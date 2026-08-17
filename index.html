@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F87209">
+  <meta name="description" content="Mandarinita: humor cotidiano, dominicano y con mucha pulpa.">
+  <title>Mandarinita — Con fruta todo fluye</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Mandarinita, inicio">
+      <span class="brand-fruit" aria-hidden="true"><i></i></span>
+      <span>Mandarinita</span>
+    </a>
+    <button class="menu-button" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><b>Menú</b></button>
+    <nav id="main-nav" class="main-nav" aria-label="Navegación principal">
+      <a class="active" href="index.html">Inicio</a>
+      <a href="#episodios">Historietas</a>
+      <a href="personajes.html">Personajes</a>
+      <a class="nav-pill" href="#siguenos">Síguenos</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">Humor cotidiano con sabor dominicano</span>
+        <h1>La vida da vueltas.<br><em>¡Ríete en el camino!</em></h1>
+        <p>Historietas sobre el trabajo, el café y esos días en que uno está presente… pero la mente pidió el día libre.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#episodios">Ver historietas <span>↓</span></a>
+          <a class="text-link" href="personajes.html">Conoce la fruticrew →</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="Mandarinita feliz saludando">
+        <span class="burst burst-one">¡JEVI!</span>
+        <span class="burst burst-two">JA<br>JA</span>
+        <div class="mandarin character-xl">
+          <div class="leaf"></div><div class="stem"></div>
+          <div class="face"><span class="eye left"></span><span class="eye right"></span><span class="brow left"></span><span class="brow right"></span><span class="mouth"></span><span class="cheek left"></span><span class="cheek right"></span></div>
+          <span class="arm left"></span><span class="arm right"></span><span class="hand left">●</span><span class="hand right">●</span><span class="leg left"></span><span class="leg right"></span>
+        </div>
+        <span class="dot dot-one"></span><span class="dot dot-two"></span><span class="dot dot-three"></span>
+      </div>
+      <p class="scroll-note">Baja, que esto se pone bueno <span>↓</span></p>
+    </section>
+
+    <section id="episodios" class="episodes section-wrap">
+      <div class="section-heading">
+        <div><span class="eyebrow dark">Recién exprimidas</span><h2>Últimas historietas</h2></div>
+        <p>Un chin de humor para sobrevivir la semana.</p>
+      </div>
+      <div class="episode-grid">
+        <article class="episode-card featured">
+          <div class="comic-preview orange">
+            <span class="day">LUNES</span>
+            <div class="mini-fruit sleepy"><i></i><b>–</b><b>–</b><u></u></div>
+            <p>Mi cuerpo llegó.<br><strong>Yo vengo ahora.</strong></p>
+          </div>
+          <div class="card-copy"><span>Episodio 12 · 2 min</span><h3>Presente… más o menos</h3><p>Mandarinita descubre que fichar temprano y despertar temprano son dos cosas muy diferentes.</p><a href="#" aria-label="Leer Presente, más o menos">Leer episodio →</a></div>
+        </article>
+        <article class="episode-card">
+          <div class="comic-preview yellow">
+            <span class="day">REUNIÓN</span>
+            <div class="mini-fruit"><i></i><b>●</b><b>●</b><u></u></div>
+            <p>Esto pudo ser<br><strong>un correíto.</strong></p>
+          </div>
+          <div class="card-copy"><span>Episodio 11 · 1 min</span><h3>La reunión eterna</h3><a href="#">Leer episodio →</a></div>
+        </article>
+        <article class="episode-card">
+          <div class="comic-preview purple">
+            <span class="day">VIERNES</span>
+            <div class="mini-fruit lime"><i></i><b>●</b><b>●</b><u></u></div>
+            <p>Tranquilo…<br><strong>falta poquito.</strong></p>
+          </div>
+          <div class="card-copy"><span>Episodio 10 · 2 min</span><h3>Viernes engañoso</h3><a href="#">Leer episodio →</a></div>
+        </article>
+      </div>
+      <div class="center"><a class="button outline" href="#">Ver todas las historietas</a></div>
+    </section>
+
+    <section class="meet-strip">
+      <div><span class="eyebrow">Ellos también trabajan… supuestamente</span><h2>Conoce a la fruticrew</h2><p>Cinco personalidades, una oficina y cero posibilidades de que el día salga normal.</p><a class="button cream" href="personajes.html">Ver personajes →</a></div>
+      <div class="fruit-line" aria-hidden="true"><span class="fruit orange-fruit">●</span><span class="fruit carrot">▲</span><span class="fruit lemon">●</span><span class="fruit water">●</span></div>
+    </section>
+  </main>
+
+  <footer id="siguenos">
+    <a class="brand footer-brand" href="index.html"><span class="brand-fruit"><i></i></span><span>Mandarinita</span></a>
+    <p>Con fruta todo fluye.</p>
+    <div class="socials"><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">YouTube</a></div>
+    <small>© 2026 Mandarinita. Hecho con pulpa y paciencia en RD.</small>
+  </footer>
+</body>
+</html>
