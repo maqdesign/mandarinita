@@ -75,13 +75,15 @@ function movePanel(direction) {
   panelIndex = (panelIndex + direction + length) % length;
   renderPanel();
 }
-document.querySelector('.reader-prev').addEventListener('click',()=>movePanel(-1));
-document.querySelector('.reader-text-prev').addEventListener('click',()=>movePanel(-1));
-document.querySelector('.reader-next').addEventListener('click',()=>movePanel(1));
-document.querySelector('.reader-text-next').addEventListener('click',()=>movePanel(1));
-document.querySelector('.reader-close').addEventListener('click',()=>dialog.close());
-dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
-dialog.addEventListener('keydown',event=>{
-  if (event.key==='ArrowLeft' && works[activeWork]?.images.length > 1) movePanel(-1);
-  if (event.key==='ArrowRight' && works[activeWork]?.images.length > 1) movePanel(1);
-});
+if (dialog) {
+  document.querySelector('.reader-prev')?.addEventListener('click',()=>movePanel(-1));
+  document.querySelector('.reader-text-prev')?.addEventListener('click',()=>movePanel(-1));
+  document.querySelector('.reader-next')?.addEventListener('click',()=>movePanel(1));
+  document.querySelector('.reader-text-next')?.addEventListener('click',()=>movePanel(1));
+  document.querySelector('.reader-close')?.addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
+  dialog.addEventListener('keydown',event=>{
+    if (event.key==='ArrowLeft' && works[activeWork]?.images.length > 1) movePanel(-1);
+    if (event.key==='ArrowRight' && works[activeWork]?.images.length > 1) movePanel(1);
+  });
+}
