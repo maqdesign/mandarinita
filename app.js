@@ -33,6 +33,8 @@ navigation?.querySelectorAll('a').forEach(link => link.addEventListener('click',
 }));
 
 const works = {
+  episode1: { title: 'Episodio original · 2019', titleEn: 'Original episode · 2019', kind: 'EPISODIO · 2 LÁMINAS', kindEn: 'EPISODE · 2 PAGES', images: [{src:'assets/comic-rage-2019.webp',alt:'Primera lámina: ¡Grrrrr!',altEn:'First page: Grrrr!'},{src:'assets/comic-focus-2019.webp',alt:'Segunda lámina: ¿Quién dice?',altEn:'Second page: Who says?'}] },
+  episode2: { title: 'Episodio original · 2022', titleEn: 'Original episode · 2022', kind: 'EPISODIO · 2 LÁMINAS', kindEn: 'EPISODE · 2 PAGES', images: [{src:'assets/art-envelope-2022.webp',alt:'Primera lámina: el sobre',altEn:'First page: the envelope'},{src:'assets/art-paperclip-2022.webp',alt:'Segunda lámina: el clip',altEn:'Second page: the paperclip'}] },
   rage: { title: '¡Grrrrr!', titleEn: 'Grrrr!', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-rage-2019.webp', alt:'Ilustración original de 2019: dos mandarinas reaccionan con enojo y alegría; texto ¡Grrrrr!', altEn:'Original 2019 illustration: two mandarins react with anger and joy; the image reads Grrrr!'}] },
   focus: { title: '¿Quién dice?', titleEn: 'Who says?', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-focus-2019.webp', alt:'Historieta original de 2019 sobre estar enfocado.', altEn:'Original 2019 comic about staying focused.'}] },
   coffee: { title: '¿Tienes hambre?', titleEn: 'Are you hungry?', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-coffee-2019.webp', alt:'Mandarinita y Sr. Mandarino conversan en el sofá; los globos dicen “Oye, voy a la cocina ¿tienes hambre?”, “No”, “¿Seguro?” y “Seguro”.', altEn:'Mandarinita and Mr. Mandarin talk on a couch; speech bubbles ask if he is hungry and whether he is sure.'}] },
@@ -56,7 +58,7 @@ function renderPanel() {
   image.alt = language === 'es' ? panel.alt : panel.altEn;
   title.textContent = language === 'es' ? work.title : work.titleEn;
   kind.textContent = language === 'es' ? work.kind : work.kindEn;
-  caption.textContent = language === 'es' ? `Imagen original ${panelIndex+1} de ${work.images.length}` : `Original image ${panelIndex+1} of ${work.images.length}`;
+  caption.textContent = language === 'es' ? `Lámina ${panelIndex+1} de ${work.images.length}` : `Page ${panelIndex+1} of ${work.images.length}`;
   count.textContent = `${panelIndex+1} / ${work.images.length}`;
   notice.textContent = activeWork === 'storyboard' ? (language === 'es' ? 'Boceto de proceso · no es un episodio publicado' : 'Storyboard process material · not a published episode') : '';
   const multiple = work.images.length > 1;
