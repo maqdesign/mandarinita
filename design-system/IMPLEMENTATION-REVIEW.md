@@ -1,6 +1,6 @@
 # Website 2026 implementation review
 
-**Review target:** Figma frames `01 · Website Desktop · 1440` (node `2:2`) and `02 · Website Mobile · 390` (node `2:35`); implementation in this branch.
+**Review target:** Figma frames [Desktop · 1440](https://www.figma.com/design/CkT0XBw8vlAxyeEGTSsK8x?node-id=2-2) (node `2:2`) and [Mobile · 390](https://www.figma.com/design/CkT0XBw8vlAxyeEGTSsK8x?node-id=2-35) (node `2:35`); Cloudflare branch preview at https://feat-mandarinita-art-2026.mandarinita-bbb.pages.dev/.
 
 ## Visual comparison
 
@@ -11,6 +11,17 @@
 | Three archive cards with large image slots | Five source-backed artwork cards in a three-column desktop / one-column mobile grid | Uses dated, signed source images. Descriptive titles are identified as gallery labels, not asserted as original titles. |
 | Artist story and an artwork reservation | English biography, creative statement, five-item artwork record, and sourced project history | The award note is attributed to the historical project site. Missing exhibition and medium data are not inferred. |
 | 390 px mobile frame with single-column comic cards | Responsive single-column cards, collapsible navigation, accessible full-screen reader | Reader controls include buttons, keyboard focus, Escape-to-close, panel count, alt text, and reduced-motion support. |
+
+The comparison shows the strongest design change in the Figma artwork slots: those are placeholders, while the implementation uses the actual supplied character and archive illustrations. The implementation extends the three-card desktop archive to five documented works and adds English portfolio records below the story section.
+
+## Preview review
+
+Preview: https://feat-mandarinita-art-2026.mandarinita-bbb.pages.dev/
+
+- Desktop: inspected at 1363 × 936. The original logo, orange hero, responsive three-column archive, portfolio, and source artwork load without broken images.
+- Mobile: inspected at 390 × 640. Header collapses to a menu button; the headline, description, CTA, and original character image reflow into a single column.
+- Interaction: the four-panel process reader advances to panel 2/4 and stays labeled as unpublished storyboard material. Escape closes the dialog. Switching to English updates the navigation, main copy, document title, metadata, and HTML language.
+- Local source checks: JavaScript syntax passes, referenced local assets exist, and the logo file is byte-identical to the supplied SVG.
 
 ## Art and provenance
 
@@ -24,9 +35,9 @@ A separate four-panel reader uses panels cropped from `storyboard-rough-2019.web
 - [x] Use supplied character illustrations and remove CSS-drawn fruit and unsupported invented cast descriptions.
 - [x] Keep Spanish and English interface copy, `lang` switching, and direct English portfolio content.
 - [x] Use semantic landmarks, skip link, accessible names, visible focus, responsive layout, dialog semantics, alt text, and reduced-motion handling.
+- [x] Inspect the Cloudflare preview at desktop and mobile widths.
+- [x] Record preview URL and Figma comparisons in this review.
 - [x] Do not touch domain records, the historical Fruition Worker, or `main`.
-- [ ] Capture and inspect the Cloudflare branch preview at desktop and mobile widths after deployment.
-- [ ] Add final preview URLs and visual-review notes after the branch deployment is available.
 
 ## Remaining source gaps
 
