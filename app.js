@@ -1,7 +1,9 @@
 const languageButton = document.querySelector('.language-toggle');
 const menuButton = document.querySelector('.menu-button');
 const navigation = document.querySelector('.main-nav');
-let language = localStorage.getItem('mandarinita-language') || 'es';
+let language = 'es';
+try { language = localStorage.getItem('mandarinita-language') || 'es'; } catch (_) { /* Storage may be disabled. */ }
+if (!['es', 'en'].includes(language)) language = 'es';
 
 function setLanguage(next) {
   language = next;
@@ -16,7 +18,7 @@ function setLanguage(next) {
   document.querySelectorAll('[data-es][data-en]').forEach(node => {
     node.textContent = node.dataset[next];
   });
-  localStorage.setItem('mandarinita-language', next);
+  try { localStorage.setItem('mandarinita-language', next); } catch (_) { /* Continue without persistence. */ }
 }
 setLanguage(language);
 languageButton.addEventListener('click', () => { setLanguage(language === 'es' ? 'en' : 'es'); if (activeWork && dialog.open) renderPanel(); });
@@ -65,6 +67,7 @@ function openReader(key) {
   panelIndex = 0;
   renderPanel();
   dialog.showModal();
+  document.querySelector('.reader-close')?.focus();
 }
 document.querySelectorAll('[data-reader]').forEach(button=>button.addEventListener('click',()=>openReader(button.dataset.reader)));
 function movePanel(direction) {
@@ -79,6 +82,6 @@ document.querySelector('.reader-text-next').addEventListener('click',()=>movePan
 document.querySelector('.reader-close').addEventListener('click',()=>dialog.close());
 dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
 dialog.addEventListener('keydown',event=>{
-  if (event.key==='ArrowLeft' && activeWork==='storyboard') movePanel(-1);
-  if (event.key==='ArrowRight' && activeWork==='storyboard') movePanel(1);
+  if (event.key==='ArrowLeft' && works[activeWork]?.images.length > 1) movePanel(-1);
+  if (event.key==='ArrowRight' && works[activeWork]?.images.length > 1) movePanel(1);
 });
