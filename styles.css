@@ -17,3 +17,29 @@
 .reader-arrow .ui-icon{width:1.5em;height:1.5em}
 .button .ui-icon,.text-button .ui-icon{transition:transform .2s ease}
 @media (prefers-reduced-motion:no-preference){.button:hover .ui-icon-next,.text-button:hover .ui-icon-next{transform:translateX(3px)}}
+
+/* Mandarinita 2026: editorial cast, genuine original art and compact downloads */
+.hero-art{position:relative;isolation:isolate;display:flex;justify-content:center;align-items:flex-end;min-height:330px}
+.hero-art .hero-character{position:relative;width:min(57%,340px);height:auto;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(56,37,15,.13));transition:transform .25s ease}
+.hero-art .hero-mandy{z-index:2;transform:rotate(-7deg) translate(8%,0)}
+.hero-art .hero-mando{z-index:1;margin-left:-18%;transform:rotate(8deg) translate(-3%,2%)}
+.hero-art figcaption{position:absolute;bottom:-2.2rem;left:0;right:0;text-align:center}
+.hero-index{display:none}
+.downloads{display:flex;align-items:center;justify-content:space-between;gap:2rem;padding-block:4rem;border-top:1px solid var(--line)}
+.downloads>div{max-width:660px}
+.downloads h2{font-size:clamp(1.8rem,3vw,2.7rem);margin-bottom:.5rem}
+.cast-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem;padding-block:2rem}
+.cast-card{display:grid;grid-template-columns:minmax(110px,36%) 1fr;overflow:hidden;min-height:210px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 10px 26px rgba(48,34,27,.045)}
+.cast-portrait{background:#fef1d9;display:grid;place-items:center;min-height:190px;padding:1rem}
+.cast-portrait img{object-fit:contain;width:100%;max-height:215px}
+.cast-copy{padding:1.5rem}
+.cast-copy h2{margin-bottom:.5rem;font-size:clamp(1.35rem,2vw,1.85rem)}
+.cast-copy p{line-height:1.55}
+.cast-copy .work-meta{font-size:.67rem;letter-spacing:.06em}
+.cast-episode{margin-bottom:0;font-weight:700;font-size:.85rem;color:var(--green)}
+.cast-episode a{text-decoration:underline;text-underline-offset:4px}
+.cast-placeholder{width:min(110px,76%);aspect-ratio:1;display:grid;place-items:center;border-radius:50%;border:2px dashed rgba(96,125,56,.4);color:var(--green);background:rgba(255,255,255,.65);font:700 clamp(2rem,4vw,3.1rem) Fredoka,sans-serif}
+.cast-note{color:var(--muted);font-size:.9rem;line-height:1.6;padding-bottom:1.5rem}
+@media(max-width:900px){.cast-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.downloads{display:block}.downloads .button{margin-top:1rem}.cast-card{grid-template-columns:110px 1fr;min-height:170px}.cast-portrait{min-height:160px;padding:.5rem}.cast-copy{padding:1rem}.hero-art{min-height:250px}.hero-art .hero-character{width:min(62%,275px)}}
+@media(prefers-reduced-motion:reduce){.hero-art .hero-character{transition:none}}
