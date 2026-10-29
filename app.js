@@ -42,6 +42,49 @@ const works = {
   paperclip: { title: 'El clip misterioso', titleEn: 'The mysterious paperclip', kind: 'ILUSTRACIÓN · 2022', kindEn: 'ILLUSTRATION · 2022', images: [{src:'assets/art-paperclip-2022.webp', alt:'Mandarinita se sorprende al ver un clip grande.', altEn:'Mandarinita is surprised by a large paperclip.'}] },
   storyboard: { title: 'Boceto de historieta · proceso', titleEn: 'Comic storyboard · process material', kind: 'MATERIAL DE PROCESO · NO PUBLICADO', kindEn: 'PROCESS MATERIAL · NOT PUBLISHED', images: [1,2,3,4].map(n=>({src:`assets/storyboard-panel-${n}.webp`,alt:`Viñeta ${n} del boceto original de 2019.`,altEn:`Panel ${n} of the original 2019 storyboard.`})) }
 };
+
+// Editorial adapter: only complete, approved comics can enter the public reader.
+// An unavailable catalog never blocks previously bundled, offline-friendly artwork.
+async function loadApprovedEpisodes() {
+  const grid = document.querySelector('.work-grid');
+  if (!grid) return;
+  try {
+    const response = await fetch('content/episodes.json', { cache: 'no-cache' });
+    if (!response.ok) return;
+    const catalog = await response.json();
+    if (catalog.schemaVersion !== 1 || catalog.editorialPolicy !== 'manual-approval' || !Array.isArray(catalog.episodes)) return;
+    for (const entry of catalog.episodes) {
+      if (entry.status !== 'published' || entry.type !== 'comic' || entry.complete !== true || !Array.isArray(entry.panels) || !entry.panels.length) continue;
+      const ordered = [...entry.panels].sort((a,b)=>a.order-b.order);
+      if (!ordered.every((panel,i) => panel.order === i+1 && /^assets\/[a-zA-Z0-9/_-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && panel.alt?.es && panel.alt?.en)) continue;
+      const key = 'catalog:' + entry.id;
+      if (works[key]) continue;
+      works[key] = {
+        title:entry.title.es,
+        titleEn:entry.title.en || entry.title.es,
+        kind:'HISTORIETA · ARCHIVO',
+        kindEn:'COMIC · ARCHIVE',
+        images:ordered.map(p=>({src:p.src,alt:p.alt.es,altEn:p.alt.en}))
+      };
+      const article=document.createElement('article');article.className='work-card catalog-card';
+      const button=document.createElement('button');button.className='work-image';button.type='button';
+      const cover=document.createElement('img');cover.src=ordered[0].src;cover.alt=ordered[0].alt[language];cover.loading='lazy';
+      button.append(cover);button.addEventListener('click',()=>openReader(key));
+      const copy=document.createElement('div');copy.className='work-copy';
+      const heading=document.createElement('h3');heading.textContent=entry.title[language]||entry.title.es;
+      const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';
+      action.addEventListener('click',()=>openReader(key));
+      copy.append(heading,action);article.append(button,copy);grid.append(article);
+      document.querySelector('.language-toggle')?.addEventListener('click',()=>{
+        heading.textContent=entry.title[language]||entry.title.es;
+        action.textContent=language==='es'?'Leer episodio':'Read episode';
+        cover.alt=ordered[0].alt[language]||ordered[0].alt.es;
+      });
+    }
+  } catch (_) { /* The curated static archive remains available. */ }
+}
+loadApprovedEpisodes();
+
 const dialog = document.querySelector('#reader');
 const image = document.querySelector('#reader-image');
 const title = document.querySelector('#reader-title');
