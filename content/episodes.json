@@ -9,12 +9,15 @@
         "en": "Grrrr!"
       },
       "episodeNumber": null,
-      "status": "published",
+      "status": "review",
       "type": "illustration",
       "source": {
         "kind": "original-archive",
         "instagramMediaId": null,
-        "instagramPermalink": null
+        "instagramPermalink": null,
+        "originalEpisodeUrl": "https://app.notion.com/p/f3a519c8a8a54776bc51d7411ec49089",
+        "originalEpisodeTitle": "Episodio 1 - La mosca",
+        "originalPanelPosition": 4
       },
       "panels": [
         {
@@ -34,12 +37,15 @@
         "en": "Who says?"
       },
       "episodeNumber": null,
-      "status": "published",
+      "status": "review",
       "type": "illustration",
       "source": {
         "kind": "original-archive",
         "instagramMediaId": null,
-        "instagramPermalink": null
+        "instagramPermalink": null,
+        "originalEpisodeUrl": "https://app.notion.com/p/f3a519c8a8a54776bc51d7411ec49089",
+        "originalEpisodeTitle": "Episodio 1 - La mosca",
+        "originalPanelPosition": 2
       },
       "panels": [
         {
@@ -51,6 +57,44 @@
           }
         }
       ]
+    },
+    {
+      "id": "ep-001-la-mosca",
+      "title": {
+        "es": "La mosca",
+        "en": "The fly"
+      },
+      "episodeNumber": 1,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/f3a519c8a8a54776bc51d7411ec49089",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 2,
+          "src": "assets/comic-focus-2019.webp",
+          "alt": {
+            "es": "Lámina B original del episodio La mosca",
+            "en": "Original page B from the episode The Fly"
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 4,
+          "src": "assets/comic-rage-2019.webp",
+          "alt": {
+            "es": "Lámina D original del episodio La mosca",
+            "en": "Original page D from the episode The Fly"
+          }
+        }
+      ],
+      "editorialNote": "Episodio de 4 láminas. Faltan A y C; NO publicar hasta recuperación y cotejo del orden."
     }
   ]
 }
