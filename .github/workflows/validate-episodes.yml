@@ -1,0 +1,26 @@
+name: Validate editorial episode catalog
+on:
+  pull_request:
+    paths:
+      - 'content/**'
+      - 'scripts/validate-episodes.mjs'
+      - '.github/workflows/validate-episodes.yml'
+  push:
+    branches:
+      - feat/instagram-episode-catalog
+    paths:
+      - 'content/**'
+      - 'scripts/validate-episodes.mjs'
+      - '.github/workflows/validate-episodes.yml'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate episode metadata and assets
+        run: node scripts/validate-episodes.mjs
