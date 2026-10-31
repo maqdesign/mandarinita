@@ -37,3 +37,5 @@ jobs:
           node scripts/smoke-award.mjs
       - name: Inspect public Notion image loading without credentials
         run: node scripts/notion-public-probe.mjs
+      - name: Download-check 24 canonical Notion PNG panels (no commit)
+        run: node scripts/import-notion-public.mjs --dry-run
