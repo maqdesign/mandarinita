@@ -85,3 +85,9 @@
 .portfolio-art-open:hover,.portfolio-art-open:focus-visible{background:#fff3dc;outline-offset:3px}
 @media(max-width:850px){.record-list article{grid-template-columns:30px minmax(0,1fr) 90px;gap:11px;align-items:start}.record-credit{grid-column:2;grid-row:2;text-align:left}.portfolio-art-open{grid-column:3;grid-row:1 / span 2;flex-direction:column;padding:6px;gap:5px}.portfolio-art-open img{width:76px;height:76px}.portfolio-art-action{font-size:.7rem}}
 @media(max-width:400px){.portfolio-art-open img{width:61px;height:61px}.record-list article{grid-template-columns:24px minmax(0,1fr) 75px}.portfolio-art-action svg{display:none}}
+
+/* Non-emoji accessible icons for Sticker.ly cards until verified pack thumbnails are available. */
+.sticker-pack-grid .sticker-pack-icon{color:var(--green)}
+.sticker-pack-grid .sticker-symbol{display:block;width:30px;height:30px}
+.sticker-pack-grid .sticker-pack-arrow{display:flex;align-items:center;justify-content:center;color:var(--green)}
+.sticker-pack-grid .sticker-external-icon{display:block;width:22px;height:22px}
