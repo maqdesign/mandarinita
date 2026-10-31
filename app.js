@@ -2,7 +2,10 @@ const languageButton = document.querySelector('.language-toggle');
 const menuButton = document.querySelector('.menu-button');
 const navigation = document.querySelector('.main-nav');
 let language = 'es';
-try { language = localStorage.getItem('mandarinita-language') || 'es'; } catch (_) { /* Storage may be disabled. */ }
+// Present the award submission in English on its .ART domain, while honoring saved choices.
+const awardHost = /^(www\.)?mandarinita\.art$/i.test(window.location.hostname);
+try { language = localStorage.getItem('mandarinita-language') || (awardHost ? 'en' : 'es'); }
+catch (_) { language = awardHost ? 'en' : 'es'; }
 if (!['es', 'en'].includes(language)) language = 'es';
 // Award entry links can open directly in English without changing the site's usual language.
 try {
