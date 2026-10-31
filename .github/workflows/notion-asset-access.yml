@@ -1,0 +1,32 @@
+name: Notion asset access diagnostic
+on:
+  push:
+    branches: [feat/notion-original-episode-recovery]
+    paths:
+      - '.github/workflows/notion-asset-access.yml'
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test direct access to canonical public episode (no credentials)
+        run: |
+          node --input-type=module <<'EOF'
+          const urls = [
+            'https://mandarinita.notion.site/f3a519c8a8a54776bc51d7411ec49089',
+            'https://www.notion.so/f3a519c8a8a54776bc51d7411ec49089'
+          ];
+          for (const url of urls) {
+            try {
+              const r=await fetch(url, {signal:AbortSignal.timeout(15000)});
+              const body=await r.text();
+              const hasImages=/CapiCC81tulo_1_a|Capi.tulo_1_a|notion-image/.test(body);
+              console.log(JSON.stringify({host:new URL(url).hostname,status:r.status,finalHost:new URL(r.url).hostname,bytes:body.length,hasImageReferences:hasImages}));
+            } catch(e) {console.log(JSON.stringify({host:new URL(url).hostname,error:e.message}));}
+          }
+          EOF
