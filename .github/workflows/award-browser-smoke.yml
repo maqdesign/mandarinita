@@ -1,0 +1,37 @@
+name: Award browser smoke
+on:
+  push:
+    branches: [feat/instagram-episode-catalog]
+    paths:
+      - 'index.html'
+      - 'app.js'
+      - 'styles.css'
+      - 'scripts/smoke-award.mjs'
+      - '.github/workflows/award-browser-smoke.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'app.js'
+      - 'styles.css'
+      - 'scripts/smoke-award.mjs'
+      - '.github/workflows/award-browser-smoke.yml'
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Run local server and responsive browser checks
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/mandarinita-http.log 2>&1 &
+          sleep 2
+          node scripts/smoke-award.mjs
