@@ -91,3 +91,29 @@
 .sticker-pack-grid .sticker-symbol{display:block;width:30px;height:30px}
 .sticker-pack-grid .sticker-pack-arrow{display:flex;align-items:center;justify-content:center;color:var(--green)}
 .sticker-pack-grid .sticker-external-icon{display:block;width:22px;height:22px}
+
+/* Mandarinita cast: characters grouped by their narrative role. */
+.character-page{min-width:0;overflow:hidden}
+.character-group{padding-block:26px 30px}
+.character-group-heading{margin-bottom:18px}
+.character-group-heading h2{font-family:'Fredoka',sans-serif;font-size:clamp(1.8rem,4vw,2.9rem);margin:0 0 6px}
+.character-group-heading p{color:var(--muted);margin:0;font-size:clamp(.93rem,2vw,1.1rem)}
+.character-group .cast-grid{display:grid;gap:18px;padding:0}
+.character-group .cast-grid-lead{grid-template-columns:repeat(2,minmax(0,1fr))}
+.character-group .cast-grid-support{grid-template-columns:repeat(3,minmax(0,1fr))}
+.character-group .cast-grid-guest{grid-template-columns:repeat(4,minmax(0,1fr))}
+.character-group .cast-card{display:flex;flex-direction:column;min-width:0;min-height:0;width:100%;overflow:hidden}
+.character-group .cast-card .cast-portrait{min-height:0;aspect-ratio:16/10;padding:12px}
+.character-group .cast-card .cast-portrait img{width:100%;max-height:100%;height:100%;object-fit:contain}
+.character-group .cast-card .cast-copy{min-width:0;width:100%;padding:clamp(18px,2.5vw,28px)}
+.character-group .cast-copy h3{font-family:'Fredoka',sans-serif;font-size:clamp(1.3rem,2.2vw,1.9rem);line-height:1.14;margin:0 0 12px;overflow-wrap:break-word}
+.character-group .cast-copy p:not(.work-meta){font-size:clamp(.94rem,1.4vw,1.04rem);line-height:1.58;margin:0}
+.character-group .cast-copy .work-meta{margin:0 0 11px;font-weight:750;color:var(--green);letter-spacing:.06em;font-size:.72rem;text-transform:uppercase}
+.character-group .cast-no-image{display:flex;grid-template-columns:none;background:#fffdf9}
+.character-group .cast-grid-guest .cast-card{border-radius:19px;background:#fffaf1}
+.character-group .cast-grid-guest .cast-copy{padding:18px}
+.character-group .cast-grid-guest h3{font-size:clamp(1.15rem,1.8vw,1.42rem)}
+.character-group .cast-grid-guest .cast-copy p:not(.work-meta){font-size:.92rem}
+@media(max-width:1050px){.character-group .cast-grid-support{grid-template-columns:repeat(2,minmax(0,1fr))}.character-group .cast-grid-guest{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.character-group .cast-grid-lead,.character-group .cast-grid-support{grid-template-columns:1fr}.character-group .cast-grid-guest{grid-template-columns:repeat(2,minmax(0,1fr))}.character-group .cast-card .cast-copy{padding:20px}.character-group .cast-card.cast-featured{flex-direction:row;align-items:center}.character-group .cast-card.cast-featured .cast-portrait{flex:0 0 35%;width:35%;aspect-ratio:1/1}.character-group .cast-card.cast-featured .cast-copy{flex:1 1 0;width:auto}.character-group .cast-grid-guest .cast-copy{padding:15px}}
+@media(max-width:430px){.character-group .cast-grid-guest{grid-template-columns:1fr}.character-group .cast-card.cast-featured{flex-direction:column}.character-group .cast-card.cast-featured .cast-portrait{flex:none;width:100%;aspect-ratio:16/9}.character-group .cast-card.cast-featured .cast-copy{width:100%}}
