@@ -13,8 +13,15 @@ try {
   if (requestedLanguage === 'en' || requestedLanguage === 'es') language = requestedLanguage;
 } catch (_) { /* A malformed URL should not break the site. */ }
 
-function setLanguage(next) {
+function setLanguage(next, updateUrl = false) {
   language = next;
+  if (updateUrl) {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', next);
+      window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+    } catch (_) { /* Language switching must work even if URL updates are restricted. */ }
+  }
   document.documentElement.lang = next;
   document.documentElement.dataset.lang = next;
   languageButton.textContent = next === 'es' ? 'EN' : 'ES';
@@ -29,7 +36,7 @@ function setLanguage(next) {
   try { localStorage.setItem('mandarinita-language', next); } catch (_) { /* Continue without persistence. */ }
 }
 setLanguage(language);
-languageButton.addEventListener('click', () => { setLanguage(language === 'es' ? 'en' : 'es'); if (activeWork && dialog.open) renderPanel(); });
+languageButton.addEventListener('click', () => { setLanguage(language === 'es' ? 'en' : 'es', true); if (activeWork && dialog.open) renderPanel(); });
 menuButton?.addEventListener('click', () => {
   const opened = menuButton.getAttribute('aria-expanded') !== 'true';
   menuButton.setAttribute('aria-expanded', String(opened));
