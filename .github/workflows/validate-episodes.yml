@@ -30,12 +30,6 @@ jobs:
           node-version: '22'
       - name: Check JavaScript syntax
         run: node --check app.js && node --check scripts/validate-episodes.mjs
-      - name: Check public Notion asset access without credentials
-        run: |
-          node --input-type=module <<'EOF'
-          const url='https://mandarinita.notion.site/f3a519c8a8a54776bc51d7411ec49089';
-          try {const r=await fetch(url,{signal:AbortSignal.timeout(15000)});const body=await r.text();console.log(JSON.stringify({status:r.status,host:new URL(r.url).hostname,bytes:body.length,hasOriginalNames:/CapiCC81tulo_1_a|Capi.tulo_1_a/.test(body)}));}catch(e){console.log('Notion public access unavailable:',e.message)}
-          EOF
       - name: Validate episode metadata and assets
         run: node scripts/validate-episodes.mjs
       - name: Verify award page structure and minimum English copy
