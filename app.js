@@ -4,6 +4,11 @@ const navigation = document.querySelector('.main-nav');
 let language = 'es';
 try { language = localStorage.getItem('mandarinita-language') || 'es'; } catch (_) { /* Storage may be disabled. */ }
 if (!['es', 'en'].includes(language)) language = 'es';
+// Award entry links can open directly in English without changing the site's usual language.
+try {
+  const requestedLanguage = new URLSearchParams(window.location.search).get('lang');
+  if (requestedLanguage === 'en' || requestedLanguage === 'es') language = requestedLanguage;
+} catch (_) { /* A malformed URL should not break the site. */ }
 
 function setLanguage(next) {
   language = next;
