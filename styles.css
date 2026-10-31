@@ -117,3 +117,10 @@
 @media(max-width:1050px){.character-group .cast-grid-support{grid-template-columns:repeat(2,minmax(0,1fr))}.character-group .cast-grid-guest{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){.character-group .cast-grid-lead,.character-group .cast-grid-support{grid-template-columns:1fr}.character-group .cast-grid-guest{grid-template-columns:repeat(2,minmax(0,1fr))}.character-group .cast-card .cast-copy{padding:20px}.character-group .cast-card.cast-featured{flex-direction:row;align-items:center}.character-group .cast-card.cast-featured .cast-portrait{flex:0 0 35%;width:35%;aspect-ratio:1/1}.character-group .cast-card.cast-featured .cast-copy{flex:1 1 0;width:auto}.character-group .cast-grid-guest .cast-copy{padding:15px}}
 @media(max-width:430px){.character-group .cast-grid-guest{grid-template-columns:1fr}.character-group .cast-card.cast-featured{flex-direction:column}.character-group .cast-card.cast-featured .cast-portrait{flex:none;width:100%;aspect-ratio:16/9}.character-group .cast-card.cast-featured .cast-copy{width:100%}}
+
+/* Fix desktop sticker cards: an older .downloads > div max-width was constraining the whole grid. */
+.downloads > .sticker-pack-grid{max-width:100%;width:100%;box-sizing:border-box;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.downloads .sticker-pack-grid .sticker-pack{min-width:0;padding:18px 20px;min-height:118px}
+.downloads .sticker-pack-grid .sticker-pack-copy strong{overflow-wrap:normal;word-break:normal;hyphens:none;font-size:clamp(1rem,1.3vw,1.12rem)}
+@media(max-width:1000px){.downloads > .sticker-pack-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.downloads > .sticker-pack-grid{grid-template-columns:1fr;gap:12px}.downloads .sticker-pack-grid .sticker-pack{min-height:94px;padding:14px 16px}}
