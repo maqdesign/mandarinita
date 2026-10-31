@@ -35,7 +35,3 @@ jobs:
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/mandarinita-http.log 2>&1 &
           sleep 2
           node scripts/smoke-award.mjs
-      - name: Inspect public Notion image loading without credentials
-        run: node scripts/notion-public-probe.mjs
-      - name: Download-check 24 canonical Notion PNG panels (no commit)
-        run: node scripts/import-notion-public.mjs --dry-run
