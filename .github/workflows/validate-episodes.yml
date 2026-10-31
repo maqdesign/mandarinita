@@ -1,0 +1,52 @@
+name: Validate editorial episode catalog
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'app.js'
+      - 'personajes.html'
+      - 'content/**'
+      - 'scripts/validate-episodes.mjs'
+      - '.github/workflows/validate-episodes.yml'
+  push:
+    branches:
+      - feat/instagram-episode-catalog
+    paths:
+      - 'index.html'
+      - 'app.js'
+      - 'personajes.html'
+      - 'content/**'
+      - 'scripts/validate-episodes.mjs'
+      - '.github/workflows/validate-episodes.yml'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: node --check app.js && node --check scripts/validate-episodes.mjs
+      - name: Validate episode metadata and assets
+        run: node scripts/validate-episodes.mjs
+      - name: Verify award page structure and minimum English copy
+        run: |
+          node --input-type=module <<'EOF'
+          import { readFileSync } from 'node:fs';
+          const html = readFileSync('index.html', 'utf8');
+          for (const anchor of ['id="inicio"','id="historietas"','id="portafolio"','id="historia"','id="reader"']) {
+            if (!html.includes(anchor)) throw new Error('Missing expected element: ' + anchor);
+          }
+          const sections = html.match(/<article class="portfolio-card[^"]*"[\s\S]*?<\/article>/g) || [];
+          if (sections.length < 2) throw new Error('Artist biography / statement missing');
+          for (const [index, section] of sections.slice(0,2).entries()) {
+            const candidates=[...section.matchAll(/data-en="([^"]{400,})"/g)].map(x=>x[1]);
+            const count=(candidates.sort((a,b)=>b.length-a.length)[0]||'').trim().split(/\s+/).length;
+            if (count < 100) throw new Error('English portfolio text #'+(index+1)+' too short: '+count+' words');
+          }
+          if (!html.includes('award-technical')) throw new Error('Technical records missing');
+          console.log('Award structure and two English texts: PASS');
+          EOF
