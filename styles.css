@@ -124,3 +124,38 @@
 .downloads .sticker-pack-grid .sticker-pack-copy strong{overflow-wrap:normal;word-break:normal;hyphens:none;font-size:clamp(1rem,1.3vw,1.12rem)}
 @media(max-width:1000px){.downloads > .sticker-pack-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.downloads > .sticker-pack-grid{grid-template-columns:1fr;gap:12px}.downloads .sticker-pack-grid .sticker-pack{min-height:94px;padding:14px 16px}}
+
+/* Approved 2026 Mandarinita hero: one transparent, self-contained illustration. */
+.hero-art.hero-art-family{
+  width:min(100%,610px);
+  height:auto;
+  min-height:0;
+  aspect-ratio:1448 / 1086;
+  padding:0;
+  margin:0;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  display:block;
+  isolation:isolate;
+  align-self:center;
+  justify-self:center;
+  overflow:visible;
+}
+.hero-art.hero-art-family .hero-family-image{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  mix-blend-mode:normal;
+  border-radius:0;
+  filter:drop-shadow(0 22px 24px rgba(61,34,13,.12));
+}
+@media(max-width:980px){
+  .hero-art.hero-art-family{width:min(100%,520px);height:auto;min-height:0;}
+}
+@media(max-width:680px){
+  .hero-art.hero-art-family{width:min(100%,450px);height:auto;min-height:0;aspect-ratio:1448 / 1086;margin:14px auto 2px;padding:0;border-radius:0;}
+  .hero-art.hero-art-family .hero-family-image{width:100%;height:100%;object-fit:contain;}
+}
