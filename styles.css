@@ -61,15 +61,18 @@
 .cast-card-text .cast-copy{padding:clamp(1.25rem,3vw,2rem)}
 .cast-card-text h2{color:var(--ink)}
 
-/* Sticker.ly pack collection — seven official Mandarinita packs. */
-.downloads:has(.sticker-pack-grid){display:block;padding-block:clamp(3rem,6vw,5rem)}
-.downloads-heading{max-width:670px;margin-bottom:1.6rem}
-.sticker-pack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.85rem}
-.sticker-pack{display:flex;align-items:center;gap:.85rem;min-width:0;padding:1.05rem;border:1px solid var(--line);background:#fff;border-radius:20px;color:var(--ink);text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
-.sticker-pack:hover,.sticker-pack:focus-visible{transform:translateY(-2px);box-shadow:0 9px 24px rgba(48,34,27,.1)}
-.sticker-pack-icon{display:grid;place-items:center;flex-shrink:0;width:48px;height:48px;background:#fff0d5;border-radius:15px;font-size:1.5rem}
-.sticker-pack-copy{display:grid;gap:.2rem;min-width:0;flex:1}
-.sticker-pack-copy strong{font-family:'Fredoka',sans-serif;font-size:1.1rem;line-height:1.18}
-.sticker-pack-copy small{color:var(--muted);font-size:.72rem}
-.sticker-pack-arrow{color:var(--green);font-size:1.35rem;flex-shrink:0}
-@media(max-width:500px){.sticker-pack-grid{grid-template-columns:1fr 1fr;gap:.65rem}.sticker-pack{padding:.85rem;gap:.55rem;align-items:flex-start;flex-wrap:wrap}.sticker-pack-icon{width:39px;height:39px;font-size:1.2rem}.sticker-pack-copy{flex-basis:calc(100% - 52px)}.sticker-pack-arrow{margin-left:auto}.sticker-pack-copy strong{font-size:1rem}}
+
+/* Sticker collection: predictable layout without :has() or inherited flex rules. */
+.downloads{display:block;padding-top:56px;padding-bottom:64px}
+.downloads .downloads-heading{max-width:680px;margin:0 0 30px}
+.downloads .downloads-heading p{margin-bottom:0}
+.sticker-pack-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:100%}
+.sticker-pack-grid .sticker-pack{display:flex;align-items:center;gap:14px;box-sizing:border-box;min-width:0;min-height:112px;padding:22px;border:1px solid #efdcc5;border-radius:22px;background:#fffdf9;color:var(--ink);text-decoration:none;box-shadow:0 5px 16px rgba(48,34,27,.035);transition:transform .15s ease,box-shadow .15s ease}
+.sticker-pack-grid .sticker-pack:hover,.sticker-pack-grid .sticker-pack:focus-visible{transform:translateY(-2px);box-shadow:0 12px 22px rgba(48,34,27,.11)}
+.sticker-pack-grid .sticker-pack-icon{display:grid;place-items:center;flex:0 0 56px;width:56px;height:56px;border-radius:18px;background:#ffefda;font-size:1.55rem}
+.sticker-pack-grid .sticker-pack-copy{display:flex;flex:1 1 0;flex-direction:column;gap:5px;min-width:0}
+.sticker-pack-grid .sticker-pack-copy strong{font:600 1.12rem/1.17 Fredoka,sans-serif;overflow-wrap:break-word}
+.sticker-pack-grid .sticker-pack-copy small{font-size:.76rem;color:var(--muted)}
+.sticker-pack-grid .sticker-pack-arrow{flex:0 0 auto;color:var(--green);font-size:1.3rem}
+@media(max-width:1000px){.sticker-pack-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.downloads{padding-top:44px;padding-bottom:52px}.sticker-pack-grid{grid-template-columns:1fr;gap:12px}.sticker-pack-grid .sticker-pack{min-height:94px;padding:14px 16px}.sticker-pack-grid .sticker-pack-icon{flex-basis:52px;width:52px;height:52px}.sticker-pack-grid .sticker-pack-copy strong{font-size:1.12rem}}
