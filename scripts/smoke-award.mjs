@@ -23,8 +23,10 @@ for(const profile of profiles){
   await cards.first().click();
   if(!(await page.locator('#reader').evaluate(el=>el.open)))throw Error('Reader did not open');
   await page.locator('#reader-image').waitFor({state:'visible'});
-  const loaded=await page.locator('#reader-image').evaluate(img=>img.complete&&img.naturalWidth>0);
-  if(!loaded)throw Error('Reader image failed to load');
+  await page.waitForFunction(() => {
+   const img=document.querySelector('#reader-image');
+   return img && img.complete && img.naturalWidth>0;
+  }, null, {timeout:15000});
   const next=page.locator('.reader-next');
   if(await next.isVisible())await next.click();
   await page.locator('.reader-close').click();
