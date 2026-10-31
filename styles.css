@@ -60,3 +60,16 @@
 .cast-card-text{display:block;min-height:0;background:#fffaf0}
 .cast-card-text .cast-copy{padding:clamp(1.25rem,3vw,2rem)}
 .cast-card-text h2{color:var(--ink)}
+
+/* Sticker.ly pack collection — seven official Mandarinita packs. */
+.downloads:has(.sticker-pack-grid){display:block;padding-block:clamp(3rem,6vw,5rem)}
+.downloads-heading{max-width:670px;margin-bottom:1.6rem}
+.sticker-pack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.85rem}
+.sticker-pack{display:flex;align-items:center;gap:.85rem;min-width:0;padding:1.05rem;border:1px solid var(--line);background:#fff;border-radius:20px;color:var(--ink);text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
+.sticker-pack:hover,.sticker-pack:focus-visible{transform:translateY(-2px);box-shadow:0 9px 24px rgba(48,34,27,.1)}
+.sticker-pack-icon{display:grid;place-items:center;flex-shrink:0;width:48px;height:48px;background:#fff0d5;border-radius:15px;font-size:1.5rem}
+.sticker-pack-copy{display:grid;gap:.2rem;min-width:0;flex:1}
+.sticker-pack-copy strong{font-family:'Fredoka',sans-serif;font-size:1.1rem;line-height:1.18}
+.sticker-pack-copy small{color:var(--muted);font-size:.72rem}
+.sticker-pack-arrow{color:var(--green);font-size:1.35rem;flex-shrink:0}
+@media(max-width:500px){.sticker-pack-grid{grid-template-columns:1fr 1fr;gap:.65rem}.sticker-pack{padding:.85rem;gap:.55rem;align-items:flex-start;flex-wrap:wrap}.sticker-pack-icon{width:39px;height:39px;font-size:1.2rem}.sticker-pack-copy{flex-basis:calc(100% - 52px)}.sticker-pack-arrow{margin-left:auto}.sticker-pack-copy strong{font-size:1rem}}
