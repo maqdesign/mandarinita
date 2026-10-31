@@ -1,20 +1,6 @@
 name: Award browser smoke
 on:
-  push:
-    branches: [feat/instagram-episode-catalog]
-    paths:
-      - 'index.html'
-      - 'app.js'
-      - 'styles.css'
-      - 'scripts/smoke-award.mjs'
-      - '.github/workflows/award-browser-smoke.yml'
-  pull_request:
-    paths:
-      - 'index.html'
-      - 'app.js'
-      - 'styles.css'
-      - 'scripts/smoke-award.mjs'
-      - '.github/workflows/award-browser-smoke.yml'
+  workflow_dispatch:
 jobs:
   browser:
     runs-on: ubuntu-latest
