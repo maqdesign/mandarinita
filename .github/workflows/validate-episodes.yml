@@ -40,7 +40,7 @@ jobs:
           for (const anchor of ['id="inicio"','id="historietas"','id="portafolio"','id="historia"','id="reader"']) {
             if (!html.includes(anchor)) throw new Error('Missing expected element: ' + anchor);
           }
-          const sections = html.match(/<article class="portfolio-card"[\s\S]*?<\/article>/g) || [];
+          const sections = html.match(/<article class="portfolio-card[^"]*"[\s\S]*?<\/article>/g) || [];
           if (sections.length < 2) throw new Error('Artist biography / statement missing');
           for (const [index, section] of sections.slice(0,2).entries()) {
             const candidates=[...section.matchAll(/data-en="([^"]{400,})"/g)].map(x=>x[1]);
