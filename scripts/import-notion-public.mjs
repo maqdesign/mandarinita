@@ -17,18 +17,25 @@ try {
  for(const episode of manifest.episodes){
   const page=await browser.newPage({viewport:{width:1440,height:900}});
   const url='https://mandarinita.notion.site/'+new URL(episode.notionUrl).pathname.split('/').pop();
-  await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
+  const downloads=new Map();
+  const pending=[];
+  page.on('response',response => {
+   if(response.status()!==200 || !/notionusercontent\.com/.test(response.url())) return;
+   const id=episode.panels.map(panel=>panel.notionFileBlock.match(/^notion-file-block:\/\/[^/]+\/([^?]+)/)?.[1]).find(id=>id && response.url().includes(id));
+   if(!id)return;
+   pending.push(response.body().then(bytes=>downloads.set(id,Buffer.from(bytes))).catch(()=>{}));
+  });
+  const pageResponse=await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForTimeout(7000);
   const loaded=await page.evaluate(() => [...document.images].map(img=>({src:img.currentSrc || img.src,loaded:img.naturalWidth>0})));
+  console.log('Source diagnostic '+JSON.stringify({number:episode.episodeNumber,http:pageResponse.status(),title:await page.title(),imgCount:loaded.length,matching:episode.panels.map(panel=>{const id=panel.notionFileBlock.match(/^notion-file-block:\/\/[^/]+\/([^?]+)/)?.[1];return loaded.some(img=>img.src.includes(id))}),responseBodies:downloads.size}));
   const info={number:episode.episodeNumber,title:episode.title,total:episode.panels.length,downloaded:0,missing:[],files:[]};
   for(const panel of episode.panels){
    const id=panel.notionFileBlock.match(/^notion-file-block:\/\/[^/]+\/([^?]+)/)?.[1];
    if(!id)throw Error('Invalid Notion file reference: '+episode.id);
-   const img=loaded.find(x=>x.src.includes(id));
-   if(!img){info.missing.push(panel.originalFilename);continue}
-   const response=await page.request.get(img.src,{timeout:35000});
-   if(!response.ok()){info.missing.push(panel.originalFilename+' HTTP '+response.status());continue}
-   const bytes=Buffer.from(await response.body());
+   await Promise.allSettled(pending);
+   const bytes=downloads.get(id);
+   if(!bytes){info.missing.push(panel.originalFilename+' original bytes not observed');continue}
    const mime=mimeByMagic(bytes);
    if(mime!=='image/png'){
     info.missing.push(panel.originalFilename+' unexpected bytes '+mime+' (not committing a converted image)');
