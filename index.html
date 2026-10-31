@@ -1,117 +1,106 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#F87209">
-  <meta name="description" content="Mandarinita: humor cotidiano, dominicano y con mucha pulpa.">
-  <title>Mandarinita — Con fruta todo fluye</title>
+  <meta name="description" content="Mandarinita: humor ilustrado desde República Dominicana. Historietas originales y portafolio artístico.">
+  <title>Mandarinita® — Historietas y arte</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <script defer>
-    document.addEventListener('DOMContentLoaded', function () {
-      const button = document.querySelector('.menu-button');
-      const navigation = document.querySelector('.main-nav');
-      if (!button || !navigation) return;
-      button.addEventListener('click', function () {
-        const open = navigation.classList.toggle('open');
-        button.setAttribute('aria-expanded', String(open));
-      });
-      navigation.querySelectorAll('a').forEach(function (link) {
-        link.addEventListener('click', function () {
-          navigation.classList.remove('open');
-          button.setAttribute('aria-expanded', 'false');
-        });
-      });
-    });
-  </script>
+  <script defer src="app.js"></script>
 </head>
 <body>
+  <a class="skip-link" href="#main"><span data-es="Saltar al contenido" data-en="Skip to content">Saltar al contenido</span></a>
   <header class="site-header">
-    <a class="brand" href="index.html" aria-label="Mandarinita, inicio">
-      <span class="brand-fruit" aria-hidden="true"><i></i></span>
-      <span>Mandarinita</span>
-    </a>
-    <button class="menu-button" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><b>Menú</b></button>
+    <a class="brand" href="#inicio" aria-label="Mandarinita, inicio"><img src="assets/mandarinita-logo.svg" width="405" height="151" alt="Mandarinita®"></a>
+    <button class="menu-button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir navegación"><span></span><span></span></button>
     <nav id="main-nav" class="main-nav" aria-label="Navegación principal">
-      <a class="active" href="index.html">Inicio</a>
-      <a href="#episodios">Historietas</a>
-      <a href="personajes.html">Personajes</a>
-      <a class="nav-pill" href="#siguenos">Síguenos</a>
+      <a href="#historietas"><span data-es="Historietas" data-en="Comics">Historietas</span></a>
+      <a href="personajes.html"><span data-es="Personajes" data-en="Characters">Personajes</span></a>
+      <a href="#portafolio"><span data-es="Portafolio" data-en="Portfolio">Portafolio</span></a>
+      <a href="#historia"><span data-es="Proyecto" data-en="About">Proyecto</span></a>
+      <button class="language-toggle" type="button" aria-label="Switch language to English">EN</button>
     </nav>
   </header>
 
-  <main>
-    <section class="hero">
+  <main id="main">
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <span class="eyebrow">Humor cotidiano con sabor dominicano</span>
-        <h1>La vida da vueltas.<br><em>¡Ríete en el camino!</em></h1>
-        <p>Historietas sobre el trabajo, el café y esos días en que uno está presente… pero la mente pidió el día libre.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="#episodios">Ver historietas <span>↓</span></a>
-          <a class="text-link" href="personajes.html">Conoce la fruticrew →</a>
-        </div>
+        <p class="eyebrow"><span data-es="Humor ilustrado desde República Dominicana" data-en="Illustrated humor from the Dominican Republic">Humor ilustrado desde República Dominicana</span></p>
+        <h1 id="hero-title"><span data-es="La vida tiene" data-en="Life has">La vida tiene</span><br><span class="hero-highlight" data-es="sus gajos." data-en="its rough edges.">sus gajos.</span></h1>
+        <p class="hero-description"><span data-es="Historietas con sabor dominicano sobre el trabajo, el café y esos días que se ponen de lo más chévere." data-en="Dominican comics about work, coffee, and the little moments that make everyday life memorable.">Historietas con sabor dominicano sobre el trabajo, el café y esos días que se ponen de lo más chévere.</span></p>
+        <a class="button button-dark" href="#historietas"><span data-es="Leer historietas" data-en="Read the comics">Leer historietas</span><span class="button-icon"><svg class="ui-icon ui-icon-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></span></a>
       </div>
-      <div class="hero-art" aria-label="Mandarinita feliz saludando">
-        <span class="burst burst-one">¡JEVI!</span>
-        <span class="burst burst-two">JA<br>JA</span>
-        <div class="mandarin character-xl">
-          <div class="leaf"></div><div class="stem"></div>
-          <div class="face"><span class="eye left"></span><span class="eye right"></span><span class="brow left"></span><span class="brow right"></span><span class="mouth"></span><span class="cheek left"></span><span class="cheek right"></span></div>
-          <span class="arm left"></span><span class="arm right"></span><span class="hand left">●</span><span class="hand right">●</span><span class="leg left"></span><span class="leg right"></span>
-        </div>
-        <span class="dot dot-one"></span><span class="dot dot-two"></span><span class="dot dot-three"></span>
-      </div>
-      <p class="scroll-note">Baja, que esto se pone bueno <span>↓</span></p>
+      <figure class="hero-art">
+        <img class="hero-character hero-mandy" src="assets/mandarinita-smile.png" width="500" height="500" alt="Mandy Mandarinita, ilustración original"><img class="hero-character hero-mando" src="assets/sr-mandarino-neutral.png" width="500" height="500" alt="Mando Mandarinita, ilustración original">
+        <figcaption><span data-es="Mandy y Mando · personajes originales" data-en="Mandy and Mando · original characters">Ilustración original · Mandarinita</span></figcaption>
+      </figure>
+      
     </section>
 
-    <section id="episodios" class="episodes section-wrap">
+    <section class="archive section-wrap" id="historietas" aria-labelledby="archive-title">
       <div class="section-heading">
-        <div><span class="eyebrow dark">Recién exprimidas</span><h2>Últimas historietas</h2></div>
-        <p>Un chin de humor para sobrevivir la semana.</p>
+        <div><p class="eyebrow green"><span data-es="El archivo de Mandarinita" data-en="The Mandarinita archive">El archivo de Mandarinita</span></p><h2 id="archive-title"><span data-es="Historias de la vida diaria" data-en="Stories from everyday life">Historias de la vida diaria</span></h2></div>
+        <p><span data-es="Obras originales recuperadas de los archivos del proyecto. Abre una para verla en grande." data-en="Original works recovered from the project archive. Open one to view it larger.">Obras originales recuperadas de los archivos del proyecto. Abre una para verla en grande.</span></p>
       </div>
-      <div class="episode-grid">
-        <article class="episode-card featured">
-          <div class="comic-preview orange">
-            <span class="day">LUNES</span>
-            <div class="mini-fruit sleepy"><i></i><b>–</b><b>–</b><u></u></div>
-            <p>Mi cuerpo llegó.<br><strong>Yo vengo ahora.</strong></p>
-          </div>
-          <div class="card-copy"><span>Episodio 12 · 2 min</span><h3>Presente… más o menos</h3><p>Mandarinita descubre que fichar temprano y despertar temprano son dos cosas muy diferentes.</p><a href="#" aria-label="Leer Presente, más o menos">Leer episodio →</a></div>
+      <div class="work-grid">
+        <article class="work-card work-featured">
+          <button class="work-image" type="button" data-reader="episode1" aria-label="Ver láminas recuperadas del episodio La mosca, archivo incompleto">
+            <img src="assets/comic-rage-2019.webp" width="2224" height="2224" loading="lazy" alt="Ilustración original de 2019: dos mandarinas reaccionan con enojo y alegría; texto ¡Grrrrr!">
+            <span class="image-action"><svg class="ui-icon ui-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+          </button>
+          <div class="work-copy"><p class="work-meta"><span data-es="Archivo parcial · 2019" data-en="Partial archive · 2019">Historieta · 2019</span></p><h3><span data-es="La mosca · archivo parcial" data-en="The Fly · partial archive">La mosca · archivo parcial</span></h3><p><span data-es="Dos láminas originales recuperadas de La mosca (2019). Faltan otras dos." data-en="Two original pages recovered from The Fly (2019). Two pages are still missing.">Una reacción en dos sabores.</span></p><button class="text-button" type="button" data-reader="episode1"><span data-es="Ver láminas" data-en="View pages">Ver ilustración</span><span class="button-icon"><svg class="ui-icon ui-icon-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></span></button></div>
         </article>
-        <article class="episode-card">
-          <div class="comic-preview yellow">
-            <span class="day">REUNIÓN</span>
-            <div class="mini-fruit"><i></i><b>●</b><b>●</b><u></u></div>
-            <p>Esto pudo ser<br><strong>un correíto.</strong></p>
-          </div>
-          <div class="card-copy"><span>Episodio 11 · 1 min</span><h3>La reunión eterna</h3><a href="#">Leer episodio →</a></div>
+        
+        <article class="work-card">
+          <button class="work-image" type="button" data-reader="coffee" aria-label="Abrir historieta de la cocina de 2019">
+            <img src="assets/comic-coffee-2019.webp" width="2000" height="2000" loading="lazy" alt="Historieta original de 2019: Mandarinita y Sr. Mandarino conversan en un sofá sobre ir a la cocina">
+            <span class="image-action"><svg class="ui-icon ui-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+          </button>
+          <div class="work-copy"><p class="work-meta"><span data-es="Historieta · 2019" data-en="Comic · 2019">Historieta · 2019</span></p><h3><span data-es="¿Tienes hambre?" data-en="Are you hungry?">¿Tienes hambre?</span></h3><p><span data-es="Una charla de sofá con un giro cotidiano." data-en="A couch conversation with an everyday twist.">Una charla de sofá con un giro cotidiano.</span></p><button class="text-button" type="button" data-reader="coffee"><span data-es="Ver ilustración" data-en="View artwork">Ver ilustración</span><span class="button-icon"><svg class="ui-icon ui-icon-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></span></button></div>
         </article>
-        <article class="episode-card">
-          <div class="comic-preview purple">
-            <span class="day">VIERNES</span>
-            <div class="mini-fruit lime"><i></i><b>●</b><b>●</b><u></u></div>
-            <p>Tranquilo…<br><strong>falta poquito.</strong></p>
-          </div>
-          <div class="card-copy"><span>Episodio 10 · 2 min</span><h3>Viernes engañoso</h3><a href="#">Leer episodio →</a></div>
+        <article class="work-card">
+          <button class="work-image" type="button" data-reader="episode2" aria-label="Ver dos ilustraciones originales de 2022">
+            <img src="assets/art-envelope-2022.webp" width="1920" height="1920" loading="lazy" alt="Ilustración de 2022: Mandarinita saluda a un sobre que corre bajo un cielo azul">
+            <span class="image-action"><svg class="ui-icon ui-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+          </button>
+          <div class="work-copy"><p class="work-meta"><span data-es="Ilustraciones · 2022" data-en="Illustrations · 2022">Ilustración · 2022</span></p><h3><span data-es="El sobre que se va" data-en="The running envelope">El sobre que se va</span></h3><p><span data-es="Dos obras originales del archivo. Relación narrativa pendiente de comprobar." data-en="Two original archived works. Narrative connection not yet verified.">Pieza original del archivo ilustrado.</span></p><button class="text-button" type="button" data-reader="episode2"><span data-es="Ver ilustración" data-en="View artwork">Ver ilustración</span><span class="button-icon"><svg class="ui-icon ui-icon-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></span></button></div>
         </article>
+        
       </div>
-      <div class="center"><a class="button outline" href="#">Ver todas las historietas</a></div>
+      <aside class="reader-callout"><div><p class="eyebrow"><span data-es="Del cuaderno al lector" data-en="From sketchbook to reader">Del cuaderno al lector</span></p><h3><span data-es="Lee el boceto por viñetas" data-en="Read the storyboard panel by panel">Lee el boceto por viñetas</span></h3><p><span data-es="Material de proceso original. Este boceto no se presenta como episodio publicado." data-en="Original process material. This storyboard is not presented as a published episode.">Material de proceso original. Este boceto no se presenta como episodio publicado.</span></p></div><button class="button button-light" type="button" data-reader="storyboard"><span data-es="Abrir lector" data-en="Open reader">Abrir lector</span><span class="button-icon"><svg class="ui-icon ui-icon-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></span></button></aside>
+      <p class="archive-source"><span data-es="Títulos descriptivos añadidos para esta galería. Se conservan las imágenes, firmas y créditos que traen los archivos originales." data-en="Descriptive titles were added for this gallery. Original image files, signatures, and embedded credits are preserved.">Títulos descriptivos añadidos para esta galería. Se conservan las imágenes, firmas y créditos que traen los archivos originales.</span></p>
     </section>
 
-    <section class="meet-strip">
-      <div><span class="eyebrow">Ellos también trabajan… supuestamente</span><h2>Conoce a la fruticrew</h2><p>Cinco personalidades, una oficina y cero posibilidades de que el día salga normal.</p><a class="button cream" href="personajes.html">Ver personajes →</a></div>
-      <div class="fruit-line" aria-hidden="true"><span class="fruit orange-fruit">●</span><span class="fruit carrot">▲</span><span class="fruit lemon">●</span><span class="fruit water">●</span></div>
+    <section class="characters-strip" aria-labelledby="characters-title">
+      <div class="characters-inner"><div><p class="eyebrow"><span data-es="Personajes originales" data-en="Original characters">Personajes originales</span></p><h2 id="characters-title"><span data-es="Dos mandarinas. Mil expresiones." data-en="Two mandarins. A thousand expressions.">Dos mandarinas. Mil expresiones.</span></h2><p><span data-es="Conoce a Mandarinita y al Sr. Mandarino a través de sus ilustraciones auténticas." data-en="Meet Mandarinita and Mr. Mandarin through their authentic original artwork.">Conoce a Mandarinita y al Sr. Mandarino a través de sus ilustraciones auténticas.</span></p><a class="button button-light" href="personajes.html"><span data-es="Ver personajes" data-en="Meet the characters">Ver personajes</span><span class="button-icon"><svg class="ui-icon ui-icon-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></span></a></div><img src="assets/character-sheet-original.jpg" width="1254" height="1254" loading="lazy" alt="Hoja original con distintas expresiones y poses dibujadas a mano de los personajes de Mandarinita"></div>
     </section>
+
+    <section class="portfolio section-wrap" id="portafolio" aria-labelledby="portfolio-title">
+      <div class="portfolio-heading"><p class="eyebrow green"><span data-es=".ART 2026 · PORTAFOLIO" data-en=".ART 2026 · PORTFOLIO">.ART 2026 · PORTAFOLIO</span></p><h2 id="portfolio-title"><span data-es="Una historia que seguimos dibujando." data-en="An ongoing practice in visual storytelling.">Una historia que seguimos dibujando.</span></h2><p class="portfolio-lede"><span data-es="Mandarinita es un proyecto independiente de ilustración e historietas inspirado en la vida cotidiana dominicana." data-en="Mandarinita is an independent illustration and comic project rooted in Dominican everyday life.">Mandarinita es un proyecto independiente de ilustración e historietas inspirado en la vida cotidiana dominicana.</span></p></div>
+      <div class="portfolio-grid">
+        <article class="portfolio-card"><p class="portfolio-label"><span data-es="BIOGRAFÍA ARTÍSTICA" data-en="ARTIST BIOGRAPHY">BIOGRAFÍA ARTÍSTICA</span></p><h3>Mauricio Quezada</h3><p><span data-es="Mauricio Quezada es un ilustrador y diseñador dominicano residente en Santo Domingo, República Dominicana. En 2019, junto a Yosdina García, comenzó Mandarinita, una serie de historietas digitales inspiradas en conversaciones, rutinas de oficina y los pequeños absurdos del día a día. El nombre del proyecto surgió de una conversación juguetona sobre la fruta favorita de Yosdina: la mandarina. Mandarinita se publicó por primera vez el 16 de noviembre de 2019 y fue desarrollando un elenco reconocible de frutas con rostros expresivos y personalidades distintas. El trabajo de Mauricio une ilustración, diseño de personajes, comunicación gráfica y narrativa secuencial. Además de las historietas originales, el archivo recoge experimentos de animación, stickers, bocetos y otros formatos creativos. La página original, realizada en Notion, obtuvo reconocimiento en el primer concurso NotionJam de 2022. Mandarinita continúa como una colaboración creativa independiente arraigada en el humor dominicano y la observación cotidiana." data-en="Mauricio Quezada is a Dominican illustrator and designer based in Santo Domingo, Dominican Republic. In 2019, he and Yosdina García began Mandarinita, a series of digital comic strips inspired by conversations, office routines, and the small absurdities of daily life. The project’s name grew out of a playful exchange about Yosdina’s favorite fruit, the mandarin orange. Mandarinita was first published on November 16, 2019, and gradually developed a recognizable cast of fruit characters with expressive faces and distinct personalities. Mauricio’s practice connects illustration, character design, graphic communication, and sequential storytelling. Beyond the original comics, the archive documents experiments with animation, stickers, sketches, and related creative formats. The original website, made with Notion, received recognition in the first NotionJam competition in 2022. Mandarinita continues as an independent creative collaboration rooted in Dominican humor and everyday observation.">Mauricio Quezada es un ilustrador y diseñador dominicano residente en Santo Domingo, República Dominicana. En 2019, junto a Yosdina García, comenzó Mandarinita, una serie de historietas digitales inspiradas en conversaciones, rutinas de oficina y los pequeños absurdos del día a día. El nombre del proyecto surgió de una conversación juguetona sobre la fruta favorita de Yosdina: la mandarina. Mandarinita se publicó por primera vez el 16 de noviembre de 2019 y fue desarrollando un elenco reconocible de frutas con rostros expresivos y personalidades distintas. El trabajo de Mauricio une ilustración, diseño de personajes, comunicación gráfica y narrativa secuencial. Además de las historietas originales, el archivo recoge experimentos de animación, stickers, bocetos y otros formatos creativos. La página original, realizada en Notion, obtuvo reconocimiento en el primer concurso NotionJam de 2022. Mandarinita continúa como una colaboración creativa independiente arraigada en el humor dominicano y la observación cotidiana.</span></p></article>
+        <article class="portfolio-card portfolio-statement"><p class="portfolio-label"><span data-es="DECLARACIÓN CREATIVA" data-en="CREATIVE STATEMENT">DECLARACIÓN CREATIVA</span></p><h3><span data-es="Encontrar una historia en un día cualquiera." data-en="Finding the story in an ordinary day.">Encontrar una historia en un día cualquiera.</span></h3><p><span data-es="Mandarinita explora cómo los momentos ordinarios se convierten en historias compartidas. Un lunes complicado, una reunión que pudo ser un correo o un malentendido tomando café pueden resultar frustrantes en el momento y graciosos cuando los recordamos. La serie transforma esas experiencias conocidas en relatos ilustrados breves, con frutas de formas redondeadas, gestos exagerados y humor visual directo. Las expresiones dominicanas y la cultura de oficina le dan al proyecto su voz local, pero sus emociones pueden cruzar fronteras. Cada personaje enfrenta un mismo mundo de forma distinta: con entusiasmo, escepticismo, impaciencia o calma. Mi proceso creativo empieza al observar un detalle familiar, encontrar el giro inesperado y reducir la escena a las expresiones y viñetas necesarias para comunicarlo. No se trata de negar las dificultades cotidianas, sino de ofrecer un espacio para reconocernos y reírnos juntos." data-en="Mandarinita explores how ordinary moments become shared stories. A complicated Monday, a meeting that could have been an email, or a simple misunderstanding over coffee can feel frustrating while it happens and funny when remembered. The series transforms those recognizable experiences into short illustrated narratives, using rounded fruit characters, exaggerated gestures, and direct visual humor. Dominican expressions and workplace culture give the project its local voice, but its emotions are meant to travel across borders. Each character approaches the same world differently: enthusiasm, skepticism, impatience, or a calmer response can change the meaning of a small event. My creative process begins by noticing a familiar detail, finding the unexpected turn, and reducing the scene to the few expressions and frames needed to communicate it. The goal is not to deny the difficulties of everyday life; it is to offer a little space to recognize ourselves and laugh together.">Mandarinita explora cómo los momentos ordinarios se convierten en historias compartidas. Un lunes complicado, una reunión que pudo ser un correo o un malentendido tomando café pueden resultar frustrantes en el momento y graciosos cuando los recordamos. La serie transforma esas experiencias conocidas en relatos ilustrados breves, con frutas de formas redondeadas, gestos exagerados y humor visual directo. Las expresiones dominicanas y la cultura de oficina le dan al proyecto su voz local, pero sus emociones pueden cruzar fronteras. Cada personaje enfrenta un mismo mundo de forma distinta: con entusiasmo, escepticismo, impaciencia o calma. Mi proceso creativo empieza al observar un detalle familiar, encontrar el giro inesperado y reducir la escena a las expresiones y viñetas necesarias para comunicarlo. No se trata de negar las dificultades cotidianas, sino de ofrecer un espacio para reconocernos y reírnos juntos.</span></p></article>
+      </div>
+      <div class="artwork-records"><div><p class="portfolio-label"><span data-es="OBRAS SELECCIONADAS · ARCHIVO" data-en="SELECTED WORKS · ARCHIVE RECORD">OBRAS SELECCIONADAS · ARCHIVO</span></p><h3><span data-es="Obras originales incluidas en este portafolio" data-en="Original works included in this portfolio">Obras originales incluidas en este portafolio</span></h3></div><div class="record-list">
+        <article><span>01</span><div><h4>“Grrrrr!”</h4><p><span data-es="Ilustración digital" data-en="Digital illustration">Ilustración digital</span> · 2019 · <span data-es="Archivo original:" data-en="Original file:">Archivo original:</span> Capítulo 1 D.webp</p><p class="award-technical"><span data-es="Medio: ilustración digital; soporte: archivo digital; dimensiones:" data-en="Medium: digital illustration; materials: digital file; dimensions:">Medio: ilustración digital; soporte: archivo digital; dimensiones:</span> 2224 × 2224 px · <span data-es="Software original: sin documentar" data-en="Original software: not documented">Software original: sin documentar</span></p></div><span class="record-credit">Maqdesign · <span data-es="firma en la imagen" data-en="signature in image">firma en la imagen</span></span></article>
+        <article><span>02</span><div><h4>“<span data-es="¿Quién dice? / Who Says?" data-en="Who Says? / ¿Quién dice?">¿Quién dice? / Who Says?</span>”</h4><p><span data-es="Historieta digital" data-en="Digital comic illustration">Historieta digital</span> · 2019 · <span data-es="Archivo original:" data-en="Original file:">Archivo original:</span> Capítulo 1 B.webp</p><p class="award-technical"><span data-es="Medio: ilustración digital; soporte: archivo digital; dimensiones:" data-en="Medium: digital illustration; materials: digital file; dimensions:">Medio: ilustración digital; soporte: archivo digital; dimensiones:</span> 2224 × 2224 px · <span data-es="Software original: sin documentar" data-en="Original software: not documented">Software original: sin documentar</span></p></div><span class="record-credit">Maqdesign · <span data-es="firma en la imagen" data-en="signature in image">firma en la imagen</span></span></article>
+        <article><span>03</span><div><h4>“<span data-es="¿Tienes hambre?" data-en="Are You Hungry?">¿Tienes hambre?</span>”</h4><p><span data-es="Historieta digital" data-en="Digital comic illustration">Historieta digital</span> · 2019 · <span data-es="Créditos impresos en la obra" data-en="Credits printed on artwork">Créditos impresos en la obra</span></p><p class="award-technical"><span data-es="Medio: ilustración digital; soporte: archivo digital; dimensiones:" data-en="Medium: digital illustration; materials: digital file; dimensions:">Medio: ilustración digital; soporte: archivo digital; dimensiones:</span> 2000 × 2000 px · <span data-es="Software original: sin documentar" data-en="Original software: not documented">Software original: sin documentar</span></p></div><span class="record-credit">Mauricio Quezada &amp; Yosdina García</span></article>
+        <article><span>04</span><div><h4>“<span data-es="El sobre que se va" data-en="The Running Envelope">El sobre que se va</span>”</h4><p><span data-es="Ilustración digital" data-en="Digital illustration">Ilustración digital</span> · 2022 · <span data-es="Archivo original:" data-en="Original file:">Archivo original:</span> w=1920,quality=90,fit=scale-down.webp</p><p class="award-technical"><span data-es="Medio: ilustración digital; soporte: archivo digital; dimensiones:" data-en="Medium: digital illustration; materials: digital file; dimensions:">Medio: ilustración digital; soporte: archivo digital; dimensiones:</span> 1920 × 1920 px · <span data-es="Software original: sin documentar" data-en="Original software: not documented">Software original: sin documentar</span></p></div><span class="record-credit">Mandarinita® · <span data-es="crédito en la obra" data-en="credit in artwork">crédito en la obra</span></span></article>
+        <article><span>05</span><div><h4>“<span data-es="El clip misterioso" data-en="The Mysterious Paperclip">El clip misterioso</span>”</h4><p><span data-es="Ilustración digital" data-en="Digital illustration">Ilustración digital</span> · 2022 · <span data-es="Archivo original:" data-en="Original file:">Archivo original:</span> Slice_3.webp</p><p class="award-technical"><span data-es="Medio: ilustración digital; soporte: archivo digital; dimensiones:" data-en="Medium: digital illustration; materials: digital file; dimensions:">Medio: ilustración digital; soporte: archivo digital; dimensiones:</span> 785 × 785 px · <span data-es="Software original: sin documentar" data-en="Original software: not documented">Software original: sin documentar</span></p></div><span class="record-credit">Mandarinita® · <span data-es="crédito en la obra" data-en="credit in artwork">crédito en la obra</span></span></article>
+      </div><p class="portfolio-note"><span data-es="Las fechas y los créditos proceden de las marcas visibles en los archivos originales facilitados. Las dimensiones originales constan en cada archivo; no se han inventado datos de exposiciones, técnicas ni publicaciones." data-en="Dates and credits are transcribed from marks visible in the supplied original files. Original dimensions are listed in each image file; no missing exhibition, medium, or publication details have been inferred.">Las fechas y los créditos proceden de las marcas visibles en los archivos originales facilitados. Las dimensiones originales constan en cada archivo; no se han inventado datos de exposiciones, técnicas ni publicaciones.</span></p></div>
+    </section>
+
+    <section class="story-section" id="historia" aria-labelledby="story-title"><div class="story-inner"><div><p class="eyebrow green"><span data-es="La historia detrás de la fruta" data-en="The story behind the fruit">La historia detrás de la fruta</span></p><h2 id="story-title"><span data-es="Un universo nacido de una conversación." data-en="A universe born from a conversation.">Un universo nacido de una conversación.</span></h2><p><span data-es="Mandarinita® comenzó como una serie de tiras cómicas digitales creadas por Mauricio Quezada y Yosdina García, publicadas desde el 16 de noviembre de 2019. El proyecto creció alrededor del humor cotidiano dominicano, los personajes frutales y el gusto de contar historias dibujadas." data-en="Mandarinita® began as a series of digital comic strips created by Mauricio Quezada and Yosdina García, published from November 16, 2019. The project grew around Dominican everyday humor, fruit characters, and a shared love of illustrated storytelling.">Mandarinita® comenzó como una serie de tiras cómicas digitales creadas por Mauricio Quezada y Yosdina García, publicadas desde el 16 de noviembre de 2019. El proyecto creció alrededor del humor cotidiano dominicano, los personajes frutales y el gusto de contar historias dibujadas.</span></p><a class="text-button" href="https://mandarinita.notion.site/" target="_blank" rel="noopener noreferrer"><span data-es="Explorar la página histórica" data-en="Explore the historical website">Explorar la página histórica</span><span class="button-icon"><svg class="ui-icon ui-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a></div><aside class="history-note"><span class="history-year">2022</span><h3>NotionJam</h3><p><span data-es="La página histórica registra que el sitio del proyecto recibió el premio del primer NotionJam." data-en="The historical site records that the project website received an award at the first NotionJam.">La página histórica registra que el sitio del proyecto recibió el premio del primer NotionJam.</span></p><span class="history-foot">ARCHIVE NOTE · NOTION</span></aside></div></section>
   </main>
+  <section class="downloads section-wrap" id="descargas"><div><p class="eyebrow green"><span data-es="Un chin de Mandarinita en tu chat" data-en="A little Mandarinita in your chats">Un chin de Mandarinita en tu chat</span></p><h2><span data-es="Stickers originales" data-en="Original stickers">Stickers originales</span></h2><p><span data-es="Descarga el paquete animado que compartimos desde nuestro archivo histórico." data-en="Get the animated sticker pack shared in our historical archive.">Descarga el paquete animado que compartimos desde nuestro archivo histórico.</span></p></div><a class="button button-dark" href="https://sticker.ly/s/D2GQR6" target="_blank" rel="noopener noreferrer"><span data-es="Ver stickers en Sticker.ly" data-en="Get stickers on Sticker.ly">Ver stickers en Sticker.ly</span></a></section>
+<footer class="site-footer"><a class="footer-logo" href="#inicio"><img src="assets/mandarinita-logo-white.svg" width="405" height="151" alt="Mandarinita®"></a><p><span data-es="Historietas con sabor a vida cotidiana." data-en="Comics inspired by everyday life.">Hecho con pulpa y paciencia en RD.</span></p><div><a href="https://www.instagram.com/mandarinita.art/" target="_blank" rel="noopener noreferrer">Instagram</a><a href="https://mandarinita.notion.site/" target="_blank" rel="noopener noreferrer"><span data-es="Archivo histórico" data-en="Historical archive">Archivo histórico</span></a></div><small>© 2019–2026 Mauricio Quezada y Yosdina García · Mandarinita®</small></footer>
 
-  <footer id="siguenos">
-    <a class="brand footer-brand" href="index.html"><span class="brand-fruit"><i></i></span><span>Mandarinita</span></a>
-    <p>Con fruta todo fluye.</p>
-    <div class="socials"><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">YouTube</a></div>
-    <small>© 2026 Mandarinita. Hecho con pulpa y paciencia en RD.</small>
-  </footer>
+  <dialog class="reader" id="reader" aria-labelledby="reader-title">
+    <div class="reader-shell"><header class="reader-top"><div><p class="eyebrow" id="reader-kind">ARCHIVO ORIGINAL</p><h2 id="reader-title">Lectura</h2></div><button class="reader-close" type="button" aria-label="Cerrar lector"><svg class="ui-icon ui-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header><div class="reader-stage"><button class="reader-arrow reader-prev" type="button" aria-label="Viñeta anterior"><svg class="ui-icon ui-icon-prev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 12H4m7 7-7-7 7-7"/></svg></button><figure><img id="reader-image" src="" alt=""><figcaption id="reader-caption"></figcaption></figure><button class="reader-arrow reader-next" type="button" aria-label="Viñeta siguiente"><svg class="ui-icon ui-icon-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></button></div><footer class="reader-bottom"><span id="reader-count">1 / 1</span><span id="reader-notice"></span><div><button class="reader-text-prev" type="button"><svg class="ui-icon ui-icon-prev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 12H4m7 7-7-7 7-7"/></svg> <span data-es="Anterior" data-en="Previous">Anterior</span></button><button class="reader-text-next" type="button"><span data-es="Siguiente" data-en="Next">Siguiente</span> <svg class="ui-icon ui-icon-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></button></div></footer></div>
+  </dialog>
 </body>
 </html>
