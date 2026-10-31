@@ -13,6 +13,11 @@ for(const profile of profiles){
  const errors=[];
  page.on('pageerror',err=>errors.push(err.message));
  try {
+  await page.goto(base+'/',{waitUntil:'networkidle',timeout:30000});
+  if(await page.locator('html').getAttribute('lang')!=='es')throw Error('Bare domain must default to Spanish');
+  await page.evaluate(() => localStorage.setItem('mandarinita-language','en'));
+  await page.reload({waitUntil:'networkidle'});
+  if(await page.locator('html').getAttribute('lang')!=='es')throw Error('Bare domain must remain Spanish despite previous English preference');
   await page.goto(base+'/?lang=en',{waitUntil:'networkidle',timeout:30000});
   await page.locator('#hero-title').waitFor({timeout:10000});
   if(await page.locator('html').getAttribute('lang')!=='en')throw Error('English entry link failed');

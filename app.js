@@ -1,12 +1,9 @@
 const languageButton = document.querySelector('.language-toggle');
 const menuButton = document.querySelector('.menu-button');
 const navigation = document.querySelector('.main-nav');
+// Spanish is the canonical language of the public site.
+// Award reviewers can use ?lang=en; the selector always updates the URL.
 let language = 'es';
-// Present the award submission in English on its .ART domain, while honoring saved choices.
-const awardHost = /^(www\.)?mandarinita\.art$/i.test(window.location.hostname);
-try { language = localStorage.getItem('mandarinita-language') || (awardHost ? 'en' : 'es'); }
-catch (_) { language = awardHost ? 'en' : 'es'; }
-if (!['es', 'en'].includes(language)) language = 'es';
 // Award entry links can open directly in English without changing the site's usual language.
 try {
   const requestedLanguage = new URLSearchParams(window.location.search).get('lang');
