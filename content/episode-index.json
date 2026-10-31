@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "sourceOfTruth": "Notion — Episodios de Mandarinita",
+  "syncPolicy": "manual-approval; number, original order, and original artwork must match; Instagram cross-check later",
+  "episodes": [
+    {
+      "number": 1,
+      "id": "ep-001-la-mosca",
+      "title": "La mosca",
+      "notionUrl": "https://app.notion.com/p/f3a519c8a8a54776bc51d7411ec49089",
+      "totalOriginalPanels": 4,
+      "localAssetsReady": false,
+      "websiteStatus": "awaiting-original-files",
+      "instagramStatus": "not-checked",
+      "approvedForPublishing": false,
+      "notes": "Images enumerated in Notion; not yet transferred to GitHub."
+    },
+    {
+      "number": 2,
+      "id": "ep-002-ansiosa",
+      "title": "Ansiosa",
+      "notionUrl": "https://app.notion.com/p/6b76c1fb60b2462cbaacd49ff3fef572",
+      "totalOriginalPanels": 4,
+      "localAssetsReady": false,
+      "websiteStatus": "awaiting-original-files",
+      "instagramStatus": "not-checked",
+      "approvedForPublishing": false,
+      "notes": "Images enumerated in Notion; not yet transferred to GitHub."
+    },
+    {
+      "number": 44,
+      "id": "ep-044-el-teletrabajo",
+      "title": "El teletrabajo",
+      "notionUrl": "https://app.notion.com/p/0b956fced23c48a5b8f9353e714d9c54",
+      "totalOriginalPanels": 5,
+      "localAssetsReady": false,
+      "websiteStatus": "awaiting-original-files",
+      "instagramStatus": "not-checked",
+      "approvedForPublishing": false,
+      "notes": "Images enumerated in Notion; not yet transferred to GitHub."
+    },
+    {
+      "number": 51,
+      "id": "ep-051-tienes-hambre",
+      "title": "¿Tienes hambre?",
+      "notionUrl": "https://app.notion.com/p/2306ff2d843844be8f2dab4d68b977d2",
+      "totalOriginalPanels": 6,
+      "localAssetsReady": false,
+      "websiteStatus": "awaiting-original-files",
+      "instagramStatus": "not-checked",
+      "approvedForPublishing": false,
+      "notes": "Images enumerated in Notion; not yet transferred to GitHub."
+    },
+    {
+      "number": 52,
+      "id": "ep-052-fruitflix",
+      "title": "Fruitflix",
+      "notionUrl": "https://app.notion.com/p/ef6ee4524fe44ec38a1a8f6b008d2606",
+      "totalOriginalPanels": 5,
+      "localAssetsReady": false,
+      "websiteStatus": "awaiting-original-files",
+      "instagramStatus": "not-checked",
+      "approvedForPublishing": false,
+      "notes": "Images enumerated in Notion; not yet transferred to GitHub."
+    }
+  ]
+}
