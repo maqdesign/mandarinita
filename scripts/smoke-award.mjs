@@ -16,6 +16,12 @@ for(const profile of profiles){
   await page.goto(base+'/?lang=en',{waitUntil:'networkidle',timeout:30000});
   await page.locator('#hero-title').waitFor({timeout:10000});
   if(await page.locator('html').getAttribute('lang')!=='en')throw Error('English entry link failed');
+  await page.locator('.language-toggle').click();
+  if(await page.locator('html').getAttribute('lang')!=='es')throw Error('Spanish toggle failed');
+  if(new URL(page.url()).searchParams.get('lang')!=='es')throw Error('Spanish URL did not update');
+  await page.locator('.language-toggle').click();
+  if(await page.locator('html').getAttribute('lang')!=='en')throw Error('English toggle failed');
+  if(new URL(page.url()).searchParams.get('lang')!=='en')throw Error('English URL did not update');
   await page.locator('#portafolio').scrollIntoViewIfNeeded();
   if(!(await page.locator('#portafolio').isVisible()))throw Error('Portfolio not visible');
   if(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+4))throw Error('Horizontal page overflow');
