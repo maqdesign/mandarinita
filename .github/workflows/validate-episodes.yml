@@ -1,23 +1,6 @@
 name: Validate editorial episode catalog
 on:
-  pull_request:
-    paths:
-      - 'index.html'
-      - 'app.js'
-      - 'personajes.html'
-      - 'content/**'
-      - 'scripts/validate-episodes.mjs'
-      - '.github/workflows/validate-episodes.yml'
-  push:
-    branches:
-      - feat/instagram-episode-catalog
-    paths:
-      - 'index.html'
-      - 'app.js'
-      - 'personajes.html'
-      - 'content/**'
-      - 'scripts/validate-episodes.mjs'
-      - '.github/workflows/validate-episodes.yml'
+  workflow_dispatch:
 jobs:
   validate:
     runs-on: ubuntu-latest
