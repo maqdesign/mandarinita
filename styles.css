@@ -45,3 +45,13 @@
 @media(prefers-reduced-motion:reduce){.hero-art .hero-character{transition:none}}
 
 .award-proof-links{display:flex;flex-wrap:wrap;gap:.55rem 1rem;margin:.8rem 0 1rem}.award-proof-links a{color:var(--green);text-decoration:underline;text-underline-offset:3px;font-size:.82rem;font-weight:700}.award-proof-links a:hover{color:var(--orange)}
+
+/* Original numbered episodes — canonical Notion archive until local originals are imported. */
+.notion-episode-section{padding-block:3rem 4rem}
+.notion-episode-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:1rem}
+.notion-episode-link{display:flex;flex-direction:column;gap:.75rem;min-height:170px;padding:1.4rem;border:1px solid var(--line);border-radius:22px;background:var(--paper);box-shadow:0 10px 26px rgba(48,34,27,.045);transition:transform .2s,box-shadow .2s}
+.notion-episode-link:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(48,34,27,.09)}
+.notion-episode-num{color:var(--green);font-size:.78rem;font-weight:800;letter-spacing:.08em}
+.notion-episode-link strong{font-family:'Fredoka',sans-serif;font-size:1.4rem;line-height:1.15}
+.notion-episode-info{margin-top:auto;color:var(--muted);font-size:.82rem;font-weight:600}
+@media(max-width:640px){.notion-episode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.notion-episode-link{padding:1rem;min-height:145px}.notion-episode-link strong{font-size:1.13rem}}
