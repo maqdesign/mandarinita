@@ -229,3 +229,29 @@
   max-height:100%;
   object-fit:contain;
 }
+
+
+/* Constrain the image element itself, not just its parent, within the portrait frame. */
+.character-group .cast-card:not(.cast-featured) .cast-portrait{display:block;position:relative;}
+.character-group .cast-card:not(.cast-featured) .cast-portrait img{
+  position:absolute;
+  top:12px;
+  left:12px;
+  width:calc(100% - 24px);
+  height:calc(100% - 24px);
+  max-width:calc(100% - 24px);
+  max-height:calc(100% - 24px);
+  object-fit:contain;
+}
+.character-group .cast-grid-guest .cast-card.cast-pera .cast-portrait{height:300px;}
+.character-group .cast-grid-guest .cast-card.cast-pera .cast-portrait img{
+  position:absolute;
+  top:12px;
+  left:12px;
+  width:calc(100% - 24px);
+  height:calc(100% - 24px);
+  max-width:calc(100% - 24px);
+  max-height:calc(100% - 24px);
+  object-fit:contain;
+  object-position:center;
+}
