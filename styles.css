@@ -196,3 +196,7 @@
     aspect-ratio:16/9;
   }
 }
+
+
+/* Keep Sra. Pera's tall scene crop legible in the guest card. */
+.character-group .cast-grid-guest .cast-portrait img.cast-scene-cover{object-fit:cover;}
