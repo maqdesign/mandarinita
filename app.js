@@ -2,7 +2,7 @@ const languageButton = document.querySelector('.language-toggle');
 const menuButton = document.querySelector('.menu-button');
 const navigation = document.querySelector('.main-nav');
 // Spanish is the canonical language of the public site.
-// Award reviewers can use ?lang=en; the selector always updates the URL.
+// The language selector updates the page and its URL.
 let language = 'es';
 // Award entry links can open directly in English without changing the site's usual language.
 try {
@@ -45,7 +45,7 @@ navigation?.querySelectorAll('a').forEach(link => link.addEventListener('click',
 }));
 
 const works = {
-  episode1: { title: 'La mosca · archivo original', titleEn: 'The Fly · original archive', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-focus-2019.webp',alt:'Lámina recuperada B de La mosca (2019).',altEn:'Recovered page B from The Fly (2019).'},{src:'assets/comic-rage-2019.webp',alt:'Lámina recuperada D de La mosca (2019).',altEn:'Recovered page D from The Fly (2019).'}] },
+  episode1: { title: 'La mosca · archivo original', titleEn: 'The Fly · original archive', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-focus-2019.webp',alt:'Lámina B original de La mosca (2019).',altEn:'Original page B from The Fly (2019).'},{src:'assets/comic-rage-2019.webp',alt:'Lámina D original de La mosca (2019).',altEn:'Original page D from The Fly (2019).'}] },
   episode2: { title: 'Ilustraciones del archivo · 2022', titleEn: 'Archive illustrations · 2022', kind: 'DOS ILUSTRACIONES · 2022', kindEn: 'TWO ILLUSTRATIONS · 2022', images: [{src:'assets/art-envelope-2022.webp',alt:'Ilustración original de 2022: el sobre.',altEn:'Original 2022 illustration: the envelope.'},{src:'assets/art-paperclip-2022.webp',alt:'Ilustración original de 2022: el clip.',altEn:'Original 2022 illustration: the paperclip.'}] },
   rage: { title: '¡Grrrrr!', titleEn: 'Grrrr!', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-rage-2019.webp', alt:'Ilustración original de 2019: dos mandarinas reaccionan con enojo y alegría; texto ¡Grrrrr!', altEn:'Original 2019 illustration: two mandarins react with anger and joy; the image reads Grrrr!'}] },
   focus: { title: '¿Quién dice?', titleEn: 'Who says?', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-focus-2019.webp', alt:'Historieta original de 2019 sobre estar enfocado.', altEn:'Original 2019 comic about staying focused.'}] },
@@ -55,8 +55,8 @@ const works = {
   storyboard: { title: 'Boceto de historieta · proceso', titleEn: 'Comic storyboard · process material', kind: 'BOCETO ORIGINAL · 2019', kindEn: 'ORIGINAL STORYBOARD · 2019', images: [1,2,3,4].map(n=>({src:`assets/storyboard-panel-${n}.webp`,alt:`Viñeta ${n} del boceto original de 2019.`,altEn:`Panel ${n} of the original 2019 storyboard.`})) }
 };
 
-// Editorial adapter: only complete, approved comics can enter the public reader.
-// An unavailable catalog never blocks previously bundled, offline-friendly artwork.
+// Add catalog entries to the public reader only when they are ready to display.
+// The curated artwork remains available if the optional catalog cannot load.
 async function loadApprovedEpisodes() {
   const grid = document.querySelector('.work-grid');
   if (!grid) return;
