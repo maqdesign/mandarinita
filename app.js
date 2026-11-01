@@ -1,6 +1,60 @@
 const languageButton = document.querySelector('.language-toggle');
 const menuButton = document.querySelector('.menu-button');
 const navigation = document.querySelector('.main-nav');
+const accessibleEnglish = {
+  aria: {
+    'Mandarinita, inicio': 'Mandarinita, home',
+    'Navegación principal': 'Main navigation',
+    'Ver selección de láminas del episodio La mosca': 'View selected pages from The Fly comic',
+    'Abrir historieta de la cocina de 2019': 'Open the 2019 kitchen comic',
+    'Ver dos ilustraciones originales de 2022': 'View two original illustrations from 2022',
+    'Episodio 1: La mosca, 4 láminas, leer en Notion': 'Episode 1: The Fly, 4 pages, read on Notion',
+    'Episodio 2: Ansiosa, 4 láminas, leer en Notion': 'Episode 2: Anxious, 4 pages, read on Notion',
+    'Episodio 44: El teletrabajo, 5 láminas, leer en Notion': 'Episode 44: Remote Work, 5 pages, read on Notion',
+    'Episodio 51: ¿Tienes hambre?, 6 láminas, leer en Notion': 'Episode 51: Are You Hungry?, 6 pages, read on Notion',
+    'Episodio 52: Fruitflix, 5 láminas, leer en Notion': 'Episode 52: Fruitflix, 5 pages, read on Notion',
+    'Ver obra: Grrrrr': 'View artwork: Grrrrr!',
+    'Ver obra: ¿Quién dice?': 'View artwork: Who says?',
+    'Ver obra: ¿Tienes hambre?': 'View artwork: Are you hungry?',
+    'Ver obra: El sobre que se va': 'View artwork: The running envelope',
+    'Ver obra: El clip misterioso': 'View artwork: The mysterious paperclip',
+    'Abrir Mandarinita animada en Sticker.ly': 'Open the Mandarinita animated sticker pack on Sticker.ly',
+    'Abrir Mandarinita 3D en Sticker.ly': 'Open the Mandarinita 3D sticker pack on Sticker.ly',
+    'Abrir Mandarinita y amigos en Sticker.ly': 'Open the Mandarinita and friends sticker pack on Sticker.ly',
+    'Abrir Mandarinita en Sticker.ly': 'Open the Mandarinita sticker pack on Sticker.ly',
+    'Abrir Marca Mandarinita en Sticker.ly': 'Open the Mandarinita brand sticker pack on Sticker.ly',
+    'Abrir Mandarimoji -emoji Mandarinita en Sticker.ly': 'Open the Mandarimoji emoji sticker pack on Sticker.ly',
+    'Abrir Mandarinita retro en Sticker.ly': 'Open the Mandarinita retro sticker pack on Sticker.ly',
+    'Cerrar lector': 'Close reader',
+    'Viñeta anterior': 'Previous panel',
+    'Viñeta siguiente': 'Next panel'
+  },
+  alt: {
+    'Mandy y Mando Mandarinita sentados en su mueble azul, con Morita en el centro haciendo ojos locos y sacando la lengua.': 'Mandy and Mando Mandarinita sit on their blue couch with Morita between them, making a silly face and sticking out her tongue.',
+    'Ilustración original de 2019: dos mandarinas reaccionan con enojo y alegría; texto ¡Grrrrr!': 'Original 2019 illustration: two mandarins react with anger and joy; the image reads “Grrrrr!”',
+    'Historieta original de 2019: Mandarinita y Sr. Mandarino conversan en un sofá sobre ir a la cocina': 'Original 2019 comic: Mandarinita and Mr. Mandarin talk on a couch about going to the kitchen.',
+    'Ilustración de 2022: Mandarinita saluda a un sobre que corre bajo un cielo azul': '2022 illustration: Mandarinita waves to a running envelope beneath a blue sky.',
+    'Hoja original con distintas expresiones y poses dibujadas a mano de los personajes de Mandarinita': 'Original hand-drawn sheet showing Mandarinita characters in different expressions and poses.',
+    'Mandy Mandarinita en una escena de Salón de la Es-pera': 'Mandy Mandarinita in a scene from The Waiting Room Salon.',
+    'Mando Mandarinita en una escena de Salón de la Es-pera': 'Mando Mandarinita in a scene from The Waiting Room Salon.',
+    'Greg el Zanahorio en una escena de Mandarinita': 'Greg the Carrot in a Mandarinita scene.',
+    'Limón Agrio en una escena de Mandarinita': 'Sour Lemon in a Mandarinita scene.',
+    'Sra. Pera en una escena de Salón de la Es-pera': 'Mrs. Pear in a scene from The Waiting Room Salon.'
+  }
+};
+function syncAccessibleLanguage() {
+  for (const [attribute, translations] of Object.entries(accessibleEnglish)) {
+    const selector = attribute === 'aria' ? '[aria-label]:not(.language-toggle):not(.menu-button)' : 'img[alt]';
+    const name = attribute === 'aria' ? 'data-es-aria-label' : 'data-es-alt';
+    document.querySelectorAll(selector).forEach(node => {
+      if (!node.hasAttribute(name)) node.setAttribute(name, node.getAttribute(attribute === 'aria' ? 'aria-label' : 'alt') || '');
+      const spanish = node.getAttribute(name);
+      const english = translations[spanish];
+      if (!english) return;
+      node.setAttribute(attribute === 'aria' ? 'aria-label' : 'alt', language === 'en' ? english : spanish);
+    });
+  }
+}
 // Spanish is the canonical language of the public site.
 // The language selector updates the page and its URL.
 let language = 'es';
@@ -32,6 +86,7 @@ function setLanguage(next, updateUrl = false) {
   document.querySelectorAll('[data-es][data-en]').forEach(node => {
     node.textContent = node.dataset[next];
   });
+  syncAccessibleLanguage();
   try { localStorage.setItem('mandarinita-language', next); } catch (_) { /* Continue without persistence. */ }
 }
 function syncInternalLanguageLinks() {
