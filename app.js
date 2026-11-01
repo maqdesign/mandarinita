@@ -4,11 +4,13 @@ const navigation = document.querySelector('.main-nav');
 // Spanish is the canonical language of the public site.
 // The language selector updates the page and its URL.
 let language = 'es';
-// Award entry links can open directly in English without changing the site's usual language.
+// Honor an explicit URL language, then keep the visitor's last choice across pages.
 try {
   const requestedLanguage = new URLSearchParams(window.location.search).get('lang');
+  const savedLanguage = localStorage.getItem('mandarinita-language');
   if (requestedLanguage === 'en' || requestedLanguage === 'es') language = requestedLanguage;
-} catch (_) { /* A malformed URL should not break the site. */ }
+  else if (savedLanguage === 'en' || savedLanguage === 'es') language = savedLanguage;
+} catch (_) { /* A malformed URL or unavailable storage should not break the site. */ }
 
 function setLanguage(next, updateUrl = false) {
   language = next;
@@ -32,8 +34,25 @@ function setLanguage(next, updateUrl = false) {
   });
   try { localStorage.setItem('mandarinita-language', next); } catch (_) { /* Continue without persistence. */ }
 }
+function syncInternalLanguageLinks() {
+  document.querySelectorAll('a[href]').forEach(link => {
+    if (link.getAttribute('href')?.startsWith('#')) return;
+    try {
+      const url = new URL(link.href, window.location.href);
+      if (url.origin !== window.location.origin) return;
+      if (!['/', '/index.html', '/personajes', '/personajes.html'].includes(url.pathname)) return;
+      url.searchParams.set('lang', language);
+      link.href = url.pathname + url.search + url.hash;
+    } catch (_) { /* Leave invalid or nonstandard links untouched. */ }
+  });
+}
 setLanguage(language);
-languageButton.addEventListener('click', () => { setLanguage(language === 'es' ? 'en' : 'es', true); if (activeWork && dialog.open) renderPanel(); });
+syncInternalLanguageLinks();
+languageButton.addEventListener('click', () => {
+  setLanguage(language === 'es' ? 'en' : 'es', true);
+  syncInternalLanguageLinks();
+  if (activeWork && dialog.open) renderPanel();
+});
 menuButton?.addEventListener('click', () => {
   const opened = menuButton.getAttribute('aria-expanded') !== 'true';
   menuButton.setAttribute('aria-expanded', String(opened));
