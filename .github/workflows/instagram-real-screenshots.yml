@@ -1,0 +1,35 @@
+name: Instagram - capturas reales escritorio y móvil
+on:
+  push:
+    branches:
+      - chore/instagram-real-screenshots-20261102
+    paths:
+      - '.github/workflows/instagram-real-screenshots.yml'
+      - 'scripts/capture-instagram-2026.mjs'
+  workflow_dispatch:
+jobs:
+  capture:
+    name: Capturar Mandarinita.art con Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar Chromium y Playwright
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Capturar sitio publicado en español y crear pieza Instagram 4:5
+        run: node scripts/capture-instagram-2026.mjs
+      - name: Subir capturas originales y publicación de Instagram
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mandarinita-instagram-capturas-reales
+          path: captures/instagram-2026-11-02/
+          if-no-files-found: warn
+          retention-days: 14
