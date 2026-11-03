@@ -1,18 +1,17 @@
 # Biblioteca editorial de Mandarinita
 
-Primera fase de la integración de la [tarea #2](https://github.com/maqdesign/mandarinita/issues/2). No conecta con Meta ni publica contenido automáticamente.
+El sitio lee `episodes.json` y muestra únicamente historietas con `status: "published"`, `type: "comic"` y `complete: true`. Las imágenes deben ser archivos locales dentro de `assets/`; el orden de lectura se indica en `panels.order` y `originalPosition` conserva la posición en el original.
 
-- `episodes.json` es el catálogo editorial de referencia. El catálogo incluye dos láminas originales aisladas en estado `review` y una ficha del episodio **La mosca** (2019), identificado desde Notion como episodio 1 de **cuatro láminas**. Solo se han recuperado las láminas B y D: la ficha permanece `complete: false` y `review`, no se publica ni se presenta como episodio completo.
-- El orden de `panels` es el orden de lectura. Cada archivo debe existir dentro del repositorio y conservar el arte original.
-- `complete: true` es obligatorio para que un registro `comic` con estado `published` sea visible en el lector. Los episodios incompletos permanecen en revisión.\n- `originalPosition` permite conservar la posición de cada lámina dentro del episodio completo incluso si hay archivos faltantes.\n- `status`: `draft` (borrador), `review` (pendiente), `published` (visible en futuras vistas), `hidden` (oculto).
-- `type`: `comic`, `illustration`, `reel`, `merchandise` u `other`. Solo `comic` aprobado debe entrar automáticamente al lector de episodios.
-- `source.instagramMediaId` permite deduplicación futura. Nunca guardar tokens de Instagram en este archivo.
-- El flujo de importación de la API debe asignar **review** a toda publicación nueva, sin exposición automática.
+Los episodios 1, 2, 44, 51, 52 y 85 ya tienen sus láminas identificadas y publicadas en el sitio. En el episodio 51 solo se presentan las cuatro páginas finales. Las opciones A y B son bocetos alternos, según los encabezados de su página de Notion; sus archivos siguen en el repositorio y no forman parte de la secuencia pública.
+
+Las imágenes de personajes se guardan en `assets/characters/` y se enlazan desde `personajes.html` solo cuando el usuario o el archivo original permite reconocerlos con seguridad. No se inventan personajes ni biografías para cubrir imágenes ausentes.
 
 ## Verificar
-Desde la raíz: `node scripts/validate-episodes.mjs` (Node 18+). No requiere dependencias.
 
-## Próximos trabajos
-El adaptador del lector en `app.js` carga `content/episodes.json` y muestra exclusivamente comics `published` y `complete: true`. El catálogo actual no contiene ninguno: el lector estático permanece disponible como antes. Pendiente: recuperar A y C del episodio 1, importación histórica del ZIP; backend privado y OAuth de Meta con Cloudflare; interfaz editorial; pruebas móviles. Evitar incorporar R2/D1 hasta comprobar necesidades y costos.
+Desde la raíz del repositorio:
 
-**Aislamiento:** se modifica `app.js` sin reescribir los recursos originales; el nuevo lector consume solo contenido editorial aprobado. No fusionar esta rama a `main` sin aprobación. GitHub Actions ejecuta el validador en cambios del catálogo.
+- `node scripts/validate-episodes.mjs` valida el catálogo, sus imágenes y el texto alternativo.
+- `node --check app.js` revisa la sintaxis del lector.
+- El sitio es estático: no necesita instalación, compilación ni dependencias.
+
+Cloudflare Pages publica los cambios que llegan a la rama de producción `main`.

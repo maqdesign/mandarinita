@@ -43,7 +43,7 @@ for (const [index, ep] of (content.episodes || []).entries()) {
     if (!text(panel.alt?.es)) errors.push(`${tag}: missing Spanish alt text`);
     if (!text(panel.src) || panel.src.startsWith('/') || panel.src.includes('..') || /^[a-z]+:/i.test(panel.src)) {
       errors.push(`${tag}: panel src must be a safe local relative path`);
-    } else if (!/^assets\/[a-zA-Z0-9/_-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src)) {
+    } else if (!/^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src)) {
       errors.push(`${tag}: panel must use a local image under assets/`);
     } else if (!existsSync(join(root, panel.src))) errors.push(`${tag}: missing asset ${panel.src}`);
   }
