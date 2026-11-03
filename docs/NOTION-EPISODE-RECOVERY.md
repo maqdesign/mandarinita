@@ -16,7 +16,7 @@ Las 24 referencias `notion-file-block://` y nombres originales están documentad
 2. Descargarlas **en el momento**, solo en entorno autorizado con acceso a red y a GitHub, usando los `notionFileBlock` del manifest.
 3. Conservar los bytes originales y hashes SHA-256. Guardar en cada `destination` existente en el manifest.
 4. Comprobar visualmente orden por indicador inferior, firmas, orientación, no recorte y que todas las láminas carguen en móvil.
-5. Actualizar `content/episodes.json`: añadir entradas a revisión, convertir a `complete: true` únicamente cuando todos los archivos estén presentes y aprobados editorialmente; entonces permitir `published`.
+5. Actualizar `episodes.json`: añadir entradas a revisión, convertir a `complete: true` únicamente cuando todos los archivos estén presentes y aprobados editorialmente; entonces permitir `published`.
 6. Validar `node scripts/validate-episodes.mjs` y pruebas Playwright; abrir PR. No editar las páginas originales de Notion.
 
 **El conector Notion utilizado para esta preparación devuelve la página y enlaces a los ficheros, pero no transfiere bytes de imagen directamente al entorno de GitHub.** Por eso el manifest aún tiene `assetImported: false`. No presentar los episodios como publicados ni sustituir los registros actuales hasta que se copien los originales.

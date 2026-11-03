@@ -132,7 +132,7 @@ async function loadApprovedEpisodes() {
   const grid = document.querySelector('.work-grid');
   if (!grid) return;
   try {
-    const response = await fetch('content/episodes.json', { cache: 'no-cache' });
+    const response = await fetch('episodes.json', { cache: 'no-cache' });
     if (!response.ok) return;
     const catalog = await response.json();
     if (catalog.schemaVersion !== 1 || catalog.editorialPolicy !== 'manual-approval' || !Array.isArray(catalog.episodes)) return;

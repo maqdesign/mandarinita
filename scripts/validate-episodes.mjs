@@ -3,7 +3,7 @@ import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const path = join(root, 'content/episodes.json');
+const path = join(root, 'episodes.json');
 const errors = [];
 const allowedStatuses = new Set(['draft', 'review', 'published', 'hidden']);
 const allowedTypes = new Set(['comic', 'illustration', 'reel', 'merchandise', 'other']);
