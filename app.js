@@ -7,7 +7,7 @@ const accessibleEnglish = {
     'Navegación principal': 'Main navigation',
     'Ver selección de láminas del episodio La mosca': 'View selected pages from The Fly comic',
     'Abrir historieta de la cocina de 2019': 'Open the 2019 kitchen comic',
-    'Ver dos ilustraciones originales de 2022': 'View two original illustrations from 2022',
+    'Abrir episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita': 'Open episode 85: What always happens to you, told without words by Mandarinita',
     'Episodio 1: La mosca, 4 láminas, leer en Notion': 'Episode 1: The Fly, 4 pages, read on Notion',
     'Episodio 2: Ansiosa, 4 láminas, leer en Notion': 'Episode 2: Anxious, 4 pages, read on Notion',
     'Episodio 44: El teletrabajo, 5 láminas, leer en Notion': 'Episode 44: Remote Work, 5 pages, read on Notion',
@@ -16,8 +16,7 @@ const accessibleEnglish = {
     'Ver obra: Grrrrr': 'View artwork: Grrrrr!',
     'Ver obra: ¿Quién dice?': 'View artwork: Who says?',
     'Ver obra: ¿Tienes hambre?': 'View artwork: Are you hungry?',
-    'Ver obra: El sobre que se va': 'View artwork: The running envelope',
-    'Ver obra: El clip misterioso': 'View artwork: The mysterious paperclip',
+    'Ver episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita': 'View episode 85: What always happens to you, told without words by Mandarinita',
     'Abrir Mandarinita animada en Sticker.ly': 'Open the Mandarinita animated sticker pack on Sticker.ly',
     'Abrir Mandarinita 3D en Sticker.ly': 'Open the Mandarinita 3D sticker pack on Sticker.ly',
     'Abrir Mandarinita y amigos en Sticker.ly': 'Open the Mandarinita and friends sticker pack on Sticker.ly',
@@ -119,13 +118,11 @@ navigation?.querySelectorAll('a').forEach(link => link.addEventListener('click',
 }));
 
 const works = {
-  episode1: { title: 'La mosca · archivo original', titleEn: 'The Fly · original archive', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-focus-2019.webp',alt:'Lámina B original de La mosca (2019).',altEn:'Original page B from The Fly (2019).'},{src:'assets/comic-rage-2019.webp',alt:'Lámina D original de La mosca (2019).',altEn:'Original page D from The Fly (2019).'}] },
-  episode2: { title: 'Ilustraciones del archivo · 2022', titleEn: 'Archive illustrations · 2022', kind: 'DOS ILUSTRACIONES · 2022', kindEn: 'TWO ILLUSTRATIONS · 2022', images: [{src:'assets/art-envelope-2022.webp',alt:'Ilustración original de 2022: el sobre.',altEn:'Original 2022 illustration: the envelope.'},{src:'assets/art-paperclip-2022.webp',alt:'Ilustración original de 2022: el clip.',altEn:'Original 2022 illustration: the paperclip.'}] },
+  episode1: { title: 'La mosca · episodio 1', titleEn: 'The Fly · episode 1', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/episodes/ep-001-la-mosca/01.1.png',alt:'Lámina A original de La mosca (2019).',altEn:'Original page A from The Fly (2019).'},{src:'assets/comic-focus-2019.webp',alt:'Lámina B original de La mosca (2019).',altEn:'Original page B from The Fly (2019).'},{src:'assets/episodes/ep-001-la-mosca/01.3.png',alt:'Lámina C original de La mosca (2019).',altEn:'Original page C from The Fly (2019).'},{src:'assets/comic-rage-2019.webp',alt:'Lámina D original de La mosca (2019).',altEn:'Original page D from The Fly (2019).'}] },
+  episode85: { title: 'Ep. 85 · Lo que siempre te pasa, contado sin palabras por Mandarinita', titleEn: 'Episode 85 · What always happens to you, told without words by Mandarinita', kind: 'HISTORIETA · 2022', kindEn: 'COMIC · 2022', images: [1,2,3,4].map(n=>({src:`assets/episodes/ep-085-lo-que-siempre-te-pasa/85.${n}.png`,alt:`Lámina ${n} del episodio 85: Lo que siempre te pasa, contado sin palabras.`,altEn:`Page ${n} from episode 85: What always happens to you, told without words.`})) },
   rage: { title: '¡Grrrrr!', titleEn: 'Grrrr!', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-rage-2019.webp', alt:'Ilustración original de 2019: dos mandarinas reaccionan con enojo y alegría; texto ¡Grrrrr!', altEn:'Original 2019 illustration: two mandarins react with anger and joy; the image reads Grrrr!'}] },
   focus: { title: '¿Quién dice?', titleEn: 'Who says?', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-focus-2019.webp', alt:'Historieta original de 2019 sobre estar enfocado.', altEn:'Original 2019 comic about staying focused.'}] },
-  coffee: { title: '¿Tienes hambre?', titleEn: 'Are you hungry?', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-coffee-2019.webp', alt:'Mandarinita y Sr. Mandarino conversan en el sofá; los globos dicen “Oye, voy a la cocina ¿tienes hambre?”, “No”, “¿Seguro?” y “Seguro”.', altEn:'Mandarinita and Mr. Mandarin talk on a couch; speech bubbles ask if he is hungry and whether he is sure.'}] },
-  envelope: { title: 'El sobre que se va', titleEn: 'The running envelope', kind: 'ILUSTRACIÓN · 2022', kindEn: 'ILLUSTRATION · 2022', images: [{src:'assets/art-envelope-2022.webp', alt:'Mandarinita saluda a un sobre que corre bajo un cielo azul.', altEn:'Mandarinita waves to a running envelope under a blue sky.'}] },
-  paperclip: { title: 'El clip misterioso', titleEn: 'The mysterious paperclip', kind: 'ILUSTRACIÓN · 2022', kindEn: 'ILLUSTRATION · 2022', images: [{src:'assets/art-paperclip-2022.webp', alt:'Mandarinita se sorprende al ver un clip grande.', altEn:'Mandarinita is surprised by a large paperclip.'}] },
+  coffee: { title: '¿Tienes hambre?', titleEn: 'Are you hungry?', kind: 'HISTORIETA · EPISODIO 51', kindEn: 'COMIC · EPISODE 51', images: [1,2,3,4].map(n=>({src:`assets/episodes/ep-051-tienes-hambre/51.${n}.png`,alt:`Lámina ${n} del episodio 51: ¿Tienes hambre?`,altEn:`Page ${n} from episode 51: Are you hungry?`})) },
   storyboard: { title: 'Boceto de historieta · proceso', titleEn: 'Comic storyboard · process material', kind: 'BOCETO ORIGINAL · 2019', kindEn: 'ORIGINAL STORYBOARD · 2019', images: [1,2,3,4].map(n=>({src:`assets/storyboard-panel-${n}.webp`,alt:`Viñeta ${n} del boceto original de 2019.`,altEn:`Panel ${n} of the original 2019 storyboard.`})) }
 };
 
@@ -142,9 +139,13 @@ async function loadApprovedEpisodes() {
     for (const entry of catalog.episodes) {
       if (entry.status !== 'published' || entry.type !== 'comic' || entry.complete !== true || !Array.isArray(entry.panels) || !entry.panels.length) continue;
       const ordered = [...entry.panels].sort((a,b)=>a.order-b.order);
-      if (!ordered.every((panel,i) => panel.order === i+1 && /^assets\/[a-zA-Z0-9/_-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && panel.alt?.es && panel.alt?.en)) continue;
-      const key = 'catalog:' + entry.id;
-      if (works[key]) continue;
+      if (!ordered.every((panel,i) => panel.order === i+1 && /^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && !panel.src.includes('..') && panel.alt?.es && panel.alt?.en)) continue;
+      const staticKeys = {
+        'ep-001-la-mosca':'episode1',
+        'ep-051-tienes-hambre':'coffee',
+        'ep-085-lo-que-siempre-te-pasa':'episode85'
+      };
+      const key = staticKeys[entry.id] || 'catalog:' + entry.id;
       works[key] = {
         title:entry.title.es,
         titleEn:entry.title.en || entry.title.es,
@@ -152,17 +153,32 @@ async function loadApprovedEpisodes() {
         kindEn:'COMIC · ARCHIVE',
         images:ordered.map(p=>({src:p.src,alt:p.alt.es,altEn:p.alt.en}))
       };
+      const existingCard = [...grid.querySelectorAll('.work-card')].find(article => [...article.querySelectorAll('[data-reader]')].some(button => staticKeys[entry.id] === button.dataset.reader));
+      if (existingCard) {
+        const cover = existingCard.querySelector('.work-image img');
+        if (cover) {
+          cover.src=ordered[0].src;
+          cover.alt=ordered[0].alt[language]||ordered[0].alt.es;
+          document.querySelector('.language-toggle')?.addEventListener('click',()=>{cover.alt=ordered[0].alt[language]||ordered[0].alt.es;});
+        }
+        existingCard.querySelectorAll('[data-reader]').forEach(button=>button.dataset.reader=key);
+        continue;
+      }
       const article=document.createElement('article');article.className='work-card catalog-card';
       const button=document.createElement('button');button.className='work-image';button.type='button';
       const cover=document.createElement('img');cover.src=ordered[0].src;cover.alt=ordered[0].alt[language];cover.loading='lazy';
       button.append(cover);button.addEventListener('click',()=>openReader(key));
       const copy=document.createElement('div');copy.className='work-copy';
+      const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
       const heading=document.createElement('h3');heading.textContent=entry.title[language]||entry.title.es;
+      const summary=document.createElement('p');summary.textContent=language==='es'?`${ordered.length} láminas en orden de lectura.`:`${ordered.length} pages in reading order.`;
       const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';
       action.addEventListener('click',()=>openReader(key));
-      copy.append(heading,action);article.append(button,copy);grid.append(article);
+      copy.append(meta,heading,summary,action);article.append(button,copy);grid.append(article);
       document.querySelector('.language-toggle')?.addEventListener('click',()=>{
+        meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
         heading.textContent=entry.title[language]||entry.title.es;
+        summary.textContent=language==='es'?`${ordered.length} láminas en orden de lectura.`:`${ordered.length} pages in reading order.`;
         action.textContent=language==='es'?'Leer episodio':'Read episode';
         cover.alt=ordered[0].alt[language]||ordered[0].alt.es;
       });
@@ -189,7 +205,7 @@ function renderPanel() {
   kind.textContent = language === 'es' ? work.kind : work.kindEn;
   caption.textContent = language === 'es' ? `Lámina ${panelIndex+1} de ${work.images.length}` : `Page ${panelIndex+1} of ${work.images.length}`;
   count.textContent = `${panelIndex+1} / ${work.images.length}`;
-  notice.textContent = activeWork === 'storyboard' ? (language === 'es' ? 'Boceto original que muestra una etapa del proceso creativo.' : 'An original storyboard showing one stage of the creative process.') : activeWork === 'episode1' ? (language === 'es' ? 'Selección de láminas originales de 2019.' : 'A selection of original pages from 2019.') : activeWork === 'episode2' ? (language === 'es' ? 'Dos ilustraciones originales del archivo creativo de 2022.' : 'Two original illustrations from the 2022 creative archive.') : '';
+  notice.textContent = activeWork === 'storyboard' ? (language === 'es' ? 'Boceto original que muestra una etapa del proceso creativo.' : 'An original storyboard showing one stage of the creative process.') : activeWork === 'episode1' ? (language === 'es' ? 'Selección de láminas originales de 2019.' : 'A selection of original pages from 2019.') : activeWork === 'episode85' ? (language === 'es' ? 'Cuatro viñetas del episodio 85.' : 'Four panels from episode 85.') : '';
   const multiple = work.images.length > 1;
   document.querySelectorAll('.reader-prev,.reader-next,.reader-text-prev,.reader-text-next').forEach(button=>button.hidden=!multiple);
 }

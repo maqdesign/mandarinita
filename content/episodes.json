@@ -65,9 +65,9 @@
         "en": "The fly"
       },
       "episodeNumber": 1,
-      "status": "review",
+      "status": "published",
       "type": "comic",
-      "complete": false,
+      "complete": true,
       "source": {
         "kind": "notion-archive",
         "notionUrl": "https://app.notion.com/p/f3a519c8a8a54776bc51d7411ec49089",
@@ -77,24 +77,344 @@
       "panels": [
         {
           "order": 1,
-          "originalPosition": 2,
-          "src": "assets/comic-focus-2019.webp",
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-001-la-mosca/01.1.png",
           "alt": {
-            "es": "Lámina B original del episodio La mosca",
-            "en": "Original page B from the episode The Fly"
+            "es": "Lámina A original del episodio La mosca.",
+            "en": "Original page A from The Fly."
           }
         },
         {
           "order": 2,
+          "originalPosition": 2,
+          "src": "assets/comic-focus-2019.webp",
+          "alt": {
+            "es": "Lámina B original del episodio La mosca.",
+            "en": "Original page B from The Fly."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-001-la-mosca/01.3.png",
+          "alt": {
+            "es": "Lámina C original del episodio La mosca.",
+            "en": "Original page C from The Fly."
+          }
+        },
+        {
+          "order": 4,
           "originalPosition": 4,
           "src": "assets/comic-rage-2019.webp",
           "alt": {
-            "es": "Lámina D original del episodio La mosca",
-            "en": "Original page D from the episode The Fly"
+            "es": "Lámina D original del episodio La mosca.",
+            "en": "Original page D from The Fly."
           }
         }
       ],
-      "editorialNote": "Episodio de 4 láminas. Faltan A y C; NO publicar hasta recuperación y cotejo del orden."
+      "editorialNote": "Cuatro páginas en el mismo orden que el archivo original; A y C provienen del ZIP del usuario y B y D del archivo local existente."
+    },
+    {
+      "id": "ep-002-ansiosa",
+      "title": {
+        "es": "Ansiosa",
+        "en": "Anxious"
+      },
+      "episodeNumber": 2,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/6b76c1fb60b2462cbaacd49ff3fef572",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-002-ansiosa/02.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio Ansiosa.",
+            "en": "Page 1 from Anxious."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-002-ansiosa/02.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio Ansiosa.",
+            "en": "Page 2 from Anxious."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-002-ansiosa/02.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio Ansiosa.",
+            "en": "Page 3 from Anxious."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-002-ansiosa/02.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio Ansiosa.",
+            "en": "Page 4 from Anxious."
+          }
+        }
+      ],
+      "editorialNote": "Las cuatro páginas finales están completas y ordenadas según los marcadores visibles de la historieta."
+    },
+    {
+      "id": "ep-044-el-teletrabajo",
+      "title": {
+        "es": "El teletrabajo",
+        "en": "Working from home"
+      },
+      "episodeNumber": 44,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/0b956fced23c48a5b8f9353e714d9c54",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-044-el-teletrabajo/44.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio El teletrabajo.",
+            "en": "Page 1 from Working from home."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-044-el-teletrabajo/44.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio El teletrabajo.",
+            "en": "Page 2 from Working from home."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-044-el-teletrabajo/44.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio El teletrabajo.",
+            "en": "Page 3 from Working from home."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-044-el-teletrabajo/44.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio El teletrabajo.",
+            "en": "Page 4 from Working from home."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-044-el-teletrabajo/44-boceto.png",
+          "alt": {
+            "es": "Lámina 5 original del episodio El teletrabajo.",
+            "en": "Original page 5 from Working from home."
+          }
+        }
+      ],
+      "editorialNote": "Las cuatro páginas finales y la quinta lámina que el usuario identificó como boceto forman la secuencia publicada."
+    },
+    {
+      "id": "ep-051-tienes-hambre",
+      "title": {
+        "es": "¿Tienes hambre?",
+        "en": "Are you hungry?"
+      },
+      "episodeNumber": 51,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/2306ff2d843844be8f2dab4d68b977d2",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-051-tienes-hambre/51.1.png",
+          "alt": {
+            "es": "Lámina 1 de ¿Tienes hambre?: las mandarinas están en el sofá y una pregunta si la otra tiene hambre.",
+            "en": "Page 1 of Are you hungry?: the mandarins sit on the sofa and one asks if the other is hungry."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-051-tienes-hambre/51.2.png",
+          "alt": {
+            "es": "Lámina 2 de ¿Tienes hambre?: una mandarina prepara un sándwich y la otra responde que no.",
+            "en": "Page 2 of Are you hungry?: one mandarin makes a sandwich while the other says no."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-051-tienes-hambre/51.3.png",
+          "alt": {
+            "es": "Lámina 3 de ¿Tienes hambre?: la mandarina disfruta el sándwich mientras su pareja la mira.",
+            "en": "Page 3 of Are you hungry?: one mandarin enjoys the sandwich as her partner watches."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-051-tienes-hambre/51.4.png",
+          "alt": {
+            "es": "Lámina 4 de ¿Tienes hambre?: una mandarina reprocha que no le hayan ofrecido compartir el sándwich.",
+            "en": "Page 4 of Are you hungry?: one mandarin complains that she was not offered any of the sandwich."
+          }
+        }
+      ],
+      "editorialNote": "La página original separa cuatro láminas finales de dos bocetos/ideas alternas. Se publican las cuatro láminas finales; las dos alternativas permanecen archivadas y no se presentan como páginas del episodio."
+    },
+    {
+      "id": "ep-052-fruitflix",
+      "title": {
+        "es": "Fruitflix",
+        "en": "Fruitflix"
+      },
+      "episodeNumber": 52,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/ef6ee4524fe44ec38a1a8f6b008d2606",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-052-fruitflix/52.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio Fruitflix.",
+            "en": "Page 1 from Fruitflix."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-052-fruitflix/52.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio Fruitflix.",
+            "en": "Page 2 from Fruitflix."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-052-fruitflix/52.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio Fruitflix.",
+            "en": "Page 3 from Fruitflix."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-052-fruitflix/52.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio Fruitflix.",
+            "en": "Page 4 from Fruitflix."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-052-fruitflix/52-boceto.png",
+          "alt": {
+            "es": "Lámina 5 original del episodio Fruitflix.",
+            "en": "Original page 5 from Fruitflix."
+          }
+        }
+      ],
+      "editorialNote": "Las cuatro páginas finales y la quinta lámina que el usuario identificó como boceto forman la secuencia publicada."
+    },
+    {
+      "id": "ep-085-lo-que-siempre-te-pasa",
+      "title": {
+        "es": "Lo que siempre te pasa, contado sin palabras por Mandarinita",
+        "en": "What always happens to you, told without words by Mandarinita"
+      },
+      "episodeNumber": 85,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "user-supplied-archive",
+        "originalEpisodeTitle": "Ep. 85 - Lo que siempre te pasa, contado sin palabras por Mandarinita",
+        "originalArtworkTitles": [
+          "El sobre que se va",
+          "El clip misterioso"
+        ],
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-085-lo-que-siempre-te-pasa/85.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita.",
+            "en": "Page 1 from episode 85: What always happens to you, told without words by Mandarinita."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-085-lo-que-siempre-te-pasa/85.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita.",
+            "en": "Page 2 from episode 85: What always happens to you, told without words by Mandarinita."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-085-lo-que-siempre-te-pasa/85.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita.",
+            "en": "Page 3 from episode 85: What always happens to you, told without words by Mandarinita."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-085-lo-que-siempre-te-pasa/85.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita.",
+            "en": "Page 4 from episode 85: What always happens to you, told without words by Mandarinita."
+          }
+        }
+      ],
+      "editorialNote": "Las cuatro viñetas corresponden al episodio 85. “El sobre que se va” y “El clip misterioso” son partes de una misma historieta."
     }
   ]
 }

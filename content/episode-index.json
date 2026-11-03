@@ -9,11 +9,11 @@
       "title": "La mosca",
       "notionUrl": "https://app.notion.com/p/f3a519c8a8a54776bc51d7411ec49089",
       "totalOriginalPanels": 4,
-      "localAssetsReady": false,
-      "websiteStatus": "complete-on-linked-notion-archive",
+      "localAssetsReady": true,
+      "websiteStatus": "published",
       "instagramStatus": "not-checked",
-      "approvedForPublishing": false,
-      "notes": "Full canonical episode available via linked Notion page; original image files not yet mirrored locally."
+      "approvedForPublishing": true,
+      "notes": "Cuatro páginas locales verificadas en el orden del archivo original."
     },
     {
       "number": 2,
@@ -21,11 +21,11 @@
       "title": "Ansiosa",
       "notionUrl": "https://app.notion.com/p/6b76c1fb60b2462cbaacd49ff3fef572",
       "totalOriginalPanels": 4,
-      "localAssetsReady": false,
-      "websiteStatus": "complete-on-linked-notion-archive",
+      "localAssetsReady": true,
+      "websiteStatus": "published",
       "instagramStatus": "not-checked",
-      "approvedForPublishing": false,
-      "notes": "Full canonical episode available via linked Notion page; original image files not yet mirrored locally."
+      "approvedForPublishing": true,
+      "notes": "Cuatro páginas finales copiadas del archivo facilitado y verificadas por sus marcadores de lectura."
     },
     {
       "number": 44,
@@ -33,23 +33,23 @@
       "title": "El teletrabajo",
       "notionUrl": "https://app.notion.com/p/0b956fced23c48a5b8f9353e714d9c54",
       "totalOriginalPanels": 5,
-      "localAssetsReady": false,
-      "websiteStatus": "complete-on-linked-notion-archive",
+      "localAssetsReady": true,
+      "websiteStatus": "published",
       "instagramStatus": "not-checked",
-      "approvedForPublishing": false,
-      "notes": "Full canonical episode available via linked Notion page; original image files not yet mirrored locally."
+      "approvedForPublishing": true,
+      "notes": "Cinco páginas locales; el usuario confirmó que el archivo llamado boceto es la quinta lámina."
     },
     {
       "number": 51,
       "id": "ep-051-tienes-hambre",
       "title": "¿Tienes hambre?",
       "notionUrl": "https://app.notion.com/p/2306ff2d843844be8f2dab4d68b977d2",
-      "totalOriginalPanels": 6,
-      "localAssetsReady": false,
-      "websiteStatus": "complete-on-linked-notion-archive",
+      "totalOriginalPanels": 4,
+      "localAssetsReady": true,
+      "websiteStatus": "published",
       "instagramStatus": "not-checked",
-      "approvedForPublishing": false,
-      "notes": "Full canonical episode available via linked Notion page; original image files not yet mirrored locally."
+      "approvedForPublishing": true,
+      "notes": "Cuatro páginas finales publicadas. Las hojas Opción A y Opción B aparecen en Notion bajo “Bocetos / ideas alternas” y se conservan fuera de la secuencia."
     },
     {
       "number": 52,
@@ -57,11 +57,11 @@
       "title": "Fruitflix",
       "notionUrl": "https://app.notion.com/p/ef6ee4524fe44ec38a1a8f6b008d2606",
       "totalOriginalPanels": 5,
-      "localAssetsReady": false,
-      "websiteStatus": "complete-on-linked-notion-archive",
+      "localAssetsReady": true,
+      "websiteStatus": "published",
       "instagramStatus": "not-checked",
-      "approvedForPublishing": false,
-      "notes": "Full canonical episode available via linked Notion page; original image files not yet mirrored locally."
+      "approvedForPublishing": true,
+      "notes": "Cinco páginas locales; el usuario confirmó que el archivo llamado boceto es la quinta lámina."
     }
   ]
 }

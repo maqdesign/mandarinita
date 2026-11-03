@@ -174,57 +174,58 @@
         "F2667698-9530-4BCA-B63C-35554CF8160C.png",
         "6149DF67-3225-4F00-AA9D-6749B139097A.png"
       ],
-      "reviewStatus": "needs-original-binaries",
-      "publicationStatus": "review",
-      "sequenceBasis": "Notion page image block order; verify footer frame icon visually",
+      "reviewStatus": "four-final-panels-verified; two-alternative-storyboards-retained",
+      "publicationStatus": "published-final-panels-only",
+      "sequenceBasis": "Four sequential final pages followed by Notion headings “Bocetos / ideas alternas”, “Opción A”, and “Opción B”.",
       "panels": [
         {
           "order": 1,
           "originalFilename": "9F0F6F44-1286-4C31-A54F-B68155E40EA2.png",
-          "destination": "assets/episodes/ep-051-tienes-hambre/01.png",
-          "assetImported": false,
+          "destination": "assets/episodes/ep-051-tienes-hambre/51.1.png",
+          "assetImported": true,
           "notionFileBlock": "notion-file-block://7ed5f32c-0fb9-44ff-bf37-28a60725a4e9/ed7769c9-8d9d-4e56-9f0a-0fd16b3d3381?space_id=826cc7c5-8dbb-456d-b69e-5cebd3aa32c1&name=9F0F6F44-1286-4C31-A54F-B68155E40EA2.png",
           "fileVerifiedOnSourcePage": true
         },
         {
           "order": 2,
           "originalFilename": "DFA3EBD3-0AFF-4E46-B44E-9327B7A155B8.png",
-          "destination": "assets/episodes/ep-051-tienes-hambre/02.png",
-          "assetImported": false,
+          "destination": "assets/episodes/ep-051-tienes-hambre/51.2.png",
+          "assetImported": true,
           "notionFileBlock": "notion-file-block://fcec4545-252e-4add-a098-9d452341aaf1/e6000238-9b64-4c69-b52e-ac35f0f243c5?space_id=826cc7c5-8dbb-456d-b69e-5cebd3aa32c1&name=DFA3EBD3-0AFF-4E46-B44E-9327B7A155B8.png",
           "fileVerifiedOnSourcePage": true
         },
         {
           "order": 3,
           "originalFilename": "49D61E60-BA12-4486-A606-DDF6E790E46F.png",
-          "destination": "assets/episodes/ep-051-tienes-hambre/03.png",
-          "assetImported": false,
+          "destination": "assets/episodes/ep-051-tienes-hambre/51.3.png",
+          "assetImported": true,
           "notionFileBlock": "notion-file-block://10daa655-29fb-4635-add5-a28254203ad9/8f132118-c5de-4df0-9c33-ff82d856a789?space_id=826cc7c5-8dbb-456d-b69e-5cebd3aa32c1&name=49D61E60-BA12-4486-A606-DDF6E790E46F.png",
           "fileVerifiedOnSourcePage": true
         },
         {
           "order": 4,
           "originalFilename": "98D270DC-D5F8-4F0E-87F9-3C0AE00BCEEF.png",
-          "destination": "assets/episodes/ep-051-tienes-hambre/04.png",
-          "assetImported": false,
+          "destination": "assets/episodes/ep-051-tienes-hambre/51.4.png",
+          "assetImported": true,
           "notionFileBlock": "notion-file-block://907fe862-8ba3-4e2e-bb9c-72ad3612b86b/4f464ff4-1401-4e7b-8884-d6bef3da41c1?space_id=826cc7c5-8dbb-456d-b69e-5cebd3aa32c1&name=98D270DC-D5F8-4F0E-87F9-3C0AE00BCEEF.png",
           "fileVerifiedOnSourcePage": true
-        },
+        }
+      ],
+      "userSuppliedArchive": "Ep. 51 Tienes hambre.png.zip",
+      "alternates": [
         {
-          "order": 5,
+          "label": "Opción A",
           "originalFilename": "F2667698-9530-4BCA-B63C-35554CF8160C.png",
-          "destination": "assets/episodes/ep-051-tienes-hambre/05.png",
-          "assetImported": false,
-          "notionFileBlock": "notion-file-block://c34a2fbf-51a6-4bfc-970b-5914d1bec830/d1e7d94a-c950-4317-bc74-e0c29882af2e?space_id=826cc7c5-8dbb-456d-b69e-5cebd3aa32c1&name=F2667698-9530-4BCA-B63C-35554CF8160C.png",
-          "fileVerifiedOnSourcePage": true
+          "destination": "assets/episodes/ep-051-tienes-hambre/51.5-boceto-a.png",
+          "assetImported": true,
+          "publishedAsEpisodePanel": false
         },
         {
-          "order": 6,
+          "label": "Opción B",
           "originalFilename": "6149DF67-3225-4F00-AA9D-6749B139097A.png",
-          "destination": "assets/episodes/ep-051-tienes-hambre/06.png",
-          "assetImported": false,
-          "notionFileBlock": "notion-file-block://49935e7c-13eb-4705-b15b-a92d466e0e89/f6e296ca-e972-44c4-a43d-51fec6973d41?space_id=826cc7c5-8dbb-456d-b69e-5cebd3aa32c1&name=6149DF67-3225-4F00-AA9D-6749B139097A.png",
-          "fileVerifiedOnSourcePage": true
+          "destination": "assets/episodes/ep-051-tienes-hambre/51.6-boceto-b.png",
+          "assetImported": true,
+          "publishedAsEpisodePanel": false
         }
       ]
     },
