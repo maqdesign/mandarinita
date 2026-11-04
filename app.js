@@ -5,6 +5,7 @@ const accessibleEnglish = {
   aria: {
     'Mandarinita, inicio': 'Mandarinita, home',
     'Navegación principal': 'Main navigation',
+    'Buscar episodios': 'Search episodes',
     'Ver selección de láminas del episodio La mosca': 'View selected pages from The Fly comic',
     'Abrir historieta de la cocina de 2019': 'Open the 2019 kitchen comic',
     'Abrir episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita': 'Open episode 85: What always happens to you, told without words by Mandarinita',
@@ -39,7 +40,7 @@ const accessibleEnglish = {
     'Greg el Zanahorio en una escena de Mandarinita': 'Greg the Carrot in a Mandarinita scene.',
     'Limón Agrio en una escena de Mandarinita': 'Sour Lemon in a Mandarinita scene.',
     'Sra. Pera en una escena de Salón de la Es-pera': 'Mrs. Pear in a scene from The Waiting Room Salon.',
-    'Morita, una pequeña mora con ojos grandes, una hoja verde y la lengua afuera.': 'Morita, a little blackberry puppy with wide eyes, a green leaf, and her tongue out.'
+    'Morita, una mora traviesa y muy movida, con ojos grandes y la lengua afuera.': 'Morita, a mischievous, energetic blackberry with big eyes and her tongue out.'
   }
 };
 function syncAccessibleLanguage() {
@@ -142,6 +143,7 @@ const works = {
   coffee: { title: '¿Tienes hambre?', titleEn: 'Are you hungry?', kind: 'HISTORIETA · EPISODIO 51', kindEn: 'COMIC · EPISODE 51', images: [1,2,3,4].map(n=>({src:`assets/episodes/ep-051-tienes-hambre/51.${n}.png`,alt:`Lámina ${n} del episodio 51: ¿Tienes hambre?`,altEn:`Page ${n} from episode 51: Are you hungry?`})) },
   storyboard: { title: 'Boceto de historieta · proceso', titleEn: 'Comic storyboard · process material', kind: 'BOCETO ORIGINAL · 2019', kindEn: 'ORIGINAL STORYBOARD · 2019', images: [1,2,3,4].map(n=>({src:`assets/storyboard-panel-${n}.webp`,alt:`Viñeta ${n} del boceto original de 2019.`,altEn:`Panel ${n} of the original 2019 storyboard.`})) }
 };
+const catalogWorkKeys = new Map();
 
 // Add catalog entries to the public reader only when they are ready to display.
 // The curated artwork remains available if the optional catalog cannot load.
@@ -164,6 +166,7 @@ async function loadApprovedEpisodes() {
         'ep-085-lo-que-siempre-te-pasa':'episode85'
       };
       const key = staticKeys[entry.id] || 'catalog:' + entry.id;
+      catalogWorkKeys.set(entry.id,key);
       works[key] = {
         title:entry.title.es,
         titleEn:catalogTitle(entry,'en'),
@@ -172,18 +175,7 @@ async function loadApprovedEpisodes() {
         images:ordered.map(p=>({src:p.src,alt:p.alt.es,altEn:p.alt.en}))
       };
       approved.push({entry,ordered,key});
-      const existingCard = [...grid.querySelectorAll('.work-card')].find(article => [...article.querySelectorAll('[data-reader]')].some(button => staticKeys[entry.id] === button.dataset.reader));
-      if (existingCard && grid.id !== 'home-featured-grid') {
-        const cover = existingCard.querySelector('.work-image img');
-        if (cover) {
-          cover.src=ordered[0].src;
-          cover.alt=ordered[0].alt[language]||ordered[0].alt.es;
-          document.querySelector('.language-toggle')?.addEventListener('click',()=>{cover.alt=ordered[0].alt[language]||ordered[0].alt.es;});
-        }
-        existingCard.querySelectorAll('[data-reader]').forEach(button=>button.dataset.reader=key);
-        continue;
-      }
-      if (grid.id === 'home-featured-grid') continue;
+      if (grid.id !== 'home-featured-grid') continue;
       const article=document.createElement('article');article.className='work-card catalog-card';
       const button=document.createElement('button');button.className='work-image';button.type='button';
       const cover=document.createElement('img');cover.src=ordered[0].src;cover.alt=ordered[0].alt[language];cover.loading='lazy';
@@ -225,7 +217,7 @@ async function loadApprovedEpisodes() {
     const requestedEpisode = new URLSearchParams(window.location.search).get('episode');
     if (requestedEpisode) {
       const match = approved.find(({entry}) => entry.id === requestedEpisode);
-      if (match) { openReader(match.key); }
+      if (match) { openReader(match.key,Boolean(document.querySelector('#episode-grid'))); }
     }
   } catch (_) {
     if (grid.id === 'home-featured-grid') grid.innerHTML = '<p class="home-archive-loading">No pudimos cargar las historietas. Usa el botón para abrir el archivo completo.</p>';
@@ -242,6 +234,7 @@ const count = document.querySelector('#reader-count');
 const notice = document.querySelector('#reader-notice');
 let activeWork;
 let panelIndex = 0;
+let readerArchiveMode = false;
 function renderPanel() {
   const work = works[activeWork];
   const panel = work.images[panelIndex];
@@ -257,16 +250,25 @@ function renderPanel() {
   notice.textContent = activeWork === 'storyboard' ? (language === 'es' ? 'Boceto original que muestra una etapa del proceso creativo.' : 'An original storyboard showing one stage of the creative process.') : activeWork === 'episode1' ? (language === 'es' ? 'Selección de láminas originales de 2019.' : 'A selection of original pages from 2019.') : activeWork === 'episode85' ? (language === 'es' ? 'Cuatro viñetas del episodio 85.' : 'Four panels from episode 85.') : '';
   const multiple = work.images.length > 1;
   document.querySelectorAll('.reader-restart').forEach(button => { button.hidden = !atEnd || !multiple; });
+  const nextEpisodeButton=document.querySelector('.reader-next-episode');
+  if(nextEpisodeButton){const label=nextEpisodeButton.querySelector('span');const es=atEnd?'Ir al siguiente episodio':'Siguiente episodio';const en=atEnd?'Read the next episode':'Next episode';nextEpisodeButton.hidden=!readerArchiveMode;if(label){label.dataset.es=es;label.dataset.en=en;label.textContent=language==='es'?es:en;}}
   document.querySelectorAll('.reader-prev,.reader-text-prev').forEach(button=>button.hidden=!multiple);
   document.querySelectorAll('.reader-next,.reader-text-next').forEach(button=>button.hidden=!multiple || atEnd);
 }
-function openReader(key) {
+function openReader(key, archiveMode = false) {
   activeWork = key;
+  readerArchiveMode = archiveMode;
   panelIndex = 0;
   renderPanel();
-  dialog.showModal();
+  if(!dialog.open)dialog.showModal();
   document.querySelector('.reader-close')?.focus();
 }
+window.openMandarinitaEpisode = episodeId => {
+  const key=catalogWorkKeys.get(episodeId);
+  if(!key)return false;
+  openReader(key,true);
+  return true;
+};
 document.querySelectorAll('[data-reader]').forEach(button=>button.addEventListener('click',()=>openReader(button.dataset.reader)));
 function movePanel(direction) {
   const length = works[activeWork].images.length;
@@ -281,6 +283,7 @@ if (dialog) {
   document.querySelector('.reader-next')?.addEventListener('click',()=>movePanel(1));
   document.querySelector('.reader-text-next')?.addEventListener('click',()=>movePanel(1));
   document.querySelectorAll('.reader-restart').forEach(button=>button.addEventListener('click',()=>{panelIndex=0;renderPanel();}));
+  document.querySelector('.reader-next-episode')?.addEventListener('click',()=>window.advanceMandarinitaEpisode?.());
   image.addEventListener('load',()=>document.querySelector('.reader-stage')?.classList.remove('is-loading'));
   image.addEventListener('error',()=>document.querySelector('.reader-stage')?.classList.remove('is-loading'));
   document.querySelector('.reader-close')?.addEventListener('click',()=>dialog.close());
