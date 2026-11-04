@@ -78,7 +78,14 @@ function setLanguage(next, updateUrl = false) {
   document.documentElement.dataset.lang = next;
   languageButton.textContent = next === 'es' ? 'EN' : 'ES';
   languageButton.setAttribute('aria-label', next === 'es' ? 'Switch language to English' : 'Cambiar idioma a español');
-  document.title = next === 'es' ? 'Mandarinita® — Historietas y arte' : 'Mandarinita® — Comics and art';
+  const page = document.body.dataset.page || (document.querySelector('#episode-grid') ? 'episodes' : document.querySelector('.sketch-grid') ? 'sketches' : document.querySelector('.character-page') ? 'characters' : 'home');
+  const pageTitles = {
+    home: ['Mandarinita® — Historietas y arte', 'Mandarinita® — Comics and art'],
+    episodes: ['Todos los episodios — Mandarinita®', 'All episodes — Mandarinita®'],
+    characters: ['Personajes originales — Mandarinita®', 'Original characters — Mandarinita®'],
+    sketches: ['Bocetos — Mandarinita®', 'Sketches — Mandarinita®']
+  };
+  document.title = pageTitles[page][next === 'es' ? 0 : 1];
   const description = document.querySelector('meta[name=description]');
   if (description) description.content = next === 'es' ? 'Mandarinita: humor ilustrado desde República Dominicana. Historietas originales y portafolio artístico.' : 'Mandarinita: illustrated humor from the Dominican Republic. Original comics and an art portfolio.';
   if (menuButton) menuButton.setAttribute('aria-label', next === 'es' ? 'Abrir navegación' : 'Open navigation');
@@ -94,7 +101,7 @@ function syncInternalLanguageLinks() {
     try {
       const url = new URL(link.href, window.location.href);
       if (url.origin !== window.location.origin) return;
-      if (!['/', '/index.html', '/personajes', '/personajes.html'].includes(url.pathname)) return;
+      if (!['/', '/index.html', '/personajes', '/personajes.html', '/episodios', '/episodios.html', '/bocetos', '/bocetos.html'].includes(url.pathname)) return;
       url.searchParams.set('lang', language);
       link.href = url.pathname + url.search + url.hash;
     } catch (_) { /* Leave invalid or nonstandard links untouched. */ }
@@ -133,9 +140,10 @@ async function loadApprovedEpisodes() {
   if (!grid) return;
   try {
     const response = await fetch('episodes.json', { cache: 'no-cache' });
-    if (!response.ok) return;
+    if (!response.ok) throw new Error('Catalog unavailable');
     const catalog = await response.json();
-    if (catalog.schemaVersion !== 1 || catalog.editorialPolicy !== 'manual-approval' || !Array.isArray(catalog.episodes)) return;
+    if (catalog.schemaVersion !== 1 || catalog.editorialPolicy !== 'manual-approval' || !Array.isArray(catalog.episodes)) throw new Error('Invalid catalog');
+    const approved = [];
     for (const entry of catalog.episodes) {
       if (entry.status !== 'published' || entry.type !== 'comic' || entry.complete !== true || !Array.isArray(entry.panels) || !entry.panels.length) continue;
       const ordered = [...entry.panels].sort((a,b)=>a.order-b.order);
@@ -153,8 +161,9 @@ async function loadApprovedEpisodes() {
         kindEn:'COMIC · ARCHIVE',
         images:ordered.map(p=>({src:p.src,alt:p.alt.es,altEn:p.alt.en}))
       };
+      approved.push({entry,ordered,key});
       const existingCard = [...grid.querySelectorAll('.work-card')].find(article => [...article.querySelectorAll('[data-reader]')].some(button => staticKeys[entry.id] === button.dataset.reader));
-      if (existingCard) {
+      if (existingCard && grid.id !== 'home-featured-grid') {
         const cover = existingCard.querySelector('.work-image img');
         if (cover) {
           cover.src=ordered[0].src;
@@ -164,6 +173,7 @@ async function loadApprovedEpisodes() {
         existingCard.querySelectorAll('[data-reader]').forEach(button=>button.dataset.reader=key);
         continue;
       }
+      if (grid.id === 'home-featured-grid') continue;
       const article=document.createElement('article');article.className='work-card catalog-card';
       const button=document.createElement('button');button.className='work-image';button.type='button';
       const cover=document.createElement('img');cover.src=ordered[0].src;cover.alt=ordered[0].alt[language];cover.loading='lazy';
@@ -183,7 +193,29 @@ async function loadApprovedEpisodes() {
         cover.alt=ordered[0].alt[language]||ordered[0].alt.es;
       });
     }
-  } catch (_) { /* The curated static archive remains available. */ }
+    if (grid.id === 'home-featured-grid') {
+      grid.replaceChildren();
+      const chosen = approved.sort(()=>Math.random()-.5).slice(0,3);
+      for (const {entry,ordered,key} of chosen) {
+        const article=document.createElement('article');article.className='work-card catalog-card';
+        const button=document.createElement('button');button.className='work-image';button.type='button';button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${entry.title.en||entry.title.es}`);
+        const cover=document.createElement('img');cover.src=ordered[0].src;cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';button.append(cover);button.addEventListener('click',()=>openReader(key));
+        const copy=document.createElement('div');copy.className='work-copy';
+        const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
+        const heading=document.createElement('h3');heading.textContent=entry.title[language]||entry.title.es;
+        const summary=document.createElement('p');summary.textContent=language==='es'?`${ordered.length} viñetas en orden de lectura.`:`${ordered.length} panels in reading order.`;
+        const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';action.addEventListener('click',()=>openReader(key));
+        copy.append(meta,heading,summary,action);article.append(button,copy);grid.append(article);
+      }
+    }
+    const requestedEpisode = new URLSearchParams(window.location.search).get('episode');
+    if (requestedEpisode) {
+      const match = approved.find(({entry}) => entry.id === requestedEpisode);
+      if (match) { openReader(match.key); }
+    }
+  } catch (_) {
+    if (grid.id === 'home-featured-grid') grid.innerHTML = '<p class="home-archive-loading">No pudimos cargar las historietas. Usa el botón para abrir el archivo completo.</p>';
+  }
 }
 loadApprovedEpisodes();
 
@@ -199,15 +231,20 @@ let panelIndex = 0;
 function renderPanel() {
   const work = works[activeWork];
   const panel = work.images[panelIndex];
+  const stage = document.querySelector('.reader-stage');
+  stage?.classList.add('is-loading');
   image.src = panel.src;
   image.alt = language === 'es' ? panel.alt : panel.altEn;
   title.textContent = language === 'es' ? work.title : work.titleEn;
   kind.textContent = language === 'es' ? work.kind : work.kindEn;
   caption.textContent = language === 'es' ? `Lámina ${panelIndex+1} de ${work.images.length}` : `Page ${panelIndex+1} of ${work.images.length}`;
   count.textContent = `${panelIndex+1} / ${work.images.length}`;
+  const atEnd = panelIndex === work.images.length - 1;
   notice.textContent = activeWork === 'storyboard' ? (language === 'es' ? 'Boceto original que muestra una etapa del proceso creativo.' : 'An original storyboard showing one stage of the creative process.') : activeWork === 'episode1' ? (language === 'es' ? 'Selección de láminas originales de 2019.' : 'A selection of original pages from 2019.') : activeWork === 'episode85' ? (language === 'es' ? 'Cuatro viñetas del episodio 85.' : 'Four panels from episode 85.') : '';
   const multiple = work.images.length > 1;
-  document.querySelectorAll('.reader-prev,.reader-next,.reader-text-prev,.reader-text-next').forEach(button=>button.hidden=!multiple);
+  document.querySelectorAll('.reader-restart').forEach(button => { button.hidden = !atEnd || !multiple; });
+  document.querySelectorAll('.reader-prev,.reader-text-prev').forEach(button=>button.hidden=!multiple);
+  document.querySelectorAll('.reader-next,.reader-text-next').forEach(button=>button.hidden=!multiple || atEnd);
 }
 function openReader(key) {
   activeWork = key;
@@ -219,7 +256,9 @@ function openReader(key) {
 document.querySelectorAll('[data-reader]').forEach(button=>button.addEventListener('click',()=>openReader(button.dataset.reader)));
 function movePanel(direction) {
   const length = works[activeWork].images.length;
-  panelIndex = (panelIndex + direction + length) % length;
+  const nextIndex = panelIndex + direction;
+  if (nextIndex < 0 || nextIndex >= length) return;
+  panelIndex = nextIndex;
   renderPanel();
 }
 if (dialog) {
@@ -227,6 +266,9 @@ if (dialog) {
   document.querySelector('.reader-text-prev')?.addEventListener('click',()=>movePanel(-1));
   document.querySelector('.reader-next')?.addEventListener('click',()=>movePanel(1));
   document.querySelector('.reader-text-next')?.addEventListener('click',()=>movePanel(1));
+  document.querySelectorAll('.reader-restart').forEach(button=>button.addEventListener('click',()=>{panelIndex=0;renderPanel();}));
+  image.addEventListener('load',()=>document.querySelector('.reader-stage')?.classList.remove('is-loading'));
+  image.addEventListener('error',()=>document.querySelector('.reader-stage')?.classList.remove('is-loading'));
   document.querySelector('.reader-close')?.addEventListener('click',()=>dialog.close());
   dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
   dialog.addEventListener('keydown',event=>{
