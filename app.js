@@ -38,7 +38,8 @@ const accessibleEnglish = {
     'Mando Mandarinita en una escena de Salón de la Es-pera': 'Mando Mandarinita in a scene from The Waiting Room Salon.',
     'Greg el Zanahorio en una escena de Mandarinita': 'Greg the Carrot in a Mandarinita scene.',
     'Limón Agrio en una escena de Mandarinita': 'Sour Lemon in a Mandarinita scene.',
-    'Sra. Pera en una escena de Salón de la Es-pera': 'Mrs. Pear in a scene from The Waiting Room Salon.'
+    'Sra. Pera en una escena de Salón de la Es-pera': 'Mrs. Pear in a scene from The Waiting Room Salon.',
+    'Morita, una pequeña mora con ojos grandes, una hoja verde y la lengua afuera.': 'Morita, a little blackberry puppy with wide eyes, a green leaf, and her tongue out.'
   }
 };
 function syncAccessibleLanguage() {
@@ -107,6 +108,15 @@ function syncInternalLanguageLinks() {
     } catch (_) { /* Leave invalid or nonstandard links untouched. */ }
   });
 }
+function formatCatalogDate(value) {
+  const locale = language === 'en' ? 'en-US' : 'es-DO';
+  return new Intl.DateTimeFormat(locale, { day:'numeric', month:'short', year:'numeric' }).format(new Date(`${value}T12:00:00`));
+}
+function catalogTitle(entry, lang = language) {
+  const translated = entry.title?.[lang];
+  if (lang === 'en' && /^episode\s+\d+$/i.test(translated || '')) return entry.title?.es || translated;
+  return translated || entry.title?.es || '';
+}
 setLanguage(language);
 syncInternalLanguageLinks();
 languageButton.addEventListener('click', () => {
@@ -156,7 +166,7 @@ async function loadApprovedEpisodes() {
       const key = staticKeys[entry.id] || 'catalog:' + entry.id;
       works[key] = {
         title:entry.title.es,
-        titleEn:entry.title.en || entry.title.es,
+        titleEn:catalogTitle(entry,'en'),
         kind:'HISTORIETA · ARCHIVO',
         kindEn:'COMIC · ARCHIVE',
         images:ordered.map(p=>({src:p.src,alt:p.alt.es,altEn:p.alt.en}))
@@ -195,17 +205,21 @@ async function loadApprovedEpisodes() {
     }
     if (grid.id === 'home-featured-grid') {
       grid.replaceChildren();
-      const chosen = approved.sort(()=>Math.random()-.5).slice(0,3);
+      const pool = [...approved];
+      for (let i=pool.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+      const chosen = pool.slice(0,3);
       for (const {entry,ordered,key} of chosen) {
         const article=document.createElement('article');article.className='work-card catalog-card';
-        const button=document.createElement('button');button.className='work-image';button.type='button';button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${entry.title.en||entry.title.es}`);
+        const button=document.createElement('button');button.className='work-image';button.type='button';button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${catalogTitle(entry,'en')}`);
         const cover=document.createElement('img');cover.src=ordered[0].src;cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';button.append(cover);button.addEventListener('click',()=>openReader(key));
         const copy=document.createElement('div');copy.className='work-copy';
         const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
-        const heading=document.createElement('h3');heading.textContent=entry.title[language]||entry.title.es;
+        const heading=document.createElement('h3');heading.textContent=catalogTitle(entry);
         const summary=document.createElement('p');summary.textContent=language==='es'?`${ordered.length} viñetas en orden de lectura.`:`${ordered.length} panels in reading order.`;
+        if (entry.publishedAt) { const date=document.createElement('time');date.className='episode-date';date.dateTime=entry.publishedAt;date.textContent=formatCatalogDate(entry.publishedAt);copy.append(meta,heading,summary,date); } else copy.append(meta,heading,summary);
         const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';action.addEventListener('click',()=>openReader(key));
-        copy.append(meta,heading,summary,action);article.append(button,copy);grid.append(article);
+        copy.append(action);article.append(button,copy);grid.append(article);
+        if(entry.publishedAt)document.querySelector('.language-toggle')?.addEventListener('click',()=>{const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);});
       }
     }
     const requestedEpisode = new URLSearchParams(window.location.search).get('episode');

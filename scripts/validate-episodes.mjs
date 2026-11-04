@@ -23,6 +23,7 @@ for (const [index, ep] of (content.episodes || []).entries()) {
   if (!allowedTypes.has(ep.type)) errors.push(`${tag}: invalid type`);
   if (ep.status === 'published' && ep.type === 'comic' && ep.complete !== true) errors.push(`${tag}: published comic must be explicitly complete`);
   if (ep.complete !== undefined && typeof ep.complete !== 'boolean') errors.push(`${tag}: complete must be a boolean`);
+  if (ep.publishedAt !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(ep.publishedAt)) errors.push(`${tag}: publishedAt must use YYYY-MM-DD`);
   if (ep.source?.kind === 'notion-archive' && !/^https:\/\/app\.notion\.com\/p\/[a-f0-9]{32}$/.test(ep.source.notionUrl || '')) errors.push(`${tag}: invalid Notion archive link`);
   if (!text(ep.title?.es)) errors.push(`${tag}: Spanish title required`);
   if (ep.episodeNumber !== null && (!Number.isInteger(ep.episodeNumber) || ep.episodeNumber < 1)) errors.push(`${tag}: episodeNumber must be null or positive integer`);
