@@ -415,6 +415,5334 @@
         }
       ],
       "editorialNote": "Las cuatro viñetas corresponden al episodio 85. “El sobre que se va” y “El clip misterioso” son partes de una misma historieta."
+    },
+    {
+      "id": "ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto",
+      "title": {
+        "es": "¡Ups! Le dimos un botoncito nuevo… y miren esto.",
+        "en": "Episode 103"
+      },
+      "episodeNumber": 103,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1eb7faf35aef808d835ecbe402f3fdc4",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 1 from episode 103."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 2 from episode 103."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 3 from episode 103."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 4 from episode 103."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.5.png",
+          "alt": {
+            "es": "Lámina 5 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 5 from episode 103."
+          }
+        },
+        {
+          "order": 6,
+          "originalPosition": 6,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.6.png",
+          "alt": {
+            "es": "Lámina 6 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 6 from episode 103."
+          }
+        },
+        {
+          "order": 7,
+          "originalPosition": 7,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.7.png",
+          "alt": {
+            "es": "Lámina 7 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 7 from episode 103."
+          }
+        },
+        {
+          "order": 8,
+          "originalPosition": 8,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.8.png",
+          "alt": {
+            "es": "Lámina 8 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 8 from episode 103."
+          }
+        },
+        {
+          "order": 9,
+          "originalPosition": 9,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.9.png",
+          "alt": {
+            "es": "Lámina 9 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 9 from episode 103."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l",
+      "title": {
+        "es": "La mandarina que informa: ¿por qué los choferes no ponen las luces direccionales para rebasar? Ya sabes…",
+        "en": "Episode 99"
+      },
+      "episodeNumber": 99,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1047faf35aef80aa9c58c77216566f56",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 99: La mandarina que informa: ¿por qué los choferes no ponen las luces direccionales para rebasar? Ya sabes….",
+            "en": "Page 1 from episode 99."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 99: La mandarina que informa: ¿por qué los choferes no ponen las luces direccionales para rebasar? Ya sabes….",
+            "en": "Page 2 from episode 99."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 99: La mandarina que informa: ¿por qué los choferes no ponen las luces direccionales para rebasar? Ya sabes….",
+            "en": "Page 3 from episode 99."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 99: La mandarina que informa: ¿por qué los choferes no ponen las luces direccionales para rebasar? Ya sabes….",
+            "en": "Page 4 from episode 99."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini",
+      "title": {
+        "es": "¡El tiempo “vuela”! ¡Ya tenemos 4 años compartiendo mandarinitas contigo! ¿No es eso algo sorprendente? Ha sido difícil mantener el ritmo y no siempre podemos publicar pero gracias por mantenerse con nosotros a pesar de todo. Comparte con amigos y familiares si deseas apoyarnos para que podamos seguir activos.",
+        "en": "Episode 98"
+      },
+      "episodeNumber": 98,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1047faf35aef802f9a74d4c32a3e88b7",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini/98.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 98: ¡El tiempo “vuela”! ¡Ya tenemos 4 años compartiendo mandarinitas contigo! ¿No es eso algo sorprendente? Ha sido difícil mantener el ritmo y no siempre podemos publicar pero gracias por mantenerse con nosotros a pesar de todo. Comparte con amigos y familiares si deseas apoyarnos para que podamos seguir activos..",
+            "en": "Page 1 from episode 98."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini/98.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 98: ¡El tiempo “vuela”! ¡Ya tenemos 4 años compartiendo mandarinitas contigo! ¿No es eso algo sorprendente? Ha sido difícil mantener el ritmo y no siempre podemos publicar pero gracias por mantenerse con nosotros a pesar de todo. Comparte con amigos y familiares si deseas apoyarnos para que podamos seguir activos..",
+            "en": "Page 2 from episode 98."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini/98.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 98: ¡El tiempo “vuela”! ¡Ya tenemos 4 años compartiendo mandarinitas contigo! ¿No es eso algo sorprendente? Ha sido difícil mantener el ritmo y no siempre podemos publicar pero gracias por mantenerse con nosotros a pesar de todo. Comparte con amigos y familiares si deseas apoyarnos para que podamos seguir activos..",
+            "en": "Page 3 from episode 98."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini/98.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 98: ¡El tiempo “vuela”! ¡Ya tenemos 4 años compartiendo mandarinitas contigo! ¿No es eso algo sorprendente? Ha sido difícil mantener el ritmo y no siempre podemos publicar pero gracias por mantenerse con nosotros a pesar de todo. Comparte con amigos y familiares si deseas apoyarnos para que podamos seguir activos..",
+            "en": "Page 4 from episode 98."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-097-reveri-que-se-trae-entre-manos-mando-mandarino-atentos-p",
+      "title": {
+        "es": "“Réveri”… ¿Qué se trae entre manos Mando Mandarino? Atentos porque ¡este jueves nace un nuevo proyecto de los creadores de Mandarinita! @reveri.art",
+        "en": "Episode 97"
+      },
+      "episodeNumber": 97,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1047faf35aef803d9a8cfc88228b65cf",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-097-reveri-que-se-trae-entre-manos-mando-mandarino-atentos-p/97.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 97: “Réveri”… ¿Qué se trae entre manos Mando Mandarino? Atentos porque ¡este jueves nace un nuevo proyecto de los creadores de Mandarinita! @reveri.art.",
+            "en": "Page 1 from episode 97."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-097-reveri-que-se-trae-entre-manos-mando-mandarino-atentos-p/97.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 97: “Réveri”… ¿Qué se trae entre manos Mando Mandarino? Atentos porque ¡este jueves nace un nuevo proyecto de los creadores de Mandarinita! @reveri.art.",
+            "en": "Page 2 from episode 97."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-097-reveri-que-se-trae-entre-manos-mando-mandarino-atentos-p/97.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 97: “Réveri”… ¿Qué se trae entre manos Mando Mandarino? Atentos porque ¡este jueves nace un nuevo proyecto de los creadores de Mandarinita! @reveri.art.",
+            "en": "Page 3 from episode 97."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-097-reveri-que-se-trae-entre-manos-mando-mandarino-atentos-p/97.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 97: “Réveri”… ¿Qué se trae entre manos Mando Mandarino? Atentos porque ¡este jueves nace un nuevo proyecto de los creadores de Mandarinita! @reveri.art.",
+            "en": "Page 4 from episode 97."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue",
+      "title": {
+        "es": "Cada vez que lavo el auto 🚙 seguro que también te pasa. Cuenta en los comentarios si te ha pasado o menciona a ese amigo que siempre le pasa",
+        "en": "Episode 100"
+      },
+      "episodeNumber": 100,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1047faf35aef809b9a50c36eeb2fef59",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 100: Cada vez que lavo el auto 🚙 seguro que también te pasa. Cuenta en los comentarios si te ha pasado o menciona a ese amigo que siempre le pasa.",
+            "en": "Page 1 from episode 100."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 100: Cada vez que lavo el auto 🚙 seguro que también te pasa. Cuenta en los comentarios si te ha pasado o menciona a ese amigo que siempre le pasa.",
+            "en": "Page 2 from episode 100."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 100: Cada vez que lavo el auto 🚙 seguro que también te pasa. Cuenta en los comentarios si te ha pasado o menciona a ese amigo que siempre le pasa.",
+            "en": "Page 3 from episode 100."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 100: Cada vez que lavo el auto 🚙 seguro que también te pasa. Cuenta en los comentarios si te ha pasado o menciona a ese amigo que siempre le pasa.",
+            "en": "Page 4 from episode 100."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe",
+      "title": {
+        "es": "¿Eres motoconcho o pasajero? Comenta tus maravillosas experiencias… OJO: No tengo nada en contra de los motoconcho. A excepción de los que se ajustan al estereotipo :)",
+        "en": "Episode 101"
+      },
+      "episodeNumber": 101,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1047faf35aef8055bddefcf4f51a8efd",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 101: ¿Eres motoconcho o pasajero? Comenta tus maravillosas experiencias… OJO: No tengo nada en contra de los motoconcho. A excepción de los que se ajustan al estereotipo :).",
+            "en": "Page 1 from episode 101."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 101: ¿Eres motoconcho o pasajero? Comenta tus maravillosas experiencias… OJO: No tengo nada en contra de los motoconcho. A excepción de los que se ajustan al estereotipo :).",
+            "en": "Page 2 from episode 101."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 101: ¿Eres motoconcho o pasajero? Comenta tus maravillosas experiencias… OJO: No tengo nada en contra de los motoconcho. A excepción de los que se ajustan al estereotipo :).",
+            "en": "Page 3 from episode 101."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 101: ¿Eres motoconcho o pasajero? Comenta tus maravillosas experiencias… OJO: No tengo nada en contra de los motoconcho. A excepción de los que se ajustan al estereotipo :).",
+            "en": "Page 4 from episode 101."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-102-hoy-se-siente-como-uno-de-esos-jueves-que-no-pidieron-in",
+      "title": {
+        "es": "Hoy se siente como uno de esos jueves que no pidieron invitación pero igual llegaron… 😅 ¿Alguien más siente que este jueves está siendo innecesariamente jueves? 🍊",
+        "en": "Episode 102"
+      },
+      "episodeNumber": 102,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1047faf35aef80268718c5a33c16948b",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-102-hoy-se-siente-como-uno-de-esos-jueves-que-no-pidieron-in/102.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 102: Hoy se siente como uno de esos jueves que no pidieron invitación pero igual llegaron… 😅 ¿Alguien más siente que este jueves está siendo innecesariamente jueves? 🍊.",
+            "en": "Page 1 from episode 102."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-096-por-que-me-espias",
+      "title": {
+        "es": "¿Por qué me espías?",
+        "en": "Episode 96"
+      },
+      "episodeNumber": 96,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1b48a8a7ce624ad8a8c0f3c74ffb7d70",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-096-por-que-me-espias/96.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 96: ¿Por qué me espías?.",
+            "en": "Page 1 from episode 96."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-096-por-que-me-espias/96.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 96: ¿Por qué me espías?.",
+            "en": "Page 2 from episode 96."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-096-por-que-me-espias/96.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 96: ¿Por qué me espías?.",
+            "en": "Page 3 from episode 96."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-096-por-que-me-espias/96.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 96: ¿Por qué me espías?.",
+            "en": "Page 4 from episode 96."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-095-ensayando-para-quedarse-en-casa",
+      "title": {
+        "es": "Ensayando para quedarse en casa",
+        "en": "Episode 95"
+      },
+      "episodeNumber": 95,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/0575bb403a5143a2838927ff31444fe5",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-095-ensayando-para-quedarse-en-casa/95.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 95: Ensayando para quedarse en casa.",
+            "en": "Page 1 from episode 95."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-095-ensayando-para-quedarse-en-casa/95.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 95: Ensayando para quedarse en casa.",
+            "en": "Page 2 from episode 95."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-095-ensayando-para-quedarse-en-casa/95.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 95: Ensayando para quedarse en casa.",
+            "en": "Page 3 from episode 95."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-095-ensayando-para-quedarse-en-casa/95.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 95: Ensayando para quedarse en casa.",
+            "en": "Page 4 from episode 95."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-094-el-dia-mas-largo-del-ano",
+      "title": {
+        "es": "El día más largo del año",
+        "en": "Episode 94"
+      },
+      "episodeNumber": 94,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/de1cc99f88894f18adf7777d89088f8a",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-094-el-dia-mas-largo-del-ano/94.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 94: El día más largo del año.",
+            "en": "Page 1 from episode 94."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-094-el-dia-mas-largo-del-ano/94.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 94: El día más largo del año.",
+            "en": "Page 2 from episode 94."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-094-el-dia-mas-largo-del-ano/94.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 94: El día más largo del año.",
+            "en": "Page 3 from episode 94."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-094-el-dia-mas-largo-del-ano/94.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 94: El día más largo del año.",
+            "en": "Page 4 from episode 94."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-093-el-vaso-de-la-licuadora",
+      "title": {
+        "es": "El vaso de la licuadora",
+        "en": "Episode 93"
+      },
+      "episodeNumber": 93,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/8be08a871844470e8013403f535d6964",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 93: El vaso de la licuadora.",
+            "en": "Page 1 from episode 93."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 93: El vaso de la licuadora.",
+            "en": "Page 2 from episode 93."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 93: El vaso de la licuadora.",
+            "en": "Page 3 from episode 93."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 93: El vaso de la licuadora.",
+            "en": "Page 4 from episode 93."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-092-cada-vez-menos",
+      "title": {
+        "es": "Cada vez menos",
+        "en": "Episode 92"
+      },
+      "episodeNumber": 92,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/743d28a1271248b786312e9bdf9486c0",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-092-cada-vez-menos/92.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 92: Cada vez menos.",
+            "en": "Page 1 from episode 92."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-092-cada-vez-menos/92.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 92: Cada vez menos.",
+            "en": "Page 2 from episode 92."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-092-cada-vez-menos/92.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 92: Cada vez menos.",
+            "en": "Page 3 from episode 92."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-092-cada-vez-menos/92.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 92: Cada vez menos.",
+            "en": "Page 4 from episode 92."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve",
+      "title": {
+        "es": "Una nave es enviada a impactar un asteroide, de verdad verdad",
+        "en": "Episode 91"
+      },
+      "episodeNumber": 91,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/b857ff32a3374990b89c53ae0997d7b2",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve/91.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 91: Una nave es enviada a impactar un asteroide, de verdad verdad.",
+            "en": "Page 1 from episode 91."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve/91.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 91: Una nave es enviada a impactar un asteroide, de verdad verdad.",
+            "en": "Page 2 from episode 91."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve/91.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 91: Una nave es enviada a impactar un asteroide, de verdad verdad.",
+            "en": "Page 3 from episode 91."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve/91.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 91: Una nave es enviada a impactar un asteroide, de verdad verdad.",
+            "en": "Page 4 from episode 91."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-090-hoy-fue-juernes",
+      "title": {
+        "es": "Hoy fue juernes",
+        "en": "Episode 90"
+      },
+      "episodeNumber": 90,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/29c62e62ada84fcfa13595580bcdd371",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-090-hoy-fue-juernes/90.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 90: Hoy fue juernes.",
+            "en": "Page 1 from episode 90."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-089-persiguiendo-tus-suenos-o-ellos-a-ti",
+      "title": {
+        "es": "¿Persiguiendo tus sueños o ellos a ti?",
+        "en": "Episode 89"
+      },
+      "episodeNumber": 89,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/f06dabc567654a5c8d10be1ca427630f",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 1 from episode 89."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 2 from episode 89."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 3 from episode 89."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 4 from episode 89."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.5.png",
+          "alt": {
+            "es": "Lámina 5 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 5 from episode 89."
+          }
+        },
+        {
+          "order": 6,
+          "originalPosition": 6,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.6.png",
+          "alt": {
+            "es": "Lámina 6 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 6 from episode 89."
+          }
+        },
+        {
+          "order": 7,
+          "originalPosition": 7,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.7.png",
+          "alt": {
+            "es": "Lámina 7 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 7 from episode 89."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual 2026-11-04: La secuencia está en trazo de boceto e incluye composiciones-resumen; confirmar si corresponde a una edición final o a material de proceso."
+    },
+    {
+      "id": "ep-088-buena-organizacion-digital",
+      "title": {
+        "es": "Buena organización digital",
+        "en": "Episode 88"
+      },
+      "episodeNumber": 88,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/c4f959088e1840dbbcf6858fd5e7581b",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-088-buena-organizacion-digital/88.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 88: Buena organización digital.",
+            "en": "Page 1 from episode 88."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-088-buena-organizacion-digital/88.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 88: Buena organización digital.",
+            "en": "Page 2 from episode 88."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-088-buena-organizacion-digital/88.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 88: Buena organización digital.",
+            "en": "Page 3 from episode 88."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-088-buena-organizacion-digital/88.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 88: Buena organización digital.",
+            "en": "Page 4 from episode 88."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap",
+      "title": {
+        "es": "“Eso es mental” decían… nada fácil la temperatura en la capital…",
+        "en": "Episode 87"
+      },
+      "episodeNumber": 87,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/192c6c679ef640a19c90e2d4563f3617",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap/87.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 87: “Eso es mental” decían… nada fácil la temperatura en la capital….",
+            "en": "Page 1 from episode 87."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap/87.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 87: “Eso es mental” decían… nada fácil la temperatura en la capital….",
+            "en": "Page 2 from episode 87."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap/87.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 87: “Eso es mental” decían… nada fácil la temperatura en la capital….",
+            "en": "Page 3 from episode 87."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap/87.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 87: “Eso es mental” decían… nada fácil la temperatura en la capital….",
+            "en": "Page 4 from episode 87."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-086-melon-musk",
+      "title": {
+        "es": "Melon Musk",
+        "en": "Episode 86"
+      },
+      "episodeNumber": 86,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/7f095e9f08354e54b85be1e31f9b8d02",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-086-melon-musk/86.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 86: Melon Musk.",
+            "en": "Page 1 from episode 86."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-086-melon-musk/86.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 86: Melon Musk.",
+            "en": "Page 2 from episode 86."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-086-melon-musk/86.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 86: Melon Musk.",
+            "en": "Page 3 from episode 86."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-086-melon-musk/86.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 86: Melon Musk.",
+            "en": "Page 4 from episode 86."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-084-como-se-llama-la-obra",
+      "title": {
+        "es": "¿Cómo se llama la obra?",
+        "en": "Episode 84"
+      },
+      "episodeNumber": 84,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/2f79dbbbf5a043ff9015779fec7c176c",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-084-como-se-llama-la-obra/84.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 84: ¿Cómo se llama la obra?.",
+            "en": "Page 1 from episode 84."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-084-como-se-llama-la-obra/84.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 84: ¿Cómo se llama la obra?.",
+            "en": "Page 2 from episode 84."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-084-como-se-llama-la-obra/84.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 84: ¿Cómo se llama la obra?.",
+            "en": "Page 3 from episode 84."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-084-como-se-llama-la-obra/84.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 84: ¿Cómo se llama la obra?.",
+            "en": "Page 4 from episode 84."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-083-cuando-uno-cree-que-va-de-robo",
+      "title": {
+        "es": "Cuando uno cree que va de robo",
+        "en": "Episode 83"
+      },
+      "episodeNumber": 83,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/64f864f284584f6aaf2fb9a1b11e724e",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-083-cuando-uno-cree-que-va-de-robo/83.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 83: Cuando uno cree que va de robo.",
+            "en": "Page 1 from episode 83."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-083-cuando-uno-cree-que-va-de-robo/83.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 83: Cuando uno cree que va de robo.",
+            "en": "Page 2 from episode 83."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-083-cuando-uno-cree-que-va-de-robo/83.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 83: Cuando uno cree que va de robo.",
+            "en": "Page 3 from episode 83."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-083-cuando-uno-cree-que-va-de-robo/83.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 83: Cuando uno cree que va de robo.",
+            "en": "Page 4 from episode 83."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-082-yo-como-que-te-he-visto",
+      "title": {
+        "es": "“Yo como que te he visto”",
+        "en": "Episode 82"
+      },
+      "episodeNumber": 82,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/5b05b325748e44c28c86c0a96b2df421",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 82: “Yo como que te he visto”.",
+            "en": "Page 1 from episode 82."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 82: “Yo como que te he visto”.",
+            "en": "Page 2 from episode 82."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 82: “Yo como que te he visto”.",
+            "en": "Page 3 from episode 82."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 82: “Yo como que te he visto”.",
+            "en": "Page 4 from episode 82."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-081-el-conteo-eterno",
+      "title": {
+        "es": "El conteo eterno",
+        "en": "Episode 81"
+      },
+      "episodeNumber": 81,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/14d85958a6304cb9bec11c4504fd9266",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-081-el-conteo-eterno/81.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 81: El conteo eterno.",
+            "en": "Page 1 from episode 81."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-081-el-conteo-eterno/81.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 81: El conteo eterno.",
+            "en": "Page 2 from episode 81."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-081-el-conteo-eterno/81.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 81: El conteo eterno.",
+            "en": "Page 3 from episode 81."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-081-el-conteo-eterno/81.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 81: El conteo eterno.",
+            "en": "Page 4 from episode 81."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-",
+      "title": {
+        "es": "Siempre se pierde. Seguro que eso no le pasa a ustedes, ¿o sí?",
+        "en": "Episode 80"
+      },
+      "episodeNumber": 80,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/8e9f177fa8074f18810a85af3b3cb6cc",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-/80.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 80: Siempre se pierde. Seguro que eso no le pasa a ustedes, ¿o sí?.",
+            "en": "Page 1 from episode 80."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-/80.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 80: Siempre se pierde. Seguro que eso no le pasa a ustedes, ¿o sí?.",
+            "en": "Page 2 from episode 80."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-/80.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 80: Siempre se pierde. Seguro que eso no le pasa a ustedes, ¿o sí?.",
+            "en": "Page 3 from episode 80."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-/80.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 80: Siempre se pierde. Seguro que eso no le pasa a ustedes, ¿o sí?.",
+            "en": "Page 4 from episode 80."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-079-cuando-dice-mandarinadas",
+      "title": {
+        "es": "Cuando dice Mandarinadas",
+        "en": "Episode 79"
+      },
+      "episodeNumber": 79,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/35091b3268744b38badf046886bdf699",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-079-cuando-dice-mandarinadas/79.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 79: Cuando dice Mandarinadas.",
+            "en": "Page 1 from episode 79."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-079-cuando-dice-mandarinadas/79.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 79: Cuando dice Mandarinadas.",
+            "en": "Page 2 from episode 79."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-079-cuando-dice-mandarinadas/79.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 79: Cuando dice Mandarinadas.",
+            "en": "Page 3 from episode 79."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-079-cuando-dice-mandarinadas/79.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 79: Cuando dice Mandarinadas.",
+            "en": "Page 4 from episode 79."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-078-esta-en-su-adn",
+      "title": {
+        "es": "Está en su ADN",
+        "en": "Episode 78"
+      },
+      "episodeNumber": 78,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/dc149c9748194460a842d5461b5b3f86",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-078-esta-en-su-adn/78.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 78: Está en su ADN.",
+            "en": "Page 1 from episode 78."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-078-esta-en-su-adn/78.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 78: Está en su ADN.",
+            "en": "Page 2 from episode 78."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-078-esta-en-su-adn/78.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 78: Está en su ADN.",
+            "en": "Page 3 from episode 78."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-078-esta-en-su-adn/78.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 78: Está en su ADN.",
+            "en": "Page 4 from episode 78."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-077-no-arrojar-papeles",
+      "title": {
+        "es": "No arrojar papeles",
+        "en": "Episode 77"
+      },
+      "episodeNumber": 77,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/3b02d4e66a614b29b2b8291533fdafcd",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-077-no-arrojar-papeles/77.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 77: No arrojar papeles.",
+            "en": "Page 1 from episode 77."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-077-no-arrojar-papeles/77.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 77: No arrojar papeles.",
+            "en": "Page 2 from episode 77."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-077-no-arrojar-papeles/77.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 77: No arrojar papeles.",
+            "en": "Page 3 from episode 77."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-077-no-arrojar-papeles/77.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 77: No arrojar papeles.",
+            "en": "Page 4 from episode 77."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-076-stop",
+      "title": {
+        "es": "STOP!",
+        "en": "Episode 76"
+      },
+      "episodeNumber": 76,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/d03941b2230b409fa24b458c13fef040",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-076-stop/76.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 76: STOP!.",
+            "en": "Page 1 from episode 76."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-076-stop/76.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 76: STOP!.",
+            "en": "Page 2 from episode 76."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-076-stop/76.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 76: STOP!.",
+            "en": "Page 3 from episode 76."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-076-stop/76.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 76: STOP!.",
+            "en": "Page 4 from episode 76."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-076-stop/76.5.png",
+          "alt": {
+            "es": "Lámina 5 del episodio 76: STOP!.",
+            "en": "Page 5 from episode 76."
+          }
+        },
+        {
+          "order": 6,
+          "originalPosition": 6,
+          "src": "assets/episodes/ep-076-stop/76.6.png",
+          "alt": {
+            "es": "Lámina 6 del episodio 76: STOP!.",
+            "en": "Page 6 from episode 76."
+          }
+        },
+        {
+          "order": 7,
+          "originalPosition": 7,
+          "src": "assets/episodes/ep-076-stop/76.7.png",
+          "alt": {
+            "es": "Lámina 7 del episodio 76: STOP!.",
+            "en": "Page 7 from episode 76."
+          }
+        },
+        {
+          "order": 8,
+          "originalPosition": 8,
+          "src": "assets/episodes/ep-076-stop/76.8.png",
+          "alt": {
+            "es": "Lámina 8 del episodio 76: STOP!.",
+            "en": "Page 8 from episode 76."
+          }
+        },
+        {
+          "order": 9,
+          "originalPosition": 9,
+          "src": "assets/episodes/ep-076-stop/76.9.png",
+          "alt": {
+            "es": "Lámina 9 del episodio 76: STOP!.",
+            "en": "Page 9 from episode 76."
+          }
+        },
+        {
+          "order": 10,
+          "originalPosition": 10,
+          "src": "assets/episodes/ep-076-stop/76.10.png",
+          "alt": {
+            "es": "Lámina 10 del episodio 76: STOP!.",
+            "en": "Page 10 from episode 76."
+          }
+        },
+        {
+          "order": 11,
+          "originalPosition": 11,
+          "src": "assets/episodes/ep-076-stop/76.11.png",
+          "alt": {
+            "es": "Lámina 11 del episodio 76: STOP!.",
+            "en": "Page 11 from episode 76."
+          }
+        },
+        {
+          "order": 12,
+          "originalPosition": 12,
+          "src": "assets/episodes/ep-076-stop/76.12.png",
+          "alt": {
+            "es": "Lámina 12 del episodio 76: STOP!.",
+            "en": "Page 12 from episode 76."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual 2026-11-04: La página mezcla viñetas narrativas con material de proceso y composiciones adicionales; confirmar la secuencia final completa."
+    },
+    {
+      "id": "ep-073-ique-calor-parte-2",
+      "title": {
+        "es": "iQué calor! Parte-2",
+        "en": "Episode 73"
+      },
+      "episodeNumber": 73,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/b864a9c9dad14105930164764f18da83",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-073-ique-calor-parte-2/73.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 73: iQué calor! Parte-2.",
+            "en": "Page 1 from episode 73."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-073-ique-calor-parte-2/73.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 73: iQué calor! Parte-2.",
+            "en": "Page 2 from episode 73."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual 2026-11-04: La segunda imagen es un dibujo sin terminar; confirmar si es material de proceso o una viñeta cuya versión final falta."
+    },
+    {
+      "id": "ep-074-friendo",
+      "title": {
+        "es": "Friendo",
+        "en": "Episode 74"
+      },
+      "episodeNumber": 74,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/817639ea057f48f1bfeddedad2ee8458",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-074-friendo/74.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 74: Friendo.",
+            "en": "Page 1 from episode 74."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-074-friendo/74.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 74: Friendo.",
+            "en": "Page 2 from episode 74."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-074-friendo/74.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 74: Friendo.",
+            "en": "Page 3 from episode 74."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-074-friendo/74.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 74: Friendo.",
+            "en": "Page 4 from episode 74."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-072-acurrucados",
+      "title": {
+        "es": "Acurrucados",
+        "en": "Episode 72"
+      },
+      "episodeNumber": 72,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/48a9da5796d545799d4250d90d2d5885",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-072-acurrucados/72.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 72: Acurrucados.",
+            "en": "Page 1 from episode 72."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-072-acurrucados/72.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 72: Acurrucados.",
+            "en": "Page 2 from episode 72."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-071-chuaaaaaaa",
+      "title": {
+        "es": "Chuaaaaaaa",
+        "en": "Episode 71"
+      },
+      "episodeNumber": 71,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/34a397b79f2a48259b6d00926a62ed9b",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-071-chuaaaaaaa/71.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 71: Chuaaaaaaa.",
+            "en": "Page 1 from episode 71."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-071-chuaaaaaaa/71.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 71: Chuaaaaaaa.",
+            "en": "Page 2 from episode 71."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-071-chuaaaaaaa/71.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 71: Chuaaaaaaa.",
+            "en": "Page 3 from episode 71."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-071-chuaaaaaaa/71.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 71: Chuaaaaaaa.",
+            "en": "Page 4 from episode 71."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-070-emociones-graficas",
+      "title": {
+        "es": "Emociones gráficas",
+        "en": "Episode 70"
+      },
+      "episodeNumber": 70,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/e86b9c7d77cd4edcbf248ae626edf222",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-070-emociones-graficas/70.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 70: Emociones gráficas.",
+            "en": "Page 1 from episode 70."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-070-emociones-graficas/70.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 70: Emociones gráficas.",
+            "en": "Page 2 from episode 70."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-070-emociones-graficas/70.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 70: Emociones gráficas.",
+            "en": "Page 3 from episode 70."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-070-emociones-graficas/70.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 70: Emociones gráficas.",
+            "en": "Page 4 from episode 70."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-069-yo-tambien-merezco-graduarme",
+      "title": {
+        "es": "Yo también merezco graduarme",
+        "en": "Episode 69"
+      },
+      "episodeNumber": 69,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/53ac2904c0eb469aa6233dcbef913d57",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-069-yo-tambien-merezco-graduarme/69.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 69: Yo también merezco graduarme.",
+            "en": "Page 1 from episode 69."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-068-tu-otra-vez",
+      "title": {
+        "es": "¿Tú otra vez?",
+        "en": "Episode 68"
+      },
+      "episodeNumber": 68,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/d1b3cce3040f4257815ab3105e41fbc6",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-068-tu-otra-vez/68.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 68: ¿Tú otra vez?.",
+            "en": "Page 1 from episode 68."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-067-el-mejor-momento-para-hablar",
+      "title": {
+        "es": "El “mejor” momento para hablar",
+        "en": "Episode 67"
+      },
+      "episodeNumber": 67,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/6faabebd5b7f4b1f98d74074b9fa9433",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-067-el-mejor-momento-para-hablar/67.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 67: El “mejor” momento para hablar.",
+            "en": "Page 1 from episode 67."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-066-vacaciones-silenciosas",
+      "title": {
+        "es": "Vacaciones silenciosas",
+        "en": "Episode 66"
+      },
+      "episodeNumber": 66,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/a9d246543a4f458da183c87dd318d5a8",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-066-vacaciones-silenciosas/66.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 66: Vacaciones silenciosas.",
+            "en": "Page 1 from episode 66."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-065-aunque-corras-no-podras-escapar",
+      "title": {
+        "es": "Aunque corras no podrás escapar",
+        "en": "Episode 65"
+      },
+      "episodeNumber": 65,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/5bd7982dde67436e90e9d43bb6a61444",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-065-aunque-corras-no-podras-escapar/65.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 65: Aunque corras no podrás escapar.",
+            "en": "Page 1 from episode 65."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-064-bombas-de-tiempo",
+      "title": {
+        "es": "Bombas de tiempo",
+        "en": "Episode 64"
+      },
+      "episodeNumber": 64,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/0d75a3a291284069a9d140365e11f543",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-064-bombas-de-tiempo/64.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 64: Bombas de tiempo.",
+            "en": "Page 1 from episode 64."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-063-llegara-la-pizza",
+      "title": {
+        "es": "¿Llegará la pizza?",
+        "en": "Episode 63"
+      },
+      "episodeNumber": 63,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/90f736df30b54191b45dd876058d9648",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-063-llegara-la-pizza/63.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 63: ¿Llegará la pizza?.",
+            "en": "Page 1 from episode 63."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-062-fruitgle",
+      "title": {
+        "es": "“Fruitgle”",
+        "en": "Episode 62"
+      },
+      "episodeNumber": 62,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/130773447b2249d09ce269391af81114",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-062-fruitgle/62.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 62: “Fruitgle”.",
+            "en": "Page 1 from episode 62."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-061-llego-el-delivery",
+      "title": {
+        "es": "Llegó el delivery",
+        "en": "Episode 61"
+      },
+      "episodeNumber": 61,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/76e84744c4f24ede9a4f85143c937f3e",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-061-llego-el-delivery/61.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 61: Llegó el delivery.",
+            "en": "Page 1 from episode 61."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-061-llego-el-delivery/61.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 61: Llegó el delivery.",
+            "en": "Page 2 from episode 61."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-061-llego-el-delivery/61.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 61: Llegó el delivery.",
+            "en": "Page 3 from episode 61."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-061-llego-el-delivery/61.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 61: Llegó el delivery.",
+            "en": "Page 4 from episode 61."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-060-el-pedido",
+      "title": {
+        "es": "El pedido",
+        "en": "Episode 60"
+      },
+      "episodeNumber": 60,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/4bb0812c9cf04faa99e3b4971b2a5abe",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-060-el-pedido/60.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 60: El pedido.",
+            "en": "Page 1 from episode 60."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-060-el-pedido/60.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 60: El pedido.",
+            "en": "Page 2 from episode 60."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-060-el-pedido/60.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 60: El pedido.",
+            "en": "Page 3 from episode 60."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-060-el-pedido/60.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 60: El pedido.",
+            "en": "Page 4 from episode 60."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-059-no-juegues-asi",
+      "title": {
+        "es": "No juegues así",
+        "en": "Episode 59"
+      },
+      "episodeNumber": 59,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/9753b44574a04b149e24aa0d5b1c6ce5",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-059-no-juegues-asi/59.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 59: No juegues así.",
+            "en": "Page 1 from episode 59."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-059-no-juegues-asi/59.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 59: No juegues así.",
+            "en": "Page 2 from episode 59."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-059-no-juegues-asi/59.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 59: No juegues así.",
+            "en": "Page 3 from episode 59."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-059-no-juegues-asi/59.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 59: No juegues así.",
+            "en": "Page 4 from episode 59."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-058-perdi-mi-celular",
+      "title": {
+        "es": "Perdí mi celular",
+        "en": "Episode 58"
+      },
+      "episodeNumber": 58,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/b28d903e60b142898dd28a710fbb545a",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-058-perdi-mi-celular/58.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 58: Perdí mi celular.",
+            "en": "Page 1 from episode 58."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-058-perdi-mi-celular/58.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 58: Perdí mi celular.",
+            "en": "Page 2 from episode 58."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-058-perdi-mi-celular/58.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 58: Perdí mi celular.",
+            "en": "Page 3 from episode 58."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-058-perdi-mi-celular/58.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 58: Perdí mi celular.",
+            "en": "Page 4 from episode 58."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-056-procrastinacion",
+      "title": {
+        "es": "Procrastinación",
+        "en": "Episode 56"
+      },
+      "episodeNumber": 56,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/7b6f06c4c52542f5a9bc9df373dc0312",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-056-procrastinacion/56.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 56: Procrastinación.",
+            "en": "Page 1 from episode 56."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-056-procrastinacion/56.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 56: Procrastinación.",
+            "en": "Page 2 from episode 56."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-056-procrastinacion/56.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 56: Procrastinación.",
+            "en": "Page 3 from episode 56."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-056-procrastinacion/56.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 56: Procrastinación.",
+            "en": "Page 4 from episode 56."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-057-dejame-un-chin",
+      "title": {
+        "es": "déjame un chin",
+        "en": "Episode 57"
+      },
+      "episodeNumber": 57,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/98299b1b82094b0c8d47d1c634ead1ca",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-057-dejame-un-chin/57.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 57: déjame un chin.",
+            "en": "Page 1 from episode 57."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-057-dejame-un-chin/57.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 57: déjame un chin.",
+            "en": "Page 2 from episode 57."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-057-dejame-un-chin/57.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 57: déjame un chin.",
+            "en": "Page 3 from episode 57."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-057-dejame-un-chin/57.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 57: déjame un chin.",
+            "en": "Page 4 from episode 57."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-055-quiero-compania",
+      "title": {
+        "es": "quiero “compañía”",
+        "en": "Episode 55"
+      },
+      "episodeNumber": 55,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/3f24bf75c8a24837a117bbf783863e2a",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-055-quiero-compania/55.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 55: quiero “compañía”.",
+            "en": "Page 1 from episode 55."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-055-quiero-compania/55.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 55: quiero “compañía”.",
+            "en": "Page 2 from episode 55."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-055-quiero-compania/55.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 55: quiero “compañía”.",
+            "en": "Page 3 from episode 55."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-055-quiero-compania/55.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 55: quiero “compañía”.",
+            "en": "Page 4 from episode 55."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-054-quisquilloso-o-descuidada",
+      "title": {
+        "es": "¿Quisquilloso o descuidada?",
+        "en": "Episode 54"
+      },
+      "episodeNumber": 54,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/cd87d7ac45cc4bc28515237df1dea7d4",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-054-quisquilloso-o-descuidada/54.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 54: ¿Quisquilloso o descuidada?.",
+            "en": "Page 1 from episode 54."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-054-quisquilloso-o-descuidada/54.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 54: ¿Quisquilloso o descuidada?.",
+            "en": "Page 2 from episode 54."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-054-quisquilloso-o-descuidada/54.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 54: ¿Quisquilloso o descuidada?.",
+            "en": "Page 3 from episode 54."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-054-quisquilloso-o-descuidada/54.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 54: ¿Quisquilloso o descuidada?.",
+            "en": "Page 4 from episode 54."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-053-ellas-vs-ellos",
+      "title": {
+        "es": "Ellas vs. ellos",
+        "en": "Episode 53"
+      },
+      "episodeNumber": 53,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/619666b0c305411ca6486be7bbc3d6e9",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-053-ellas-vs-ellos/53.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 53: Ellas vs. ellos.",
+            "en": "Page 1 from episode 53."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-053-ellas-vs-ellos/53.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 53: Ellas vs. ellos.",
+            "en": "Page 2 from episode 53."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-053-ellas-vs-ellos/53.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 53: Ellas vs. ellos.",
+            "en": "Page 3 from episode 53."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-053-ellas-vs-ellos/53.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 53: Ellas vs. ellos.",
+            "en": "Page 4 from episode 53."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-050-a-que-fue-que-vine",
+      "title": {
+        "es": "“¿A qué fue que vine?”",
+        "en": "Episode 50"
+      },
+      "episodeNumber": 50,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/c76e7e47c40943928d818e4382e55cde",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-050-a-que-fue-que-vine/50.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 50: “¿A qué fue que vine?”.",
+            "en": "Page 1 from episode 50."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-050-a-que-fue-que-vine/50.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 50: “¿A qué fue que vine?”.",
+            "en": "Page 2 from episode 50."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-050-a-que-fue-que-vine/50.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 50: “¿A qué fue que vine?”.",
+            "en": "Page 3 from episode 50."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-050-a-que-fue-que-vine/50.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 50: “¿A qué fue que vine?”.",
+            "en": "Page 4 from episode 50."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-049-no-se-vale-picar",
+      "title": {
+        "es": "¿No se vale picar?",
+        "en": "Episode 49"
+      },
+      "episodeNumber": 49,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/0d3fe4f59d414060853ce2417835df7d",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-049-no-se-vale-picar/49.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 49: ¿No se vale picar?.",
+            "en": "Page 1 from episode 49."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-049-no-se-vale-picar/49.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 49: ¿No se vale picar?.",
+            "en": "Page 2 from episode 49."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-049-no-se-vale-picar/49.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 49: ¿No se vale picar?.",
+            "en": "Page 3 from episode 49."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-049-no-se-vale-picar/49.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 49: ¿No se vale picar?.",
+            "en": "Page 4 from episode 49."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-048-interrupciones",
+      "title": {
+        "es": "Interrupciones",
+        "en": "Episode 48"
+      },
+      "episodeNumber": 48,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1a06593a63b84729872843d528eaa365",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-048-interrupciones/48.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 48: Interrupciones.",
+            "en": "Page 1 from episode 48."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-048-interrupciones/48.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 48: Interrupciones.",
+            "en": "Page 2 from episode 48."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-048-interrupciones/48.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 48: Interrupciones.",
+            "en": "Page 3 from episode 48."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-048-interrupciones/48.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 48: Interrupciones.",
+            "en": "Page 4 from episode 48."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-046-sorpresa",
+      "title": {
+        "es": "¡Sorpresa!",
+        "en": "Episode 46"
+      },
+      "episodeNumber": 46,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/d4f3a0db8b80415cb3797b382dadf8ea",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-046-sorpresa/46.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 46: ¡Sorpresa!.",
+            "en": "Page 1 from episode 46."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-046-sorpresa/46.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 46: ¡Sorpresa!.",
+            "en": "Page 2 from episode 46."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-046-sorpresa/46.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 46: ¡Sorpresa!.",
+            "en": "Page 3 from episode 46."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-046-sorpresa/46.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 46: ¡Sorpresa!.",
+            "en": "Page 4 from episode 46."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-047-gases-toxicos",
+      "title": {
+        "es": "Gases tóxicos",
+        "en": "Episode 47"
+      },
+      "episodeNumber": 47,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/d9bdad9d06c544ea97755e3817cc529e",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-047-gases-toxicos/47.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 47: Gases tóxicos.",
+            "en": "Page 1 from episode 47."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-047-gases-toxicos/47.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 47: Gases tóxicos.",
+            "en": "Page 2 from episode 47."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-047-gases-toxicos/47.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 47: Gases tóxicos.",
+            "en": "Page 3 from episode 47."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-047-gases-toxicos/47.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 47: Gases tóxicos.",
+            "en": "Page 4 from episode 47."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-045-frustraciones-de-la-vida",
+      "title": {
+        "es": "frustraciones de la vida",
+        "en": "Episode 45"
+      },
+      "episodeNumber": 45,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/b643cc72123648478d50b37ca6a865c8",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-045-frustraciones-de-la-vida/45.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 45: frustraciones de la vida.",
+            "en": "Page 1 from episode 45."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-045-frustraciones-de-la-vida/45.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 45: frustraciones de la vida.",
+            "en": "Page 2 from episode 45."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-045-frustraciones-de-la-vida/45.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 45: frustraciones de la vida.",
+            "en": "Page 3 from episode 45."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-045-frustraciones-de-la-vida/45.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 45: frustraciones de la vida.",
+            "en": "Page 4 from episode 45."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-043-otro-vaso",
+      "title": {
+        "es": "“¿Otro vaso?”",
+        "en": "Episode 43"
+      },
+      "episodeNumber": 43,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/65a7203771444713a54804285f5c3f1a",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-043-otro-vaso/43.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 43: “¿Otro vaso?”.",
+            "en": "Page 1 from episode 43."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-043-otro-vaso/43.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 43: “¿Otro vaso?”.",
+            "en": "Page 2 from episode 43."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-043-otro-vaso/43.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 43: “¿Otro vaso?”.",
+            "en": "Page 3 from episode 43."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-043-otro-vaso/43.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 43: “¿Otro vaso?”.",
+            "en": "Page 4 from episode 43."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-042-cuando-lo-tienes-frente-a-tus-ojos",
+      "title": {
+        "es": "Cuando lo tienes frente a tus ojos",
+        "en": "Episode 42"
+      },
+      "episodeNumber": 42,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/8f0ff05bf912402997ad97f95982a5ed",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 42: Cuando lo tienes frente a tus ojos.",
+            "en": "Page 1 from episode 42."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 42: Cuando lo tienes frente a tus ojos.",
+            "en": "Page 2 from episode 42."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 42: Cuando lo tienes frente a tus ojos.",
+            "en": "Page 3 from episode 42."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 42: Cuando lo tienes frente a tus ojos.",
+            "en": "Page 4 from episode 42."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-041-agarra-eso-ahi",
+      "title": {
+        "es": "“Agarra eso ahí”",
+        "en": "Episode 41"
+      },
+      "episodeNumber": 41,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1b30e2657bd3420aa1c92e23c6d33c87",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-041-agarra-eso-ahi/41.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 41: “Agarra eso ahí”.",
+            "en": "Page 1 from episode 41."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-041-agarra-eso-ahi/41.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 41: “Agarra eso ahí”.",
+            "en": "Page 2 from episode 41."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-041-agarra-eso-ahi/41.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 41: “Agarra eso ahí”.",
+            "en": "Page 3 from episode 41."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-041-agarra-eso-ahi/41.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 41: “Agarra eso ahí”.",
+            "en": "Page 4 from episode 41."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-040-quiero-una-mascota-parte-2",
+      "title": {
+        "es": "Quiero una mascota -parte 2",
+        "en": "Episode 40"
+      },
+      "episodeNumber": 40,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/f2464e95f4b545e288db2f6c3c6934bd",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-040-quiero-una-mascota-parte-2/40.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 40: Quiero una mascota -parte 2.",
+            "en": "Page 1 from episode 40."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-040-quiero-una-mascota-parte-2/40.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 40: Quiero una mascota -parte 2.",
+            "en": "Page 2 from episode 40."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-040-quiero-una-mascota-parte-2/40.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 40: Quiero una mascota -parte 2.",
+            "en": "Page 3 from episode 40."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-040-quiero-una-mascota-parte-2/40.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 40: Quiero una mascota -parte 2.",
+            "en": "Page 4 from episode 40."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-039-quiero-una-mascota-parte-1",
+      "title": {
+        "es": "Quiero una mascota -parte 1",
+        "en": "Episode 39"
+      },
+      "episodeNumber": 39,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1e5d27c15e91404aa2fab014b814d7f2",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 39: Quiero una mascota -parte 1.",
+            "en": "Page 1 from episode 39."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 39: Quiero una mascota -parte 1.",
+            "en": "Page 2 from episode 39."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 39: Quiero una mascota -parte 1.",
+            "en": "Page 3 from episode 39."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 39: Quiero una mascota -parte 1.",
+            "en": "Page 4 from episode 39."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-038-la-cartera-del-infinito",
+      "title": {
+        "es": "La cartera del infinito",
+        "en": "Episode 38"
+      },
+      "episodeNumber": 38,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/313748b93b1e4d40b0de1a312b0a2e18",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-038-la-cartera-del-infinito/38.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 38: La cartera del infinito.",
+            "en": "Page 1 from episode 38."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-038-la-cartera-del-infinito/38.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 38: La cartera del infinito.",
+            "en": "Page 2 from episode 38."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-038-la-cartera-del-infinito/38.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 38: La cartera del infinito.",
+            "en": "Page 3 from episode 38."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-038-la-cartera-del-infinito/38.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 38: La cartera del infinito.",
+            "en": "Page 4 from episode 38."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-037-distanciamiento-social",
+      "title": {
+        "es": "Distanciamiento social",
+        "en": "Episode 37"
+      },
+      "episodeNumber": 37,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/baf47918bec44410831655dd624d0d62",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-037-distanciamiento-social/37.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 37: Distanciamiento social.",
+            "en": "Page 1 from episode 37."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-037-distanciamiento-social/37.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 37: Distanciamiento social.",
+            "en": "Page 2 from episode 37."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-037-distanciamiento-social/37.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 37: Distanciamiento social.",
+            "en": "Page 3 from episode 37."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-037-distanciamiento-social/37.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 37: Distanciamiento social.",
+            "en": "Page 4 from episode 37."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-036-la-compra",
+      "title": {
+        "es": "La compra",
+        "en": "Episode 36"
+      },
+      "episodeNumber": 36,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/f80b639c13f846b68b3cf6ad16bd25f7",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-036-la-compra/36.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 36: La compra.",
+            "en": "Page 1 from episode 36."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-036-la-compra/36.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 36: La compra.",
+            "en": "Page 2 from episode 36."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-036-la-compra/36.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 36: La compra.",
+            "en": "Page 3 from episode 36."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-036-la-compra/36.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 36: La compra.",
+            "en": "Page 4 from episode 36."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-035-la-cucaracha",
+      "title": {
+        "es": "La cucaracha",
+        "en": "Episode 35"
+      },
+      "episodeNumber": 35,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/e7ed6f52bda74252b6159aef4f4f7ecc",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-035-la-cucaracha/35.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 35: La cucaracha.",
+            "en": "Page 1 from episode 35."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-035-la-cucaracha/35.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 35: La cucaracha.",
+            "en": "Page 2 from episode 35."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-035-la-cucaracha/35.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 35: La cucaracha.",
+            "en": "Page 3 from episode 35."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-035-la-cucaracha/35.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 35: La cucaracha.",
+            "en": "Page 4 from episode 35."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-034-la-cosa",
+      "title": {
+        "es": "La “cosa”",
+        "en": "Episode 34"
+      },
+      "episodeNumber": 34,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/8650dce3107a4218aac5e7848be4d18f",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-034-la-cosa/34.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 34: La “cosa”.",
+            "en": "Page 1 from episode 34."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-034-la-cosa/34.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 34: La “cosa”.",
+            "en": "Page 2 from episode 34."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-034-la-cosa/34.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 34: La “cosa”.",
+            "en": "Page 3 from episode 34."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-034-la-cosa/34.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 34: La “cosa”.",
+            "en": "Page 4 from episode 34."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-033-repetir-ropa",
+      "title": {
+        "es": "Repetir ropa",
+        "en": "Episode 33"
+      },
+      "episodeNumber": 33,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/9f96c9f862b440609055603bad1fcbd9",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-033-repetir-ropa/33.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 33: Repetir ropa.",
+            "en": "Page 1 from episode 33."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-033-repetir-ropa/33.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 33: Repetir ropa.",
+            "en": "Page 2 from episode 33."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-033-repetir-ropa/33.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 33: Repetir ropa.",
+            "en": "Page 3 from episode 33."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-033-repetir-ropa/33.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 33: Repetir ropa.",
+            "en": "Page 4 from episode 33."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-032-frutify",
+      "title": {
+        "es": "“Frutify”",
+        "en": "Episode 32"
+      },
+      "episodeNumber": 32,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/9caee10e49754062a33fba3c71727325",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-032-frutify/32.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 32: “Frutify”.",
+            "en": "Page 1 from episode 32."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-032-frutify/32.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 32: “Frutify”.",
+            "en": "Page 2 from episode 32."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-032-frutify/32.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 32: “Frutify”.",
+            "en": "Page 3 from episode 32."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-032-frutify/32.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 32: “Frutify”.",
+            "en": "Page 4 from episode 32."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-031-que-calor",
+      "title": {
+        "es": "¡Qué calor!",
+        "en": "Episode 31"
+      },
+      "episodeNumber": 31,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/a60d342dcb4d4e229519457c3b1b834d",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-031-que-calor/31.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 31: ¡Qué calor!.",
+            "en": "Page 1 from episode 31."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-031-que-calor/31.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 31: ¡Qué calor!.",
+            "en": "Page 2 from episode 31."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-031-que-calor/31.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 31: ¡Qué calor!.",
+            "en": "Page 3 from episode 31."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-031-que-calor/31.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 31: ¡Qué calor!.",
+            "en": "Page 4 from episode 31."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-030-el-gran-lava-o",
+      "title": {
+        "es": "El gran lava’o",
+        "en": "Episode 30"
+      },
+      "episodeNumber": 30,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/b1ba7ed3c4c040dc96e57adb8fe67049",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-030-el-gran-lava-o/30.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 30: El gran lava’o.",
+            "en": "Page 1 from episode 30."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-030-el-gran-lava-o/30.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 30: El gran lava’o.",
+            "en": "Page 2 from episode 30."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-030-el-gran-lava-o/30.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 30: El gran lava’o.",
+            "en": "Page 3 from episode 30."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-030-el-gran-lava-o/30.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 30: El gran lava’o.",
+            "en": "Page 4 from episode 30."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-027-de-donde-salio",
+      "title": {
+        "es": "\"¿De dónde salió?\"",
+        "en": "Episode 27"
+      },
+      "episodeNumber": 27,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/0789ad0255be4cb496f0aeaf29ff48b4",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-027-de-donde-salio/27.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 27: \"¿De dónde salió?\".",
+            "en": "Page 1 from episode 27."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-027-de-donde-salio/27.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 27: \"¿De dónde salió?\".",
+            "en": "Page 2 from episode 27."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-027-de-donde-salio/27.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 27: \"¿De dónde salió?\".",
+            "en": "Page 3 from episode 27."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-027-de-donde-salio/27.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 27: \"¿De dónde salió?\".",
+            "en": "Page 4 from episode 27."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-029-cafe",
+      "title": {
+        "es": "Café",
+        "en": "Episode 29"
+      },
+      "episodeNumber": 29,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/7983068473e34a48ac9e3fd803eeada4",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-029-cafe/29.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 29: Café.",
+            "en": "Page 1 from episode 29."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-029-cafe/29.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 29: Café.",
+            "en": "Page 2 from episode 29."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-029-cafe/29.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 29: Café.",
+            "en": "Page 3 from episode 29."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-029-cafe/29.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 29: Café.",
+            "en": "Page 4 from episode 29."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-028-trukea",
+      "title": {
+        "es": "\"Trukea\"",
+        "en": "Episode 28"
+      },
+      "episodeNumber": 28,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/94e4fde6c522463bb052a1b0470f37c1",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-028-trukea/28.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 28: \"Trukea\".",
+            "en": "Page 1 from episode 28."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-028-trukea/28.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 28: \"Trukea\".",
+            "en": "Page 2 from episode 28."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-028-trukea/28.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 28: \"Trukea\".",
+            "en": "Page 3 from episode 28."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-028-trukea/28.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 28: \"Trukea\".",
+            "en": "Page 4 from episode 28."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-026-tutoriales-de-youtube",
+      "title": {
+        "es": "Tutoriales de YouTube™",
+        "en": "Episode 26"
+      },
+      "episodeNumber": 26,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/44a2a8ec82fb467c9315fc346231c48f",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-026-tutoriales-de-youtube/26.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 26: Tutoriales de YouTube™.",
+            "en": "Page 1 from episode 26."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-026-tutoriales-de-youtube/26.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 26: Tutoriales de YouTube™.",
+            "en": "Page 2 from episode 26."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-026-tutoriales-de-youtube/26.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 26: Tutoriales de YouTube™.",
+            "en": "Page 3 from episode 26."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-026-tutoriales-de-youtube/26.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 26: Tutoriales de YouTube™.",
+            "en": "Page 4 from episode 26."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-025-quien-era-ese",
+      "title": {
+        "es": "“¿Quién era ese?”",
+        "en": "Episode 25"
+      },
+      "episodeNumber": 25,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/a7ebadd73b5546fabc4a4e6aab5c3b40",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-025-quien-era-ese/25.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 25: “¿Quién era ese?”.",
+            "en": "Page 1 from episode 25."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-025-quien-era-ese/25.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 25: “¿Quién era ese?”.",
+            "en": "Page 2 from episode 25."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-025-quien-era-ese/25.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 25: “¿Quién era ese?”.",
+            "en": "Page 3 from episode 25."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-025-quien-era-ese/25.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 25: “¿Quién era ese?”.",
+            "en": "Page 4 from episode 25."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-024-como-me-queda",
+      "title": {
+        "es": "¿Cómo me queda?",
+        "en": "Episode 24"
+      },
+      "episodeNumber": 24,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/8561f57f33564e699bf5db3dc1d954aa",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-024-como-me-queda/24.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 24: ¿Cómo me queda?.",
+            "en": "Page 1 from episode 24."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-024-como-me-queda/24.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 24: ¿Cómo me queda?.",
+            "en": "Page 2 from episode 24."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-024-como-me-queda/24.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 24: ¿Cómo me queda?.",
+            "en": "Page 3 from episode 24."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-024-como-me-queda/24.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 24: ¿Cómo me queda?.",
+            "en": "Page 4 from episode 24."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-023-organizadora-compulsiva",
+      "title": {
+        "es": "Organizadora compulsiva",
+        "en": "Episode 23"
+      },
+      "episodeNumber": 23,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/c664075617a448daaa5438fed075c2f4",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-023-organizadora-compulsiva/23.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 23: Organizadora compulsiva.",
+            "en": "Page 1 from episode 23."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-023-organizadora-compulsiva/23.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 23: Organizadora compulsiva.",
+            "en": "Page 2 from episode 23."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-023-organizadora-compulsiva/23.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 23: Organizadora compulsiva.",
+            "en": "Page 3 from episode 23."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-023-organizadora-compulsiva/23.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 23: Organizadora compulsiva.",
+            "en": "Page 4 from episode 23."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-022-el-fregao",
+      "title": {
+        "es": "\"El fregao\"",
+        "en": "Episode 22"
+      },
+      "episodeNumber": 22,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/4f4dfb8ebf11482e98dd97ada53ed155",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-022-el-fregao/22.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 22: \"El fregao\".",
+            "en": "Page 1 from episode 22."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-022-el-fregao/22.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 22: \"El fregao\".",
+            "en": "Page 2 from episode 22."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-022-el-fregao/22.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 22: \"El fregao\".",
+            "en": "Page 3 from episode 22."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-022-el-fregao/22.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 22: \"El fregao\".",
+            "en": "Page 4 from episode 22."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-022-el-fregao/22.5.png",
+          "alt": {
+            "es": "Lámina 5 del episodio 22: \"El fregao\".",
+            "en": "Page 5 from episode 22."
+          }
+        },
+        {
+          "order": 6,
+          "originalPosition": 6,
+          "src": "assets/episodes/ep-022-el-fregao/22.6.png",
+          "alt": {
+            "es": "Lámina 6 del episodio 22: \"El fregao\".",
+            "en": "Page 6 from episode 22."
+          }
+        },
+        {
+          "order": 7,
+          "originalPosition": 7,
+          "src": "assets/episodes/ep-022-el-fregao/22.7.png",
+          "alt": {
+            "es": "Lámina 7 del episodio 22: \"El fregao\".",
+            "en": "Page 7 from episode 22."
+          }
+        },
+        {
+          "order": 8,
+          "originalPosition": 8,
+          "src": "assets/episodes/ep-022-el-fregao/22.8.png",
+          "alt": {
+            "es": "Lámina 8 del episodio 22: \"El fregao\".",
+            "en": "Page 8 from episode 22."
+          }
+        },
+        {
+          "order": 9,
+          "originalPosition": 9,
+          "src": "assets/episodes/ep-022-el-fregao/22.9.png",
+          "alt": {
+            "es": "Lámina 9 del episodio 22: \"El fregao\".",
+            "en": "Page 9 from episode 22."
+          }
+        },
+        {
+          "order": 10,
+          "originalPosition": 10,
+          "src": "assets/episodes/ep-022-el-fregao/22.10.png",
+          "alt": {
+            "es": "Lámina 10 del episodio 22: \"El fregao\".",
+            "en": "Page 10 from episode 22."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual 2026-11-04: Incluye tarjetas de “sigue para ver más” entre dos tramos narrativos; confirmar si ambos tramos pertenecen al episodio y el orden editorial."
+    },
+    {
+      "id": "ep-021-nada",
+      "title": {
+        "es": "\"¡Nada!\"",
+        "en": "Episode 21"
+      },
+      "episodeNumber": 21,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/980cfd38a6e3449eb7f09d6f56500c41",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-021-nada/21.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 21: \"¡Nada!\".",
+            "en": "Page 1 from episode 21."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-021-nada/21.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 21: \"¡Nada!\".",
+            "en": "Page 2 from episode 21."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-021-nada/21.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 21: \"¡Nada!\".",
+            "en": "Page 3 from episode 21."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-021-nada/21.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 21: \"¡Nada!\".",
+            "en": "Page 4 from episode 21."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-020-el-jarron-de-agua",
+      "title": {
+        "es": "El jarrón de agua",
+        "en": "Episode 20"
+      },
+      "episodeNumber": 20,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/c44f3499b02f4cf099ceb390c77c4c07",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-020-el-jarron-de-agua/20.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 20: El jarrón de agua.",
+            "en": "Page 1 from episode 20."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-020-el-jarron-de-agua/20.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 20: El jarrón de agua.",
+            "en": "Page 2 from episode 20."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-020-el-jarron-de-agua/20.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 20: El jarrón de agua.",
+            "en": "Page 3 from episode 20."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-020-el-jarron-de-agua/20.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 20: El jarrón de agua.",
+            "en": "Page 4 from episode 20."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-017-el-pela-o-y-el-mentiole",
+      "title": {
+        "es": "El pela'o y el \"mentiolé\"",
+        "en": "Episode 17"
+      },
+      "episodeNumber": 17,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/29a5b66239fa4ba0aac148413e48dd75",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 17: El pela'o y el \"mentiolé\".",
+            "en": "Page 1 from episode 17."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 17: El pela'o y el \"mentiolé\".",
+            "en": "Page 2 from episode 17."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 17: El pela'o y el \"mentiolé\".",
+            "en": "Page 3 from episode 17."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 17: El pela'o y el \"mentiolé\".",
+            "en": "Page 4 from episode 17."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-019-noche-de-peliculas",
+      "title": {
+        "es": "Noche de películas",
+        "en": "Episode 19"
+      },
+      "episodeNumber": 19,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/5b667e0b4cc04b40a1a20581fffba654",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-019-noche-de-peliculas/19.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 19: Noche de películas.",
+            "en": "Page 1 from episode 19."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-019-noche-de-peliculas/19.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 19: Noche de películas.",
+            "en": "Page 2 from episode 19."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-019-noche-de-peliculas/19.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 19: Noche de películas.",
+            "en": "Page 3 from episode 19."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-019-noche-de-peliculas/19.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 19: Noche de películas.",
+            "en": "Page 4 from episode 19."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-018-coronavirus",
+      "title": {
+        "es": "Coronavirus",
+        "en": "Episode 18"
+      },
+      "episodeNumber": 18,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/0ad8190b867f4ba5a7bb83f8ea867143",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-018-coronavirus/18.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 18: Coronavirus.",
+            "en": "Page 1 from episode 18."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-018-coronavirus/18.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 18: Coronavirus.",
+            "en": "Page 2 from episode 18."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-018-coronavirus/18.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 18: Coronavirus.",
+            "en": "Page 3 from episode 18."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-018-coronavirus/18.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 18: Coronavirus.",
+            "en": "Page 4 from episode 18."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-015-salon-de-la-es-pera",
+      "title": {
+        "es": "Salón de la Es-pera",
+        "en": "Episode 15"
+      },
+      "episodeNumber": 15,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/35152f3f7b854622bc4d3eaf2da02dd0",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 15: Salón de la Es-pera.",
+            "en": "Page 1 from episode 15."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 15: Salón de la Es-pera.",
+            "en": "Page 2 from episode 15."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 15: Salón de la Es-pera.",
+            "en": "Page 3 from episode 15."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 15: Salón de la Es-pera.",
+            "en": "Page 4 from episode 15."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.5.jpg",
+          "alt": {
+            "es": "Lámina 5 del episodio 15: Salón de la Es-pera.",
+            "en": "Page 5 from episode 15."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual 2026-11-04: La quinta imagen es un boceto de otra escena; confirmar si es material alterno o una viñeta final antes de publicar."
+    },
+    {
+      "id": "ep-016-mandarino-vs-agua-fria",
+      "title": {
+        "es": "Mandarino vs agua fría",
+        "en": "Episode 16"
+      },
+      "episodeNumber": 16,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/dd8d670285204a92ad6aed62bc2c20ab",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-016-mandarino-vs-agua-fria/16.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 16: Mandarino vs agua fría.",
+            "en": "Page 1 from episode 16."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-016-mandarino-vs-agua-fria/16.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 16: Mandarino vs agua fría.",
+            "en": "Page 2 from episode 16."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-016-mandarino-vs-agua-fria/16.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 16: Mandarino vs agua fría.",
+            "en": "Page 3 from episode 16."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-016-mandarino-vs-agua-fria/16.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 16: Mandarino vs agua fría.",
+            "en": "Page 4 from episode 16."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-014-un-dia-malo",
+      "title": {
+        "es": "Un día malo",
+        "en": "Episode 14"
+      },
+      "episodeNumber": 14,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/7519d483fe0f4b93a2695a87be5b503f",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-014-un-dia-malo/14.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 14: Un día malo.",
+            "en": "Page 1 from episode 14."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-014-un-dia-malo/14.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 14: Un día malo.",
+            "en": "Page 2 from episode 14."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-014-un-dia-malo/14.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 14: Un día malo.",
+            "en": "Page 3 from episode 14."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-014-un-dia-malo/14.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 14: Un día malo.",
+            "en": "Page 4 from episode 14."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-013-siempre-con-sueno",
+      "title": {
+        "es": "Siempre con sueño",
+        "en": "Episode 13"
+      },
+      "episodeNumber": 13,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/a7f72428243248bca2f86d62944420f9",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-013-siempre-con-sueno/13.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 13: Siempre con sueño.",
+            "en": "Page 1 from episode 13."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-013-siempre-con-sueno/13.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 13: Siempre con sueño.",
+            "en": "Page 2 from episode 13."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-013-siempre-con-sueno/13.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 13: Siempre con sueño.",
+            "en": "Page 3 from episode 13."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-013-siempre-con-sueno/13.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 13: Siempre con sueño.",
+            "en": "Page 4 from episode 13."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-012-enero-sin-fin",
+      "title": {
+        "es": "enero sin fin",
+        "en": "Episode 12"
+      },
+      "episodeNumber": 12,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/83bb3d6707744407b626a5e30b63f5fc",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-012-enero-sin-fin/12.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 12: enero sin fin.",
+            "en": "Page 1 from episode 12."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-012-enero-sin-fin/12.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 12: enero sin fin.",
+            "en": "Page 2 from episode 12."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-012-enero-sin-fin/12.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 12: enero sin fin.",
+            "en": "Page 3 from episode 12."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-012-enero-sin-fin/12.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 12: enero sin fin.",
+            "en": "Page 4 from episode 12."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-011-el-virus-vuelve-y-vuelve",
+      "title": {
+        "es": "el virus vuelve y vuelve",
+        "en": "Episode 11"
+      },
+      "episodeNumber": 11,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1dc38706fdaa427fb4b8a697504e4ad5",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-011-el-virus-vuelve-y-vuelve/11.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 11: el virus vuelve y vuelve.",
+            "en": "Page 1 from episode 11."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-011-el-virus-vuelve-y-vuelve/11.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 11: el virus vuelve y vuelve.",
+            "en": "Page 2 from episode 11."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-011-el-virus-vuelve-y-vuelve/11.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 11: el virus vuelve y vuelve.",
+            "en": "Page 3 from episode 11."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-011-el-virus-vuelve-y-vuelve/11.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 11: el virus vuelve y vuelve.",
+            "en": "Page 4 from episode 11."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-010-fabrica-de-recuerdos",
+      "title": {
+        "es": "Fábrica de recuerdos",
+        "en": "Episode 10"
+      },
+      "episodeNumber": 10,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/1b132547cfa34b6cbd01976c22db84f0",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-010-fabrica-de-recuerdos/10.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 10: Fábrica de recuerdos.",
+            "en": "Page 1 from episode 10."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-010-fabrica-de-recuerdos/10.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 10: Fábrica de recuerdos.",
+            "en": "Page 2 from episode 10."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-010-fabrica-de-recuerdos/10.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 10: Fábrica de recuerdos.",
+            "en": "Page 3 from episode 10."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-010-fabrica-de-recuerdos/10.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 10: Fábrica de recuerdos.",
+            "en": "Page 4 from episode 10."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-009-la-cena",
+      "title": {
+        "es": "La cena",
+        "en": "Episode 9"
+      },
+      "episodeNumber": 9,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/3973ad78d3d1458090d626f6a6ecf717",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-009-la-cena/09.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 9: La cena.",
+            "en": "Page 1 from episode 9."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-009-la-cena/09.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 9: La cena.",
+            "en": "Page 2 from episode 9."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-009-la-cena/09.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 9: La cena.",
+            "en": "Page 3 from episode 9."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-009-la-cena/09.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 9: La cena.",
+            "en": "Page 4 from episode 9."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-006-parodia",
+      "title": {
+        "es": "parodia",
+        "en": "Episode 6"
+      },
+      "episodeNumber": 6,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/731dc77fadc348e2b6a488da4e980554",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-006-parodia/06.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 6: parodia.",
+            "en": "Page 1 from episode 6."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-006-parodia/06.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 6: parodia.",
+            "en": "Page 2 from episode 6."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-006-parodia/06.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 6: parodia.",
+            "en": "Page 3 from episode 6."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-006-parodia/06.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 6: parodia.",
+            "en": "Page 4 from episode 6."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-006-parodia/06.5.jpg",
+          "alt": {
+            "es": "Lámina 5 del episodio 6: parodia.",
+            "en": "Page 5 from episode 6."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-005-cinco-minutos-mas",
+      "title": {
+        "es": "Cinco minutos más",
+        "en": "Episode 5"
+      },
+      "episodeNumber": 5,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/23b85175d30940cc808bb4cb3dfb8977",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-005-cinco-minutos-mas/05.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 5: Cinco minutos más.",
+            "en": "Page 1 from episode 5."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-005-cinco-minutos-mas/05.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 5: Cinco minutos más.",
+            "en": "Page 2 from episode 5."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-005-cinco-minutos-mas/05.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 5: Cinco minutos más.",
+            "en": "Page 3 from episode 5."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-005-cinco-minutos-mas/05.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 5: Cinco minutos más.",
+            "en": "Page 4 from episode 5."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-007-this-guy-is-on-fire",
+      "title": {
+        "es": "This guy is on fire",
+        "en": "Episode 7"
+      },
+      "episodeNumber": 7,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/6a951f7698814bf091c381402956c578",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-007-this-guy-is-on-fire/07.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 7: This guy is on fire.",
+            "en": "Page 1 from episode 7."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-007-this-guy-is-on-fire/07.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 7: This guy is on fire.",
+            "en": "Page 2 from episode 7."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-007-this-guy-is-on-fire/07.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 7: This guy is on fire.",
+            "en": "Page 3 from episode 7."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-007-this-guy-is-on-fire/07.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 7: This guy is on fire.",
+            "en": "Page 4 from episode 7."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-008-pepino-felino",
+      "title": {
+        "es": "Pepino Felino",
+        "en": "Episode 8"
+      },
+      "episodeNumber": 8,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/57b28937bf2948c5adb9b95162517096",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-008-pepino-felino/08.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 8: Pepino Felino.",
+            "en": "Page 1 from episode 8."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-008-pepino-felino/08.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 8: Pepino Felino.",
+            "en": "Page 2 from episode 8."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-008-pepino-felino/08.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 8: Pepino Felino.",
+            "en": "Page 3 from episode 8."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-008-pepino-felino/08.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 8: Pepino Felino.",
+            "en": "Page 4 from episode 8."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-004-el-metro",
+      "title": {
+        "es": "El metro",
+        "en": "Episode 4"
+      },
+      "episodeNumber": 4,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/55b97f56d8a1453c86e3210765f1998f",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-004-el-metro/04.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 4: El metro.",
+            "en": "Page 1 from episode 4."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
+    },
+    {
+      "id": "ep-003-preguntan-y-preguntan",
+      "title": {
+        "es": "Preguntan y  preguntan",
+        "en": "Episode 3"
+      },
+      "episodeNumber": 3,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "source": {
+        "kind": "notion-archive",
+        "notionUrl": "https://app.notion.com/p/6db651fa3b5a4fbebeca34532e843103",
+        "importedBy": "notion-bulk-import",
+        "instagramMediaId": null,
+        "instagramPermalink": null
+      },
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-003-preguntan-y-preguntan/03.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 3: Preguntan y  preguntan.",
+            "en": "Page 1 from episode 3."
+          }
+        }
+      ],
+      "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas."
     }
   ]
 }

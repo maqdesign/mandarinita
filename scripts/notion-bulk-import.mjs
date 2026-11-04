@@ -4,7 +4,6 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, join, resolve } from 'node:path';
-import { tmpdir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -350,7 +349,8 @@ async function main() {
     return;
   }
 
-  const staging = join(tmpdir(), `mandarinita-notion-import-${process.pid}-${Date.now()}`);
+  // Keep staging on the checkout's filesystem so final renames stay atomic.
+  const staging = join(ROOT, `.notion-import-staging-${process.pid}-${Date.now()}`);
   mkdirSync(staging, { recursive: true });
   const newEntries = [];
   const stagedWrites = [];
