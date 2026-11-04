@@ -85,11 +85,13 @@ window.advanceMandarinitaEpisode=()=>{
   const next=episodes[(currentIndex+1+episodes.length)%episodes.length];
   openEpisodeFromArchive(next.id);
 };
+window.retreatMandarinitaEpisode=()=>{
+  if(!episodes.length)return false;
+  const currentIndex=episodes.findIndex(entry=>entry.id===currentEpisodeId);
+  const previous=episodes[(currentIndex-1+episodes.length)%episodes.length];
+  return openEpisodeFromArchive(previous.id);
+};
 window.randomMandarinitaEpisode=()=>{
-  const confirmed=window.confirm(pageLanguage()==='en'
-    ? 'Open a random episode? If you are following the archive in order, this may interrupt your sequence.'
-    : '¿Seguro que quieres abrir un episodio aleatorio? Si sigues una secuencia, podrías perder el hilo.');
-  if(!confirmed)return false;
   const candidates=allEpisodes.filter(entry=>entry.id!==currentEpisodeId);
   const list=candidates.length?candidates:allEpisodes;
   if(!list.length)return false;

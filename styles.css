@@ -369,3 +369,24 @@
 .work-grid .episode-share svg{width:17px;height:17px}
 .work-grid .episode-share:hover{color:var(--orange);background:var(--soft)}
 @media(max-width:680px){.reader-shortcuts{display:none}}
+
+/* Episode navigation stays compact without crowding the comic on phones. */
+.reader-prev-episode{min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:0 18px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);font:700 .88rem/1 'Work Sans',sans-serif;cursor:pointer}
+.reader-prev-episode:hover{background:var(--soft);transform:translateY(-1px)}
+.reader-prev-episode svg{width:18px;height:18px;flex:0 0 18px}
+.reader-episode-label-short{display:none}
+.reader-prev-episode[hidden]{display:none!important}
+.random-confirm-dialog{width:min(440px,calc(100% - 24px));max-width:none;padding:0;border:1px solid var(--line);border-radius:24px;background:var(--paper);color:var(--ink);box-shadow:0 24px 80px rgba(37,25,17,.3)}
+.random-confirm-dialog::backdrop{background:rgba(35,26,22,.66);backdrop-filter:blur(4px)}
+.random-confirm-content{padding:clamp(20px,5vw,32px)}
+.random-confirm-content .eyebrow{margin:0 0 8px;color:var(--green);font-size:.66rem}
+.random-confirm-content h2{margin:0 0 10px;font:600 clamp(1.35rem,4vw,1.8rem)/1.12 Fredoka,sans-serif}
+.random-confirm-content>p:not(.eyebrow){margin:0;color:var(--muted);font-size:.95rem;line-height:1.55}
+.random-confirm-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+.random-confirm-actions button{min-height:44px;padding:0 17px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);font:700 .82rem 'Work Sans',sans-serif;cursor:pointer}
+.random-confirm-actions .random-confirm-accept{border-color:var(--orange);background:var(--orange);color:white}
+.random-confirm-actions button:hover{filter:brightness(.97);transform:translateY(-1px)}
+.random-confirm-dialog[open]{animation:dialog-in .18s ease-out}
+.sticker-pack-grid .sticker-pack-cover{display:block;flex:0 0 60px;width:60px;height:60px;object-fit:contain;border-radius:14px;background:#fff7e9}
+@media(max-width:480px){.reader-bottom{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}.reader-footer-meta{grid-column:1;width:100%;min-width:0;flex-wrap:nowrap;justify-content:flex-start;gap:8px}.reader-bottom>div.reader-actions{grid-column:1;display:flex;width:100%;justify-content:space-between;gap:8px;flex-wrap:nowrap}.reader-prev-episode,.reader-next-episode{min-width:0;min-height:42px;flex:1;gap:5px;padding:0 8px;font-size:.72rem}.reader-prev-episode svg,.reader-next-episode .ui-icon{width:16px;height:16px;flex:0 0 16px}.reader-episode-label-long{display:none}.reader-episode-label-short{display:inline}.random-confirm-actions{gap:8px}.random-confirm-actions button{min-width:0;flex:1;padding:0 8px;font-size:.72rem}.sticker-pack-grid .sticker-pack-cover{flex-basis:52px;width:52px;height:52px}}
+@media(prefers-reduced-motion:reduce){.reader-prev-episode,.random-confirm-actions button{transition:none}}

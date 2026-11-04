@@ -52,7 +52,14 @@ const accessibleEnglish = {
     'Boceto original del episodio 44': 'Original sketch for episode 44',
     'Opción de boceto A para la escena del episodio 51': 'Sketch option A for the scene in episode 51',
     'Opción de boceto B para la escena del episodio 51': 'Sketch option B for the scene in episode 51',
-    'Boceto original del episodio 52': 'Original sketch for episode 52'
+    'Boceto original del episodio 52': 'Original sketch for episode 52',
+    'Mandarinita animada: portada de su paquete de stickers': 'Mandarinita animated sticker pack cover',
+    'Mandarinita 3D: sticker de una mandarina con expresión alegre': 'Mandarinita 3D sticker: a smiling mandarin character',
+    'Mandarinita y amigos: sticker de Greg el Zanahorio': 'Mandarinita and friends sticker featuring Greg the Carrot',
+    'Mandarinita: sticker de una mandarina montando bicicleta': 'Mandarinita sticker showing an orange riding a bicycle',
+    'Marca Mandarinita: logotipo sobre fondo amarillo': 'Mandarinita brand logo on a yellow background',
+    'Mandarimoji: cara de una mandarina sorprendida': 'Mandarimoji sticker with a surprised mandarin face',
+    'Mandarinita retro: rostro de una mandarina en estilo pixelado': 'Mandarinita retro sticker with a pixel-style mandarin face'
   }
 };
 function syncAccessibleLanguage() {
@@ -194,26 +201,6 @@ async function loadApprovedEpisodes() {
         images:ordered.map(p=>({src:p.src,alt:p.alt.es,altEn:p.alt.en}))
       };
       approved.push({entry,ordered,key});
-      if (grid.id !== 'home-featured-grid') continue;
-      const article=document.createElement('article');article.className='work-card catalog-card';
-      const button=document.createElement('button');button.className='work-image';button.type='button';
-      const cover=document.createElement('img');cover.src=ordered[0].src;cover.alt=ordered[0].alt[language];cover.loading='lazy';
-      button.append(cover);button.addEventListener('click',()=>openReader(key));
-      const copy=document.createElement('div');copy.className='work-copy';
-      const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
-      const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
-      const heading=document.createElement('h3');heading.textContent=entry.title[language]||entry.title.es;
-      const summary=document.createElement('p');summary.textContent=language==='es'?`${ordered.length} láminas en orden de lectura.`:`${ordered.length} pages in reading order.`;
-      const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';
-      action.addEventListener('click',()=>openReader(key));
-      copy.append(meta,heading,summary,action);article.append(button,copy);grid.append(article);
-      document.querySelector('.language-toggle')?.addEventListener('click',()=>{
-        meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
-        heading.textContent=entry.title[language]||entry.title.es;
-        summary.textContent=language==='es'?`${ordered.length} láminas en orden de lectura.`:`${ordered.length} pages in reading order.`;
-        action.textContent=language==='es'?'Leer episodio':'Read episode';
-        cover.alt=ordered[0].alt[language]||ordered[0].alt.es;
-      });
     }
     approvedEpisodeKeys=approved.map(({entry,key})=>({id:entry.id,key}));
     if (grid.id === 'home-featured-grid') {
@@ -224,7 +211,7 @@ async function loadApprovedEpisodes() {
       for (const {entry,ordered,key} of chosen) {
         const article=document.createElement('article');article.className='work-card catalog-card';
         const button=document.createElement('button');button.className='work-image';button.type='button';button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${catalogTitle(entry,'en')}`);
-        const cover=document.createElement('img');cover.src=ordered[0].src;cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';button.append(cover);button.addEventListener('click',()=>openReader(key));
+        const cover=document.createElement('img');const fullResolutionSrc=ordered[0].src;cover.src=fullResolutionSrc.replace(/([^/]+)\.(png|jpe?g)$/i,'thumb-$1.webp');cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.addEventListener('error',()=>{if(cover.src!==new URL(fullResolutionSrc,location.href).href)cover.src=fullResolutionSrc;},{once:true});button.append(cover);button.addEventListener('click',()=>openReader(key));
         const copy=document.createElement('div');copy.className='work-copy';
         const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
         const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
@@ -270,8 +257,10 @@ function renderPanel() {
   const atEnd = panelIndex === work.images.length - 1;
   const multiple = work.images.length > 1;
   document.querySelectorAll('.reader-restart').forEach(button => { button.hidden = !atEnd || !multiple || readerArchiveMode; });
+  const prevEpisodeButton=document.querySelector('.reader-prev-episode');
+  if(prevEpisodeButton){prevEpisodeButton.hidden=!readerArchiveMode;prevEpisodeButton.setAttribute('aria-label',language==='en'?'Previous episode':'Episodio anterior');prevEpisodeButton.title=prevEpisodeButton.getAttribute('aria-label');}
   const nextEpisodeButton=document.querySelector('.reader-next-episode');
-  if(nextEpisodeButton){const label=nextEpisodeButton.querySelector('span');const es=atEnd?'Ir al siguiente episodio':'Siguiente episodio';const en=atEnd?'Read the next episode':'Next episode';nextEpisodeButton.hidden=!readerArchiveMode;if(label){label.dataset.es=es;label.dataset.en=en;label.textContent=language==='es'?es:en;}}
+  if(nextEpisodeButton){const longLabel=nextEpisodeButton.querySelector('.reader-episode-label-long');const shortLabel=nextEpisodeButton.querySelector('.reader-episode-label-short');const es=atEnd?'Ir al siguiente episodio':'Siguiente episodio';const en=atEnd?'Read the next episode':'Next episode';nextEpisodeButton.hidden=!readerArchiveMode;nextEpisodeButton.setAttribute('aria-label',language==='en'?en:es);nextEpisodeButton.title=nextEpisodeButton.getAttribute('aria-label');if(longLabel){longLabel.dataset.es=es;longLabel.dataset.en=en;longLabel.textContent=language==='es'?es:en;}if(shortLabel){shortLabel.dataset.es='Siguiente';shortLabel.dataset.en='Next';shortLabel.textContent=language==='es'?'Siguiente':'Next';}}
   const prevButton=document.querySelector('.reader-prev');if(prevButton){prevButton.disabled=!multiple||panelIndex===0;prevButton.setAttribute('aria-label',language==='en'?'Previous panel':'Viñeta anterior');}
   const nextButton=document.querySelector('.reader-next');if(nextButton){nextButton.disabled=!multiple||atEnd;nextButton.setAttribute('aria-label',language==='en'?'Next panel':'Viñeta siguiente');}
   const shareButton=document.querySelector('.reader-share');if(shareButton){shareButton.setAttribute('aria-label',language==='en'?'Share this episode':'Compartir este episodio');shareButton.title=shareButton.getAttribute('aria-label');}
@@ -291,12 +280,14 @@ window.openMandarinitaEpisode = episodeId => {
   openReader(key,true);
   return true;
 };
+window.requestRandomMandarinitaEpisode = () => {
+  const confirmation=document.querySelector('#random-episode-confirm');
+  if(!confirmation)return false;
+  confirmation.showModal();
+  return true;
+};
 window.randomMandarinitaEpisode = () => {
   if(!approvedEpisodeKeys.length)return false;
-  const confirmed=window.confirm(language==='en'
-    ? 'Open a random episode? If you are following the archive in order, this may interrupt your sequence.'
-    : '¿Seguro que quieres abrir un episodio aleatorio? Si sigues una secuencia, podrías perder el hilo.');
-  if(!confirmed)return false;
   const choices=approvedEpisodeKeys.filter(item=>item.id!==works[activeWork]?.episodeId);
   const list=choices.length?choices:approvedEpisodeKeys;
   const picked=list[Math.floor(Math.random()*list.length)];
@@ -310,10 +301,18 @@ window.advanceMandarinitaEpisode = () => {
   openReader(next.key,true);
   return true;
 };
+window.retreatMandarinitaEpisode = () => {
+  if(!approvedEpisodeKeys.length)return false;
+  const index=approvedEpisodeKeys.findIndex(item=>item.id===works[activeWork]?.episodeId);
+  const previous=approvedEpisodeKeys[(index-1+approvedEpisodeKeys.length)%approvedEpisodeKeys.length];
+  openReader(previous.key,true);
+  return true;
+};
 window.shareMandarinitaEpisode = async episodeId => {
   const key=catalogWorkKeys.get(episodeId),work=key&&works[key];
   if(!work)return false;
-  const url=new URL('episodios.html',location.href);url.searchParams.set('episode',episodeId);
+  const sharePath=language==='en'?`share/en/${episodeId}.html`:`share/${episodeId}.html`;
+  const url=new URL(sharePath,location.origin);
   const title=language==='en'?work.titleEn:work.title;
   const status=document.querySelector('#reader-share-status');
   try{
@@ -367,8 +366,13 @@ if (dialog) {
   document.querySelector('.reader-next')?.addEventListener('click',()=>movePanel(1));
   document.querySelectorAll('.reader-restart').forEach(button=>button.addEventListener('click',()=>{panelIndex=0;renderPanel();}));
   document.querySelector('.reader-next-episode')?.addEventListener('click',()=>window.advanceMandarinitaEpisode?.());
+  document.querySelector('.reader-prev-episode')?.addEventListener('click',()=>window.retreatMandarinitaEpisode?.());
   document.querySelector('.reader-share')?.addEventListener('click',()=>window.shareMandarinitaEpisode?.(works[activeWork]?.episodeId));
-  document.querySelector('.reader-random')?.addEventListener('click',()=>window.randomMandarinitaEpisode?.());
+  document.querySelector('.reader-random')?.addEventListener('click',()=>window.requestRandomMandarinitaEpisode?.());
+  const randomConfirmation=document.querySelector('#random-episode-confirm');
+  randomConfirmation?.querySelector('.random-confirm-cancel')?.addEventListener('click',()=>randomConfirmation.close());
+  randomConfirmation?.querySelector('.random-confirm-accept')?.addEventListener('click',()=>{randomConfirmation.close();window.randomMandarinitaEpisode?.();});
+  randomConfirmation?.addEventListener('click',event=>{if(event.target===randomConfirmation)randomConfirmation.close();});
   image.addEventListener('load',()=>document.querySelector('.reader-stage')?.classList.remove('is-loading'));
   image.addEventListener('error',()=>document.querySelector('.reader-stage')?.classList.remove('is-loading'));
   document.querySelector('.reader-close')?.addEventListener('click',()=>dialog.close());
