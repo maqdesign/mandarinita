@@ -34,7 +34,8 @@ function renderBatch() {
     const article=document.createElement('article');article.className='work-card catalog-card';article.id=`episode-${entry.episodeNumber}`;
     const link=document.createElement('button');link.className='work-image is-loading';link.type='button';link.setAttribute('aria-label',`${entry.title.es}, episodio ${entry.episodeNumber}`);link.setAttribute('aria-busy','true');link.addEventListener('click',()=>openEpisodeFromArchive(entry.id));
     const cover=document.createElement('img');const original=entry.panels[0].src;cover.src=original.replace(/([^/]+)\.(png|jpe?g)$/i,'thumb-$1.webp');cover.alt=entry.panels[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.width=480;cover.height=480;cover.addEventListener('load',()=>{link.classList.remove('is-loading');link.setAttribute('aria-busy','false')},{once:true});cover.addEventListener('error',()=>{if(cover.src!==new URL(original,location.href).href){cover.src=original;return}link.classList.remove('is-loading');link.setAttribute('aria-busy','false')},{once:true});link.append(cover);
-    const copy=document.createElement('div');copy.className='work-copy';const meta=document.createElement('p');meta.className='work-meta';meta.dataset.es=`Episodio ${entry.episodeNumber}`;meta.dataset.en=`Episode ${entry.episodeNumber}`;meta.textContent=meta.dataset.es;
+    const copy=document.createElement('div');copy.className='work-copy';const meta=document.createElement('p');meta.className='work-meta';const metaLabel=document.createElement('span');metaLabel.dataset.es=`Episodio ${entry.episodeNumber}`;metaLabel.dataset.en=`Episode ${entry.episodeNumber}`;metaLabel.textContent=metaLabel.dataset.es;meta.append(metaLabel);
+    const share=document.createElement('button');share.className='episode-share';share.type='button';share.setAttribute('aria-label',document.documentElement.dataset.lang==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
     const heading=document.createElement('h2');heading.textContent=entry.title.es;heading.dataset.es=entry.title.es;heading.dataset.en=/^episode\s+\d+$/i.test(entry.title.en||'')?entry.title.es:(entry.title.en||entry.title.es);const summary=document.createElement('p');summary.dataset.es=`${entry.panels.length} viñetas`;summary.dataset.en=`${entry.panels.length} panels`;summary.textContent=summary.dataset.es;
     const instagramUrl=entry.source?.instagramPermalink;
     if(typeof instagramUrl==='string'&&/^https:\/\/(?:www\.)?instagram\.com\/(?:p|reel|tv)\/[A-Za-z0-9_-]+\/?$/.test(instagramUrl)){
@@ -60,7 +61,7 @@ function applySort(){
   try{const url=new URL(location.href);url.searchParams.set('sort',sortSelect.value);history.replaceState(history.state,'',url.pathname+url.search+url.hash);}catch(_){}
 }
 function resetList() { grid.replaceChildren();shown=0;renderBatch(); }
-function openEpisodeFromArchive(id){currentEpisodeId=id;let attempts=0;const open=()=>{if(window.openMandarinitaEpisode?.(id))return true;if(++attempts<20){setTimeout(open,50);return true;}status.textContent=currentLanguage==='en'?'This episode could not be opened. Please try again.':'No se pudo abrir este episodio. Inténtalo de nuevo.';return false;};return open();}
+function openEpisodeFromArchive(id){currentEpisodeId=id;try{const url=new URL(location.href);url.searchParams.set('episode',id);history.replaceState(history.state,'',url.pathname+url.search+url.hash);}catch(_){}let attempts=0;const open=()=>{if(window.openMandarinitaEpisode?.(id))return true;if(++attempts<20){setTimeout(open,50);return true;}status.textContent=currentLanguage==='en'?'This episode could not be opened. Please try again.':'No se pudo abrir este episodio. Inténtalo de nuevo.';return false;};return open();}
 window.openEpisodeFromArchive=openEpisodeFromArchive;
 window.advanceMandarinitaEpisode=()=>{
   if(!episodes.length)return;
@@ -68,12 +69,19 @@ window.advanceMandarinitaEpisode=()=>{
   const next=episodes[(currentIndex+1+episodes.length)%episodes.length];
   openEpisodeFromArchive(next.id);
 };
+window.randomMandarinitaEpisode=()=>{
+  const candidates=allEpisodes.filter(entry=>entry.id!==currentEpisodeId);
+  const list=candidates.length?candidates:allEpisodes;
+  if(!list.length)return false;
+  return openEpisodeFromArchive(list[Math.floor(Math.random()*list.length)].id);
+};
 sortSelect.addEventListener('change',applySort);
 loadMoreButton.addEventListener('click',renderBatch);
 document.querySelector('.language-toggle')?.addEventListener('click',()=>{
   const lang=document.documentElement.dataset.lang==='en'?'en':'es';
   document.querySelectorAll('#episode-grid [data-es][data-en]').forEach(node=>{node.textContent=node.dataset[lang];});
   document.querySelectorAll('#episode-grid .episode-date').forEach(node=>{node.textContent=formatEpisodeDate(node.dataset.iso);});
+  document.querySelectorAll('#episode-grid .episode-share').forEach(node=>{node.setAttribute('aria-label',lang==='en'?'Share episode':'Compartir episodio');node.title=node.getAttribute('aria-label');});
   status.textContent=status.dataset[lang]||status.textContent;
   const total=document.querySelector('#episode-total');total.textContent=total.dataset[lang]||total.textContent;
   sortSelect.options[0].textContent=lang==='es'?'Más recientes primero':'Newest first';sortSelect.options[1].textContent=lang==='es'?'Del primero al último':'Oldest first';sortSelect.options[2].textContent=lang==='es'?'Orden aleatorio':'Random order';loadMoreButton.textContent=lang==='es'?'Cargar más episodios':'Load more episodes';

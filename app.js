@@ -146,6 +146,7 @@ const works = {
   storyboard: { title: 'Boceto de historieta · proceso', titleEn: 'Comic storyboard · process material', kind: 'BOCETO ORIGINAL · 2019', kindEn: 'ORIGINAL STORYBOARD · 2019', images: [1,2,3,4].map(n=>({src:`assets/storyboard-panel-${n}.webp`,alt:`Viñeta ${n} del boceto original de 2019.`,altEn:`Panel ${n} of the original 2019 storyboard.`})) }
 };
 const catalogWorkKeys = new Map();
+let approvedEpisodeKeys=[];
 
 // Add catalog entries to the public reader only when they are ready to display.
 // The curated artwork remains available if the optional catalog cannot load.
@@ -174,6 +175,7 @@ async function loadApprovedEpisodes() {
       works[key] = {
         title:entry.title.es,
         titleEn:catalogTitle(entry,'en'),
+        episodeId:entry.id,
         publishedAt:entry.publishedAt || null,
         kind:'HISTORIETA · ARCHIVO',
         kindEn:'COMIC · ARCHIVE',
@@ -187,6 +189,7 @@ async function loadApprovedEpisodes() {
       button.append(cover);button.addEventListener('click',()=>openReader(key));
       const copy=document.createElement('div');copy.className='work-copy';
       const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
+      const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
       const heading=document.createElement('h3');heading.textContent=entry.title[language]||entry.title.es;
       const summary=document.createElement('p');summary.textContent=language==='es'?`${ordered.length} láminas en orden de lectura.`:`${ordered.length} pages in reading order.`;
       const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';
@@ -200,6 +203,7 @@ async function loadApprovedEpisodes() {
         cover.alt=ordered[0].alt[language]||ordered[0].alt.es;
       });
     }
+    approvedEpisodeKeys=approved.map(({entry,key})=>({id:entry.id,key}));
     if (grid.id === 'home-featured-grid') {
       grid.replaceChildren();
       const pool = [...approved];
@@ -211,12 +215,13 @@ async function loadApprovedEpisodes() {
         const cover=document.createElement('img');cover.src=ordered[0].src;cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';button.append(cover);button.addEventListener('click',()=>openReader(key));
         const copy=document.createElement('div');copy.className='work-copy';
         const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
+        const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
         const heading=document.createElement('h3');heading.textContent=catalogTitle(entry);
         const summary=document.createElement('p');summary.textContent=language==='es'?`${ordered.length} viñetas en orden de lectura.`:`${ordered.length} panels in reading order.`;
         if (entry.publishedAt) { const date=document.createElement('time');date.className='episode-date';date.dateTime=entry.publishedAt;date.textContent=formatCatalogDate(entry.publishedAt);copy.append(meta,heading,summary,date); } else copy.append(meta,heading,summary);
         const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';action.addEventListener('click',()=>openReader(key));
         copy.append(action);article.append(button,copy);grid.append(article);
-        if(entry.publishedAt)document.querySelector('.language-toggle')?.addEventListener('click',()=>{const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);});
+        document.querySelector('.language-toggle')?.addEventListener('click',()=>{if(entry.publishedAt){const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);}share.setAttribute('aria-label',language==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');});
       }
     }
     const requestedEpisode = new URLSearchParams(window.location.search).get('episode');
@@ -257,6 +262,8 @@ function renderPanel() {
   if(nextEpisodeButton){const label=nextEpisodeButton.querySelector('span');const es=atEnd?'Ir al siguiente episodio':'Siguiente episodio';const en=atEnd?'Read the next episode':'Next episode';nextEpisodeButton.hidden=!readerArchiveMode;if(label){label.dataset.es=es;label.dataset.en=en;label.textContent=language==='es'?es:en;}}
   const prevButton=document.querySelector('.reader-prev');if(prevButton){prevButton.disabled=!multiple||panelIndex===0;prevButton.setAttribute('aria-label',language==='en'?'Previous panel':'Viñeta anterior');}
   const nextButton=document.querySelector('.reader-next');if(nextButton){nextButton.disabled=!multiple||atEnd;nextButton.setAttribute('aria-label',language==='en'?'Next panel':'Viñeta siguiente');}
+  const shareButton=document.querySelector('.reader-share');if(shareButton){shareButton.setAttribute('aria-label',language==='en'?'Share this episode':'Compartir este episodio');shareButton.title=shareButton.getAttribute('aria-label');}
+  const randomButton=document.querySelector('.reader-random');if(randomButton){randomButton.hidden=!work.episodeId;randomButton.setAttribute('aria-label',language==='en'?'Open a random episode':'Abrir un episodio aleatorio');randomButton.title=randomButton.getAttribute('aria-label');}
 }
 function openReader(key, archiveMode = false) {
   activeWork = key;
@@ -272,6 +279,34 @@ window.openMandarinitaEpisode = episodeId => {
   openReader(key,true);
   return true;
 };
+window.randomMandarinitaEpisode = () => {
+  if(!approvedEpisodeKeys.length)return false;
+  const choices=approvedEpisodeKeys.filter(item=>item.id!==works[activeWork]?.episodeId);
+  const list=choices.length?choices:approvedEpisodeKeys;
+  const picked=list[Math.floor(Math.random()*list.length)];
+  openReader(picked.key,true);
+  return true;
+};
+window.advanceMandarinitaEpisode = () => {
+  if(!approvedEpisodeKeys.length)return false;
+  const index=approvedEpisodeKeys.findIndex(item=>item.id===works[activeWork]?.episodeId);
+  const next=approvedEpisodeKeys[(index+1+approvedEpisodeKeys.length)%approvedEpisodeKeys.length];
+  openReader(next.key,true);
+  return true;
+};
+window.shareMandarinitaEpisode = async episodeId => {
+  const key=catalogWorkKeys.get(episodeId),work=key&&works[key];
+  if(!work)return false;
+  const url=new URL('episodios.html',location.href);url.searchParams.set('episode',episodeId);
+  const title=language==='en'?work.titleEn:work.title;
+  const status=document.querySelector('#reader-share-status');
+  try{
+    if(navigator.share){await navigator.share({title,text:`${title} · Mandarinita`,url:url.href});if(status)status.textContent='';return true;}
+    if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url.href);if(status)status.textContent=language==='en'?'Episode link copied.':'Enlace del episodio copiado.';return true;}
+    if(status)status.textContent=language==='en'?'Sharing is not available in this browser.':'Este navegador no permite compartir desde aquí.';
+    return false;
+  }catch(error){if(error?.name==='AbortError')return false;if(status)status.textContent=language==='en'?'Could not share this episode.':'No se pudo compartir este episodio.';return false;}
+};
 document.querySelectorAll('[data-reader]').forEach(button=>button.addEventListener('click',()=>openReader(button.dataset.reader)));
 function movePanel(direction) {
   const length = works[activeWork].images.length;
@@ -281,10 +316,43 @@ function movePanel(direction) {
   renderPanel();
 }
 if (dialog) {
+  const stage=document.querySelector('.reader-stage');
+  let swipe=null;
+  const swipeThreshold=118;
+  const resetSwipe=()=>{stage?.classList.remove('is-swiping','is-next-episode-pull','is-advancing-episode','is-swipe-edge');stage?.style.removeProperty('--swipe-distance');stage?.style.removeProperty('--swipe-progress');swipe=null;};
+  stage?.addEventListener('pointerdown',event=>{
+    if(!['touch','pen'].includes(event.pointerType)||event.target.closest('button'))return;
+    swipe={id:event.pointerId,x:event.clientX,y:event.clientY,horizontal:false,dx:0};
+  });
+  stage?.addEventListener('pointermove',event=>{
+    if(!swipe||event.pointerId!==swipe.id)return;
+    const dx=event.clientX-swipe.x,dy=event.clientY-swipe.y;
+    if(!swipe.horizontal&&Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.2){swipe.horizontal=true;stage.setPointerCapture(event.pointerId);}
+    if(!swipe.horizontal){if(Math.abs(dy)>18)swipe=null;return;}
+    event.preventDefault();swipe.dx=dx;
+    const atEnd=panelIndex===works[activeWork].images.length-1;
+    const pullNext=readerArchiveMode&&atEnd&&dx<0&&typeof window.advanceMandarinitaEpisode==='function';
+    stage.classList.add('is-swiping');stage.style.setProperty('--swipe-distance',`${Math.max(-150,Math.min(150,dx*.72))}px`);
+    stage.classList.toggle('is-next-episode-pull',pullNext);
+    if(pullNext)stage.style.setProperty('--swipe-progress',String(Math.min(1,Math.abs(dx)/swipeThreshold)));
+  });
+  stage?.addEventListener('pointerup',event=>{
+    if(!swipe||event.pointerId!==swipe.id)return;
+    const {horizontal,dx}=swipe;
+    if(horizontal){
+      const atEnd=panelIndex===works[activeWork].images.length-1;
+      const pullNext=readerArchiveMode&&atEnd&&dx<=-swipeThreshold&&typeof window.advanceMandarinitaEpisode==='function';
+      if(pullNext){stage.classList.add('is-advancing-episode');setTimeout(()=>{resetSwipe();window.advanceMandarinitaEpisode?.();},170);}
+      else{resetSwipe();if(Math.abs(dx)>=54){if(dx<0&&panelIndex<works[activeWork].images.length-1)movePanel(1);else if(dx>0&&panelIndex>0)movePanel(-1);else{stage.classList.add('is-swipe-edge');setTimeout(()=>stage.classList.remove('is-swipe-edge'),240);}}}
+    }else resetSwipe();
+  });
+  stage?.addEventListener('pointercancel',resetSwipe);
   document.querySelector('.reader-prev')?.addEventListener('click',()=>movePanel(-1));
   document.querySelector('.reader-next')?.addEventListener('click',()=>movePanel(1));
   document.querySelectorAll('.reader-restart').forEach(button=>button.addEventListener('click',()=>{panelIndex=0;renderPanel();}));
   document.querySelector('.reader-next-episode')?.addEventListener('click',()=>window.advanceMandarinitaEpisode?.());
+  document.querySelector('.reader-share')?.addEventListener('click',()=>window.shareMandarinitaEpisode?.(works[activeWork]?.episodeId));
+  document.querySelector('.reader-random')?.addEventListener('click',()=>window.randomMandarinitaEpisode?.());
   image.addEventListener('load',()=>document.querySelector('.reader-stage')?.classList.remove('is-loading'));
   image.addEventListener('error',()=>document.querySelector('.reader-stage')?.classList.remove('is-loading'));
   document.querySelector('.reader-close')?.addEventListener('click',()=>dialog.close());

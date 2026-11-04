@@ -336,3 +336,35 @@
   object-position:center;
 }
 .reader-stage:focus{outline:none}
+.reader-stage{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.reader-stage figure img{transition:opacity .2s,transform .2s}
+.reader-stage.is-swiping figure img{transition:none;transform:translateX(var(--swipe-distance,0))}
+.reader-swipe-hint{position:absolute;z-index:4;top:14px;left:50%;display:flex;align-items:center;gap:9px;max-width:calc(100% - 30px);padding:9px 13px;border:1px solid rgba(48,34,27,.12);border-radius:999px;background:rgba(255,255,255,.96);box-shadow:0 5px 18px rgba(48,34,27,.15);color:var(--ink);font:700 .76rem/1.1 'Work Sans',sans-serif;opacity:0;transform:translate(-42%, -5px);transition:opacity .12s,transform .12s;pointer-events:none}
+.reader-swipe-arrow{font-size:1.1rem;color:var(--orange)}
+.reader-swipe-progress{position:absolute;left:14px;right:14px;bottom:3px;height:2px;overflow:hidden;background:rgba(48,34,27,.12);border-radius:2px}
+.reader-swipe-progress i{display:block;width:100%;height:100%;background:var(--orange);transform:scaleX(var(--swipe-progress,0));transform-origin:left center}
+.reader-stage.is-next-episode-pull .reader-swipe-hint{opacity:1;transform:translate(-50%,0)}
+.reader-stage.is-advancing-episode figure img{transition:transform .17s ease-in;transform:translateX(-115%)}
+.reader-stage.is-swipe-edge{animation:reader-edge-nudge .22s ease-in-out}
+@keyframes reader-edge-nudge{0%,100%{translate:0 0}40%{translate:-7px 0}70%{translate:4px 0}}
+@media(max-width:480px){.reader-swipe-hint{top:10px;gap:7px;padding:8px 11px;font-size:.68rem}}
+@media(prefers-reduced-motion:reduce){.reader-stage.is-swipe-edge{animation:none}.reader-stage.is-advancing-episode figure img{transition:none}}
+.reader-footer-meta{gap:9px}
+.reader-utility-button{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--muted);cursor:pointer;transition:background .16s,color .16s,transform .16s}
+.reader-utility-button svg{width:19px;height:19px}
+.reader-utility-button:hover{background:var(--soft);color:var(--ink);transform:translateY(-1px)}
+.reader-utility-button[hidden]{display:none!important}
+.episode-grid .work-meta .episode-share{width:32px;height:32px;flex:0 0 32px;display:grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--green);cursor:pointer}
+.episode-grid .work-meta .episode-share svg{width:17px;height:17px}
+.episode-grid .work-meta .episode-share:hover{color:var(--orange);background:var(--soft)}
+@media(max-width:480px){.reader-footer-meta{gap:6px}.reader-utility-button{width:36px;height:36px;flex-basis:36px}.reader-utility-button svg{width:17px;height:17px}}
+@media(max-width:360px){.reader-footer-meta{gap:4px}.reader-utility-button{width:32px;height:32px;flex-basis:32px}.reader-utility-button svg{width:16px;height:16px}.reader-actions{gap:4px}.reader-next-episode,.reader-restart{padding:0 8px;font-size:.68rem}}
+@media(prefers-reduced-motion:reduce){.reader-utility-button{transition:none}}
+.reader-swipe-hint{left:auto;right:12px;white-space:nowrap;max-width:calc(100% - 20px);font-size:.7rem;transform:translate(5px,-5px)}
+.reader-stage.is-next-episode-pull .reader-swipe-hint{transform:translate(0,0)}
+@media(max-width:480px){.reader-swipe-hint{right:8px;top:9px;gap:6px;padding:7px 9px;font-size:.64rem}}
+@media(max-width:360px){.reader-footer-meta{flex-wrap:nowrap;gap:2px}.reader-shortcuts summary{width:28px;height:28px;min-height:28px}.reader-utility-button{width:28px;height:28px;flex-basis:28px}.reader-utility-button svg{width:15px;height:15px}}
+.work-grid .work-meta{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.work-grid .episode-share{width:32px;height:32px;flex:0 0 32px;display:grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--green);cursor:pointer}
+.work-grid .episode-share svg{width:17px;height:17px}
+.work-grid .episode-share:hover{color:var(--orange);background:var(--soft)}
