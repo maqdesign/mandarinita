@@ -138,6 +138,8 @@ navigation?.querySelectorAll('a').forEach(link => link.addEventListener('click',
 const works = {
   episode1: { title: 'La mosca · episodio 1', titleEn: 'The Fly · episode 1', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/episodes/ep-001-la-mosca/01.1.png',alt:'Lámina A original de La mosca (2019).',altEn:'Original page A from The Fly (2019).'},{src:'assets/comic-focus-2019.webp',alt:'Lámina B original de La mosca (2019).',altEn:'Original page B from The Fly (2019).'},{src:'assets/episodes/ep-001-la-mosca/01.3.png',alt:'Lámina C original de La mosca (2019).',altEn:'Original page C from The Fly (2019).'},{src:'assets/comic-rage-2019.webp',alt:'Lámina D original de La mosca (2019).',altEn:'Original page D from The Fly (2019).'}] },
   episode85: { title: 'Ep. 85 · Lo que siempre te pasa, contado sin palabras por Mandarinita', titleEn: 'Episode 85 · What always happens to you, told without words by Mandarinita', kind: 'HISTORIETA · 2022', kindEn: 'COMIC · 2022', images: [1,2,3,4].map(n=>({src:`assets/episodes/ep-085-lo-que-siempre-te-pasa/85.${n}.png`,alt:`Lámina ${n} del episodio 85: Lo que siempre te pasa, contado sin palabras.`,altEn:`Page ${n} from episode 85: What always happens to you, told without words.`})) },
+  episode44: { title:'El teletrabajo · episodio 44',titleEn:'Working from home · episode 44',kind:'HISTORIETA · 2021',kindEn:'COMIC · 2021',images:[1,2,3,4].map(n=>({src:`assets/episodes/ep-044-el-teletrabajo/44.${n}.png`,alt:`Viñeta ${n} del episodio 44: El teletrabajo.`,altEn:`Panel ${n} from episode 44: Working from home.`})) },
+  episode93: { title:'El vaso de la licuadora · episodio 93',titleEn:'The blender jar · episode 93',kind:'HISTORIETA · 2025',kindEn:'COMIC · 2025',images:[1,2,3,4].map(n=>({src:`assets/episodes/ep-093-el-vaso-de-la-licuadora/93.${n}.png`,alt:`Viñeta ${n} del episodio 93: El vaso de la licuadora.`,altEn:`Panel ${n} from episode 93: The blender jar.`})) },
   rage: { title: '¡Grrrrr!', titleEn: 'Grrrr!', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-rage-2019.webp', alt:'Ilustración original de 2019: dos mandarinas reaccionan con enojo y alegría; texto ¡Grrrrr!', altEn:'Original 2019 illustration: two mandarins react with anger and joy; the image reads Grrrr!'}] },
   focus: { title: '¿Quién dice?', titleEn: 'Who says?', kind: 'HISTORIETA · 2019', kindEn: 'COMIC · 2019', images: [{src:'assets/comic-focus-2019.webp', alt:'Historieta original de 2019 sobre estar enfocado.', altEn:'Original 2019 comic about staying focused.'}] },
   coffee: { title: '¿Tienes hambre?', titleEn: 'Are you hungry?', kind: 'HISTORIETA · EPISODIO 51', kindEn: 'COMIC · EPISODE 51', images: [1,2,3,4].map(n=>({src:`assets/episodes/ep-051-tienes-hambre/51.${n}.png`,alt:`Lámina ${n} del episodio 51: ¿Tienes hambre?`,altEn:`Page ${n} from episode 51: Are you hungry?`})) },
@@ -163,7 +165,9 @@ async function loadApprovedEpisodes() {
       const staticKeys = {
         'ep-001-la-mosca':'episode1',
         'ep-051-tienes-hambre':'coffee',
-        'ep-085-lo-que-siempre-te-pasa':'episode85'
+        'ep-085-lo-que-siempre-te-pasa':'episode85',
+        'ep-044-el-teletrabajo':'episode44',
+        'ep-093-el-vaso-de-la-licuadora':'episode93'
       };
       const key = staticKeys[entry.id] || 'catalog:' + entry.id;
       catalogWorkKeys.set(entry.id,key);
