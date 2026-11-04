@@ -440,3 +440,16 @@
 .character-group .cast-grid-guest .cast-card.cast-pera .cast-portrait{background:#e4e0ff;}
 .character-group .cast-grid-support .cast-support:nth-child(1) .cast-portrait{background:#dceafa;}
 .character-group .cast-grid-support .cast-support:nth-child(2) .cast-portrait{background:#f7e6d9;}
+
+/* The adjacent low-resolution panel slides into view while the reader is dragged. */
+.reader-stage .reader-image-viewport{position:relative;display:grid;place-items:center;width:100%;height:100%;min-width:0;min-height:0;overflow:hidden;isolation:isolate}
+.reader-stage figure{position:absolute;inset:0;display:block;width:100%;height:100%}
+.reader-stage .reader-image-viewport{position:absolute;inset:0}
+.reader-stage .reader-image-viewport img{position:absolute;inset:0;margin:auto;width:100%!important;height:100%!important;max-width:min(100%,1100px)!important;max-height:min(62vh,800px)!important;aspect-ratio:auto!important;object-fit:contain;pointer-events:none}
+.reader-stage .reader-image-viewport #reader-image{z-index:1;transform:translateX(0);transition:transform .2s ease,opacity .2s}
+.reader-stage .reader-image-viewport #reader-swipe-preview{z-index:0;opacity:0;transform:translateX(100%);transition:transform .2s ease,opacity .14s;max-width:100%!important;max-height:100%!important;object-fit:contain;object-position:left center;background:transparent;border-radius:12px;box-shadow:0 14px 42px rgba(48,34,27,.12)}
+.reader-stage.is-swiping .reader-image-viewport #reader-image{transition:none;transform:translateX(var(--swipe-distance,0))}
+.reader-stage.is-swiping.has-swipe-preview .reader-image-viewport #reader-swipe-preview{opacity:1;transform:translateX(calc(100% + var(--swipe-distance,0)))}
+.reader-stage.is-swiping.swipe-preview-from-left .reader-image-viewport #reader-swipe-preview{transform:translateX(calc(-100% + var(--swipe-distance,0)));object-position:right center}
+.reader-stage.is-advancing-episode .reader-image-viewport #reader-image{transform:translateX(-115%)}
+@media(prefers-reduced-motion:reduce){.reader-stage .reader-image-viewport img{transition:none!important}}

@@ -236,6 +236,7 @@ loadApprovedEpisodes();
 
 const dialog = document.querySelector('#reader');
 const image = document.querySelector('#reader-image');
+const swipePreview = document.querySelector('#reader-swipe-preview');
 const title = document.querySelector('#reader-title');
 const kind = document.querySelector('#reader-kind');
 const readerDate = document.querySelector('#reader-date');
@@ -243,6 +244,21 @@ const count = document.querySelector('#reader-count');
 let activeWork;
 let panelIndex = 0;
 let readerArchiveMode = false;
+const panelThumbnailCache = new Map();
+function panelThumbnailSource(panel) {
+  return panel.src.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-$1.webp');
+}
+function preloadNeighborPanels(work, index) {
+  for (const neighborIndex of [index - 1, index + 1]) {
+    const neighbor = work.images[neighborIndex];
+    if (!neighbor) continue;
+    const src = panelThumbnailSource(neighbor);
+    if (panelThumbnailCache.has(src)) continue;
+    const preload = new Image();
+    preload.src = src;
+    panelThumbnailCache.set(src, preload);
+  }
+}
 function renderPanel() {
   const work = works[activeWork];
   const panel = work.images[panelIndex];
@@ -254,6 +270,9 @@ function renderPanel() {
   kind.textContent = language === 'es' ? work.kind : work.kindEn;
   if(readerDate){readerDate.hidden=!work.publishedAt;readerDate.textContent=work.publishedAt?formatCatalogDate(work.publishedAt):'';if(work.publishedAt)readerDate.dateTime=work.publishedAt;}
   count.textContent = `${panelIndex+1} / ${work.images.length}`;
+  if (swipePreview) { swipePreview.removeAttribute('src'); swipePreview.removeAttribute('data-panel-src'); swipePreview.alt = ''; }
+  stage?.classList.remove('has-swipe-preview','swipe-preview-from-left');
+  preloadNeighborPanels(work, panelIndex);
   const atEnd = panelIndex === work.images.length - 1;
   const multiple = work.images.length > 1;
   document.querySelectorAll('.reader-restart').forEach(button => { button.hidden = !atEnd || !multiple || readerArchiveMode; });
@@ -334,7 +353,7 @@ if (dialog) {
   const stage=document.querySelector('.reader-stage');
   let swipe=null;
   const swipeThreshold=118;
-  const resetSwipe=()=>{stage?.classList.remove('is-swiping','is-next-episode-pull','is-advancing-episode','is-swipe-edge');stage?.style.removeProperty('--swipe-distance');stage?.style.removeProperty('--swipe-progress');swipe=null;};
+  const resetSwipe=()=>{stage?.classList.remove('is-swiping','is-next-episode-pull','is-advancing-episode','is-swipe-edge','has-swipe-preview','swipe-preview-from-left');stage?.style.removeProperty('--swipe-distance');stage?.style.removeProperty('--swipe-progress');swipe=null;};
   stage?.addEventListener('pointerdown',event=>{
     if(!['touch','pen'].includes(event.pointerType)||event.target.closest('button'))return;
     swipe={id:event.pointerId,x:event.clientX,y:event.clientY,horizontal:false,dx:0};
@@ -349,6 +368,18 @@ if (dialog) {
     const pullNext=readerArchiveMode&&atEnd&&dx<0&&typeof window.advanceMandarinitaEpisode==='function';
     stage.classList.add('is-swiping');stage.style.setProperty('--swipe-distance',`${Math.max(-150,Math.min(150,dx*.72))}px`);
     stage.classList.toggle('is-next-episode-pull',pullNext);
+    const neighborIndex=panelIndex+(dx<0?1:-1);
+    const neighbor=works[activeWork].images[neighborIndex];
+    if(!pullNext&&neighbor&&swipePreview){
+      const fromLeft=dx>0;
+      const previewSrc=panelThumbnailSource(neighbor);
+      if(swipePreview.dataset.panelSrc!==previewSrc){swipePreview.dataset.panelSrc=previewSrc;swipePreview.src=previewSrc;}
+      swipePreview.alt=language==='es'?'Vista previa de la siguiente viñeta':'Preview of the adjacent panel';
+      stage.classList.toggle('swipe-preview-from-left',fromLeft);
+      stage.classList.add('has-swipe-preview');
+    } else {
+      stage.classList.remove('has-swipe-preview','swipe-preview-from-left');
+    }
     if(pullNext)stage.style.setProperty('--swipe-progress',String(Math.min(1,Math.abs(dx)/swipeThreshold)));
   });
   stage?.addEventListener('pointerup',event=>{
