@@ -264,7 +264,7 @@ function openReader(key, archiveMode = false) {
   panelIndex = 0;
   renderPanel();
   if(!dialog.open)dialog.showModal();
-  document.querySelector('.reader-close')?.focus();
+  document.querySelector('.reader-stage')?.focus({preventScroll:true});
 }
 window.openMandarinitaEpisode = episodeId => {
   const key=catalogWorkKeys.get(episodeId);
@@ -290,7 +290,10 @@ if (dialog) {
   document.querySelector('.reader-close')?.addEventListener('click',()=>dialog.close());
   dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
   dialog.addEventListener('keydown',event=>{
-    if (event.key==='ArrowLeft' && works[activeWork]?.images.length > 1) movePanel(-1);
-    if (event.key==='ArrowRight' && works[activeWork]?.images.length > 1) movePanel(1);
+    const interactive=event.target.closest?.('button,summary,a,input,select,textarea,[contenteditable="true"]');
+    if(event.key==='ArrowLeft'&&works[activeWork]?.images.length>1){event.preventDefault();movePanel(-1);return;}
+    if(event.key==='ArrowRight'&&works[activeWork]?.images.length>1){event.preventDefault();movePanel(1);return;}
+    if(event.key===' '&&!interactive){event.preventDefault();if(panelIndex<works[activeWork].images.length-1)movePanel(1);return;}
+    if(event.key==='Enter'&&!interactive){event.preventDefault();if(readerArchiveMode)window.advanceMandarinitaEpisode?.();else if(panelIndex<works[activeWork].images.length-1)movePanel(1);else{panelIndex=0;renderPanel();}}
   });
 }
