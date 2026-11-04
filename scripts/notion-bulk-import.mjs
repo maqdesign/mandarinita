@@ -182,6 +182,14 @@ function notionTokenFrom(environment) {
   return environment.NOTION_TOKEN || environment.NOTIO_TOKEN;
 }
 
+function validateProxyMode(environment, args) {
+  const hasProxy = Boolean(environment.HTTPS_PROXY || environment.HTTP_PROXY || environment.https_proxy || environment.http_proxy);
+  const proxyEnabled = args.includes('--use-env-proxy');
+  if (hasProxy && !proxyEnabled) {
+    throw new Error('Este entorno requiere su proxy de red. Ejecuta el importador con `node --use-env-proxy scripts/notion-bulk-import.mjs`.');
+  }
+}
+
 async function notionRequest(path, token, options = {}) {
   const wait = Math.max(0, 350 - (Date.now() - lastNotionRequest));
   if (wait) await sleep(wait);
@@ -296,6 +304,7 @@ async function main() {
   const dryRun = process.argv.includes('--dry-run');
   const token = notionTokenFrom(process.env);
   validateNotionConfiguration(token);
+  validateProxyMode(process.env, process.execArgv);
 
   const knownNumbers = new Set(catalog.episodes.filter(episode => Number.isInteger(episode.episodeNumber)).map(episode => episode.episodeNumber));
   const pages = await queryEpisodePages(token);
@@ -387,6 +396,8 @@ function runSelfTest() {
   assert.equal(episodeNumber('Día del emoji'), null);
   assert.equal(notionTokenFrom({ NOTIO_TOKEN: 'configured-secret' }), 'configured-secret');
   assert.equal(notionTokenFrom({ NOTION_TOKEN: 'preferred-secret', NOTIO_TOKEN: 'legacy-secret' }), 'preferred-secret');
+  assert.throws(() => validateProxyMode({ HTTPS_PROXY: 'configured' }, []), /--use-env-proxy/);
+  assert.doesNotThrow(() => validateProxyMode({ HTTPS_PROXY: 'configured' }, ['--use-env-proxy']));
   assert.equal(cleanTitle('Ep. 85 - Lo que siempre te pasa #comic', 85), 'Lo que siempre te pasa');
   const image = (name, id) => ({ type: 'image', id, image: { file: { url: `https://example.invalid/${name}`, name } } });
   const fixture = [
