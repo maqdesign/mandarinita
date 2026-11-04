@@ -276,8 +276,6 @@
     aspect-ratio:16/9;
   }
 }
-
-
 /* Keep Sra. Pera's tall scene crop legible in the guest card. */
 .character-group .cast-grid-guest .cast-portrait img.cast-scene-cover{object-fit:cover;}
 
@@ -390,3 +388,53 @@
 .sticker-pack-grid .sticker-pack-cover{display:block;flex:0 0 60px;width:60px;height:60px;object-fit:contain;border-radius:14px;background:#fff7e9}
 @media(max-width:480px){.reader-bottom{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}.reader-footer-meta{grid-column:1;width:100%;min-width:0;flex-wrap:nowrap;justify-content:flex-start;gap:8px}.reader-bottom>div.reader-actions{grid-column:1;display:flex;width:100%;justify-content:space-between;gap:8px;flex-wrap:nowrap}.reader-prev-episode,.reader-next-episode{min-width:0;min-height:42px;flex:1;gap:5px;padding:0 8px;font-size:.72rem}.reader-prev-episode svg,.reader-next-episode .ui-icon{width:16px;height:16px;flex:0 0 16px}.reader-episode-label-long{display:none}.reader-episode-label-short{display:inline}.random-confirm-actions{gap:8px}.random-confirm-actions button{min-width:0;flex:1;padding:0 8px;font-size:.72rem}.sticker-pack-grid .sticker-pack-cover{flex-basis:52px;width:52px;height:52px}}
 @media(prefers-reduced-motion:reduce){.reader-prev-episode,.random-confirm-actions button{transition:none}}
+
+/* Keep the full transparent character art inside its portrait frame. */
+.character-group .cast-card.cast-featured .cast-portrait{
+  height:clamp(410px,38vw,500px);
+  aspect-ratio:auto;
+  padding:30px;
+}
+.character-group .cast-card.cast-featured .cast-portrait img{
+  width:auto;
+  height:min(440px,calc(clamp(410px,38vw,500px) - 60px));
+  max-width:100%;
+  max-height:none;
+  object-fit:contain;
+  object-position:center;
+}
+@media(max-width:700px){
+  .character-group .cast-card.cast-featured .cast-portrait{
+    height:auto;
+    aspect-ratio:1/1;
+    padding:22px;
+  }
+  .character-group .cast-card.cast-featured .cast-portrait img{
+    height:calc((100vw - 48px)*.35 - 44px);
+  }
+}
+@media(max-width:430px){
+  .character-group .cast-card.cast-featured .cast-portrait{
+    height:auto;
+    aspect-ratio:1/1;
+    padding:22px;
+  }
+  .character-group .cast-card.cast-featured .cast-portrait img{
+    height:calc(100vw - 86px);
+  }
+}
+
+/* Final transparent portrait preview styling. */
+.character-group .cast-grid-guest .cast-card.cast-pera .cast-portrait{
+  flex:0 0 300px;
+  height:300px;
+}
+.character-group .cast-grid-guest .cast-card.cast-pera .cast-portrait img{
+  object-fit:contain;
+  object-position:center;
+}
+.character-group .cast-grid-lead .cast-featured:nth-child(1) .cast-portrait{background:#d9f0eb;}
+.character-group .cast-grid-lead .cast-featured:nth-child(2) .cast-portrait{background:#dceafa;}
+.character-group .cast-grid-support .cast-support:nth-child(3) .cast-portrait{background:#f7dfe0;}
+.character-group .cast-grid-support .cast-support:nth-child(4) .cast-portrait{background:#ffedb8;}
+.character-group .cast-grid-guest .cast-card.cast-pera .cast-portrait{background:#e4e0ff;}
