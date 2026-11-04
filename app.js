@@ -174,6 +174,7 @@ async function loadApprovedEpisodes() {
       works[key] = {
         title:entry.title.es,
         titleEn:catalogTitle(entry,'en'),
+        publishedAt:entry.publishedAt || null,
         kind:'HISTORIETA · ARCHIVO',
         kindEn:'COMIC · ARCHIVE',
         images:ordered.map(p=>({src:p.src,alt:p.alt.es,altEn:p.alt.en}))
@@ -233,9 +234,8 @@ const dialog = document.querySelector('#reader');
 const image = document.querySelector('#reader-image');
 const title = document.querySelector('#reader-title');
 const kind = document.querySelector('#reader-kind');
-const caption = document.querySelector('#reader-caption');
+const readerDate = document.querySelector('#reader-date');
 const count = document.querySelector('#reader-count');
-const notice = document.querySelector('#reader-notice');
 let activeWork;
 let panelIndex = 0;
 let readerArchiveMode = false;
@@ -248,16 +248,15 @@ function renderPanel() {
   image.alt = language === 'es' ? panel.alt : panel.altEn;
   title.textContent = language === 'es' ? work.title : work.titleEn;
   kind.textContent = language === 'es' ? work.kind : work.kindEn;
-  caption.textContent = language === 'es' ? `Lámina ${panelIndex+1} de ${work.images.length}` : `Page ${panelIndex+1} of ${work.images.length}`;
+  if(readerDate){readerDate.hidden=!work.publishedAt;readerDate.textContent=work.publishedAt?formatCatalogDate(work.publishedAt):'';if(work.publishedAt)readerDate.dateTime=work.publishedAt;}
   count.textContent = `${panelIndex+1} / ${work.images.length}`;
   const atEnd = panelIndex === work.images.length - 1;
-  notice.textContent = activeWork === 'storyboard' ? (language === 'es' ? 'Boceto original que muestra una etapa del proceso creativo.' : 'An original storyboard showing one stage of the creative process.') : activeWork === 'episode1' ? (language === 'es' ? 'Selección de láminas originales de 2019.' : 'A selection of original pages from 2019.') : activeWork === 'episode85' ? (language === 'es' ? 'Cuatro viñetas del episodio 85.' : 'Four panels from episode 85.') : '';
   const multiple = work.images.length > 1;
-  document.querySelectorAll('.reader-restart').forEach(button => { button.hidden = !atEnd || !multiple; });
+  document.querySelectorAll('.reader-restart').forEach(button => { button.hidden = !atEnd || !multiple || readerArchiveMode; });
   const nextEpisodeButton=document.querySelector('.reader-next-episode');
   if(nextEpisodeButton){const label=nextEpisodeButton.querySelector('span');const es=atEnd?'Ir al siguiente episodio':'Siguiente episodio';const en=atEnd?'Read the next episode':'Next episode';nextEpisodeButton.hidden=!readerArchiveMode;if(label){label.dataset.es=es;label.dataset.en=en;label.textContent=language==='es'?es:en;}}
-  document.querySelectorAll('.reader-prev,.reader-text-prev').forEach(button=>button.hidden=!multiple);
-  document.querySelectorAll('.reader-next,.reader-text-next').forEach(button=>button.hidden=!multiple || atEnd);
+  const prevButton=document.querySelector('.reader-prev');if(prevButton){prevButton.disabled=!multiple||panelIndex===0;prevButton.setAttribute('aria-label',language==='en'?'Previous panel':'Viñeta anterior');}
+  const nextButton=document.querySelector('.reader-next');if(nextButton){nextButton.disabled=!multiple||atEnd;nextButton.setAttribute('aria-label',language==='en'?'Next panel':'Viñeta siguiente');}
 }
 function openReader(key, archiveMode = false) {
   activeWork = key;
@@ -283,9 +282,7 @@ function movePanel(direction) {
 }
 if (dialog) {
   document.querySelector('.reader-prev')?.addEventListener('click',()=>movePanel(-1));
-  document.querySelector('.reader-text-prev')?.addEventListener('click',()=>movePanel(-1));
   document.querySelector('.reader-next')?.addEventListener('click',()=>movePanel(1));
-  document.querySelector('.reader-text-next')?.addEventListener('click',()=>movePanel(1));
   document.querySelectorAll('.reader-restart').forEach(button=>button.addEventListener('click',()=>{panelIndex=0;renderPanel();}));
   document.querySelector('.reader-next-episode')?.addEventListener('click',()=>window.advanceMandarinitaEpisode?.());
   image.addEventListener('load',()=>document.querySelector('.reader-stage')?.classList.remove('is-loading'));
