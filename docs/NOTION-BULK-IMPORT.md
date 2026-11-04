@@ -23,15 +23,17 @@ El importador ya conoce el ID de la fuente de datos de esta base. Si se usa en o
 Primero revisa qué importaría, sin descargar ni escribir:
 
 ```sh
-node scripts/notion-bulk-import.mjs --dry-run
+node --use-env-proxy scripts/notion-bulk-import.mjs --dry-run
 ```
 
 Luego baja las imágenes y agrega las entradas como revisión:
 
 ```sh
-node scripts/notion-bulk-import.mjs
+node --use-env-proxy scripts/notion-bulk-import.mjs
 node scripts/validate-episodes.mjs
 ```
+
+En el entorno de Cloud Environment, conserva la configuración de `HTTP_PROXY`/`HTTPS_PROXY` y ejecuta Node con `--use-env-proxy`; si se omite, Node intenta conectarse directamente y puede fallar con `ECONNREFUSED` aunque los dominios estén permitidos.
 
 La ejecución es repetible: compara los números de episodio con `episodes.json` y omite cualquier episodio que ya exista. No vuelve a bajar ni duplica los seis episodios actuales. Las viñetas originales se guardan en carpetas con nombres estables y extensiones reconocidas.
 
