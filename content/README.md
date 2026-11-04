@@ -15,3 +15,4 @@ Desde la raíz del repositorio:
 - El sitio es estático: no necesita instalación, compilación ni dependencias.
 
 Cloudflare Pages publica los cambios que llegan a la rama de producción `main`.
+Para importar episodios en lote desde Notion, consulta [NOTION-BULK-IMPORT.md](../docs/NOTION-BULK-IMPORT.md). El importador descarga las imágenes finales y añade los episodios nuevos como revisión, sin duplicar los ya catalogados.
