@@ -3,12 +3,12 @@ const searchInput=document.querySelector('#global-search-input');
 const searchResults=document.querySelector('#global-search-results');
 let searchCatalog=[];
 fetch('episodes.json',{cache:'no-cache'}).then(r=>r.ok?r.json():Promise.reject()).then(data=>{searchCatalog=data.episodes||[];}).catch(()=>{});
+function syncSearchLanguage(){const english=document.documentElement.dataset.lang==='en';const heading=document.querySelector('#global-search-title');if(heading)heading.textContent=english?'Search Mandarinita':'Buscar en Mandarinita';if(searchInput)searchInput.placeholder=english?'Episode title or number':'Título o número de episodio';const label=document.querySelector('label[for="global-search-input"]');if(label)label.textContent=english?'Search episodes':'Buscar episodios';}
+syncSearchLanguage();
 function openSearch(){if(!searchDialog)return;searchDialog.showModal();searchInput.focus();}
 document.querySelectorAll('.global-search-trigger').forEach(button=>button.addEventListener('click',openSearch));
 document.querySelector('.language-toggle')?.addEventListener('click',()=>{
-  const english=document.documentElement.dataset.lang==='en';
-  const heading=document.querySelector('#global-search-title');if(heading)heading.textContent=english?'Search Mandarinita':'Buscar en Mandarinita';
-  if(searchInput)searchInput.placeholder=english?'Episode title or number':'Título o número de episodio';
+  syncSearchLanguage();
 });
 document.addEventListener('keydown',event=>{if((event.key==='k'&&(event.ctrlKey||event.metaKey))||event.key==='/'){if(event.target.matches('input,textarea,select,[contenteditable="true"]'))return;event.preventDefault();openSearch();}});
 searchInput?.addEventListener('input',()=>{

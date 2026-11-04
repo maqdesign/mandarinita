@@ -26,6 +26,10 @@ const accessibleEnglish = {
     'Abrir Mandarimoji -emoji Mandarinita en Sticker.ly': 'Open the Mandarimoji emoji sticker pack on Sticker.ly',
     'Abrir Mandarinita retro en Sticker.ly': 'Open the Mandarinita retro sticker pack on Sticker.ly',
     'Cerrar lector': 'Close reader',
+    'Cerrar búsqueda': 'Close search',
+    'Buscar en Mandarinita': 'Search Mandarinita',
+    'Título o número de episodio': 'Episode title or number',
+    'Saltar al contenido': 'Skip to content',
     'Viñeta anterior': 'Previous panel',
     'Viñeta siguiente': 'Next panel'
   },
@@ -40,7 +44,15 @@ const accessibleEnglish = {
     'Greg el Zanahorio en una escena de Mandarinita': 'Greg the Carrot in a Mandarinita scene.',
     'Limón Agrio en una escena de Mandarinita': 'Sour Lemon in a Mandarinita scene.',
     'Sra. Pera en una escena de Salón de la Es-pera': 'Mrs. Pear in a scene from The Waiting Room Salon.',
-    'Morita, una mora traviesa y muy movida, con ojos grandes y la lengua afuera.': 'Morita, a mischievous, energetic blackberry with big eyes and her tongue out.'
+    'Morita, una mora traviesa y muy movida, con ojos grandes y la lengua afuera.': 'Morita, a mischievous, energetic blackberry with big eyes and her tongue out.',
+    'Viñeta 1 del storyboard original': 'Panel 1 of the original storyboard',
+    'Viñeta 2 del storyboard original': 'Panel 2 of the original storyboard',
+    'Viñeta 3 del storyboard original': 'Panel 3 of the original storyboard',
+    'Viñeta 4 del storyboard original': 'Panel 4 of the original storyboard',
+    'Boceto original del episodio 44': 'Original sketch for episode 44',
+    'Opción de boceto A para la escena del episodio 51': 'Sketch option A for the scene in episode 51',
+    'Opción de boceto B para la escena del episodio 51': 'Sketch option B for the scene in episode 51',
+    'Boceto original del episodio 52': 'Original sketch for episode 52'
   }
 };
 function syncAccessibleLanguage() {
@@ -189,7 +201,7 @@ async function loadApprovedEpisodes() {
       button.append(cover);button.addEventListener('click',()=>openReader(key));
       const copy=document.createElement('div');copy.className='work-copy';
       const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
-      const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
+      const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
       const heading=document.createElement('h3');heading.textContent=entry.title[language]||entry.title.es;
       const summary=document.createElement('p');summary.textContent=language==='es'?`${ordered.length} láminas en orden de lectura.`:`${ordered.length} pages in reading order.`;
       const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';
@@ -215,7 +227,7 @@ async function loadApprovedEpisodes() {
         const cover=document.createElement('img');cover.src=ordered[0].src;cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';button.append(cover);button.addEventListener('click',()=>openReader(key));
         const copy=document.createElement('div');copy.className='work-copy';
         const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
-        const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
+        const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
         const heading=document.createElement('h3');heading.textContent=catalogTitle(entry);
         const summary=document.createElement('p');summary.textContent=language==='es'?`${ordered.length} viñetas en orden de lectura.`:`${ordered.length} panels in reading order.`;
         if (entry.publishedAt) { const date=document.createElement('time');date.className='episode-date';date.dateTime=entry.publishedAt;date.textContent=formatCatalogDate(entry.publishedAt);copy.append(meta,heading,summary,date); } else copy.append(meta,heading,summary);
