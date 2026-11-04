@@ -368,3 +368,4 @@
 .work-grid .episode-share{width:32px;height:32px;flex:0 0 32px;display:grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--green);cursor:pointer}
 .work-grid .episode-share svg{width:17px;height:17px}
 .work-grid .episode-share:hover{color:var(--orange);background:var(--soft)}
+@media(max-width:680px){.reader-shortcuts{display:none}}

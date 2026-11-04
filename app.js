@@ -281,6 +281,10 @@ window.openMandarinitaEpisode = episodeId => {
 };
 window.randomMandarinitaEpisode = () => {
   if(!approvedEpisodeKeys.length)return false;
+  const confirmed=window.confirm(language==='en'
+    ? 'Open a random episode? If you are following the archive in order, this may interrupt your sequence.'
+    : '¿Seguro que quieres abrir un episodio aleatorio? Si sigues una secuencia, podrías perder el hilo.');
+  if(!confirmed)return false;
   const choices=approvedEpisodeKeys.filter(item=>item.id!==works[activeWork]?.episodeId);
   const list=choices.length?choices:approvedEpisodeKeys;
   const picked=list[Math.floor(Math.random()*list.length)];
