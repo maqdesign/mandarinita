@@ -4,7 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#fffaf3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Taller Mandarinita">
   <title>Taller Mandarinita · Editor de episodios</title>
+  <link rel="manifest" href="/editor.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/mandarinita-pwa-180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,11 +22,12 @@
     <header class="home-header">
       <a href="index.html" class="brand"><img src="assets/mandarinita-logo.svg" alt="Mandarinita" width="142"></a>
       <span class="eyebrow">TALLER PERSONAL DE MAURICIO</span>
+      <button id="install-app" class="button install-app" hidden><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 18v3h14v-3"/></svg></span><span>Instalar taller</span></button>
     </header>
     <main class="home-main">
       <div class="home-heading">
-        <div><span class="eyebrow">ARCHIVO LOCAL</span><h1 id="home-title">Mis episodios</h1><p>Tus proyectos se guardan en este dispositivo. Descarga el archivo fuente para moverlos entre dispositivos.</p></div>
-        <div class="home-actions"><button class="button primary" id="new-project"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Nuevo episodio</button><button class="button" id="import-project">Importar archivo .mandarinita</button><input id="project-file" type="file" accept=".mandarinita,.man,.zip,.json,application/zip,application/json" hidden></div>
+        <div><span class="eyebrow">CENTRO DE CONTENIDO · BORRADORES LOCALES</span><h1 id="home-title">Mis borradores</h1><p>Organiza episodios, textos, banners y secciones. Cada pieza queda editable y en revisión hasta que la apruebes.</p></div>
+        <div class="home-actions"><button class="button primary" id="new-project"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Nuevo contenido</button><button class="button" id="import-project">Importar archivo .mandarinita</button><input id="project-file" type="file" accept=".mandarinita,.man,.zip,.json,application/zip,application/json" hidden></div>
       </div>
       <div id="project-list" class="project-list"></div>
       <p class="home-footnote">Tus proyectos se guardan en este navegador. El archivo editable conserva capas y propiedades para abrirlos en otro dispositivo.</p>
@@ -29,7 +36,7 @@
 
   <section id="editor-view" class="editor-view" hidden>
     <header class="topbar">
-      <button class="home-back" id="back-home"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6M9 12h12"/></svg></span><span>Mis episodios</span></button>
+      <button class="home-back" id="back-home"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6M9 12h12"/></svg></span><span>Mis borradores</span></button>
       <a class="brand" href="index.html"><img src="assets/mandarinita-logo.svg" alt="Mandarinita" width="112"></a>
       <div class="project"><span class="eyebrow">TALLER MANDARINITA</span><strong id="project-title" contenteditable="true" aria-label="Título del episodio">Un episodio nuevo</strong><small id="save-state">Borrador local</small></div>
       <div class="top-actions">
@@ -56,7 +63,7 @@
           <div class="breadcrumbs"><span>EPISODIO</span><span class="breadcrumb-separator" aria-hidden="true"></span><span id="current-panel-label">VIÑETA 1</span></div>
           <div class="tools">
             <button id="toggle-library" title="Mostrar/ocultar biblioteca">Biblioteca</button><button id="toggle-layers" title="Mostrar/ocultar inspector">Capas</button><button id="focus-mode" title="Ampliar el lienzo" aria-pressed="false">Lienzo amplio</button>
-            <button id="add-panel">Viñeta</button><select id="bubble-kind" aria-label="Tipo de texto"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW</option></select><button id="add-bubble">Añadir</button>
+            <button id="add-panel">Viñeta</button><button id="add-text">Texto</button><select id="bubble-kind" aria-label="Tipo de texto"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW</option></select><button id="add-bubble">Añadir globo</button>
             <button id="toggle-draw" aria-pressed="false">Dibujar</button>
             <span class="divider"></span><button id="toggle-grid" aria-pressed="true">Guías</button><button id="zoom-out" aria-label="Alejar"></button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Acercar"></button><button id="fit">Ajustar</button>
             <select id="export-preset" aria-label="Formato del lienzo"><option value="web">Web · 3:2</option><option value="square">Instagram · 1:1</option><option value="portrait">Instagram · 4:5</option></select>
@@ -64,10 +71,11 @@
           </div>
         </div>
         <div id="draw-toolbar" class="draw-toolbar" hidden>
-          <span class="eyebrow">TRAZO</span><select id="brush-type" aria-label="Tipo de trazo"><option value="pen">Pluma</option><option value="marker">Marcador</option><option value="pencil">Lápiz</option></select>
-          <div id="color-palette" class="color-palette" aria-label="Colores rápidos"></div><label>Ancho <input id="brush-size" type="range" min="2" max="24" value="5"></label><button id="eraser-tool" aria-pressed="false">Borrador</button><button id="group-drawing">Agrupar trazos</button><button id="end-drawing-object" hidden>Terminar objeto</button><span>Apple Pencil y táctil</span>
+          <span class="eyebrow">DIBUJO</span>
+          <button class="draw-tool active" id="brush-pen" aria-label="Pluma" title="Pluma" aria-pressed="true"></button><button class="draw-tool" id="brush-marker" aria-label="Marcador" title="Marcador" aria-pressed="false"></button><button class="draw-tool" id="brush-pencil" aria-label="Lápiz" title="Lápiz" aria-pressed="false"></button>
+          <div id="color-palette" class="color-palette" aria-label="Colores rápidos"></div><label class="brush-width" aria-label="Ancho del trazo">Ancho<input id="brush-size" type="range" min="2" max="24" value="5"></label><button id="eraser-tool" class="draw-tool" aria-label="Borrador" title="Borrador" aria-pressed="false"></button><button id="group-drawing" class="draw-tool" aria-label="Agrupar trazos en un objeto" title="Agrupar trazos"></button><button id="end-drawing-object" class="draw-tool" aria-label="Terminar objeto" title="Terminar objeto" hidden></button>
         </div>
-        <div class="stage-wrap"><div class="stage" id="stage" aria-label="Mesa de trabajo con todas las viñetas"></div></div>
+        <div class="stage-wrap" id="stage-wrap"><div class="stage" id="stage" aria-label="Mesa de trabajo con todas las viñetas"></div></div>
         <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Arrastra las viñetas para ordenarlas</strong></div></div><div id="panel-list" class="panel-list"></div></div>
       </section>
       <aside class="inspector" id="inspector-panel">
@@ -79,6 +87,9 @@
     </main>
   </section>
   <dialog id="template-dialog" class="template-dialog"><form method="dialog"><button class="close" aria-label="Cerrar"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button></form><span class="eyebrow">EMPEZAR UN EPISODIO</span><h2>Elige una plantilla</h2><p>Podrás cambiar el formato y el número de viñetas más adelante.</p><div class="template-grid"><button type="button" class="template-card" data-template="strip"><span class="template-art strip-template"><i></i><i></i><i></i></span><b>Tira breve</b><small>3 viñetas · Web</small></button><button type="button" class="template-card" data-template="carousel"><span class="template-art carousel-template"><i></i><i></i><i></i><i></i></span><b>Carrusel</b><small>4 viñetas · Instagram vertical</small></button><button type="button" class="template-card" data-template="square"><span class="template-art square-template"><i></i><i></i><i></i><i></i></span><b>Página cuadrada</b><small>4 viñetas · Instagram cuadrado</small></button><button type="button" class="template-card" data-template="blank"><span class="template-art blank-template"><i></i><i></i></span><b>En blanco</b><small>2 viñetas · Web</small></button></div></dialog>
+  <dialog id="new-content-dialog" class="template-dialog"><form method="dialog"><button class="close" aria-label="Cerrar"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button></form><span class="eyebrow">CENTRO DE CONTENIDO</span><h2>¿Qué quieres crear?</h2><p>Todo empieza como borrador local y requiere revisión antes de llegar al sitio.</p><div class="template-grid content-type-grid"><button type="button" class="template-card content-type-card" data-content-type="episode"><span class="template-art strip-template"><i></i><i></i><i></i></span><b>Episodio</b><small>Una historia con varias viñetas y orden de lectura</small></button><button type="button" class="template-card content-type-card" data-content-type="copy"><span class="template-art blank-template"><i></i></span><b>Texto o copy</b><small>Titulares, descripciones y llamadas a la acción</small></button><button type="button" class="template-card content-type-card" data-content-type="banner"><span class="template-art carousel-template"><i></i><i></i></span><b>Banner</b><small>Composición para una promoción o portada</small></button><button type="button" class="template-card content-type-card" data-content-type="section"><span class="template-art square-template"><i></i><i></i><i></i><i></i></span><b>Sección web</b><small>Un bloque visual editable para revisar</small></button></div></dialog>
+  <dialog id="resource-picker-dialog" class="resource-picker-dialog"><form method="dialog"><button class="close" aria-label="Cerrar"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button></form><span class="eyebrow">COMPONENTES APROBADOS</span><h2>Sustituir personaje</h2><p>El nuevo dibujo conservará el tamaño, giro y posición de esta capa.</p><div id="replace-resource-grid" class="replace-resource-grid"></div></dialog>
+  <dialog id="install-help-dialog" class="install-help-dialog"><form method="dialog"><button class="close" aria-label="Cerrar"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button></form><span class="eyebrow">TALLER MANDARINITA</span><h2>Añadir a tu pantalla de inicio</h2><p><strong>iPad o iPhone:</strong> abre esta página en Safari, toca Compartir y elige “Añadir a pantalla de inicio”.</p><p><strong>Mac o computadora:</strong> usa “Instalar” o “Crear acceso directo” desde el menú del navegador.</p></dialog>
   <dialog id="delete-project-dialog" class="confirm-dialog" aria-labelledby="delete-title"><form method="dialog"><span class="eyebrow">ARCHIVO LOCAL</span><h2 id="delete-title">¿Borrar este episodio?</h2><p>Se quitará de este dispositivo. Si tienes un archivo .mandarinita descargado, podrás volver a importarlo.</p><div class="dialog-actions"><button value="cancel" class="button">Cancelar</button><button id="confirm-delete" value="delete" class="button danger">Borrar episodio</button></div></form></dialog>
   <div id="toast" role="status" aria-live="polite"></div>
 </body>

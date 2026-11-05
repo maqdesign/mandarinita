@@ -50,6 +50,8 @@
   let erasing = null;
   let pendingDeleteId = null;
   let panelDrag = null;
+  let installPromptEvent = null;
+  let pinchZoom = null;
 
   // Small inline subset of the open-source Lucide icon set (ISC) keeps controls crisp offline.
   const ICON = {
@@ -72,12 +74,16 @@
     copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
     grip: '<circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>',
     eraser: '<path d="m7 21-4.3-4.3a2.4 2.4 0 0 1 0-3.4L13.3 2.7a2.4 2.4 0 0 1 3.4 0l4.6 4.6a2.4 2.4 0 0 1 0 3.4L11 21H7zM5 14l5 5M12 21h9"/>'
+    ,marker: '<path d="m15 4 5 5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20zM3 21h18"/>',
+    pencil: '<path d="m15 5 4 4M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20z"/>',
+    layersPlus: '<path d="m12 2 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5M19 3v6M16 6h6"/>',
+    text: '<path d="M4 6V4h16v2M12 4v16M8 20h8"/>'
   };
   const svgIcon = (name, cls = 'ui-icon') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICON[name] || ICON.image}</svg>`;
 
   function id() { return crypto.randomUUID?.() || Math.random().toString(36).slice(2, 12); }
-  function makeProject(title = 'Episodio nuevo') {
-    return { schemaVersion: 1, projectId: id(), title, status: 'draft', format: 'web', pageHeight: 400, active: 0, selected: null, zoom: 1, grid: true, panels: [{ id: id(), items: [] }, { id: id(), items: [] }], createdAt: Date.now(), updatedAt: Date.now() };
+  function makeProject(title = 'Episodio nuevo', contentType = 'episode') {
+    return { schemaVersion: 1, projectId: id(), title, contentType, status: 'draft', format: 'web', pageHeight: 400, active: 0, selected: null, zoom: 1, grid: true, panels: [{ id: id(), items: [] }, { id: id(), items: [] }], createdAt: Date.now(), updatedAt: Date.now() };
   }
   function listProjects() {
     try { return JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]'); } catch { return []; }
@@ -95,6 +101,7 @@
   function normalizeProject(project) {
     const normalized = { ...makeProject(project.title || 'Episodio importado'), ...project };
     normalized.projectId ||= id();
+    normalized.contentType ||= 'episode';
     normalized.format = FORMAT[normalized.format] ? normalized.format : 'web';
     normalized.pageHeight = normalized.pageHeight || FORMAT[normalized.format].logicalHeight;
     normalized.panels = Array.isArray(normalized.panels) && normalized.panels.length ? normalized.panels : [{ id: id(), items: [] }, { id: id(), items: [] }];
@@ -107,7 +114,7 @@
     project.updatedAt = Date.now();
     localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
     const index = listProjects().filter(p => p.id !== project.projectId);
-    index.push({ id: project.projectId, title: project.title || 'Episodio sin título', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: project.updatedAt });
+    index.push({ id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: project.updatedAt });
     index.sort((a, b) => b.updatedAt - a.updatedAt);
     localStorage.setItem(PROJECTS_KEY, JSON.stringify(index));
   }
@@ -160,7 +167,7 @@
     const projects = listProjects();
     list.innerHTML = '';
     if (!projects.length) {
-      list.innerHTML = `<div class="home-empty">${svgIcon('image','home-empty-icon')}<b>Aquí aparecerán tus episodios</b><p>Crea uno nuevo o importa un archivo .mandarinita que guardaste antes.</p></div>`;
+      list.innerHTML = `<div class="home-empty">${svgIcon('image','home-empty-icon')}<b>Aquí aparecerán tus borradores</b><p>Crea un episodio, copy, banner o sección web. Todo queda editable en este dispositivo.</p></div>`;
       return;
     }
     projects.forEach(record => {
@@ -173,13 +180,15 @@
         layer.style.left = `${Math.max(-10,Math.min(100,item.x/600*100))}%`; layer.style.top = `${Math.max(-10,Math.min(100,item.y/(project.pageHeight || 400)*100))}%`;
         layer.style.width = `${Math.max(5,item.w/600*100)}%`; layer.style.height = `${Math.max(5,item.h/(project.pageHeight || 400)*100)}%`;
         if (item.type === 'image') { const image = document.createElement('img'); image.src = item.src; image.alt = ''; layer.append(image); }
-        else if (item.type === 'bubble') layer.textContent = item.text || '';
+        else if (item.type === 'bubble' || item.type === 'text') { layer.textContent = item.text || ''; if(item.type==='text')layer.classList.add('preview-text'); }
         else { const stroke = document.createElement('span'); stroke.style.cssText = `position:absolute;inset:0;background:linear-gradient(135deg,transparent 46%,${item.color || '#282522'} 48%,${item.color || '#282522'} 52%,transparent 54%)`; layer.append(stroke); }
         preview.append(layer);
       });
       const main = document.createElement('div'); main.className = 'project-card-main';
       const reviewState = record.status === 'review';
-      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${reviewState ? 'ready' : ''}">${reviewState ? 'En revisión' : 'Borrador'}</span><small>${project.panels?.length || 0} viñetas · Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
+      const kindLabels = {episode:'Episodio',copy:'Texto / copy',banner:'Banner',section:'Sección web'};
+      const isEpisode = (project.contentType || record.contentType || 'episode') === 'episode';
+      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${reviewState ? 'ready' : ''}">${reviewState ? 'En revisión' : 'Borrador'}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
       const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${record.title}`); open.append(preview,main); open.onclick = () => openProject(record.id);
       const menu = document.createElement('details'); menu.className = 'project-card-menu';
       menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">Duplicar archivo</button><button type="button" data-action="delete" class="danger">Borrar archivo</button></div>`;
@@ -197,13 +206,20 @@
     } catch { toast('No pude abrir ese proyecto local. Prueba importar su archivo .mandarinita.'); }
   }
   function newProject() {
-    $('#template-dialog').showModal();
+    $('#new-content-dialog').showModal();
   }
   function createProjectFromTemplate(key) {
     const templates = { strip: { format:'web', panels:3 }, carousel: { format:'portrait', panels:4 }, square: { format:'square', panels:4 }, blank: { format:'web', panels:2 } };
-    const template = templates[key] || templates.blank; state = makeProject(); state.format = template.format; state.pageHeight = FORMAT[template.format].logicalHeight;
+    const template = templates[key] || templates.blank; state = makeProject('Episodio nuevo','episode'); state.format = template.format; state.pageHeight = FORMAT[template.format].logicalHeight;
     state.panels = Array.from({length:template.panels},() => ({id:id(),items:[]})); undoStack = []; redoStack = [];
     try { saveProject(); showEditor(); } catch { showEditor(); toast('Este navegador no permitió guardar automáticamente. Descarga el .mandarinita.'); }
+  }
+  function createContentDraft(type) {
+    if(type==='episode'){ $('#template-dialog').showModal(); return; }
+    const presets={copy:{title:'Texto o copy nuevo',label:'Escribe el texto o copy aquí…'},banner:{title:'Banner nuevo',label:'Escribe el titular del banner…'},section:{title:'Sección web nueva',label:'Escribe el título de la sección…'}};
+    const preset=presets[type]||presets.copy; state=makeProject(preset.title,type); state.panels=[{id:id(),items:[]}]; undoStack=[];redoStack=[];
+    const item={id:id(),type:'text',name:preset.title,text:preset.label,x:80,y:105,w:440,h:150,fontSize:32,fontWeight:600,align:'center',color:'#292725',rotation:0,locked:false};state.panels[0].items.push(item);state.selected=item.id;
+    try{saveProject();showEditor();}catch{showEditor();toast('Este navegador no permitió guardar automáticamente. Descarga el archivo editable.');}
   }
   function duplicateProject(projectId) {
     try {
@@ -250,7 +266,7 @@
     const height = isSticker ? 130 : 160;
     const pos = placeWithoutOverlap(width, height);
     snapshot();
-    const item = { id: id(), type: 'image', name: resource.name, resourceId: resource.name, aliases: resource.aliases || [], src: variant.src, variants: resource.variants || null, variantIndex, x: pos.x, y: pos.y, w: width, h: height, rotation: 0, locked: false };
+    const item = { id: id(), type: 'image', name: resource.name, resourceId: resource.name, category: resource.category, aliases: resource.aliases || [], src: variant.src, variants: resource.variants || null, variantIndex, x: pos.x, y: pos.y, w: width, h: height, rotation: 0, locked: false };
     currentPanel().items.push(item); selectItem(item.id); commit();
   }
   function addBubble(kind = 'dialogue') {
@@ -260,6 +276,9 @@
     const labels = { dialogue: 'Diálogo', thought: 'Pensamiento', narration: 'Narración', shout: 'Voz fuerte', sfx: 'Efecto' };
     const item = { id: id(), type: 'bubble', kind, name: kind === 'sfx' ? 'Efecto de sonido' : `Globo · ${labels[kind]}`, text: kind === 'sfx' ? 'POW!' : 'Escribe aquí…', ...pos, ...size, fontSize: kind === 'sfx' ? 42 : kind === 'shout' ? 24 : 17, align: 'center', shape:'auto', tail: ['dialogue', 'shout', 'thought'].includes(kind), tailAngle: 90, tailLength: 34, actionStyle: 'raised', overflow: 'auto', locked: false };
     currentPanel().items.push(item); selectItem(item.id); commit();
+  }
+  function addTextBlock(text='Escribe aquí…') {
+    const pos=placeWithoutOverlap(360,100);snapshot();const item={id:id(),type:'text',name:'Texto',text,x:pos.x,y:pos.y,w:360,h:100,fontSize:28,fontWeight:600,align:'center',color:'#292725',rotation:0,locked:false};currentPanel().items.push(item);selectItem(item.id);commit();
   }
   function updateBubbleAccessories(item, element) {
     element.querySelectorAll('.bubble-tail-svg,.thought-dot').forEach(node => node.remove());
@@ -311,16 +330,21 @@
   function render() {
     const stage = $('#stage'); stage.innerHTML = '';
     const available = Math.max(300, stage.clientWidth || stage.parentElement.clientWidth || window.innerWidth - 32);
-    const columns = Math.max(1, Math.floor((available + 14) / 300));
-    const cellWidth = (available - (columns - 1) * 14) / columns;
-    const scale = Math.min(1, cellWidth / LOGICAL_WIDTH) * state.zoom;
+    const gap = 14;
+    const baseColumns = Math.max(1, Math.floor((available + gap) / 300));
+    const baseCell = (available - (baseColumns - 1) * gap) / baseColumns;
+    const fitScale = Math.min(1, Math.max(.2, (baseCell - 18) / LOGICAL_WIDTH));
+    const scale = fitScale * (state.zoom || 1);
+    const tileWidth = LOGICAL_WIDTH * scale + 18;
+    const columns = Math.max(1, Math.floor((available + gap) / (tileWidth + gap)));
+    const cellWidth = (available - (columns - 1) * gap) / columns;
+    stage.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`;
     $('#zoom-label').textContent = `${Math.round(scale * 100)}%`;
     $('#project-title').textContent = state.title || 'Episodio nuevo';
     $('#export-preset').value = state.format;
     renderPanels();
     state.panels.forEach((panel, panelIndex) => {
-      const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.dataset.panelIndex = panelIndex;
-      wrapper.style.setProperty('--artboard-scale', scale);
+      const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.dataset.panelIndex = panelIndex; wrapper.style.setProperty('--artboard-scale', scale);
       const heading = document.createElement('div'); heading.className = 'artboard-heading';
       const activate = document.createElement('button'); activate.className = 'artboard-title'; activate.innerHTML = `<strong>Viñeta ${panelIndex + 1}</strong><span>${panel.items.length} capas</span>`; activate.onclick = () => setActivePanel(panelIndex, true);
       heading.append(activate); wrapper.append(heading);
@@ -386,6 +410,11 @@
         svg.append(path);
       });
       element.append(svg);
+    } else if (item.type === 'text') {
+      element.classList.add('text-layer');
+      const textarea=document.createElement('textarea');textarea.setAttribute('aria-label',`Texto: ${item.name}`);textarea.value=item.text||'';textarea.style.fontSize=`${item.fontSize||28}px`;textarea.style.fontWeight=String(item.fontWeight||600);textarea.style.textAlign=item.align||'center';textarea.style.color=item.color||'#292725';
+      textarea.onfocus=()=>{if(!item._typingSnapshot){snapshot();item._typingSnapshot=true;}};textarea.onblur=()=>{delete item._typingSnapshot;autosave();};
+      textarea.oninput=()=>{item.text=textarea.value;textarea.style.height='auto';item.h=Math.max(56,Math.min(state.pageHeight-item.y,textarea.scrollHeight+12));element.style.height=`${item.h}px`;autosave();};element.append(textarea);
     } else {
       applyBubbleShape(item,element);
       updateBubbleAccessories(item, element);
@@ -446,18 +475,27 @@
   function renderInspector() {
     const item = currentItem(); const box = $('#inspector-content');
     if (!item) { box.innerHTML = `<div class="empty-state">${svgIcon('image')}<b>Selecciona un elemento</b><p>Su contorno y tirador naranja aparecerán en el lienzo.</p></div>`; return; }
+    const characterResource = item.type === 'image' && (item.category === 'character' || resources.some(resource => resource.name === item.resourceId && resource.category === 'character'));
+    const replaceControl = characterResource ? '<button id="replace-character" class="button replace-character">Sustituir personaje</button>' : '';
+    const textControls = item.type === 'text' ? `<div class="field"><label>Contenido</label><textarea id="p-text" rows="4">${escapeHTML(item.text||'')}</textarea></div><div class="field"><label>Tamaño de letra</label><input id="p-text-font" type="range" min="10" max="72" value="${item.fontSize||28}"></div><div class="field"><label>Alineación</label><select id="p-text-align"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option></select></div><div class="field"><label>Color</label><input id="p-text-color" type="color" value="${item.color||'#292725'}"></div>` : '';
     const variantControl = item.variants?.length ? `<div class="field"><label>Variación del mismo personaje</label><select id="p-variant">${item.variants.map((variant, i) => `<option value="${i}" ${i === item.variantIndex ? 'selected' : ''}>${escapeHTML(variant.name)}</option>`).join('')}</select></div>` : '';
     const bubbleControls = item.type === 'bubble' ? `<div class="field"><label>Tipo</label><select id="p-kind"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto de sonido</option></select></div>${['dialogue','thought'].includes(item.kind) ? `<div class="field"><label>Forma</label><select id="p-shape"><option value="auto">Adaptar al texto</option><option value="oval">Óvalo</option><option value="rounded">Rectángulo redondeado</option></select></div>` : ''}${item.kind === 'sfx' ? `<div class="field"><label>Estilo de efecto</label><select id="p-action-style"><option value="raised">Naranja con sombra</option><option value="outline">Contorno blanco</option><option value="impact">Sombra dramática</option></select></div>` : ''}<div class="field"><label>Tamaño de letra</label><input id="p-font" type="range" min="10" max="56" value="${item.fontSize || 17}"></div><div class="field"><label>Alineación</label><select id="p-align"><option value="center">Centrada</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div>${['dialogue','thought','shout'].includes(item.kind) ? `<label class="check-field"><input id="p-tail" type="checkbox" ${item.tail ? 'checked' : ''}> ${item.kind === 'thought' ? 'Burbujas de pensamiento' : 'Cola del globo'}</label>${item.tail ? `<div class="field"><label>Dirección de la cola</label><input id="p-tail-angle" type="range" min="-180" max="180" value="${item.tailAngle ?? 90}"></div><div class="field"><label>Largo de la cola</label><input id="p-tail-length" type="range" min="16" max="90" value="${item.tailLength ?? 34}"></div>` : ''}` : ''}<label class="check-field"><input id="p-autogrow" type="checkbox" ${item.autoGrow === false ? '' : 'checked'}> Ajustar alto al texto</label>` : '';
     const drawingControls = item.type === 'drawing' ? `<div class="field"><label>Relleno del contorno cerrado</label><label class="check-field"><input id="p-fill" type="checkbox" ${item.fillEnabled ? 'checked' : ''}> Aplicar relleno</label><input id="p-fill-color" type="color" value="${item.fillColor || '#F87209'}"></div><div class="field"><label>Color del trazo</label><input id="p-color" type="color" value="${item.color || '#282522'}"></div><div class="field"><label>Grosor</label><input id="p-stroke-width" type="range" min="1" max="40" value="${item.strokeWidth || 5}"></div>` : '';
     const recoverControl = isOffstage(item) ? '<button id="bring-in" class="button recovery">Recuperar dentro del lienzo</button>' : '';
-    box.innerHTML = `<div class="field"><label>Nombre de capa</label><input id="p-name" value=""></div>${variantControl}${bubbleControls}${drawingControls}<div class="field-row"><div class="field"><label>X</label><input id="p-x" type="number" value="${Math.round(item.x)}"></div><div class="field"><label>Y</label><input id="p-y" type="number" value="${Math.round(item.y)}"></div></div><div class="field-row"><div class="field"><label>Ancho</label><input id="p-w" type="number" value="${Math.round(item.w)}"></div><div class="field"><label>Alto</label><input id="p-h" type="number" value="${Math.round(item.h)}"></div></div><div class="field"><label>Giro</label><input id="p-rot" type="range" min="-180" max="180" value="${item.rotation || 0}"></div><div class="inspector-buttons"><button id="duplicate">Duplicar</button><button id="lock">${item.locked ? 'Desbloquear' : 'Bloquear'}</button><button id="delete" class="danger">Borrar</button></div>${recoverControl}`;
+    box.innerHTML = `<div class="field"><label>Nombre de capa</label><input id="p-name" value=""></div>${replaceControl}${variantControl}${bubbleControls}${textControls}${drawingControls}<div class="field-row"><div class="field"><label>X</label><input id="p-x" type="number" value="${Math.round(item.x)}"></div><div class="field"><label>Y</label><input id="p-y" type="number" value="${Math.round(item.y)}"></div></div><div class="field-row"><div class="field"><label>Ancho</label><input id="p-w" type="number" value="${Math.round(item.w)}"></div><div class="field"><label>Alto</label><input id="p-h" type="number" value="${Math.round(item.h)}"></div></div><div class="field"><label>Giro</label><input id="p-rot" type="range" min="-180" max="180" value="${item.rotation || 0}"></div><div class="inspector-buttons"><button id="duplicate">Duplicar</button><button id="lock">${item.locked ? 'Desbloquear' : 'Bloquear'}</button><button id="delete" class="danger">Borrar</button></div>${recoverControl}`;
     $('#p-name').value = item.name;
     for (const name of ['kind', 'align']) { const input = $(`#p-${name}`); if (input) input.value = item[name] || (name === 'align' ? 'center' : 'dialogue'); }
     if ($('#p-action-style')) $('#p-action-style').value = item.actionStyle || 'raised';
     if ($('#p-shape')) $('#p-shape').value = item.shape || 'auto';
+    if ($('#p-text-align')) $('#p-text-align').value=item.align||'center';
     const setProp = (selector, property, numeric = true) => $(`#p-${selector}`)?.addEventListener('change', event => { snapshot(); item[property] = numeric ? Number(event.target.value) : event.target.value; commit(); });
     setProp('name', 'name', false); setProp('x', 'x'); setProp('y', 'y'); setProp('w', 'w'); setProp('h', 'h'); setProp('rot', 'rotation');
     $('#p-variant')?.addEventListener('change', event => { snapshot(); item.variantIndex = Number(event.target.value); item.src = item.variants[item.variantIndex].src; commit(); });
+    $('#replace-character')?.addEventListener('click', () => openCharacterPicker(item.id));
+    $('#p-text')?.addEventListener('input',event=>{item.text=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.value=item.text;autosave();});
+    $('#p-text-font')?.addEventListener('input',event=>{item.fontSize=Number(event.target.value);const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.fontSize=`${item.fontSize}px`;autosave();});
+    $('#p-text-align')?.addEventListener('change',event=>{item.align=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.textAlign=item.align;autosave();});
+    $('#p-text-color')?.addEventListener('input',event=>{item.color=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.color=item.color;autosave();});
     $('#p-kind')?.addEventListener('change', event => { snapshot(); item.kind = event.target.value; item.name = item.kind === 'sfx' ? 'Efecto de sonido' : `Globo · ${({dialogue:'Diálogo',thought:'Pensamiento',narration:'Narración',shout:'Voz fuerte'})[item.kind]}`; item.tail = ['dialogue','thought','shout'].includes(item.kind); item.fontSize = item.kind === 'sfx' ? Math.max(item.fontSize,42) : item.kind === 'shout' ? Math.max(item.fontSize,24) : item.fontSize; commit(); });
     $('#p-action-style')?.addEventListener('change', event => { snapshot(); item.actionStyle = event.target.value; commit(); });
     $('#p-shape')?.addEventListener('change', event => { snapshot(); item.shape = event.target.value; commit(); });
@@ -540,6 +578,24 @@
       grid.append(card);
     });
   }
+  function openCharacterPicker(itemId) {
+    const grid = $('#replace-resource-grid'); grid.innerHTML = '';
+    resources.filter(resource => resource.category === 'character' && resource.approvedCutout).forEach(resource => {
+      const button = document.createElement('button'); button.className = 'replace-resource-card';
+      const variant = resource.variants?.[0] || resource;
+      button.innerHTML = `<img src="${variant.src}" alt=""><span>${escapeHTML(resource.name)}</span>`;
+      button.onclick = () => {
+        const item = currentPanel().items.find(entry => entry.id === itemId); if (!item) return;
+        snapshot(); item.name = resource.name; item.resourceId = resource.name; item.category = resource.category; item.aliases = resource.aliases || [];
+        item.variants = resource.variants || null; item.variantIndex = 0; item.src = variant.src; $('#resource-picker-dialog').close(); commit();
+      };
+      grid.append(button);
+    });
+    $('#resource-picker-dialog').showModal();
+  }
+  function adjustZoom(factor) {
+    state.zoom = Math.max(.35, Math.min(2.5, (state.zoom || 1) * factor)); render();
+  }
   function setupResourceFilters() {
     $$('.filters button').forEach(button => button.onclick = () => {
       $$('.filters button').forEach(candidate => candidate.classList.toggle('active', candidate === button));
@@ -564,8 +620,9 @@
     const first = item.strokes[0]; item.color = first.color; item.strokeWidth = first.strokeWidth;
   }
   function setEraser(enabled) {
-    brushMode = enabled ? 'eraser' : $('#brush-type').value;
+    brushMode = enabled ? 'eraser' : 'pen';
     $('#eraser-tool').setAttribute('aria-pressed',String(enabled)); $('#toggle-draw').setAttribute('aria-pressed','true');
+    $('#eraser-tool').classList.toggle('active',enabled);
     $('#canvas')?.classList.toggle('eraser-active',enabled); $$('.artboard-canvas').forEach(board => board.classList.toggle('eraser-active',enabled));
   }
   function beginDrawing(event) {
@@ -648,6 +705,8 @@
           if (item.fillEnabled && stroke.closed) { ctx.fillStyle = item.fillColor || '#F87209'; ctx.fill(path); }
           ctx.stroke(path); ctx.restore();
         });
+      } else if (item.type === 'text') {
+        ctx.fillStyle=item.color||'#292725';ctx.font=`${item.fontWeight||600} ${item.fontSize||28}px Fredoka, sans-serif`;ctx.textAlign=item.align||'center';ctx.textBaseline='middle';wrapText(ctx,item.text,0,0,item.w*.92,(item.fontSize||28)*1.25);
       } else {
         const form = getBubbleForm(item); const angle = (item.tailAngle ?? 90) * Math.PI / 180; const ux=Math.cos(angle), uy=Math.sin(angle); const radiusX=item.w*.49, radiusY=item.h*.49;
         const denom = form==='rounded' ? Math.max(Math.abs(ux)/radiusX,Math.abs(uy)/radiusY) : Math.sqrt(ux*ux/(radiusX*radiusX)+uy*uy/(radiusY*radiusY));
@@ -701,10 +760,13 @@
   async function exportReview() {
     state.format = $('#export-preset').value; state.status = 'review'; autosave();
     const title = state.title || 'Episodio nuevo'; const slug = slugify(title) || 'episodio-nuevo';
-    const catalog = { schemaVersion: 1, editorialPolicy: 'manual-approval', episodes: [{ id: slug, title: { es: title }, episodeNumber: null, status: 'review', type: 'comic', complete: false, source: { kind: 'editor-draft', instagramMediaId: null, instagramPermalink: null }, panels: state.panels.map((panel, index) => ({ order: index + 1, alt: { es: `Viñeta ${index + 1} pendiente de revisión` }, src: `assets/episodes/drafts/${slug}/vineta-${String(index + 1).padStart(2, '0')}.png` })) }] };
-    const files = [{ name: 'metadata-review.json', data: new TextEncoder().encode(JSON.stringify(catalog, null, 2)) }];
-    for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index]); files.push({ name: `assets/episodes/drafts/${slug}/vineta-${String(index + 1).padStart(2, '0')}.png`, data: new Uint8Array(await image.arrayBuffer()) }); }
-    download(zipStore(files), `${slug}-revision.zip`); toast('Paquete de revisión listo. El estado sigue pendiente de aprobación.');
+    const isEpisode=(state.contentType||'episode')==='episode';
+    const metadata = isEpisode
+      ? { schemaVersion: 1, editorialPolicy: 'manual-approval', episodes: [{ id: slug, title: { es: title }, episodeNumber: null, status: 'review', type: 'comic', complete: false, source: { kind: 'editor-draft', instagramMediaId: null, instagramPermalink: null }, panels: state.panels.map((panel, index) => ({ order: index + 1, alt: { es: `Viñeta ${index + 1} pendiente de revisión` }, src: `assets/episodes/drafts/${slug}/vineta-${String(index + 1).padStart(2, '0')}.png` })) }] }
+      : { schemaVersion:1, editorialPolicy:'manual-approval', status:'review', published:false, contentType:state.contentType, title, projectSource:'proyecto.json', panels:state.panels.map((panel,index)=>({order:index+1,asset:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`,text:panel.items.filter(item=>item.type==='text'||item.type==='bubble').map(item=>({type:item.type,text:item.text||'',x:item.x,y:item.y,w:item.w,h:item.h,fontSize:item.fontSize||null,align:item.align||'center'}))})) };
+    const files = [{ name: 'metadata-review.json', data: new TextEncoder().encode(JSON.stringify(metadata, null, 2)) }];
+    for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index]); const path=isEpisode?`assets/episodes/drafts/${slug}/vineta-${String(index+1).padStart(2,'0')}.png`:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`; files.push({ name:path, data: new Uint8Array(await image.arrayBuffer()) }); }
+    download(zipStore(files), `${slug}-revision.zip`); toast('Paquete de revisión listo. No se publica automáticamente.');
   }
   function slugify(value) { return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function download(blob, filename) { const url = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 2000); }
@@ -739,7 +801,8 @@
     labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías');
     $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
     $('#new-project').onclick = newProject;
-    $$('.template-card').forEach(button => button.onclick = () => { $('#template-dialog').close(); createProjectFromTemplate(button.dataset.template); });
+    $$('.content-type-card').forEach(button=>button.onclick=()=>{$('#new-content-dialog').close();createContentDraft(button.dataset.contentType);});
+    $$('#template-dialog .template-card').forEach(button => button.onclick = () => { $('#template-dialog').close(); createProjectFromTemplate(button.dataset.template); });
     $('#import-project').onclick = () => $('#project-file').click();
     $('#project-file').onchange = event => importProjectFile(event.target.files[0]);
     $('#back-home').onclick = showHome;
@@ -748,14 +811,31 @@
     $('#export-project').onclick = exportReview;
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;
+    $('#add-text').innerHTML = `${svgIcon('text')}<span>Texto</span>`; $('#add-text').onclick = () => addTextBlock();
     $('#add-bubble').onclick = () => addBubble($('#bubble-kind').value);
     $('#export-preset').onchange = event => changeFormat(event.target.value);
     $('#toggle-grid').onclick = event => { state.grid = !state.grid; event.currentTarget.setAttribute('aria-pressed', String(state.grid)); render(); };
-    $('#zoom-in').onclick = () => { state.zoom = Math.min(1.8, state.zoom + 0.1); render(); };
-    $('#zoom-out').onclick = () => { state.zoom = Math.max(0.4, state.zoom - 0.1); render(); };
+    $('#zoom-in').onclick = () => adjustZoom(1.1);
+    $('#zoom-out').onclick = () => adjustZoom(1 / 1.1);
     $('#fit').onclick = () => { state.zoom = 1; render(); };
+    const viewport = $('#stage-wrap');
+    viewport.addEventListener('wheel', event => { if (!state) return; event.preventDefault(); adjustZoom(Math.exp(-event.deltaY * .002)); }, { passive:false });
+    viewport.addEventListener('touchstart', event => {
+      if (event.touches.length !== 2) return;
+      event.preventDefault(); const [a,b] = event.touches; pinchZoom = { distance:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY), zoom:state.zoom||1 };
+    }, { passive:false });
+    viewport.addEventListener('touchmove', event => {
+      if (!pinchZoom || event.touches.length !== 2) return;
+      event.preventDefault(); const [a,b] = event.touches; const distance = Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+      const next = Math.max(.35,Math.min(2.5,pinchZoom.zoom*distance/pinchZoom.distance));
+      if (Math.abs(next-state.zoom) > .008) { state.zoom=next; render(); }
+    }, { passive:false });
+    viewport.addEventListener('touchend', event => { if (event.touches.length < 2) pinchZoom=null; });
     $('#toggle-library').onclick = () => $('#app-shell').classList.toggle('library-collapsed');
-    $('#toggle-layers').onclick = () => $('#app-shell').classList.toggle('inspector-collapsed');
+    $('#toggle-layers').onclick = event => {
+      if (matchMedia('(max-width:1100px)').matches) { const open=$('#inspector-panel').classList.toggle('open'); event.currentTarget.setAttribute('aria-pressed',String(open)); }
+      else { const collapsed=$('#app-shell').classList.toggle('inspector-collapsed'); event.currentTarget.setAttribute('aria-pressed',String(!collapsed)); }
+    };
     $('#mobile-library').onclick = () => $('#library-panel').classList.toggle('open');
     $('#mobile-properties').onclick = () => $('#inspector-panel').classList.toggle('open');
     $('#focus-mode').onclick = event => { const active = $('#app-shell').classList.toggle('focus-mode'); event.currentTarget.setAttribute('aria-pressed', String(active)); };
@@ -775,12 +855,22 @@
       addResource(resource); event.target.value = '';
     };
     $('#toggle-draw').onclick = event => { const enabled = event.currentTarget.getAttribute('aria-pressed') !== 'true'; setDrawMode(enabled); };
-    $('#brush-type').onchange = event => { brushMode = event.target.value; $('#eraser-tool').setAttribute('aria-pressed','false'); };
-    $('#eraser-tool').innerHTML = `${svgIcon('eraser')}<span>Borrador</span>`;
-    $('#eraser-tool').onclick = () => setEraser($('#eraser-tool').getAttribute('aria-pressed') !== 'true');
-    $('#group-drawing').onclick = () => { if(drawingObjectId){finishDrawingObject();return;} drawingObjectId = currentItem()?.type === 'drawing' ? currentItem().id : '__new_drawing_object__'; $('#end-drawing-object').hidden=false; $('#group-drawing').textContent='Objeto en curso'; toast('Los siguientes trazos se unirán en un solo objeto.'); };
+    [['pen','Pluma','pen'],['marker','Marcador','marker'],['pencil','Lápiz','pencil']].forEach(([mode,label,icon]) => {
+      const button = $(`#brush-${mode}`); button.innerHTML = svgIcon(icon); button.title = label; button.onclick = () => setDrawingBrush(mode);
+    });
+    $('#eraser-tool').innerHTML = svgIcon('eraser');
+    $('#group-drawing').innerHTML = svgIcon('layersPlus'); $('#end-drawing-object').innerHTML = svgIcon('fit');
+    $('#eraser-tool').onclick = () => { const enabled=$('#eraser-tool').getAttribute('aria-pressed')!=='true'; if(enabled){brushMode='eraser';$('#eraser-tool').setAttribute('aria-pressed','true');$('#eraser-tool').classList.add('active');['pen','marker','pencil'].forEach(name=>{const button=$(`#brush-${name}`);button.setAttribute('aria-pressed','false');button.classList.remove('active');});$('#toggle-draw').setAttribute('aria-pressed','true');$('#draw-toolbar').hidden=false;render();}else setDrawingBrush('pen'); };
+    $('#group-drawing').onclick = () => { if(drawingObjectId){finishDrawingObject();return;} drawingObjectId = currentItem()?.type === 'drawing' ? currentItem().id : '__new_drawing_object__'; $('#end-drawing-object').hidden=false; $('#group-drawing').classList.add('active'); toast('Los siguientes trazos se unirán en un solo objeto.'); };
     $('#end-drawing-object').onclick = finishDrawingObject;
-    $('#color-palette').addEventListener('click', event => { if (event.target.matches('.color-swatch')) selectedColor = event.target.dataset.color; });
+    $('#color-palette').addEventListener('click', event => { if (event.target.matches('.color-swatch')) { selectedColor = event.target.dataset.color; $$('.color-swatch').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.color===selectedColor))); } });
+    $('#install-app').onclick = async () => {
+      if (installPromptEvent) { installPromptEvent.prompt(); await installPromptEvent.userChoice; installPromptEvent=null; $('#install-app').hidden=true; }
+      else $('#install-help-dialog').showModal();
+    };
+    window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPromptEvent=event; $('#install-app').hidden=false; });
+    window.addEventListener('appinstalled', () => { $('#install-app').hidden=true; toast('Taller Mandarinita quedó instalado.'); });
+    if (!matchMedia('(display-mode: standalone)').matches && !navigator.standalone) $('#install-app').hidden=false;
     $('#project-list').addEventListener('click', event => {
       const filter = event.target.closest('[data-project-filter]');
       if (filter) { $$('.project-filter').forEach(button => button.classList.toggle('active', button === filter)); renderProjectList(filter.dataset.projectFilter); }
@@ -794,10 +884,11 @@
   }
   function setDrawMode(enabled) {
     $('#toggle-draw').setAttribute('aria-pressed', String(enabled)); $('#draw-toolbar').hidden = !enabled;
-    if(!enabled){drawingObjectId=null;$('#end-drawing-object').hidden=true;$('#group-drawing').textContent='Agrupar trazos';$('#eraser-tool').setAttribute('aria-pressed','false');brushMode=$('#brush-type').value;}
+    if(!enabled){drawingObjectId=null;$('#end-drawing-object').hidden=true;$('#group-drawing').classList.remove('active');$('#eraser-tool').setAttribute('aria-pressed','false');$('#eraser-tool').classList.remove('active');setDrawingBrush('pen');}
     render();
   }
-  function finishDrawingObject() { drawingObjectId=null; $('#end-drawing-object').hidden=true; $('#group-drawing').textContent='Agrupar trazos'; toast('Objeto de dibujo cerrado.'); }
+  function finishDrawingObject() { drawingObjectId=null; $('#end-drawing-object').hidden=true; $('#group-drawing').classList.remove('active'); toast('Objeto de dibujo cerrado.'); }
+  function setDrawingBrush(mode) { brushMode=mode; $('#eraser-tool').setAttribute('aria-pressed','false'); $('#eraser-tool').classList.remove('active'); ['pen','marker','pencil'].forEach(name=>{const button=$(`#brush-${name}`);button.setAttribute('aria-pressed',String(name===mode));button.classList.toggle('active',name===mode);}); }
   function installPalette() {
     const root = $('#color-palette');
     PALETTE.forEach(color => { const button = document.createElement('button'); button.className = 'color-swatch'; button.dataset.color = color; button.style.background = color; button.title = color; button.setAttribute('aria-label', `Trazo ${color}`); if (color === '#FFFFFF') button.classList.add('white-swatch'); root.append(button); });
@@ -823,4 +914,5 @@
   applyTheme();
   matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (getThemeChoice() === 'system') applyTheme('system'); });
   installEvents(); setupResourceFilters(); installPalette(); renderProjectList();
+  if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('/editor-service-worker.js', { scope:'/' }).catch(() => {});
 })();
