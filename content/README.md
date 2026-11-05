@@ -6,6 +6,12 @@ Los episodios 1, 2, 44, 51, 52 y 85 ya tienen sus láminas identificadas y publi
 
 Las imágenes de personajes se guardan en `assets/characters/` y se enlazan desde `personajes.html` solo cuando el usuario o el archivo original permite reconocerlos con seguridad. No se inventan personajes ni biografías para cubrir imágenes ausentes.
 
+## Apariciones de personajes
+
+`characters.json` define los IDs estables que usan las tarjetas y el catálogo. En cada episodio, `characters` puede contener los IDs de los personajes que se ven en sus viñetas. Añade un ID solo cuando la aparición esté confirmada visualmente; no infieras una aparición a partir del título o de la descripción. Las tarjetas cuentan y eligen al azar solo episodios publicados, completos y etiquetados. Los episodios en revisión pueden llevar etiquetas editoriales, pero nunca aparecen en el lector público.
+
+Cuando se incorpore un episodio, conserva sus etiquetas durante el trabajo editorial y añade las apariciones que se hayan comprobado antes de publicarlo. `node scripts/validate-episodes.mjs` verifica que cada ID exista en `characters.json` y que no haya IDs repetidos.
+
 ## Verificar
 
 Desde la raíz del repositorio:

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "characters": [
+    {
+      "id": "mandy-mandarinita",
+      "name": "Mandy Mandarinita"
+    },
+    {
+      "id": "mando-mandarinita",
+      "name": "Mando Mandarinita"
+    },
+    {
+      "id": "greg-el-zanahorio",
+      "name": "Greg el Zanahorio"
+    },
+    {
+      "id": "limon-agrio",
+      "name": "Limón Agrio"
+    },
+    {
+      "id": "aguacatelo",
+      "name": "Aguacatelo"
+    },
+    {
+      "id": "morita",
+      "name": "Morita"
+    },
+    {
+      "id": "don-guineo",
+      "name": "Don Guineo"
+    },
+    {
+      "id": "don-manzanillo",
+      "name": "Don Manzanillo"
+    },
+    {
+      "id": "sra-pera",
+      "name": "Sra. Pera"
+    },
+    {
+      "id": "sandy-la-sandia",
+      "name": "Sandy la Sandía"
+    },
+    {
+      "id": "los-cherrys",
+      "name": "Los Cherrys"
+    },
+    {
+      "id": "superfreso",
+      "name": "Superfreso"
+    },
+    {
+      "id": "don-pepino",
+      "name": "Don Pepino"
+    },
+    {
+      "id": "champi-non",
+      "name": "Champi Ñón"
+    }
+  ]
+}

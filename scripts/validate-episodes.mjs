@@ -4,11 +4,21 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const path = join(root, 'episodes.json');
+const characterPath = join(root, 'content', 'characters.json');
 const errors = [];
 const allowedStatuses = new Set(['draft', 'review', 'published', 'hidden']);
 const allowedTypes = new Set(['comic', 'illustration', 'reel', 'merchandise', 'other']);
 const text = v => typeof v === 'string' && v.trim().length > 0;
 const content = JSON.parse(readFileSync(path, 'utf8'));
+const characterCatalog = JSON.parse(readFileSync(characterPath, 'utf8'));
+const characterIds = new Set();
+if (characterCatalog.schemaVersion !== 1 || !Array.isArray(characterCatalog.characters)) errors.push('Invalid content/characters.json registry');
+for (const [index, character] of (characterCatalog.characters || []).entries()) {
+  if (!text(character.id) || !/^[a-z0-9][a-z0-9-]*$/.test(character.id)) errors.push(`characters[${index}]: invalid ID`);
+  if (characterIds.has(character.id)) errors.push(`characters[${index}]: duplicate ID`);
+  if (!text(character.name)) errors.push(`characters[${index}]: name required`);
+  characterIds.add(character.id);
+}
 if (content.schemaVersion !== 1) errors.push('Unsupported schemaVersion');
 if (!Array.isArray(content.episodes)) errors.push('episodes must be an array');
 if (content.editorialPolicy !== 'manual-approval') errors.push('editorialPolicy must be manual-approval');
@@ -23,6 +33,17 @@ for (const [index, ep] of (content.episodes || []).entries()) {
   if (!allowedTypes.has(ep.type)) errors.push(`${tag}: invalid type`);
   if (ep.status === 'published' && ep.type === 'comic' && ep.complete !== true) errors.push(`${tag}: published comic must be explicitly complete`);
   if (ep.complete !== undefined && typeof ep.complete !== 'boolean') errors.push(`${tag}: complete must be a boolean`);
+  if (ep.characters !== undefined) {
+    if (!Array.isArray(ep.characters)) errors.push(`${tag}: characters must be an array of character IDs`);
+    else {
+      const episodeCharacterIds = new Set();
+      for (const characterId of ep.characters) {
+        if (!characterIds.has(characterId)) errors.push(`${tag}: unknown character ID ${characterId}`);
+        if (episodeCharacterIds.has(characterId)) errors.push(`${tag}: duplicate character ID ${characterId}`);
+        episodeCharacterIds.add(characterId);
+      }
+    }
+  }
   if (ep.publishedAt !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(ep.publishedAt)) errors.push(`${tag}: publishedAt must use YYYY-MM-DD`);
   if (ep.source?.kind === 'notion-archive' && !/^https:\/\/app\.notion\.com\/p\/[a-f0-9]{32}$/.test(ep.source.notionUrl || '')) errors.push(`${tag}: invalid Notion archive link`);
   if (!text(ep.title?.es)) errors.push(`${tag}: Spanish title required`);

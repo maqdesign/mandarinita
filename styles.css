@@ -389,6 +389,14 @@
 @media(max-width:480px){.reader-bottom{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}.reader-footer-meta{grid-column:1;width:100%;min-width:0;flex-wrap:nowrap;justify-content:flex-start;gap:8px}.reader-bottom>div.reader-actions{grid-column:1;display:flex;width:100%;justify-content:space-between;gap:8px;flex-wrap:nowrap}.reader-prev-episode,.reader-next-episode{min-width:0;min-height:42px;flex:1;gap:5px;padding:0 8px;font-size:.72rem}.reader-prev-episode svg,.reader-next-episode .ui-icon{width:16px;height:16px;flex:0 0 16px}.reader-episode-label-long{display:none}.reader-episode-label-short{display:inline}.random-confirm-actions{gap:8px}.random-confirm-actions button{min-width:0;flex:1;padding:0 8px;font-size:.72rem}.sticker-pack-grid .sticker-pack-cover{flex-basis:52px;width:52px;height:52px}}
 @media(prefers-reduced-motion:reduce){.reader-prev-episode,.random-confirm-actions button{transition:none}}
 
+/* Character cards link to a randomly selected, catalogued appearance. */
+.character-episode-action{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:16px}
+.character-episode-button{min-height:42px;padding:0 16px;border:1px solid var(--orange);border-radius:999px;background:var(--orange);color:#fff;font:700 .8rem 'Work Sans',sans-serif;cursor:pointer;transition:background .16s ease,transform .16s ease}
+.character-episode-button:hover:not(:disabled){background:#df5d00;transform:translateY(-1px)}
+.character-episode-button:disabled{border-color:var(--line);background:#f4f0e8;color:var(--muted);cursor:not-allowed}
+.character-episode-count{color:var(--muted);font-size:.75rem;line-height:1.35}
+@media(max-width:700px){.character-episode-action{gap:7px;margin-top:13px}.character-episode-button{min-height:42px;padding:0 12px;font-size:.75rem}}
+
 /* Keep the full transparent character art inside its portrait frame. */
 .character-group .cast-card.cast-featured .cast-portrait{
   height:clamp(410px,38vw,500px);

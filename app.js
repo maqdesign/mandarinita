@@ -240,7 +240,60 @@ async function loadApprovedEpisodes() {
     if (grid.id === 'home-featured-grid') grid.innerHTML = '<p class="home-archive-loading">No pudimos cargar las historietas. Usa el botón para abrir el archivo completo.</p>';
   }
 }
+async function loadCharacterEpisodeActions() {
+  const cards = [...document.querySelectorAll('.character-page .cast-card[data-character-id]')];
+  if (!cards.length) return;
+  const setCount = (node, es, en) => {
+    node.dataset.es = es;
+    node.dataset.en = en;
+    node.textContent = language === 'en' ? en : es;
+  };
+  try {
+    const response = await fetch('episodes.json', { cache: 'no-cache' });
+    if (!response.ok) throw new Error('Episode catalog unavailable');
+    const catalog = await response.json();
+    if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.episodes)) throw new Error('Invalid episode catalog');
+    const episodes = catalog.episodes.filter(entry => entry.status === 'published' && entry.type === 'comic' && entry.complete === true && Number.isInteger(entry.episodeNumber));
+    for (const card of cards) {
+      const characterId = card.dataset.characterId;
+      const button = card.querySelector('.character-episode-button');
+      const count = card.querySelector('.character-episode-count');
+      const matches = episodes.filter(entry => Array.isArray(entry.characters) && entry.characters.includes(characterId));
+      if (!button || !count) continue;
+      if (!matches.length) {
+        const reviewCount = catalog.episodes.filter(entry => entry.status === 'review' && Array.isArray(entry.characters) && entry.characters.includes(characterId)).length;
+        if (reviewCount) setCount(count, `${reviewCount} ${reviewCount === 1 ? 'episodio en revisión' : 'episodios en revisión'}`, `${reviewCount} ${reviewCount === 1 ? 'episode in review' : 'episodes in review'}`);
+        else setCount(count, 'Aún no hemos vinculado episodios', 'No episodes linked yet');
+        continue;
+      }
+      const amount = matches.length;
+      setCount(count, `En ${amount} ${amount === 1 ? 'episodio' : 'episodios'}`, `In ${amount} ${amount === 1 ? 'episode' : 'episodes'}`);
+      button.disabled = false;
+      button.addEventListener('click', () => {
+        let choices = matches;
+        try {
+          const previousId = sessionStorage.getItem(`mandarinita-character-episode:${characterId}`);
+          const withoutPrevious = matches.filter(entry => entry.id !== previousId);
+          if (withoutPrevious.length) choices = withoutPrevious;
+        } catch (_) { /* Random selection still works if session storage is unavailable. */ }
+        const selected = choices[Math.floor(Math.random() * choices.length)];
+        try { sessionStorage.setItem(`mandarinita-character-episode:${characterId}`, selected.id); } catch (_) { /* Continue without remembering the previous selection. */ }
+        const url = new URL('episodios.html', window.location.href);
+        url.searchParams.set('episode', selected.id);
+        url.searchParams.set('lang', language);
+        window.location.assign(url.href);
+      });
+    }
+  } catch (_) {
+    for (const card of cards) {
+      const count = card.querySelector('.character-episode-count');
+      if (count) setCount(count, 'No pudimos cargar las apariciones', 'Could not load appearances');
+    }
+  }
+}
+
 loadApprovedEpisodes();
+loadCharacterEpisodeActions();
 
 const dialog = document.querySelector('#reader');
 const image = document.querySelector('#reader-image');
