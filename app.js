@@ -195,10 +195,11 @@ async function loadApprovedEpisodes() {
         title:entry.title.es,
         titleEn:catalogTitle(entry,'en'),
         episodeId:entry.id,
+        episodeNumber:entry.episodeNumber,
         publishedAt:entry.publishedAt || null,
         kind:'HISTORIETA · ARCHIVO',
         kindEn:'COMIC · ARCHIVE',
-        images:ordered.map(p=>({src:p.src,alt:p.alt.es,altEn:p.alt.en}))
+        images:ordered.map(p=>({src:p.watermarkedSrc||p.src,thumbSrc:p.watermarkedThumbnailSrc||null,alt:p.alt.es,altEn:p.alt.en}))
       };
       approved.push({entry,ordered,key});
     }
@@ -219,7 +220,7 @@ async function loadApprovedEpisodes() {
       for (const {entry,ordered,key} of chosen) {
         const article=document.createElement('article');article.className='work-card catalog-card';
         const button=document.createElement('button');button.className='work-image';button.type='button';button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${catalogTitle(entry,'en')}`);
-        const cover=document.createElement('img');const fullResolutionSrc=ordered[0].src;cover.src=fullResolutionSrc.replace(/([^/]+)\.(png|jpe?g)$/i,'thumb-$1.webp');cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.addEventListener('error',()=>{if(cover.src!==new URL(fullResolutionSrc,location.href).href)cover.src=fullResolutionSrc;},{once:true});button.append(cover);button.addEventListener('click',()=>openReader(key));
+        const cover=document.createElement('img');const fullResolutionSrc=ordered[0].watermarkedSrc||ordered[0].src;cover.src=ordered[0].watermarkedThumbnailSrc||fullResolutionSrc.replace(/([^/]+)\.(png|jpe?g|webp)$/i,'thumb-$1.webp');cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.addEventListener('error',()=>{if(cover.src!==new URL(fullResolutionSrc,location.href).href)cover.src=fullResolutionSrc;},{once:true});button.append(cover);button.addEventListener('click',()=>openReader(key));
         const copy=document.createElement('div');copy.className='work-copy';
         const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
         const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
@@ -258,6 +259,13 @@ async function loadCharacterEpisodeActions() {
       const characterId = card.dataset.characterId;
       const button = card.querySelector('.character-episode-button');
       const count = card.querySelector('.character-episode-count');
+      const archiveLink = card.querySelector('.character-episode-all');
+      if (archiveLink) {
+        const url = new URL('episodios.html', window.location.href);
+        url.searchParams.set('character', characterId);
+        url.searchParams.set('lang', language);
+        archiveLink.href = url.href;
+      }
       const matches = episodes.filter(entry => Array.isArray(entry.characters) && entry.characters.includes(characterId));
       if (!button || !count) continue;
       if (!matches.length) {
@@ -307,6 +315,7 @@ let panelIndex = 0;
 const readerHasEpisodeNavigation = () => Boolean(works[activeWork]?.episodeId);
 const panelThumbnailCache = new Map();
 function panelThumbnailSource(panel) {
+  if (panel.thumbSrc) return panel.thumbSrc;
   return panel.src.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-$1.webp');
 }
 function preloadNeighborPanels(work, index) {
@@ -328,7 +337,9 @@ function renderPanel() {
   image.src = panel.src;
   image.alt = language === 'es' ? panel.alt : panel.altEn;
   title.textContent = language === 'es' ? work.title : work.titleEn;
-  kind.textContent = language === 'es' ? work.kind : work.kindEn;
+  const episodeLabel=work.episodeNumber?(language==='es'?`EPISODIO ${work.episodeNumber}`:`EPISODE ${work.episodeNumber}`):'';
+  const baseKind=language==='es'?work.kind:work.kindEn;
+  kind.textContent=episodeLabel?`${episodeLabel} · ${baseKind}`:baseKind;
   if(readerDate){readerDate.hidden=!work.publishedAt;readerDate.textContent=work.publishedAt?formatCatalogDate(work.publishedAt):'';if(work.publishedAt)readerDate.dateTime=work.publishedAt;}
   count.textContent = `${panelIndex+1} / ${work.images.length}`;
   if (swipePreview) { swipePreview.removeAttribute('src'); swipePreview.removeAttribute('data-panel-src'); swipePreview.alt = ''; }

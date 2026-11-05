@@ -68,6 +68,18 @@ for (const [index, ep] of (content.episodes || []).entries()) {
     } else if (!/^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src)) {
       errors.push(`${tag}: panel must use a local image under assets/`);
     } else if (!existsSync(join(root, panel.src))) errors.push(`${tag}: missing asset ${panel.src}`);
+    if (panel.sourceSrc !== undefined) {
+      if (!text(panel.sourceSrc) || panel.sourceSrc.startsWith('/') || panel.sourceSrc.includes('..') || /^[a-z]+:/i.test(panel.sourceSrc) || !/^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.sourceSrc)) errors.push(`${tag}: sourceSrc must be a safe local relative path under assets/`);
+      else if (!existsSync(join(root, panel.sourceSrc))) errors.push(`${tag}: missing original asset ${panel.sourceSrc}`);
+    }
+    for (const key of ['watermarkedSrc', 'watermarkedThumbnailSrc']) {
+      const derivative = panel[key];
+      if (ep.status === 'published' && ep.type === 'comic' && !derivative) errors.push(`${tag}: published comic panel needs ${key}`);
+      if (derivative !== undefined) {
+        if (!text(derivative) || derivative.startsWith('/') || derivative.includes('..') || /^[a-z]+:/i.test(derivative) || !/^assets\/watermarked\/[a-zA-Z0-9/_.-]+\.webp$/i.test(derivative)) errors.push(`${tag}: ${key} must be a safe watermarked WebP path`);
+        else if (!existsSync(join(root, derivative))) errors.push(`${tag}: missing watermarked asset ${derivative}`);
+      }
+    }
   }
 }
 if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1; }

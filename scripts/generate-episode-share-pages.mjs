@@ -21,8 +21,9 @@ const localizedTitle = (entry, language) => {
   if (language === 'en' && /^episode\s+\d+$/i.test(translated || '')) return entry.title?.es || translated;
   return translated || entry.title?.es || `Episode ${entry.episodeNumber || ''}`.trim();
 };
+const MAGICK = spawnSync('magick', ['-version'], { encoding: 'utf8' }).status === 0 ? 'magick' : 'convert';
 const runMagick = (source, destination) => {
-  const result = spawnSync('magick', [source, '-auto-orient', '-strip', '-resize', '1200x1200>', '-background', '#ffffff', '-alpha', 'remove', '-quality', '82', destination], { encoding: 'utf8' });
+  const result = spawnSync(MAGICK, [source, '-auto-orient', '-strip', '-resize', '1200x1200>', '-background', '#ffffff', '-alpha', 'remove', '-quality', '82', destination], { encoding: 'utf8' });
   if (result.error || result.status !== 0) throw new Error(`Could not create share preview for ${source}: ${result.stderr || result.error?.message || 'ImageMagick failed'}`);
 };
 const makePage = (entry, panelCount, language) => {
@@ -48,7 +49,7 @@ const makePage = (entry, panelCount, language) => {
 for (const entry of comics) {
   if (!/^[a-z0-9-]+$/.test(entry.id)) throw new Error(`Invalid episode id: ${entry.id}`);
   const panels = [...entry.panels].sort((a, b) => a.order - b.order);
-  const source = path.join(ROOT, panels[0].src);
+  const source = path.join(ROOT, panels[0].watermarkedSrc || panels[0].src);
   const imagePath = path.join(imageDir, `${entry.id}.jpg`);
   runMagick(source, imagePath);
   await writeFile(path.join(ROOT, 'share', `${entry.id}.html`), makePage(entry, panels.length, 'es'));

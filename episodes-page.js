@@ -7,6 +7,7 @@ let episodes = [];
 let allEpisodes = [];
 let shown = 0;
 let currentEpisodeId = null;
+let selectedCharacter = null;
 const pageLanguage=()=>document.documentElement.dataset.lang==='en'?'en':'es';
 function episodeTitle(entry,lang=pageLanguage()){
   const translated=entry.title?.[lang];
@@ -15,9 +16,22 @@ function episodeTitle(entry,lang=pageLanguage()){
 }
 function syncArchiveLanguage(){
   const lang=pageLanguage();
+  const allTitle=document.querySelector('.archive-title-all'),characterTitle=document.querySelector('.archive-title-character');
+  const allIntro=document.querySelector('.archive-intro-all'),characterIntro=document.querySelector('.archive-intro-character');
+  const characterFilter=document.querySelector('#character-archive-filter');
+  if(selectedCharacter){
+    const name=selectedCharacter.name;
+    if(allTitle)allTitle.hidden=true;if(characterTitle){characterTitle.hidden=false;characterTitle.textContent=lang==='en'?`The capers of ${name}`:`Las ocurrencias de ${name}`;}
+    if(allIntro)allIntro.hidden=true;if(characterIntro){characterIntro.hidden=false;characterIntro.textContent=lang==='en'?`A little archive of the episodes where ${name} shows up.`:`Mira en cuáles episodios aparece ${name}.`;}
+    if(characterFilter){characterFilter.hidden=false;characterFilter.querySelector('.character-archive-filter-name').textContent=lang==='en'?`Looking for ${name?`all of ${name}'s appearances`:'this character'}? Here they are.`:`¿Buscabas todas las apariciones de ${name}? Aquí están.`;}
+  }else{
+    if(allTitle)allTitle.hidden=false;if(characterTitle)characterTitle.hidden=true;
+    if(allIntro)allIntro.hidden=false;if(characterIntro)characterIntro.hidden=true;
+    if(characterFilter)characterFilter.hidden=true;
+  }
   status.textContent=status.dataset[lang]||status.textContent;
   const total=document.querySelector('#episode-total');if(total)total.textContent=total.dataset[lang]||total.textContent;
-  sortSelect.options[0].textContent=lang==='es'?'Más recientes primero':'Newest first';sortSelect.options[1].textContent=lang==='es'?'Del primero al último':'Oldest first';sortSelect.options[2].textContent=lang==='es'?'Orden aleatorio':'Random order';
+  sortSelect.querySelector('[value="random"]').textContent=lang==='es'?'Orden aleatorio':'Random order';sortSelect.querySelector('[value="newest"]').textContent=lang==='es'?'Más recientes primero':'Newest first';sortSelect.querySelector('[value="oldest"]').textContent=lang==='es'?'Del primero al último':'Oldest first';
   loadMoreButton.textContent=lang==='es'?'Cargar más episodios':'Load more episodes';
 }
 
@@ -48,7 +62,7 @@ function renderBatch() {
     const article=document.createElement('article');article.className='work-card catalog-card';article.id=`episode-${entry.episodeNumber}`;
     const title=episodeTitle(entry,lang);
     const link=document.createElement('button');link.className='work-image is-loading';link.type='button';link.setAttribute('aria-label',lang==='en'?`Read episode ${entry.episodeNumber}: ${title}`:`Leer episodio ${entry.episodeNumber}: ${title}`);link.setAttribute('aria-busy','true');link.addEventListener('click',()=>openEpisodeFromArchive(entry.id));
-    const cover=document.createElement('img');const original=entry.panels[0].src;cover.dataset.original=original;cover.src=original.replace(/([^/]+)\.(png|jpe?g)$/i,'thumb-$1.webp');cover.alt=entry.panels[0].alt[lang]||entry.panels[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.width=480;cover.height=480;cover.addEventListener('load',()=>{link.classList.remove('is-loading');link.setAttribute('aria-busy','false')},{once:true});cover.addEventListener('error',()=>{if(cover.src!==new URL(original,location.href).href){cover.src=original;return}link.classList.remove('is-loading');link.setAttribute('aria-busy','false')},{once:true});link.append(cover);
+    const cover=document.createElement('img');const original=entry.panels[0].watermarkedSrc||entry.panels[0].src;cover.dataset.original=entry.panels[0].src;cover.src=entry.panels[0].watermarkedThumbnailSrc||original.replace(/([^/]+)\.(png|jpe?g|webp)$/i,'thumb-$1.webp');cover.alt=entry.panels[0].alt[lang]||entry.panels[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.width=480;cover.height=480;cover.addEventListener('load',()=>{link.classList.remove('is-loading');link.setAttribute('aria-busy','false')},{once:true});cover.addEventListener('error',()=>{if(cover.src!==new URL(original,location.href).href){cover.src=original;return}link.classList.remove('is-loading');link.setAttribute('aria-busy','false')},{once:true});link.append(cover);
     const copy=document.createElement('div');copy.className='work-copy';const meta=document.createElement('p');meta.className='work-meta';const metaLabel=document.createElement('span');metaLabel.dataset.es=`Episodio ${entry.episodeNumber}`;metaLabel.dataset.en=`Episode ${entry.episodeNumber}`;metaLabel.textContent=metaLabel.dataset[lang];meta.append(metaLabel);
     const share=document.createElement('button');share.className='episode-share';share.type='button';share.setAttribute('aria-label',lang==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
     const heading=document.createElement('h2');heading.textContent=title;heading.dataset.es=entry.title.es;heading.dataset.en=episodeTitle(entry,'en');const summary=document.createElement('p');summary.dataset.es=`${entry.panels.length} viñetas`;summary.dataset.en=`${entry.panels.length} panels`;summary.textContent=summary.dataset[lang];
@@ -110,10 +124,14 @@ document.querySelector('.language-toggle')?.addEventListener('click',()=>{
 });
 const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting))renderBatch();},{rootMargin:'600px'});
 observer.observe(loadMoreButton);
-fetch('episodes.json',{cache:'no-cache'}).then(response=>{if(!response.ok)throw new Error('No se pudo cargar el catálogo.');return response.json();}).then(catalog=>{
+Promise.all([fetch('episodes.json',{cache:'no-cache'}).then(response=>{if(!response.ok)throw new Error('No se pudo cargar el catálogo.');return response.json();}),fetch('content/characters.json',{cache:'no-cache'}).then(response=>{if(!response.ok)throw new Error('No se pudo cargar el elenco.');return response.json();})]).then(([catalog,characterCatalog])=>{
   allEpisodes=approvedEpisodes(catalog).filter(entry=>Number.isFinite(entry.episodeNumber));
+  const params=new URLSearchParams(location.search);
+  const requestedCharacter=params.get('character');
+  const character=characterCatalog.characters?.find(item=>item.id===requestedCharacter);
+  if(character){selectedCharacter=character;allEpisodes=allEpisodes.filter(entry=>entry.characters?.includes(character.id));}
   if(!allEpisodes.length){status.textContent=pageLanguage()==='en'?'There are no published episodes to show.':'No hay episodios publicados para mostrar.';loadMoreButton.hidden=true;return;}
-  const params=new URLSearchParams(location.search);if(['newest','oldest','random'].includes(params.get('sort')))sortSelect.value=params.get('sort');
+  if(['newest','oldest','random'].includes(params.get('sort')))sortSelect.value=params.get('sort');
   if(sortSelect.value==='random')episodes=shuffle(allEpisodes);else episodes=[...allEpisodes].sort((a,b)=>compareEpisodes(a,b,sortSelect.value==='oldest'?1:-1));
   resetList();
   syncArchiveLanguage();
