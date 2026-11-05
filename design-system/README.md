@@ -13,6 +13,7 @@ Este repositorio mantiene la fuente de verdad técnica compartida entre **Figma*
 ## Estructura
 - `tokens.json`: tokens semánticos de interfaz; los valores **no se aplican al logotipo**.
 - `BRAND-GUARDRAILS.md`: límites de uso y normas canónicas.
+- `VOZ-DE-MARCA.md`: guía editorial para el sitio, las redes y futuras herramientas de creación.
 - `HISTORICAL-AUDIT.md`: evidencia revisada, procedencia, lagunas.
 - `COMPONENTS.md`: contrato de componentes web y futuros aplicativos.
 
