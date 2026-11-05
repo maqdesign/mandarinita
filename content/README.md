@@ -8,7 +8,7 @@ Las imágenes de personajes se guardan en `assets/characters/` y se enlazan desd
 
 ## Marcas de autoría en imágenes públicas
 
-Las fuentes originales se conservan en sus rutas actuales. Las imágenes servidas por el sitio usan derivados WebP con una marca discreta que incluye el logotipo, el copyright y `mandarinita.art`: viñetas completas y miniaturas bajo `assets/watermarked/episodes/`, retratos bajo `assets/watermarked/characters/`, y previews sociales bajo `assets/episode-previews/`. Para regenerarlos después de cambiar una fuente, ejecuta `python scripts/generate-watermarked-images.py` y luego `node scripts/generate-episode-share-pages.mjs`. No edites manualmente los archivos generados; corrige la fuente y vuelve a generarlos.
+Las páginas muestran las fuentes originales sin marca para que la lectura y los retratos se vean limpios. Los controles de descarga entregan derivados WebP con una marca discreta que incluye el logotipo, el copyright y `mandarinita.art`; las previews sociales también llevan esa marca. Los derivados de viñetas y retratos viven bajo `assets/watermarked/`, y los previews bajo `assets/episode-previews/`. Para regenerarlos después de cambiar una fuente, ejecuta `python scripts/generate-watermarked-images.py` y luego `node scripts/generate-episode-share-pages.mjs`. No edites manualmente los archivos generados; corrige la fuente y vuelve a generarlos.
 
 ## Apariciones de personajes
 

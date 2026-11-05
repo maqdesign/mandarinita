@@ -142,6 +142,7 @@ syncInternalLanguageLinks();
 languageButton.addEventListener('click', () => {
   setLanguage(language === 'es' ? 'en' : 'es', true);
   syncInternalLanguageLinks();
+  document.querySelectorAll('.portrait-download').forEach(link=>{link.setAttribute('aria-label',language==='en'?'Download credited portrait':'Descargar retrato con firma');link.title=link.getAttribute('aria-label');});
   if (activeWork && dialog.open) renderPanel();
 });
 menuButton?.addEventListener('click', () => {
@@ -199,7 +200,7 @@ async function loadApprovedEpisodes() {
         publishedAt:entry.publishedAt || null,
         kind:'HISTORIETA · ARCHIVO',
         kindEn:'COMIC · ARCHIVE',
-        images:ordered.map(p=>({src:p.watermarkedSrc||p.src,thumbSrc:p.watermarkedThumbnailSrc||null,alt:p.alt.es,altEn:p.alt.en}))
+        images:ordered.map(p=>{const source=p.sourceSrc||p.src;return {src:source,thumbSrc:source.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i,'thumb-$1.webp'),downloadSrc:p.watermarkedSrc||null,alt:p.alt.es,altEn:p.alt.en};})
       };
       approved.push({entry,ordered,key});
     }
@@ -220,16 +221,17 @@ async function loadApprovedEpisodes() {
       for (const {entry,ordered,key} of chosen) {
         const article=document.createElement('article');article.className='work-card catalog-card';
         const button=document.createElement('button');button.className='work-image';button.type='button';button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${catalogTitle(entry,'en')}`);
-        const cover=document.createElement('img');const fullResolutionSrc=ordered[0].watermarkedSrc||ordered[0].src;cover.src=ordered[0].watermarkedThumbnailSrc||fullResolutionSrc.replace(/([^/]+)\.(png|jpe?g|webp)$/i,'thumb-$1.webp');cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.addEventListener('error',()=>{if(cover.src!==new URL(fullResolutionSrc,location.href).href)cover.src=fullResolutionSrc;},{once:true});button.append(cover);button.addEventListener('click',()=>openReader(key));
+        const cover=document.createElement('img');const fullResolutionSrc=ordered[0].sourceSrc||ordered[0].src;cover.src=fullResolutionSrc.replace(/([^/]+)\.(png|jpe?g|webp)$/i,'thumb-$1.webp');cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.addEventListener('error',()=>{if(cover.src!==new URL(fullResolutionSrc,location.href).href)cover.src=fullResolutionSrc;},{once:true});button.append(cover);button.addEventListener('click',()=>openReader(key));
         const copy=document.createElement('div');copy.className='work-copy';
         const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
         const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
-        const heading=document.createElement('h3');heading.textContent=catalogTitle(entry);
+        if(ordered[0].watermarkedSrc)meta.append(markedDownloadLink(ordered[0].watermarkedSrc,`episodio-${entry.episodeNumber}-portada.webp`,language==='es'?'Descargar imagen con firma':'Download credited image'));
+        const heading=document.createElement('h3');heading.textContent=catalogTitle(entry);heading.title=heading.textContent;
         const summary=document.createElement('p');summary.textContent=language==='es'?`${ordered.length} viñetas en orden de lectura.`:`${ordered.length} panels in reading order.`;
         if (entry.publishedAt) { const date=document.createElement('time');date.className='episode-date';date.dateTime=entry.publishedAt;date.textContent=formatCatalogDate(entry.publishedAt);copy.append(meta,heading,summary,date); } else copy.append(meta,heading,summary);
         const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';action.addEventListener('click',()=>openReader(key));
         copy.append(action);article.append(button,copy);grid.append(article);
-        document.querySelector('.language-toggle')?.addEventListener('click',()=>{if(entry.publishedAt){const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);}share.setAttribute('aria-label',language==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');});
+        document.querySelector('.language-toggle')?.addEventListener('click',()=>{if(entry.publishedAt){const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);}share.setAttribute('aria-label',language==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');const download=copy.querySelector('.episode-download');if(download){download.setAttribute('aria-label',language==='en'?'Download credited image':'Descargar imagen con firma');download.title=download.getAttribute('aria-label');}});
       }
     }
     const requestedEpisode = new URLSearchParams(window.location.search).get('episode');
@@ -302,6 +304,14 @@ async function loadCharacterEpisodeActions() {
 
 loadApprovedEpisodes();
 loadCharacterEpisodeActions();
+function markedDownloadLink(src,filename,label){const link=document.createElement('a');link.className='episode-download';link.href=src;link.download=filename;link.title=label;link.setAttribute('aria-label',label);link.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>';return link;}
+function installPortraitDownloadLinks(){
+  document.querySelectorAll('.character-group .cast-portrait img[data-download-src]').forEach(img=>{
+    const src=img.dataset.downloadSrc;if(!src||img.parentElement.querySelector('.portrait-download'))return;
+    const link=document.createElement('a');link.className='portrait-download';link.href=src;link.download=src.split('/').pop();link.setAttribute('aria-label',language==='es'?'Descargar retrato con firma':'Download credited portrait');link.title=link.getAttribute('aria-label');link.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>';img.parentElement.append(link);
+  });
+}
+installPortraitDownloadLinks();
 
 const dialog = document.querySelector('#reader');
 const image = document.querySelector('#reader-image');
@@ -342,6 +352,8 @@ function renderPanel() {
   kind.textContent=episodeLabel?`${episodeLabel} · ${baseKind}`:baseKind;
   if(readerDate){readerDate.hidden=!work.publishedAt;readerDate.textContent=work.publishedAt?formatCatalogDate(work.publishedAt):'';if(work.publishedAt)readerDate.dateTime=work.publishedAt;}
   count.textContent = `${panelIndex+1} / ${work.images.length}`;
+  const downloadLink=document.querySelector('.reader-download');
+  if(downloadLink){downloadLink.hidden=!panel.downloadSrc;if(panel.downloadSrc){downloadLink.href=panel.downloadSrc;downloadLink.download=`${work.episodeId||activeWork}-viñeta-${panelIndex+1}.webp`;downloadLink.setAttribute('aria-label',language==='es'?'Descargar viñeta con firma':'Download credited panel');downloadLink.title=downloadLink.getAttribute('aria-label');}}
   if (swipePreview) { swipePreview.removeAttribute('src'); swipePreview.removeAttribute('data-panel-src'); swipePreview.alt = ''; }
   stage?.classList.remove('has-swipe-preview','swipe-preview-from-left');
   preloadNeighborPanels(work, panelIndex);

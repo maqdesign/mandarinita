@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const path = join(root, 'episodes.json');
-const characterPath = join(root, 'content', 'characters.json');
+const characterPath = join(root, 'characters.json');
 const errors = [];
 const allowedStatuses = new Set(['draft', 'review', 'published', 'hidden']);
 const allowedTypes = new Set(['comic', 'illustration', 'reel', 'merchandise', 'other']);
@@ -12,7 +12,7 @@ const text = v => typeof v === 'string' && v.trim().length > 0;
 const content = JSON.parse(readFileSync(path, 'utf8'));
 const characterCatalog = JSON.parse(readFileSync(characterPath, 'utf8'));
 const characterIds = new Set();
-if (characterCatalog.schemaVersion !== 1 || !Array.isArray(characterCatalog.characters)) errors.push('Invalid content/characters.json registry');
+if (characterCatalog.schemaVersion !== 1 || !Array.isArray(characterCatalog.characters)) errors.push('Invalid characters.json registry');
 for (const [index, character] of (characterCatalog.characters || []).entries()) {
   if (!text(character.id) || !/^[a-z0-9][a-z0-9-]*$/.test(character.id)) errors.push(`characters[${index}]: invalid ID`);
   if (characterIds.has(character.id)) errors.push(`characters[${index}]: duplicate ID`);

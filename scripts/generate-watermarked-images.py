@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Create branded WebP derivatives for episode panels and transparent portraits.
 
-Original artwork stays in its existing source path. The catalog and the two
-character pages are updated to use the watermarked copies served to visitors.
+Original artwork stays in its existing source path. The catalog records both
+source and marked paths; pages show sources while downloads and social cards use marked copies.
 Requires Pillow (python -m pip install Pillow).
 """
 from __future__ import annotations
@@ -93,20 +93,25 @@ for episode in catalog["episodes"]:
 
 # Character portraits are linked from both the cast page and the home teaser.
 portrait_images = 0
-character_pattern = re.compile(r'(src=")(assets/characters/[^"?]+)(?:\?[^"]*)?(\")')
+character_pattern = re.compile(r'(src=")(assets/(?:watermarked/)?characters/[^"?]+)(?:\?[^"]*)?(\")(?:\s+data-download-src="[^"]*")?')
 for page_name in ("personajes.html", "index.html"):
     page = ROOT / page_name
     text = page.read_text(encoding="utf-8")
     replacements: dict[str, str] = {}
 
     def replace_character(match: re.Match[str]) -> str:
-        original = match.group(2)
-        source = ROOT / original
+        referenced = match.group(2)
+        stem = Path(referenced).stem
+        source_candidates = sorted((ROOT / "assets/characters").glob(f"{stem}.*"))
+        if not source_candidates:
+            raise FileNotFoundError(f"No original character portrait found for {referenced}")
+        source = source_candidates[0]
         destination = Path("assets/watermarked/characters") / f"{source.stem}.webp"
+        original = source.relative_to(ROOT).as_posix()
         if original not in replacements:
             save_webp(source, ROOT / destination, transparent=True)
             replacements[original] = destination.as_posix()
-        return f'{match.group(1)}{replacements[original]}{match.group(3)}'
+        return f'{match.group(1)}{original}{match.group(3)} data-download-src="{replacements[original]}"'
 
     revised, count = character_pattern.subn(replace_character, text)
     if revised != text:

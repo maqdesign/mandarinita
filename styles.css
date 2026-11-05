@@ -458,6 +458,31 @@
   object-position:center;
 }
 .character-group .cast-grid-lead .cast-featured:nth-child(1) .cast-portrait{background:#d9f0eb;}
+
+/* Wider screens use the archive space without letting cards grow oversized. */
+@media(min-width:981px) and (max-width:1199px){
+  .episode-archive-layout{grid-template-columns:190px minmax(0,1fr);gap:1.25rem}
+  .episode-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+}
+@media(min-width:1200px) and (max-width:1439px){.episode-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:1440px){
+  .episode-archive-page{width:100%;max-width:3600px;margin-inline:auto;padding-inline:clamp(96px,5vw,180px)}
+  .episode-archive-layout{grid-template-columns:clamp(240px,15vw,300px) minmax(0,1fr);gap:clamp(24px,2vw,42px)}
+  .episode-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(16px,1.1vw,26px)}
+}
+@media(min-width:1900px){.episode-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(min-width:2560px){.episode-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(min-width:3400px){.episode-grid{grid-template-columns:repeat(8,minmax(0,1fr))}}
+
+/* Marked files are offered only through the deliberate download controls. */
+.work-grid .episode-download,.portrait-download{width:32px;height:32px;flex:0 0 32px;display:inline-grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--green);cursor:pointer}
+.work-grid .episode-download svg,.portrait-download svg{width:17px;height:17px}
+.work-grid .episode-download:hover,.portrait-download:hover{color:var(--orange);background:var(--soft)}
+.reader-download{color:var(--green)}
+.reader-download svg{width:18px;height:18px}
+.portrait-download{position:absolute;right:14px;bottom:14px;z-index:2;width:40px;height:40px;box-shadow:0 2px 10px rgba(48,34,27,.13)}
+.episode-grid .work-copy h2{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;min-height:3.45em;overflow:hidden}
+.episode-grid .work-copy>p:not(.work-meta){min-height:2.7em}
 .character-group .cast-grid-lead .cast-featured:nth-child(2) .cast-portrait{background:#dceafa;}
 .character-group .cast-grid-support .cast-support:nth-child(3) .cast-portrait{background:#f7dfe0;}
 .character-group .cast-grid-support .cast-support:nth-child(4) .cast-portrait{background:#ffedb8;}
