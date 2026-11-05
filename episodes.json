@@ -1021,7 +1021,10 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2024-04-29"
+      "publishedAt": "2024-04-29",
+      "characters": [
+        "limon-agrio"
+      ]
     },
     {
       "id": "ep-102-hoy-se-siente-como-uno-de-esos-jueves-que-no-pidieron-in",
@@ -6370,12 +6373,12 @@
       "id": "ep-015-salon-de-la-es-pera",
       "title": {
         "es": "Salón de la Es-pera",
-        "en": "Episode 15"
+        "en": "The Waiting Room Salon"
       },
       "episodeNumber": 15,
-      "status": "review",
+      "status": "published",
       "type": "comic",
-      "complete": false,
+      "complete": true,
       "source": {
         "kind": "notion-archive",
         "notionUrl": "https://app.notion.com/p/35152f3f7b854622bc4d3eaf2da02dd0",
@@ -6390,7 +6393,7 @@
           "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.1.png",
           "alt": {
             "es": "Lámina 1 del episodio 15: Salón de la Es-pera.",
-            "en": "Page 1 from episode 15."
+            "en": "Page 1 from The Waiting Room Salon."
           },
           "sourceSrc": "assets/episodes/ep-015-salon-de-la-es-pera/15.1.png",
           "watermarkedSrc": "assets/watermarked/episodes/ep-015-salon-de-la-es-pera/15.1.webp",
@@ -6402,7 +6405,7 @@
           "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.2.png",
           "alt": {
             "es": "Lámina 2 del episodio 15: Salón de la Es-pera.",
-            "en": "Page 2 from episode 15."
+            "en": "Page 2 from The Waiting Room Salon."
           },
           "sourceSrc": "assets/episodes/ep-015-salon-de-la-es-pera/15.2.png",
           "watermarkedSrc": "assets/watermarked/episodes/ep-015-salon-de-la-es-pera/15.2.webp",
@@ -6414,7 +6417,7 @@
           "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.3.png",
           "alt": {
             "es": "Lámina 3 del episodio 15: Salón de la Es-pera.",
-            "en": "Page 3 from episode 15."
+            "en": "Page 3 from The Waiting Room Salon."
           },
           "sourceSrc": "assets/episodes/ep-015-salon-de-la-es-pera/15.3.png",
           "watermarkedSrc": "assets/watermarked/episodes/ep-015-salon-de-la-es-pera/15.3.webp",
@@ -6426,26 +6429,14 @@
           "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.4.png",
           "alt": {
             "es": "Lámina 4 del episodio 15: Salón de la Es-pera.",
-            "en": "Page 4 from episode 15."
+            "en": "Page 4 from The Waiting Room Salon."
           },
           "sourceSrc": "assets/episodes/ep-015-salon-de-la-es-pera/15.4.png",
           "watermarkedSrc": "assets/watermarked/episodes/ep-015-salon-de-la-es-pera/15.4.webp",
           "watermarkedThumbnailSrc": "assets/watermarked/episodes/ep-015-salon-de-la-es-pera/thumb-15.4.webp"
-        },
-        {
-          "order": 5,
-          "originalPosition": 5,
-          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.5.jpg",
-          "alt": {
-            "es": "Lámina 5 del episodio 15: Salón de la Es-pera.",
-            "en": "Page 5 from episode 15."
-          },
-          "sourceSrc": "assets/episodes/ep-015-salon-de-la-es-pera/15.5.jpg",
-          "watermarkedSrc": "assets/watermarked/episodes/ep-015-salon-de-la-es-pera/15.5.webp",
-          "watermarkedThumbnailSrc": "assets/watermarked/episodes/ep-015-salon-de-la-es-pera/thumb-15.5.webp"
         }
       ],
-      "editorialNote": "Revisión visual 2026-11-04: La quinta imagen es un boceto de otra escena; confirmar si es material alterno o una viñeta final antes de publicar.",
+      "editorialNote": "Published pages 1–4 in reading order. The fifth source image is a rough storyboard of another scene and remains outside the public episode sequence.",
       "characters": [
         "sra-pera"
       ]
@@ -7053,7 +7044,8 @@
       "publishedAt": "2019-12-21",
       "characters": [
         "mandy-mandarinita",
-        "mando-mandarinita"
+        "mando-mandarinita",
+        "limon-agrio"
       ]
     },
     {
