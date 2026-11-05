@@ -1,21 +1,84 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#fffaf3"><title>Taller Mandarinita · Editor de episodios</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fffaf3">
+  <title>Taller Mandarinita · Editor de episodios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="editor.css"><script defer src="editor.js"></script>
+  <link rel="stylesheet" href="editor.css">
+  <script defer src="editor.js"></script>
 </head>
 <body>
-<header class="topbar"><a class="brand" href="index.html"><img src="assets/mandarinita-logo.svg" alt="Mandarinita" width="118"></a><div class="project"><span class="eyebrow">TALLER MANDARINITA</span><strong contenteditable="true" aria-label="Título del episodio">Un episodio nuevo</strong><small id="save-state">Borrador local</small></div><div class="top-actions"><button id="undo" title="Deshacer">↶</button><button id="redo" title="Rehacer">↷</button><button class="quiet" id="open-project">Abrir</button><button class="quiet" id="save-project">Guardar</button><button class="primary" id="export-project">Exportar revisión</button><input id="file-open" type="file" accept="application/json,.json" hidden></div></header>
-<main class="app-shell">
- <aside class="library"><div class="side-head"><div><span class="eyebrow">RECURSOS APROBADOS</span><h1>Biblioteca</h1></div><button id="upload-asset" class="round" title="Importar dibujo">＋</button><input id="asset-file" type="file" accept="image/*" hidden></div><label class="search"><span>⌕</span><input id="asset-search" type="search" placeholder="Buscar personaje u objeto" aria-label="Buscar recursos"></label><nav class="filters" aria-label="Filtrar recursos"><button class="active" data-filter="all">Todo</button><button data-filter="character">Personajes</button><button data-filter="object">Objetos</button></nav><div id="asset-grid" class="asset-grid"></div><p class="library-note">Se usan archivos del repositorio sin alterar su proporción ni transparencia. Los dibujos importados quedan como recursos privados del borrador.</p></aside>
- <section class="workspace"><div class="workspace-bar"><div class="breadcrumbs"><span>EPISODIO</span><b>›</b><span id="current-panel-label">VIÑETA 1</span></div><div class="tools"><button id="add-panel">＋ Viñeta</button><button id="add-bubble">◯ Globo</button><span class="divider"></span><button id="toggle-grid" aria-pressed="true">▦ Guías</button><button id="zoom-out" aria-label="Alejar">−</button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Acercar">＋</button><button id="fit">Ajustar</button><select id="export-preset" aria-label="Formato de exportación"><option value="web">Web · 1200 × 800</option><option value="square">Instagram · 1080 × 1080</option><option value="portrait">Instagram · 1080 × 1350</option></select><button class="mobile-drawer" id="mobile-library">Recursos</button><button class="mobile-drawer" id="mobile-properties">Propiedades</button></div></div>
- <div class="stage-wrap"><div class="stage" id="stage"><div id="canvas" class="canvas" role="application" aria-label="Lienzo de viñeta"></div></div></div>
- <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Viñetas del episodio</strong></div><button id="preview">Vista previa</button></div><div id="panel-list" class="panel-list"></div></div></section>
- <aside class="inspector"><div class="side-head"><div><span class="eyebrow">EDICIÓN</span><h2>Propiedades</h2></div></div><div id="inspector-content" class="inspector-content"><div class="empty-state"><span>✳</span><b>Selecciona un elemento</b><p>Arrástralo en el lienzo o ajusta sus propiedades aquí.</p></div></div><div class="layers"><div class="layer-title"><span class="eyebrow">CAPAS</span><span id="layer-count">0 elementos</span></div><div id="layer-list"></div></div></aside>
-</main>
-<dialog id="preview-dialog"><form method="dialog"><button class="close" aria-label="Cerrar">×</button></form><span class="eyebrow">VISTA PREVIA · LECTURA</span><h2 id="preview-title">Un episodio nuevo</h2><div id="preview-panels"></div></dialog>
-<div id="toast" role="status" aria-live="polite"></div>
-</body></html>
+  <section id="project-home" class="project-home" aria-labelledby="home-title">
+    <header class="home-header">
+      <a href="index.html" class="brand"><img src="assets/mandarinita-logo.svg" alt="Mandarinita" width="142"></a>
+      <span class="eyebrow">TALLER PERSONAL DE MAURICIO</span>
+    </header>
+    <main class="home-main">
+      <div class="home-heading">
+        <div><span class="eyebrow">ARCHIVO LOCAL</span><h1 id="home-title">Mis episodios</h1><p>Tus proyectos se guardan en este dispositivo. Descarga el archivo fuente para moverlos entre dispositivos.</p></div>
+        <div class="home-actions"><button class="button primary" id="new-project">＋ Nuevo episodio</button><button class="button" id="import-project">Importar archivo</button><input id="project-file" type="file" accept=".mandarinita,.man,.zip,.json,application/zip,application/json" hidden></div>
+      </div>
+      <div id="project-list" class="project-list"></div>
+      <p class="home-footnote">El archivo editable usa el formato ZIP de Mandarinita con extensión <code>.mandarinita</code>. También se pueden importar proyectos JSON anteriores.</p>
+    </main>
+  </section>
+
+  <section id="editor-view" class="editor-view" hidden>
+    <header class="topbar">
+      <button class="home-back" id="back-home" aria-label="Volver a mis episodios">← <span>Mis episodios</span></button>
+      <a class="brand" href="index.html"><img src="assets/mandarinita-logo.svg" alt="Mandarinita" width="112"></a>
+      <div class="project"><span class="eyebrow">TALLER MANDARINITA</span><strong id="project-title" contenteditable="true" aria-label="Título del episodio">Un episodio nuevo</strong><small id="save-state">Borrador local</small></div>
+      <div class="top-actions">
+        <button id="undo" title="Deshacer">↶</button><button id="redo" title="Rehacer">↷</button>
+        <button id="save-project" class="quiet">Guardar</button>
+        <button id="download-source" class="quiet">Archivo editable</button>
+        <button id="export-project" class="primary">Exportar revisión</button>
+        <button id="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">◐</button>
+      </div>
+    </header>
+    <main class="app-shell" id="app-shell">
+      <aside class="library" id="library-panel">
+        <div class="side-head"><div><span class="eyebrow">BIBLIOTECA DE RECURSOS</span><h1>Componentes</h1></div><button id="upload-asset" class="round" title="Importar dibujo">＋</button><input id="asset-file" type="file" accept="image/*" hidden></div>
+        <label class="search"><span>⌕</span><input id="asset-search" type="search" placeholder="Personaje, alias u objeto" aria-label="Buscar recursos"></label>
+        <nav class="filters" aria-label="Filtrar recursos">
+          <button class="active" data-filter="all">Todo</button><button data-filter="character">Personajes</button><button data-filter="object">Objetos</button><button data-filter="background">Fondos</button>
+        </nav>
+        <div id="asset-grid" class="asset-grid"></div>
+        <div id="background-note" class="library-note" hidden>Los episodios guardados contienen imágenes aplanadas. Para crear fondos limpios reutilizables hacen falta archivos por capas o una etapa de extracción y revisión.</div>
+        <div class="library-note">Los recortes con fondo se muestran como referencia; solo los componentes aislados se colocan directamente.</div>
+      </aside>
+      <section class="workspace">
+        <div class="workspace-bar">
+          <div class="breadcrumbs"><span>EPISODIO</span><b>›</b><span id="current-panel-label">VIÑETA 1</span></div>
+          <div class="tools">
+            <button id="toggle-library" title="Mostrar/ocultar biblioteca">Biblioteca</button><button id="toggle-layers" title="Mostrar/ocultar inspector">Capas</button><button id="focus-mode" title="Ampliar el lienzo" aria-pressed="false">⛶ Lienzo</button>
+            <button id="add-panel">＋ Viñeta</button><select id="bubble-kind" aria-label="Tipo de globo"><option value="dialogue">＋ Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW</option></select><button id="add-bubble">Añadir globo</button>
+            <button id="toggle-draw" aria-pressed="false">✎ Dibujar</button>
+            <span class="divider"></span><button id="toggle-grid" aria-pressed="true">▦ Guías</button><button id="zoom-out" aria-label="Alejar">−</button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Acercar">＋</button><button id="fit">Ajustar</button>
+            <select id="export-preset" aria-label="Formato del lienzo"><option value="web">Web · 3:2</option><option value="square">Instagram · 1:1</option><option value="portrait">Instagram · 4:5</option></select>
+            <button class="mobile-drawer" id="mobile-library">Recursos</button><button class="mobile-drawer" id="mobile-properties">Propiedades</button>
+          </div>
+        </div>
+        <div id="draw-toolbar" class="draw-toolbar" hidden>
+          <span class="eyebrow">TRAZO</span><select id="brush-type" aria-label="Tipo de trazo"><option value="pen">Pluma</option><option value="marker">Marcador</option><option value="pencil">Lápiz</option><option value="eraser">Borrar trazo</option></select>
+          <div id="color-palette" class="color-palette" aria-label="Colores rápidos"></div><label>Ancho <input id="brush-size" type="range" min="2" max="24" value="5"></label><span>Apple Pencil y táctil</span>
+        </div>
+        <div class="stage-wrap"><div class="stage" id="stage"><div id="canvas" class="canvas" role="application" aria-label="Lienzo de viñeta"></div></div></div>
+        <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Viñetas del episodio</strong></div><button id="preview">Vista previa</button></div><div id="panel-list" class="panel-list"></div></div>
+      </section>
+      <aside class="inspector" id="inspector-panel">
+        <div class="side-head"><div><span class="eyebrow">EDICIÓN</span><h2>Propiedades y capas</h2></div></div>
+        <div id="inspector-content" class="inspector-content"><div class="empty-state"><span>✳</span><b>Selecciona un elemento</b><p>El contorno naranja confirma qué elemento está seleccionado.</p></div></div>
+        <div id="offstage-panel" class="offstage-panel" hidden><div class="layer-title"><span class="eyebrow">FUERA DEL LIENZO</span><span id="offstage-count">0</span></div><div id="offstage-list"></div></div>
+        <div class="layers"><div class="layer-title"><span class="eyebrow">CAPAS</span><span id="layer-count">0 elementos</span></div><div id="layer-list"></div></div>
+      </aside>
+    </main>
+  </section>
+  <dialog id="preview-dialog"><form method="dialog"><button class="close" aria-label="Cerrar">×</button></form><span class="eyebrow">VISTA PREVIA · ORDEN DE LECTURA</span><h2 id="preview-title">Un episodio nuevo</h2><div id="preview-panels"></div></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
