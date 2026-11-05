@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fffaf3"><title>Taller Mandarinita · Editor de episodios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="editor.css"><script defer src="editor.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="index.html"><img src="assets/mandarinita-logo.svg" alt="Mandarinita" width="118"></a><div class="project"><span class="eyebrow">TALLER MANDARINITA</span><strong contenteditable="true" aria-label="Título del episodio">Un episodio nuevo</strong><small id="save-state">Borrador local</small></div><div class="top-actions"><button id="undo" title="Deshacer">↶</button><button id="redo" title="Rehacer">↷</button><button class="quiet" id="open-project">Abrir</button><button class="quiet" id="save-project">Guardar</button><button class="primary" id="export-project">Exportar revisión</button><input id="file-open" type="file" accept="application/json,.json" hidden></div></header>
+<main class="app-shell">
+ <aside class="library"><div class="side-head"><div><span class="eyebrow">RECURSOS APROBADOS</span><h1>Biblioteca</h1></div><button id="upload-asset" class="round" title="Importar dibujo">＋</button><input id="asset-file" type="file" accept="image/*" hidden></div><label class="search"><span>⌕</span><input id="asset-search" type="search" placeholder="Buscar personaje u objeto" aria-label="Buscar recursos"></label><nav class="filters" aria-label="Filtrar recursos"><button class="active" data-filter="all">Todo</button><button data-filter="character">Personajes</button><button data-filter="object">Objetos</button></nav><div id="asset-grid" class="asset-grid"></div><p class="library-note">Se usan archivos del repositorio sin alterar su proporción ni transparencia. Los dibujos importados quedan como recursos privados del borrador.</p></aside>
+ <section class="workspace"><div class="workspace-bar"><div class="breadcrumbs"><span>EPISODIO</span><b>›</b><span id="current-panel-label">VIÑETA 1</span></div><div class="tools"><button id="add-panel">＋ Viñeta</button><button id="add-bubble">◯ Globo</button><span class="divider"></span><button id="toggle-grid" aria-pressed="true">▦ Guías</button><button id="zoom-out" aria-label="Alejar">−</button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Acercar">＋</button><button id="fit">Ajustar</button><select id="export-preset" aria-label="Formato de exportación"><option value="web">Web · 1200 × 800</option><option value="square">Instagram · 1080 × 1080</option><option value="portrait">Instagram · 1080 × 1350</option></select><button class="mobile-drawer" id="mobile-library">Recursos</button><button class="mobile-drawer" id="mobile-properties">Propiedades</button></div></div>
+ <div class="stage-wrap"><div class="stage" id="stage"><div id="canvas" class="canvas" role="application" aria-label="Lienzo de viñeta"></div></div></div>
+ <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Viñetas del episodio</strong></div><button id="preview">Vista previa</button></div><div id="panel-list" class="panel-list"></div></div></section>
+ <aside class="inspector"><div class="side-head"><div><span class="eyebrow">EDICIÓN</span><h2>Propiedades</h2></div></div><div id="inspector-content" class="inspector-content"><div class="empty-state"><span>✳</span><b>Selecciona un elemento</b><p>Arrástralo en el lienzo o ajusta sus propiedades aquí.</p></div></div><div class="layers"><div class="layer-title"><span class="eyebrow">CAPAS</span><span id="layer-count">0 elementos</span></div><div id="layer-list"></div></div></aside>
+</main>
+<dialog id="preview-dialog"><form method="dialog"><button class="close" aria-label="Cerrar">×</button></form><span class="eyebrow">VISTA PREVIA · LECTURA</span><h2 id="preview-title">Un episodio nuevo</h2><div id="preview-panels"></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+</body></html>
