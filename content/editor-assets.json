@@ -63,6 +63,18 @@
       "sourcePage": "personajes.html"
     },
     {
+      "name": "Aguacatelo · referencia de viñeta",
+      "path": "assets/characters/aguacatelo.png",
+      "group": "referencia",
+      "appearance": "imagen con fondo de viñeta; no es un recorte independiente",
+      "editorUse": "reference-only",
+      "format": "png",
+      "width": 446,
+      "height": 536,
+      "mode": "RGBA",
+      "sourcePage": "personajes.html"
+    },
+    {
       "name": "Morita",
       "path": "assets/characters/morita.png",
       "group": "secundario",

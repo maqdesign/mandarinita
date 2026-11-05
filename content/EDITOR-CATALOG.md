@@ -13,7 +13,7 @@ Este catálogo se deriva de los recursos visibles del repositorio y no concede a
 
 La página de personajes nombra 14 personajes: Mandy y Mando Mandarinita; Greg el Zanahorio; Limón Agrio; Aguacatelo; Morita; Don Guineo; Don Manzanillo; Sra. Pera; Sandy la Sandía; Los Cherrys; Superfreso; Don Pepino; y Champi Ñón.
 
-El catálogo de assets registra también dos retratos sueltos —Sr. Mandarino neutral y Mandarinita sonriente— sin inferir que representen poses de cuerpo completo. Ver [`editor-assets.json`](editor-assets.json) para dimensiones, transparencia, formato y uso recomendado.
+El catálogo de assets registra los 15 archivos de `assets/characters/`, incluidos archivos que son referencias con fondo y no capas aisladas. Registra también dos retratos sueltos —Sr. Mandarino neutral y Mandarinita sonriente— sin inferir que representen poses de cuerpo completo. Ver [`editor-assets.json`](editor-assets.json) para dimensiones, transparencia, formato y uso recomendado.
 
 - Las figuras recortadas con transparencia pueden probarse como capas conservando su archivo original y proporción.
 - Los fragmentos de viñeta y las ilustraciones con fondo sirven como referencia visual; no son componentes aislados y no deben recortarse automáticamente.
