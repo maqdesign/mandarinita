@@ -142,6 +142,7 @@ syncInternalLanguageLinks();
 languageButton.addEventListener('click', () => {
   setLanguage(language === 'es' ? 'en' : 'es', true);
   syncInternalLanguageLinks();
+  document.querySelectorAll('.portrait-download').forEach(link=>{link.setAttribute('aria-label',language==='en'?'Download credited portrait':'Descargar retrato con firma');link.title=link.getAttribute('aria-label');});
   if (activeWork && dialog.open) renderPanel();
 });
 menuButton?.addEventListener('click', () => {
@@ -195,10 +196,11 @@ async function loadApprovedEpisodes() {
         title:entry.title.es,
         titleEn:catalogTitle(entry,'en'),
         episodeId:entry.id,
+        episodeNumber:entry.episodeNumber,
         publishedAt:entry.publishedAt || null,
         kind:'HISTORIETA · ARCHIVO',
         kindEn:'COMIC · ARCHIVE',
-        images:ordered.map(p=>({src:p.src,alt:p.alt.es,altEn:p.alt.en}))
+        images:ordered.map(p=>{const source=p.sourceSrc||p.src;return {src:source,thumbSrc:source.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i,'thumb-$1.webp'),downloadSrc:p.watermarkedSrc||null,alt:p.alt.es,altEn:p.alt.en};})
       };
       approved.push({entry,ordered,key});
     }
@@ -219,16 +221,17 @@ async function loadApprovedEpisodes() {
       for (const {entry,ordered,key} of chosen) {
         const article=document.createElement('article');article.className='work-card catalog-card';
         const button=document.createElement('button');button.className='work-image';button.type='button';button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${catalogTitle(entry,'en')}`);
-        const cover=document.createElement('img');const fullResolutionSrc=ordered[0].src;cover.src=fullResolutionSrc.replace(/([^/]+)\.(png|jpe?g)$/i,'thumb-$1.webp');cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.addEventListener('error',()=>{if(cover.src!==new URL(fullResolutionSrc,location.href).href)cover.src=fullResolutionSrc;},{once:true});button.append(cover);button.addEventListener('click',()=>openReader(key));
+        const cover=document.createElement('img');const fullResolutionSrc=ordered[0].sourceSrc||ordered[0].src;cover.src=fullResolutionSrc.replace(/([^/]+)\.(png|jpe?g|webp)$/i,'thumb-$1.webp');cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.addEventListener('error',()=>{if(cover.src!==new URL(fullResolutionSrc,location.href).href)cover.src=fullResolutionSrc;},{once:true});button.append(cover);button.addEventListener('click',()=>openReader(key));
         const copy=document.createElement('div');copy.className='work-copy';
         const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
         const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
-        const heading=document.createElement('h3');heading.textContent=catalogTitle(entry);
+        if(ordered[0].watermarkedSrc)meta.append(markedDownloadLink(ordered[0].watermarkedSrc,`episodio-${entry.episodeNumber}-portada.webp`,language==='es'?'Descargar imagen con firma':'Download credited image'));
+        const heading=document.createElement('h3');heading.textContent=catalogTitle(entry);heading.title=heading.textContent;
         const summary=document.createElement('p');summary.textContent=language==='es'?`${ordered.length} viñetas en orden de lectura.`:`${ordered.length} panels in reading order.`;
         if (entry.publishedAt) { const date=document.createElement('time');date.className='episode-date';date.dateTime=entry.publishedAt;date.textContent=formatCatalogDate(entry.publishedAt);copy.append(meta,heading,summary,date); } else copy.append(meta,heading,summary);
         const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';action.addEventListener('click',()=>openReader(key));
         copy.append(action);article.append(button,copy);grid.append(article);
-        document.querySelector('.language-toggle')?.addEventListener('click',()=>{if(entry.publishedAt){const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);}share.setAttribute('aria-label',language==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');});
+        document.querySelector('.language-toggle')?.addEventListener('click',()=>{if(entry.publishedAt){const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);}share.setAttribute('aria-label',language==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');const download=copy.querySelector('.episode-download');if(download){download.setAttribute('aria-label',language==='en'?'Download credited image':'Descargar imagen con firma');download.title=download.getAttribute('aria-label');}});
       }
     }
     const requestedEpisode = new URLSearchParams(window.location.search).get('episode');
@@ -240,7 +243,75 @@ async function loadApprovedEpisodes() {
     if (grid.id === 'home-featured-grid') grid.innerHTML = '<p class="home-archive-loading">No pudimos cargar las historietas. Usa el botón para abrir el archivo completo.</p>';
   }
 }
+async function loadCharacterEpisodeActions() {
+  const cards = [...document.querySelectorAll('.character-page .cast-card[data-character-id]')];
+  if (!cards.length) return;
+  const setCount = (node, es, en) => {
+    node.dataset.es = es;
+    node.dataset.en = en;
+    node.textContent = language === 'en' ? en : es;
+  };
+  try {
+    const response = await fetch('episodes.json', { cache: 'no-cache' });
+    if (!response.ok) throw new Error('Episode catalog unavailable');
+    const catalog = await response.json();
+    if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.episodes)) throw new Error('Invalid episode catalog');
+    const episodes = catalog.episodes.filter(entry => entry.status === 'published' && entry.type === 'comic' && entry.complete === true && Number.isInteger(entry.episodeNumber));
+    for (const card of cards) {
+      const characterId = card.dataset.characterId;
+      const button = card.querySelector('.character-episode-button');
+      const count = card.querySelector('.character-episode-count');
+      const archiveLink = card.querySelector('.character-episode-all');
+      if (archiveLink) {
+        const url = new URL('episodios.html', window.location.href);
+        url.searchParams.set('character', characterId);
+        url.searchParams.set('lang', language);
+        archiveLink.href = url.href;
+      }
+      const matches = episodes.filter(entry => Array.isArray(entry.characters) && entry.characters.includes(characterId));
+      if (!button || !count) continue;
+      if (!matches.length) {
+        const reviewCount = catalog.episodes.filter(entry => entry.status === 'review' && Array.isArray(entry.characters) && entry.characters.includes(characterId)).length;
+        if (reviewCount) setCount(count, `${reviewCount} ${reviewCount === 1 ? 'episodio en revisión' : 'episodios en revisión'}`, `${reviewCount} ${reviewCount === 1 ? 'episode in review' : 'episodes in review'}`);
+        else setCount(count, 'Aún no hemos vinculado episodios', 'No episodes linked yet');
+        continue;
+      }
+      const amount = matches.length;
+      setCount(count, `En ${amount} ${amount === 1 ? 'episodio' : 'episodios'}`, `In ${amount} ${amount === 1 ? 'episode' : 'episodes'}`);
+      button.disabled = false;
+      button.addEventListener('click', () => {
+        let choices = matches;
+        try {
+          const previousId = sessionStorage.getItem(`mandarinita-character-episode:${characterId}`);
+          const withoutPrevious = matches.filter(entry => entry.id !== previousId);
+          if (withoutPrevious.length) choices = withoutPrevious;
+        } catch (_) { /* Random selection still works if session storage is unavailable. */ }
+        const selected = choices[Math.floor(Math.random() * choices.length)];
+        try { sessionStorage.setItem(`mandarinita-character-episode:${characterId}`, selected.id); } catch (_) { /* Continue without remembering the previous selection. */ }
+        const url = new URL('episodios.html', window.location.href);
+        url.searchParams.set('episode', selected.id);
+        url.searchParams.set('lang', language);
+        window.location.assign(url.href);
+      });
+    }
+  } catch (_) {
+    for (const card of cards) {
+      const count = card.querySelector('.character-episode-count');
+      if (count) setCount(count, 'No pudimos cargar las apariciones', 'Could not load appearances');
+    }
+  }
+}
+
 loadApprovedEpisodes();
+loadCharacterEpisodeActions();
+function markedDownloadLink(src,filename,label){const link=document.createElement('a');link.className='episode-download';link.href=src;link.download=filename;link.title=label;link.setAttribute('aria-label',label);link.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>';return link;}
+function installPortraitDownloadLinks(){
+  document.querySelectorAll('.character-group .cast-portrait img[data-download-src]').forEach(img=>{
+    const src=img.dataset.downloadSrc;if(!src||img.parentElement.querySelector('.portrait-download'))return;
+    const link=document.createElement('a');link.className='portrait-download';link.href=src;link.download=src.split('/').pop();link.setAttribute('aria-label',language==='es'?'Descargar retrato con firma':'Download credited portrait');link.title=link.getAttribute('aria-label');link.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>';img.parentElement.append(link);
+  });
+}
+installPortraitDownloadLinks();
 
 const dialog = document.querySelector('#reader');
 const image = document.querySelector('#reader-image');
@@ -254,6 +325,7 @@ let panelIndex = 0;
 const readerHasEpisodeNavigation = () => Boolean(works[activeWork]?.episodeId);
 const panelThumbnailCache = new Map();
 function panelThumbnailSource(panel) {
+  if (panel.thumbSrc) return panel.thumbSrc;
   return panel.src.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-$1.webp');
 }
 function preloadNeighborPanels(work, index) {
@@ -275,9 +347,13 @@ function renderPanel() {
   image.src = panel.src;
   image.alt = language === 'es' ? panel.alt : panel.altEn;
   title.textContent = language === 'es' ? work.title : work.titleEn;
-  kind.textContent = language === 'es' ? work.kind : work.kindEn;
+  const episodeLabel=work.episodeNumber?(language==='es'?`EPISODIO ${work.episodeNumber}`:`EPISODE ${work.episodeNumber}`):'';
+  const baseKind=language==='es'?work.kind:work.kindEn;
+  kind.textContent=episodeLabel?`${episodeLabel} · ${baseKind}`:baseKind;
   if(readerDate){readerDate.hidden=!work.publishedAt;readerDate.textContent=work.publishedAt?formatCatalogDate(work.publishedAt):'';if(work.publishedAt)readerDate.dateTime=work.publishedAt;}
   count.textContent = `${panelIndex+1} / ${work.images.length}`;
+  const downloadLink=document.querySelector('.reader-download');
+  if(downloadLink){downloadLink.hidden=!panel.downloadSrc;if(panel.downloadSrc){downloadLink.href=panel.downloadSrc;downloadLink.download=`${work.episodeId||activeWork}-viñeta-${panelIndex+1}.webp`;downloadLink.setAttribute('aria-label',language==='es'?'Descargar viñeta con firma':'Download credited panel');downloadLink.title=downloadLink.getAttribute('aria-label');}}
   if (swipePreview) { swipePreview.removeAttribute('src'); swipePreview.removeAttribute('data-panel-src'); swipePreview.alt = ''; }
   stage?.classList.remove('has-swipe-preview','swipe-preview-from-left');
   preloadNeighborPanels(work, panelIndex);
