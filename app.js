@@ -202,7 +202,15 @@ async function loadApprovedEpisodes() {
       };
       approved.push({entry,ordered,key});
     }
-    approvedEpisodeKeys=approved.map(({entry,key})=>({id:entry.id,key}));
+    approvedEpisodeKeys=approved
+      .map(({entry,key})=>({id:entry.id,key,entry}))
+      .sort((a,b)=>{
+        const dateA=a.entry.publishedAt?Date.parse(`${a.entry.publishedAt}T12:00:00`):NaN;
+        const dateB=b.entry.publishedAt?Date.parse(`${b.entry.publishedAt}T12:00:00`):NaN;
+        if(Number.isFinite(dateA)&&Number.isFinite(dateB)&&dateA!==dateB)return dateB-dateA;
+        return (b.entry.episodeNumber||0)-(a.entry.episodeNumber||0);
+      })
+      .map(({id,key})=>({id,key}));
     if (grid.id === 'home-featured-grid') {
       grid.replaceChildren();
       const pool = [...approved];
@@ -226,7 +234,7 @@ async function loadApprovedEpisodes() {
     const requestedEpisode = new URLSearchParams(window.location.search).get('episode');
     if (requestedEpisode) {
       const match = approved.find(({entry}) => entry.id === requestedEpisode);
-      if (match) { openReader(match.key,Boolean(document.querySelector('#episode-grid'))); }
+      if (match) { openReader(match.key); }
     }
   } catch (_) {
     if (grid.id === 'home-featured-grid') grid.innerHTML = '<p class="home-archive-loading">No pudimos cargar las historietas. Usa el botón para abrir el archivo completo.</p>';
@@ -243,7 +251,7 @@ const readerDate = document.querySelector('#reader-date');
 const count = document.querySelector('#reader-count');
 let activeWork;
 let panelIndex = 0;
-let readerArchiveMode = false;
+const readerHasEpisodeNavigation = () => Boolean(works[activeWork]?.episodeId);
 const panelThumbnailCache = new Map();
 function panelThumbnailSource(panel) {
   return panel.src.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-$1.webp');
@@ -275,19 +283,19 @@ function renderPanel() {
   preloadNeighborPanels(work, panelIndex);
   const atEnd = panelIndex === work.images.length - 1;
   const multiple = work.images.length > 1;
-  document.querySelectorAll('.reader-restart').forEach(button => { button.hidden = !atEnd || !multiple || readerArchiveMode; });
+  const hasEpisodeNavigation=readerHasEpisodeNavigation();
+  document.querySelectorAll('.reader-restart').forEach(button => { button.hidden = !atEnd || !multiple || hasEpisodeNavigation; });
   const prevEpisodeButton=document.querySelector('.reader-prev-episode');
-  if(prevEpisodeButton){prevEpisodeButton.hidden=!readerArchiveMode;prevEpisodeButton.setAttribute('aria-label',language==='en'?'Previous episode':'Episodio anterior');prevEpisodeButton.title=prevEpisodeButton.getAttribute('aria-label');}
+  if(prevEpisodeButton){prevEpisodeButton.hidden=!hasEpisodeNavigation;prevEpisodeButton.setAttribute('aria-label',language==='en'?'Previous episode':'Episodio anterior');prevEpisodeButton.title=prevEpisodeButton.getAttribute('aria-label');}
   const nextEpisodeButton=document.querySelector('.reader-next-episode');
-  if(nextEpisodeButton){const longLabel=nextEpisodeButton.querySelector('.reader-episode-label-long');const shortLabel=nextEpisodeButton.querySelector('.reader-episode-label-short');const es=atEnd?'Ir al siguiente episodio':'Siguiente episodio';const en=atEnd?'Read the next episode':'Next episode';nextEpisodeButton.hidden=!readerArchiveMode;nextEpisodeButton.setAttribute('aria-label',language==='en'?en:es);nextEpisodeButton.title=nextEpisodeButton.getAttribute('aria-label');if(longLabel){longLabel.dataset.es=es;longLabel.dataset.en=en;longLabel.textContent=language==='es'?es:en;}if(shortLabel){shortLabel.dataset.es='Siguiente';shortLabel.dataset.en='Next';shortLabel.textContent=language==='es'?'Siguiente':'Next';}}
+  if(nextEpisodeButton){const longLabel=nextEpisodeButton.querySelector('.reader-episode-label-long');const shortLabel=nextEpisodeButton.querySelector('.reader-episode-label-short');const es=atEnd?'Ir al siguiente episodio':'Siguiente episodio';const en=atEnd?'Read the next episode':'Next episode';nextEpisodeButton.hidden=!hasEpisodeNavigation;nextEpisodeButton.setAttribute('aria-label',language==='en'?en:es);nextEpisodeButton.title=nextEpisodeButton.getAttribute('aria-label');if(longLabel){longLabel.dataset.es=es;longLabel.dataset.en=en;longLabel.textContent=language==='es'?es:en;}if(shortLabel){shortLabel.dataset.es='Siguiente';shortLabel.dataset.en='Next';shortLabel.textContent=language==='es'?'Siguiente':'Next';}}
   const prevButton=document.querySelector('.reader-prev');if(prevButton){prevButton.disabled=!multiple||panelIndex===0;prevButton.setAttribute('aria-label',language==='en'?'Previous panel':'Viñeta anterior');}
   const nextButton=document.querySelector('.reader-next');if(nextButton){nextButton.disabled=!multiple||atEnd;nextButton.setAttribute('aria-label',language==='en'?'Next panel':'Viñeta siguiente');}
   const shareButton=document.querySelector('.reader-share');if(shareButton){shareButton.setAttribute('aria-label',language==='en'?'Share this episode':'Compartir este episodio');shareButton.title=shareButton.getAttribute('aria-label');}
   const randomButton=document.querySelector('.reader-random');if(randomButton){randomButton.hidden=!work.episodeId;randomButton.setAttribute('aria-label',language==='en'?'Open a random episode':'Abrir un episodio aleatorio');randomButton.title=randomButton.getAttribute('aria-label');}
 }
-function openReader(key, archiveMode = false) {
+function openReader(key) {
   activeWork = key;
-  readerArchiveMode = archiveMode;
   panelIndex = 0;
   renderPanel();
   if(!dialog.open)dialog.showModal();
@@ -296,7 +304,7 @@ function openReader(key, archiveMode = false) {
 window.openMandarinitaEpisode = episodeId => {
   const key=catalogWorkKeys.get(episodeId);
   if(!key)return false;
-  openReader(key,true);
+  openReader(key);
   return true;
 };
 window.requestRandomMandarinitaEpisode = () => {
@@ -310,21 +318,21 @@ window.randomMandarinitaEpisode = () => {
   const choices=approvedEpisodeKeys.filter(item=>item.id!==works[activeWork]?.episodeId);
   const list=choices.length?choices:approvedEpisodeKeys;
   const picked=list[Math.floor(Math.random()*list.length)];
-  openReader(picked.key,true);
+  openReader(picked.key);
   return true;
 };
 window.advanceMandarinitaEpisode = () => {
   if(!approvedEpisodeKeys.length)return false;
   const index=approvedEpisodeKeys.findIndex(item=>item.id===works[activeWork]?.episodeId);
   const next=approvedEpisodeKeys[(index+1+approvedEpisodeKeys.length)%approvedEpisodeKeys.length];
-  openReader(next.key,true);
+  openReader(next.key);
   return true;
 };
 window.retreatMandarinitaEpisode = () => {
   if(!approvedEpisodeKeys.length)return false;
   const index=approvedEpisodeKeys.findIndex(item=>item.id===works[activeWork]?.episodeId);
   const previous=approvedEpisodeKeys[(index-1+approvedEpisodeKeys.length)%approvedEpisodeKeys.length];
-  openReader(previous.key,true);
+  openReader(previous.key);
   return true;
 };
 window.shareMandarinitaEpisode = async episodeId => {
@@ -365,7 +373,7 @@ if (dialog) {
     if(!swipe.horizontal){if(Math.abs(dy)>18)swipe=null;return;}
     event.preventDefault();swipe.dx=dx;
     const atEnd=panelIndex===works[activeWork].images.length-1;
-    const pullNext=readerArchiveMode&&atEnd&&dx<0&&typeof window.advanceMandarinitaEpisode==='function';
+    const pullNext=readerHasEpisodeNavigation()&&atEnd&&dx<0&&typeof window.advanceMandarinitaEpisode==='function';
     stage.classList.add('is-swiping');stage.style.setProperty('--swipe-distance',`${Math.max(-150,Math.min(150,dx*.72))}px`);
     stage.classList.toggle('is-next-episode-pull',pullNext);
     const neighborIndex=panelIndex+(dx<0?1:-1);
@@ -387,7 +395,7 @@ if (dialog) {
     const {horizontal,dx}=swipe;
     if(horizontal){
       const atEnd=panelIndex===works[activeWork].images.length-1;
-      const pullNext=readerArchiveMode&&atEnd&&dx<=-swipeThreshold&&typeof window.advanceMandarinitaEpisode==='function';
+      const pullNext=readerHasEpisodeNavigation()&&atEnd&&dx<=-swipeThreshold&&typeof window.advanceMandarinitaEpisode==='function';
       if(pullNext){stage.classList.add('is-advancing-episode');setTimeout(()=>{resetSwipe();window.advanceMandarinitaEpisode?.();},170);}
       else{resetSwipe();if(Math.abs(dx)>=54){if(dx<0&&panelIndex<works[activeWork].images.length-1)movePanel(1);else if(dx>0&&panelIndex>0)movePanel(-1);else{stage.classList.add('is-swipe-edge');setTimeout(()=>stage.classList.remove('is-swipe-edge'),240);}}}
     }else resetSwipe();
@@ -413,6 +421,6 @@ if (dialog) {
     if(event.key==='ArrowLeft'&&works[activeWork]?.images.length>1){event.preventDefault();movePanel(-1);return;}
     if(event.key==='ArrowRight'&&works[activeWork]?.images.length>1){event.preventDefault();movePanel(1);return;}
     if(event.key===' '&&!interactive){event.preventDefault();if(panelIndex<works[activeWork].images.length-1)movePanel(1);return;}
-    if(event.key==='Enter'&&!interactive){event.preventDefault();if(readerArchiveMode)window.advanceMandarinitaEpisode?.();else if(panelIndex<works[activeWork].images.length-1)movePanel(1);else{panelIndex=0;renderPanel();}}
+    if(event.key==='Enter'&&!interactive){event.preventDefault();if(readerHasEpisodeNavigation())window.advanceMandarinitaEpisode?.();else if(panelIndex<works[activeWork].images.length-1)movePanel(1);else{panelIndex=0;renderPanel();}}
   });
 }
