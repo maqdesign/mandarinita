@@ -56,7 +56,7 @@
           <div class="breadcrumbs"><span>EPISODIO</span><span class="breadcrumb-separator" aria-hidden="true"></span><span id="current-panel-label">VIÑETA 1</span></div>
           <div class="tools">
             <button id="toggle-library" title="Mostrar/ocultar biblioteca">Biblioteca</button><button id="toggle-layers" title="Mostrar/ocultar inspector">Capas</button><button id="focus-mode" title="Ampliar el lienzo" aria-pressed="false">Lienzo amplio</button>
-            <button id="add-panel">Viñeta</button><select id="bubble-kind" aria-label="Tipo de globo"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW</option></select><button id="add-bubble">Añadir globo</button>
+            <button id="add-panel">Viñeta</button><select id="bubble-kind" aria-label="Tipo de texto"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW</option></select><button id="add-bubble">Añadir</button>
             <button id="toggle-draw" aria-pressed="false">Dibujar</button>
             <span class="divider"></span><button id="toggle-grid" aria-pressed="true">Guías</button><button id="zoom-out" aria-label="Alejar"></button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Acercar"></button><button id="fit">Ajustar</button>
             <select id="export-preset" aria-label="Formato del lienzo"><option value="web">Web · 3:2</option><option value="square">Instagram · 1:1</option><option value="portrait">Instagram · 4:5</option></select>
@@ -64,11 +64,11 @@
           </div>
         </div>
         <div id="draw-toolbar" class="draw-toolbar" hidden>
-          <span class="eyebrow">TRAZO</span><select id="brush-type" aria-label="Tipo de trazo"><option value="pen">Pluma</option><option value="marker">Marcador</option><option value="pencil">Lápiz</option><option value="eraser">Borrar trazo</option></select>
-          <div id="color-palette" class="color-palette" aria-label="Colores rápidos"></div><label>Ancho <input id="brush-size" type="range" min="2" max="24" value="5"></label><span>Apple Pencil y táctil</span>
+          <span class="eyebrow">TRAZO</span><select id="brush-type" aria-label="Tipo de trazo"><option value="pen">Pluma</option><option value="marker">Marcador</option><option value="pencil">Lápiz</option></select>
+          <div id="color-palette" class="color-palette" aria-label="Colores rápidos"></div><label>Ancho <input id="brush-size" type="range" min="2" max="24" value="5"></label><button id="eraser-tool" aria-pressed="false">Borrador</button><button id="group-drawing">Agrupar trazos</button><button id="end-drawing-object" hidden>Terminar objeto</button><span>Apple Pencil y táctil</span>
         </div>
-        <div class="stage-wrap"><div class="stage" id="stage"><div id="canvas" class="canvas" role="application" aria-label="Lienzo de viñeta"></div></div></div>
-        <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Viñetas del episodio</strong></div><div class="strip-actions"><button id="board-view">Mesa de trabajo</button><button id="preview">Vista previa</button></div></div><div id="panel-list" class="panel-list"></div></div>
+        <div class="stage-wrap"><div class="stage" id="stage" aria-label="Mesa de trabajo con todas las viñetas"></div></div>
+        <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Arrastra las viñetas para ordenarlas</strong></div></div><div id="panel-list" class="panel-list"></div></div>
       </section>
       <aside class="inspector" id="inspector-panel">
         <div class="side-head"><div><span class="eyebrow">EDICIÓN</span><h2>Propiedades y capas</h2></div></div>
@@ -78,8 +78,7 @@
       </aside>
     </main>
   </section>
-  <dialog id="preview-dialog"><form method="dialog"><button class="close" aria-label="Cerrar"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button></form><span class="eyebrow">VISTA PREVIA · ORDEN DE LECTURA</span><h2 id="preview-title">Un episodio nuevo</h2><div id="preview-panels"></div></dialog>
-  <dialog id="board-dialog" class="board-dialog"><form method="dialog"><button class="close" aria-label="Cerrar"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button></form><span class="eyebrow">TODAS LAS VIÑETAS</span><h2 id="board-title">Mesa de trabajo</h2><p class="board-help">Toca una viñeta para abrirla y editarla en el lienzo.</p><div id="board-panels" class="board-preview-grid"></div></dialog>
+  <dialog id="template-dialog" class="template-dialog"><form method="dialog"><button class="close" aria-label="Cerrar"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button></form><span class="eyebrow">EMPEZAR UN EPISODIO</span><h2>Elige una plantilla</h2><p>Podrás cambiar el formato y el número de viñetas más adelante.</p><div class="template-grid"><button type="button" class="template-card" data-template="strip"><span class="template-art strip-template"><i></i><i></i><i></i></span><b>Tira breve</b><small>3 viñetas · Web</small></button><button type="button" class="template-card" data-template="carousel"><span class="template-art carousel-template"><i></i><i></i><i></i><i></i></span><b>Carrusel</b><small>4 viñetas · Instagram vertical</small></button><button type="button" class="template-card" data-template="square"><span class="template-art square-template"><i></i><i></i><i></i><i></i></span><b>Página cuadrada</b><small>4 viñetas · Instagram cuadrado</small></button><button type="button" class="template-card" data-template="blank"><span class="template-art blank-template"><i></i><i></i></span><b>En blanco</b><small>2 viñetas · Web</small></button></div></dialog>
   <dialog id="delete-project-dialog" class="confirm-dialog" aria-labelledby="delete-title"><form method="dialog"><span class="eyebrow">ARCHIVO LOCAL</span><h2 id="delete-title">¿Borrar este episodio?</h2><p>Se quitará de este dispositivo. Si tienes un archivo .mandarinita descargado, podrás volver a importarlo.</p><div class="dialog-actions"><button value="cancel" class="button">Cancelar</button><button id="confirm-delete" value="delete" class="button danger">Borrar episodio</button></div></form></dialog>
   <div id="toast" role="status" aria-live="polite"></div>
 </body>

@@ -46,8 +46,10 @@
   let selectedColor = PALETTE[0];
   let brushMode = 'pen';
   let drawing = null;
+  let drawingObjectId = null;
+  let erasing = null;
   let pendingDeleteId = null;
-  const canvas = $('#canvas');
+  let panelDrag = null;
 
   // Small inline subset of the open-source Lucide icon set (ISC) keeps controls crisp offline.
   const ICON = {
@@ -67,7 +69,9 @@
     board: '<rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/>',
     fit: '<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/><path d="M9 9h6v6H9z"/>',
     trash: '<path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/>',
-    copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>'
+    copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
+    grip: '<circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>',
+    eraser: '<path d="m7 21-4.3-4.3a2.4 2.4 0 0 1 0-3.4L13.3 2.7a2.4 2.4 0 0 1 3.4 0l4.6 4.6a2.4 2.4 0 0 1 0 3.4L11 21H7zM5 14l5 5M12 21h9"/>'
   };
   const svgIcon = (name, cls = 'ui-icon') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICON[name] || ICON.image}</svg>`;
 
@@ -130,6 +134,16 @@
   }
   function currentPanel() { return state.panels[state.active]; }
   function currentItem() { return currentPanel()?.items.find(item => item.id === state.selected); }
+  function activeCanvas() { return $('#stage .artboard-canvas[data-panel-index="' + state.active + '"]'); }
+  function canvasScale(target = activeCanvas()) { return target ? target.getBoundingClientRect().width / LOGICAL_WIDTH : 1; }
+  function setActivePanel(index, clearSelection = false) {
+    if (index < 0 || index >= state.panels.length) return;
+    if (index !== state.active && drawingObjectId) finishDrawingObject();
+    state.active = index; if (clearSelection) state.selected = null;
+    $('#current-panel-label').textContent = `VIÑETA ${index + 1}`;
+    $$('.artboard-wrap').forEach((element, i) => element.classList.toggle('active', i === index));
+    renderPanels(); renderInspector(); renderLayers(); renderOffstage();
+  }
   function isOffstage(item) { return item.x < 0 || item.y < 0 || item.x + item.w > LOGICAL_WIDTH || item.y + item.h > state.pageHeight; }
   function formatBounds(format = state.format) { return { width: LOGICAL_WIDTH, height: FORMAT[format].logicalHeight }; }
   function escapeHTML(value) { return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char])); }
@@ -183,7 +197,12 @@
     } catch { toast('No pude abrir ese proyecto local. Prueba importar su archivo .mandarinita.'); }
   }
   function newProject() {
-    state = makeProject(); undoStack = []; redoStack = [];
+    $('#template-dialog').showModal();
+  }
+  function createProjectFromTemplate(key) {
+    const templates = { strip: { format:'web', panels:3 }, carousel: { format:'portrait', panels:4 }, square: { format:'square', panels:4 }, blank: { format:'web', panels:2 } };
+    const template = templates[key] || templates.blank; state = makeProject(); state.format = template.format; state.pageHeight = FORMAT[template.format].logicalHeight;
+    state.panels = Array.from({length:template.panels},() => ({id:id(),items:[]})); undoStack = []; redoStack = [];
     try { saveProject(); showEditor(); } catch { showEditor(); toast('Este navegador no permitió guardar automáticamente. Descarga el .mandarinita.'); }
   }
   function duplicateProject(projectId) {
@@ -235,12 +254,49 @@
     currentPanel().items.push(item); selectItem(item.id); commit();
   }
   function addBubble(kind = 'dialogue') {
-    const size = kind === 'sfx' ? { w: 150, h: 90 } : { w: 210, h: 105 };
+    const size = kind === 'sfx' ? { w: 210, h: 110 } : kind === 'narration' ? { w: 230, h: 105 } : { w: 210, h: 105 };
     const pos = placeWithoutOverlap(size.w, size.h);
     snapshot();
     const labels = { dialogue: 'Diálogo', thought: 'Pensamiento', narration: 'Narración', shout: 'Voz fuerte', sfx: 'Efecto' };
-    const item = { id: id(), type: 'bubble', kind, name: `Globo · ${labels[kind]}`, text: kind === 'sfx' ? 'POW!' : 'Escribe aquí…', ...pos, ...size, fontSize: kind === 'sfx' ? 30 : 17, align: 'center', tail: ['dialogue', 'shout'].includes(kind), tailX: 28, overflow: 'auto', locked: false };
+    const item = { id: id(), type: 'bubble', kind, name: kind === 'sfx' ? 'Efecto de sonido' : `Globo · ${labels[kind]}`, text: kind === 'sfx' ? 'POW!' : 'Escribe aquí…', ...pos, ...size, fontSize: kind === 'sfx' ? 42 : kind === 'shout' ? 24 : 17, align: 'center', shape:'auto', tail: ['dialogue', 'shout', 'thought'].includes(kind), tailAngle: 90, tailLength: 34, actionStyle: 'raised', overflow: 'auto', locked: false };
     currentPanel().items.push(item); selectItem(item.id); commit();
+  }
+  function updateBubbleAccessories(item, element) {
+    element.querySelectorAll('.bubble-tail-svg,.thought-dot').forEach(node => node.remove());
+    if (!item.tail || !['dialogue','shout','thought'].includes(item.kind)) return;
+    const angle = (item.tailAngle ?? 90) * Math.PI / 180; const ux = Math.cos(angle); const uy = Math.sin(angle);
+    const cx = item.w / 2; const cy = item.h / 2; const rx = item.w * .49; const ry = item.h * .49;
+    const form = getBubbleForm(item); const denominator = form === 'rounded' ? Math.max(Math.abs(ux)/rx,Math.abs(uy)/ry) : Math.sqrt((ux * ux) / (rx * rx) + (uy * uy) / (ry * ry));
+    const bx = cx + ux / denominator; const by = cy + uy / denominator; const length = item.tailLength ?? 34;
+    if (item.kind === 'thought') {
+      [14,9,5].forEach((diameter,index) => {
+        const t = [.34,.62,.86][index]; const dot = document.createElement('span'); dot.className = 'thought-dot';
+        dot.style.width = `${diameter}px`; dot.style.height = `${diameter}px`; dot.style.left = `${bx + ux * length * t - diameter/2}px`; dot.style.top = `${by + uy * length * t - diameter/2}px`; element.append(dot);
+      });
+      return;
+    }
+    const tx = -uy; const ty = ux; const half = Math.max(6, Math.min(13, item.w * .045)); const tipX = bx + ux * length; const tipY = by + uy * length;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.classList.add('bubble-tail-svg'); svg.setAttribute('viewBox',`0 0 ${item.w} ${item.h}`); svg.setAttribute('aria-hidden','true');
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',`M${bx-tx*half} ${by-ty*half} L${tipX} ${tipY} L${bx+tx*half} ${by+ty*half}`); path.setAttribute('fill','#fff'); path.setAttribute('stroke','#292725'); path.setAttribute('stroke-width','2'); path.setAttribute('stroke-linejoin','round'); svg.append(path); element.append(svg);
+  }
+  function getBubbleForm(item) {
+    if (item.shape === 'oval' || item.kind === 'thought') return 'oval';
+    if (item.shape === 'rounded' || item.kind === 'narration') return 'rounded';
+    const font = item.fontSize || 17; const estimate = Math.max(8,item.w/(font*.56));
+    const lines = String(item.text||'').split('\n').reduce((sum,line)=>sum+Math.max(1,Math.ceil(line.length/estimate)),0);
+    return lines <= 1 && item.w / Math.max(1,item.h) >= 1.35 ? 'oval' : 'rounded';
+  }
+  function applyBubbleShape(item, element) {
+    element.classList.toggle('bubble-shape-oval',getBubbleForm(item)==='oval');
+    element.classList.toggle('bubble-shape-rounded',getBubbleForm(item)==='rounded');
+  }
+  function styleBubbleText(item, textarea) {
+    textarea.style.fontSize = `${item.kind === 'shout' ? Math.max(24,item.fontSize || 24) : item.kind === 'sfx' ? Math.max(30,item.fontSize || 42) : item.fontSize || 17}px`;
+    textarea.style.fontWeight = item.kind === 'shout' || item.kind === 'sfx' ? '700' : '500';
+    textarea.style.textAlign = item.align || 'center'; textarea.style.overflow = item.overflow || 'auto';
+    textarea.style.textTransform = item.kind === 'shout' || item.kind === 'sfx' ? 'uppercase' : 'none';
+    textarea.dataset.kind = item.kind;
+    if (item.kind === 'sfx') textarea.dataset.style = item.actionStyle || 'raised';
   }
   function selectItem(itemId) {
     state.selected = itemId;
@@ -252,19 +308,34 @@
     });
     renderInspector(); renderLayers();
   }
-  function stageScale() { return state.zoom * (matchMedia('(max-width: 640px)').matches ? 0.56 : 1); }
   function render() {
-    canvas.innerHTML = '';
-    canvas.style.height = `${state.pageHeight}px`;
-    canvas.style.transform = `scale(${stageScale()})`;
-    canvas.classList.toggle('grid-off', !state.grid);
-    canvas.classList.toggle('draw-active', $('#toggle-draw').getAttribute('aria-pressed') === 'true');
-    $('#zoom-label').textContent = `${Math.round(stageScale() * 100)}%`;
+    const stage = $('#stage'); stage.innerHTML = '';
+    const available = Math.max(300, stage.clientWidth || stage.parentElement.clientWidth || window.innerWidth - 32);
+    const columns = Math.max(1, Math.floor((available + 14) / 300));
+    const cellWidth = (available - (columns - 1) * 14) / columns;
+    const scale = Math.min(1, cellWidth / LOGICAL_WIDTH) * state.zoom;
+    $('#zoom-label').textContent = `${Math.round(scale * 100)}%`;
     $('#project-title').textContent = state.title || 'Episodio nuevo';
     $('#export-preset').value = state.format;
-    $('#current-panel-label').textContent = `VIÑETA ${state.active + 1}`;
     renderPanels();
-    currentPanel().items.forEach((item, index) => renderItem(item, index));
+    state.panels.forEach((panel, panelIndex) => {
+      const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.dataset.panelIndex = panelIndex;
+      wrapper.style.setProperty('--artboard-scale', scale);
+      const heading = document.createElement('div'); heading.className = 'artboard-heading';
+      const activate = document.createElement('button'); activate.className = 'artboard-title'; activate.innerHTML = `<strong>Viñeta ${panelIndex + 1}</strong><span>${panel.items.length} capas</span>`; activate.onclick = () => setActivePanel(panelIndex, true);
+      heading.append(activate); wrapper.append(heading);
+      const artboard = document.createElement('div'); artboard.className = 'artboard-frame';
+      artboard.style.width = `${LOGICAL_WIDTH * scale}px`; artboard.style.height = `${state.pageHeight * scale}px`;
+      const boardCanvas = document.createElement('div'); boardCanvas.className = 'canvas artboard-canvas'; boardCanvas.dataset.panelIndex = panelIndex;
+      boardCanvas.setAttribute('role','application'); boardCanvas.setAttribute('aria-label',`Lienzo de viñeta ${panelIndex + 1}`);
+      boardCanvas.style.width = `${LOGICAL_WIDTH}px`; boardCanvas.style.height = `${state.pageHeight}px`; boardCanvas.style.transform = `scale(${scale})`;
+      boardCanvas.classList.toggle('grid-off', !state.grid); boardCanvas.classList.toggle('draw-active', $('#toggle-draw').getAttribute('aria-pressed') === 'true');
+      boardCanvas.addEventListener('pointerdown', beginDrawing); boardCanvas.addEventListener('pointermove', continueDrawing); boardCanvas.addEventListener('pointerup', finishDrawing); boardCanvas.addEventListener('pointercancel', () => { drawing = null; });
+      boardCanvas.addEventListener('click', event => { if (event.target === boardCanvas) { setActivePanel(panelIndex); if ($('#toggle-draw').getAttribute('aria-pressed') !== 'true') selectItem(null); } });
+      artboard.append(boardCanvas); wrapper.append(artboard); stage.append(wrapper);
+      panel.items.forEach((item, index) => renderItem(item, index, panelIndex, boardCanvas));
+    });
+    $('#current-panel-label').textContent = `VIÑETA ${state.active + 1}`;
     renderInspector(); renderLayers(); renderOffstage();
   }
   function renderPanels() {
@@ -273,19 +344,29 @@
       const card = document.createElement('div'); card.className = 'panel-card';
       const button = document.createElement('button'); button.className = `panel-thumb${index === state.active ? ' active' : ''}`;
       button.innerHTML = `<span class="panel-number">${index + 1}</span>Viñeta<span class="mini-count">${panel.items.length} capas</span>`;
-      button.onclick = () => { state.active = index; state.selected = null; render(); };
+      button.onclick = () => setActivePanel(index, true);
+      const drag = document.createElement('button'); drag.className = 'panel-drag-handle'; drag.type = 'button'; drag.innerHTML = svgIcon('grip'); drag.setAttribute('aria-label', `Arrastrar viñeta ${index + 1} para cambiar el orden`);
+      drag.onpointerdown = event => { event.preventDefault(); panelDrag = { from: index, pointerId: event.pointerId }; drag.setPointerCapture(event.pointerId); card.classList.add('dragging'); };
+      drag.onpointerup = event => {
+        if (!panelDrag || panelDrag.pointerId !== event.pointerId) return;
+        drag.releasePointerCapture(event.pointerId); card.classList.remove('dragging');
+        const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.panel-card');
+        const to = target ? Number(target.dataset.panelIndex) : panelDrag.from; const from = panelDrag.from; panelDrag = null;
+        if (Number.isInteger(to) && to !== from) movePanel(from, to);
+      };
+      drag.onpointercancel = () => { panelDrag = null; card.classList.remove('dragging'); };
       const up = document.createElement('button'); const down = document.createElement('button');
       up.className = down.className = 'panel-move';
       up.innerHTML = svgIcon('up'); down.innerHTML = svgIcon('down');
       up.setAttribute('aria-label', `Mover viñeta ${index + 1} antes`); down.setAttribute('aria-label', `Mover viñeta ${index + 1} después`);
       up.disabled = index === 0; down.disabled = index === state.panels.length - 1;
-      up.onclick = () => movePanel(index, -1); down.onclick = () => movePanel(index, 1);
-      card.append(button, up, down); list.append(card);
+      up.onclick = () => movePanel(index, index - 1); down.onclick = () => movePanel(index, index + 1);
+      card.dataset.panelIndex = index; card.append(drag, button, up, down); list.append(card);
     });
   }
-  function renderItem(item, index) {
+  function renderItem(item, index, panelIndex, boardCanvas) {
     const element = document.createElement('div');
-    element.className = `placed${state.selected === item.id ? ' selected' : ''}${item.type === 'bubble' ? ` bubble bubble-${item.kind}` : ''}${item.type === 'drawing' ? ' drawing' : ''}${isOffstage(item) ? ' offstage' : ''}`;
+    element.className = `placed${state.selected === item.id ? ' selected' : ''}${item.type === 'bubble' ? ` bubble bubble-${item.kind}${item.tail ? ' has-tail' : ''}` : ''}${item.type === 'drawing' ? ' drawing' : ''}${isOffstage(item) ? ' offstage' : ''}`;
     element.dataset.id = item.id;
     element.style.cssText = `left:${item.x}px;top:${item.y}px;width:${item.w}px;height:${item.h}px;transform:rotate(${item.rotation || 0}deg);--tail-x:${item.tailX ?? 28}%;z-index:${index + 1};`;
     if (item.type === 'image') {
@@ -293,32 +374,44 @@
     } else if (item.type === 'drawing') {
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.setAttribute('viewBox', `0 0 ${item.w} ${item.h}`); svg.setAttribute('aria-label', item.name);
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', item.path); path.setAttribute('fill', 'none'); path.setAttribute('stroke', item.color); path.setAttribute('stroke-width', item.strokeWidth); path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round');
-      if (item.opacity) path.setAttribute('opacity', item.opacity);
-      svg.append(path); element.append(svg);
+      const strokes = item.strokes?.length ? item.strokes : [{ path:item.path, color:item.color, strokeWidth:item.strokeWidth, opacity:item.opacity, brush:'pen', closed:false }];
+      strokes.forEach(stroke => {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        let d = stroke.path;
+        if (stroke.points?.length) d = stroke.points.map((point,i) => `${i ? 'L' : 'M'}${(point.x-item.x).toFixed(1)},${(point.y-item.y).toFixed(1)}`).join(' ') + (stroke.closed ? ' Z' : '');
+        path.setAttribute('d',d); path.setAttribute('fill',item.fillEnabled && stroke.closed ? item.fillColor || '#F87209' : 'none'); path.setAttribute('stroke',stroke.color || item.color); path.setAttribute('stroke-width',stroke.strokeWidth || item.strokeWidth); path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
+        if (stroke.brush === 'marker') { path.setAttribute('stroke-width',(stroke.strokeWidth || item.strokeWidth)*1.8); path.setAttribute('opacity','0.38'); }
+        else if (stroke.brush === 'pencil') { path.setAttribute('stroke-width',(stroke.strokeWidth || item.strokeWidth)*0.65); path.setAttribute('opacity','0.75'); path.setAttribute('stroke-dasharray','0.8 0.45'); }
+        else if (stroke.opacity) path.setAttribute('opacity',stroke.opacity);
+        svg.append(path);
+      });
+      element.append(svg);
     } else {
+      applyBubbleShape(item,element);
+      updateBubbleAccessories(item, element);
       const textarea = document.createElement('textarea'); textarea.setAttribute('aria-label', `Texto: ${item.name}`); textarea.value = item.text || '';
-      textarea.style.fontSize = `${item.fontSize || 17}px`; textarea.style.textAlign = item.align || 'center'; textarea.style.overflow = item.overflow || 'auto';
+      styleBubbleText(item, textarea);
       textarea.onfocus = () => { if (!item._typingSnapshot) { snapshot(); item._typingSnapshot = true; } };
       textarea.onblur = () => { delete item._typingSnapshot; autosave(); };
       textarea.oninput = () => {
         item.text = textarea.value;
         if (item.autoGrow !== false) { textarea.style.height = 'auto'; item.h = Math.max(78, Math.min(state.pageHeight - item.y, textarea.scrollHeight + 26)); element.style.height = `${item.h}px`; }
+        applyBubbleShape(item,element); updateBubbleAccessories(item,element);
         autosave();
       };
       element.append(textarea);
     }
     const handle = document.createElement('button'); handle.className = 'resize-handle'; handle.type = 'button'; handle.setAttribute('aria-label', `Cambiar tamaño de ${item.name}`); handle.hidden = item.id !== state.selected || item.locked; element.append(handle);
-    attachResize(handle, element, item);
+    attachResize(handle, element, item, boardCanvas, panelIndex);
     element.onpointerdown = event => {
       if ($('#toggle-draw').getAttribute('aria-pressed') === 'true' || item.locked || event.target === handle || event.target.tagName === 'TEXTAREA') return;
+      if (state.active !== panelIndex) setActivePanel(panelIndex, true);
       if (state.selected !== item.id) selectItem(item.id);
       event.preventDefault(); element.setPointerCapture(event.pointerId);
-      const start = { x: event.clientX, y: event.clientY, ix: item.x, iy: item.y, moved: false };
+      const start = { x: event.clientX, y: event.clientY, ix: item.x, iy: item.y, moved: false, scale: canvasScale(boardCanvas) };
       element.onpointermove = moveEvent => {
         if (!element.hasPointerCapture(moveEvent.pointerId)) return;
-        const dx = (moveEvent.clientX - start.x) / stageScale(); const dy = (moveEvent.clientY - start.y) / stageScale();
+        const dx = (moveEvent.clientX - start.x) / start.scale; const dy = (moveEvent.clientY - start.y) / start.scale;
         if (!start.moved && Math.hypot(dx, dy) > 2) { snapshot(); start.moved = true; }
         if (!start.moved) return;
         item.x = start.ix + dx; item.y = start.iy + dy;
@@ -327,19 +420,20 @@
       };
       element.onpointerup = () => { if (element.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId); element.onpointermove = null; element.onpointerup = null; if (start.moved) { autosave(); renderOffstage(); renderLayers(); } };
     };
-    element.onclick = event => { event.stopPropagation(); selectItem(item.id); };
+    element.onclick = event => { event.stopPropagation(); if (state.active !== panelIndex) setActivePanel(panelIndex, true); selectItem(item.id); };
     if ($('#toggle-draw').getAttribute('aria-pressed') === 'true') element.style.pointerEvents = 'none';
-    canvas.append(element);
+    boardCanvas.append(element);
   }
-  function attachResize(handle, element, item) {
+  function attachResize(handle, element, item, boardCanvas, panelIndex) {
     handle.onpointerdown = event => {
       if (item.locked) return;
       event.preventDefault(); event.stopPropagation(); snapshot();
-      const start = { x: event.clientX, y: event.clientY, w: item.w, h: item.h, ratio: item.w / item.h };
+      if (state.active !== panelIndex) setActivePanel(panelIndex, true);
+      const start = { x: event.clientX, y: event.clientY, w: item.w, h: item.h, ratio: item.w / item.h, scale: canvasScale(boardCanvas) };
       handle.setPointerCapture(event.pointerId);
       handle.onpointermove = moveEvent => {
         if (!handle.hasPointerCapture(moveEvent.pointerId)) return;
-        const dx = (moveEvent.clientX - start.x) / stageScale(); const dy = (moveEvent.clientY - start.y) / stageScale();
+        const dx = (moveEvent.clientX - start.x) / start.scale; const dy = (moveEvent.clientY - start.y) / start.scale;
         if (item.type === 'image' || item.type === 'drawing') {
           const width = Math.max(40, start.w + (Math.abs(dx) > Math.abs(dy) ? dx : dy * start.ratio));
           item.w = Math.min(LOGICAL_WIDTH - item.x, width); item.h = item.w / start.ratio;
@@ -353,23 +447,30 @@
     const item = currentItem(); const box = $('#inspector-content');
     if (!item) { box.innerHTML = `<div class="empty-state">${svgIcon('image')}<b>Selecciona un elemento</b><p>Su contorno y tirador naranja aparecerán en el lienzo.</p></div>`; return; }
     const variantControl = item.variants?.length ? `<div class="field"><label>Variación del mismo personaje</label><select id="p-variant">${item.variants.map((variant, i) => `<option value="${i}" ${i === item.variantIndex ? 'selected' : ''}>${escapeHTML(variant.name)}</option>`).join('')}</select></div>` : '';
-    const bubbleControls = item.type === 'bubble' ? `<div class="field"><label>Tipo</label><select id="p-kind"><option value="dialogue">Diálogo normal</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW / CRASH</option></select></div><div class="field"><label>Tamaño de letra</label><input id="p-font" type="range" min="10" max="44" value="${item.fontSize || 17}"></div><div class="field"><label>Alineación</label><select id="p-align"><option value="center">Centrada</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div><label class="check-field"><input id="p-tail" type="checkbox" ${item.tail ? 'checked' : ''}> Cola del globo</label><div class="field"><label>Posición de la cola</label><input id="p-tail-x" type="range" min="10" max="90" value="${item.tailX ?? 28}"></div><label class="check-field"><input id="p-autogrow" type="checkbox" ${item.autoGrow === false ? '' : 'checked'}> Ajustar alto al texto</label>` : '';
-    const drawingControls = item.type === 'drawing' ? `<div class="field"><label>Color del trazo</label><input id="p-color" type="color" value="${item.color}"></div><div class="field"><label>Grosor</label><input id="p-stroke-width" type="range" min="1" max="40" value="${item.strokeWidth}"></div>` : '';
+    const bubbleControls = item.type === 'bubble' ? `<div class="field"><label>Tipo</label><select id="p-kind"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto de sonido</option></select></div>${['dialogue','thought'].includes(item.kind) ? `<div class="field"><label>Forma</label><select id="p-shape"><option value="auto">Adaptar al texto</option><option value="oval">Óvalo</option><option value="rounded">Rectángulo redondeado</option></select></div>` : ''}${item.kind === 'sfx' ? `<div class="field"><label>Estilo de efecto</label><select id="p-action-style"><option value="raised">Naranja con sombra</option><option value="outline">Contorno blanco</option><option value="impact">Sombra dramática</option></select></div>` : ''}<div class="field"><label>Tamaño de letra</label><input id="p-font" type="range" min="10" max="56" value="${item.fontSize || 17}"></div><div class="field"><label>Alineación</label><select id="p-align"><option value="center">Centrada</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div>${['dialogue','thought','shout'].includes(item.kind) ? `<label class="check-field"><input id="p-tail" type="checkbox" ${item.tail ? 'checked' : ''}> ${item.kind === 'thought' ? 'Burbujas de pensamiento' : 'Cola del globo'}</label>${item.tail ? `<div class="field"><label>Dirección de la cola</label><input id="p-tail-angle" type="range" min="-180" max="180" value="${item.tailAngle ?? 90}"></div><div class="field"><label>Largo de la cola</label><input id="p-tail-length" type="range" min="16" max="90" value="${item.tailLength ?? 34}"></div>` : ''}` : ''}<label class="check-field"><input id="p-autogrow" type="checkbox" ${item.autoGrow === false ? '' : 'checked'}> Ajustar alto al texto</label>` : '';
+    const drawingControls = item.type === 'drawing' ? `<div class="field"><label>Relleno del contorno cerrado</label><label class="check-field"><input id="p-fill" type="checkbox" ${item.fillEnabled ? 'checked' : ''}> Aplicar relleno</label><input id="p-fill-color" type="color" value="${item.fillColor || '#F87209'}"></div><div class="field"><label>Color del trazo</label><input id="p-color" type="color" value="${item.color || '#282522'}"></div><div class="field"><label>Grosor</label><input id="p-stroke-width" type="range" min="1" max="40" value="${item.strokeWidth || 5}"></div>` : '';
     const recoverControl = isOffstage(item) ? '<button id="bring-in" class="button recovery">Recuperar dentro del lienzo</button>' : '';
     box.innerHTML = `<div class="field"><label>Nombre de capa</label><input id="p-name" value=""></div>${variantControl}${bubbleControls}${drawingControls}<div class="field-row"><div class="field"><label>X</label><input id="p-x" type="number" value="${Math.round(item.x)}"></div><div class="field"><label>Y</label><input id="p-y" type="number" value="${Math.round(item.y)}"></div></div><div class="field-row"><div class="field"><label>Ancho</label><input id="p-w" type="number" value="${Math.round(item.w)}"></div><div class="field"><label>Alto</label><input id="p-h" type="number" value="${Math.round(item.h)}"></div></div><div class="field"><label>Giro</label><input id="p-rot" type="range" min="-180" max="180" value="${item.rotation || 0}"></div><div class="inspector-buttons"><button id="duplicate">Duplicar</button><button id="lock">${item.locked ? 'Desbloquear' : 'Bloquear'}</button><button id="delete" class="danger">Borrar</button></div>${recoverControl}`;
     $('#p-name').value = item.name;
     for (const name of ['kind', 'align']) { const input = $(`#p-${name}`); if (input) input.value = item[name] || (name === 'align' ? 'center' : 'dialogue'); }
+    if ($('#p-action-style')) $('#p-action-style').value = item.actionStyle || 'raised';
+    if ($('#p-shape')) $('#p-shape').value = item.shape || 'auto';
     const setProp = (selector, property, numeric = true) => $(`#p-${selector}`)?.addEventListener('change', event => { snapshot(); item[property] = numeric ? Number(event.target.value) : event.target.value; commit(); });
     setProp('name', 'name', false); setProp('x', 'x'); setProp('y', 'y'); setProp('w', 'w'); setProp('h', 'h'); setProp('rot', 'rotation');
     $('#p-variant')?.addEventListener('change', event => { snapshot(); item.variantIndex = Number(event.target.value); item.src = item.variants[item.variantIndex].src; commit(); });
-    $('#p-kind')?.addEventListener('change', event => { snapshot(); item.kind = event.target.value; if (item.kind === 'sfx') { item.tail = false; item.fontSize = Math.max(item.fontSize, 30); } commit(); });
+    $('#p-kind')?.addEventListener('change', event => { snapshot(); item.kind = event.target.value; item.name = item.kind === 'sfx' ? 'Efecto de sonido' : `Globo · ${({dialogue:'Diálogo',thought:'Pensamiento',narration:'Narración',shout:'Voz fuerte'})[item.kind]}`; item.tail = ['dialogue','thought','shout'].includes(item.kind); item.fontSize = item.kind === 'sfx' ? Math.max(item.fontSize,42) : item.kind === 'shout' ? Math.max(item.fontSize,24) : item.fontSize; commit(); });
+    $('#p-action-style')?.addEventListener('change', event => { snapshot(); item.actionStyle = event.target.value; commit(); });
+    $('#p-shape')?.addEventListener('change', event => { snapshot(); item.shape = event.target.value; commit(); });
     $('#p-align')?.addEventListener('change', event => { snapshot(); item.align = event.target.value; commit(); });
-    $('#p-font')?.addEventListener('input', event => { item.fontSize = Number(event.target.value); const text = canvas.querySelector(`[data-id="${item.id}"] textarea`); if (text) text.style.fontSize = `${item.fontSize}px`; autosave(); });
+    $('#p-font')?.addEventListener('input', event => { item.fontSize = Number(event.target.value); const text = activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`); if (text) styleBubbleText(item,text); autosave(); });
     $('#p-tail')?.addEventListener('change', event => { item.tail = event.target.checked; commit(); });
-    $('#p-tail-x')?.addEventListener('input', event => { item.tailX = Number(event.target.value); canvas.querySelector(`[data-id="${item.id}"]`)?.style.setProperty('--tail-x', `${item.tailX}%`); autosave(); });
+    $('#p-tail-angle')?.addEventListener('input', event => { item.tailAngle = Number(event.target.value); const el = activeCanvas()?.querySelector(`[data-id="${item.id}"]`); if (el) updateBubbleAccessories(item,el); autosave(); });
+    $('#p-tail-length')?.addEventListener('input', event => { item.tailLength = Number(event.target.value); const el = activeCanvas()?.querySelector(`[data-id="${item.id}"]`); if (el) updateBubbleAccessories(item,el); autosave(); });
     $('#p-autogrow')?.addEventListener('change', event => { item.autoGrow = event.target.checked; autosave(); });
-    $('#p-color')?.addEventListener('input', event => { item.color = event.target.value; const path = canvas.querySelector(`[data-id="${item.id}"] path`); path?.setAttribute('stroke', item.color); autosave(); });
-    $('#p-stroke-width')?.addEventListener('input', event => { item.strokeWidth = Number(event.target.value); const path = canvas.querySelector(`[data-id="${item.id}"] path`); path?.setAttribute('stroke-width', item.strokeWidth); autosave(); });
+    $('#p-color')?.addEventListener('input', event => { item.color = event.target.value; const path = activeCanvas()?.querySelector(`[data-id="${item.id}"] path`); path?.setAttribute('stroke', item.color); autosave(); });
+    $('#p-stroke-width')?.addEventListener('input', event => { item.strokeWidth = Number(event.target.value); const path = activeCanvas()?.querySelector(`[data-id="${item.id}"] path`); path?.setAttribute('stroke-width', item.strokeWidth); autosave(); });
+    $('#p-fill')?.addEventListener('change', event => { snapshot(); item.fillEnabled = event.target.checked; commit(); });
+    $('#p-fill-color')?.addEventListener('input', event => { item.fillColor = event.target.value; activeCanvas()?.querySelectorAll(`[data-id="${item.id}"] path`).forEach(path => { if (path.getAttribute('d').trim().endsWith('Z')) path.setAttribute('fill',item.fillColor); }); autosave(); });
     $('#duplicate').onclick = () => { snapshot(); const copy = { ...item, id: id(), x: item.x + 24, y: item.y + 24, name: `${item.name} · copia` }; currentPanel().items.push(copy); selectItem(copy.id); commit(); };
     $('#lock').onclick = () => { snapshot(); item.locked = !item.locked; commit(); };
     $('#delete').onclick = () => { snapshot(); currentPanel().items = currentPanel().items.filter(entry => entry.id !== item.id); state.selected = null; commit(); };
@@ -406,9 +507,11 @@
     if (scale < 1) { item.w *= scale; item.h *= scale; }
     item.x = Math.max(8, Math.min(LOGICAL_WIDTH - item.w - 8, item.x)); item.y = Math.max(8, Math.min(state.pageHeight - item.h - 8, item.y)); commit(); selectItem(item.id);
   }
-  function movePanel(index, delta) {
-    const next = index + delta; if (next < 0 || next >= state.panels.length) return;
-    snapshot(); [state.panels[index], state.panels[next]] = [state.panels[next], state.panels[index]]; state.active = next; commit();
+  function movePanel(from, to) {
+    if (from < 0 || from >= state.panels.length || to < 0 || to >= state.panels.length || from === to) return;
+    const activeId = currentPanel().id;
+    snapshot(); const [moved] = state.panels.splice(from,1); state.panels.splice(to,0,moved);
+    state.active = Math.max(0,state.panels.findIndex(panel => panel.id === activeId)); commit();
   }
   function addPanel() { snapshot(); state.panels.push({ id: id(), items: [] }); state.active = state.panels.length - 1; state.selected = null; commit(); }
   function changeFormat(format) {
@@ -446,50 +549,85 @@
     renderResources();
   }
 
-  function setDrawMode(enabled) {
-    $('#toggle-draw').setAttribute('aria-pressed', String(enabled));
-    $('#draw-toolbar').hidden = !enabled;
-    render();
-  }
-  function pointOnCanvas(event) {
-    const rect = canvas.getBoundingClientRect(); const scale = rect.width / LOGICAL_WIDTH;
+  function pointOnCanvas(event, target = event.currentTarget) {
+    const rect = target.getBoundingClientRect(); const scale = rect.width / LOGICAL_WIDTH;
     return { x: (event.clientX - rect.left) / scale, y: (event.clientY - rect.top) / scale, pressure: event.pointerType === 'pen' ? Math.max(0.15, event.pressure) : 0.65 };
+  }
+  function drawingStrokes(item) { return item.strokes?.length ? item.strokes : item.path ? [{ points:null, path:item.path, color:item.color, strokeWidth:item.strokeWidth, opacity:item.opacity, brush:'pen', closed:false }] : []; }
+  function updateDrawingBounds(item) {
+    const points = item.strokes.flatMap(stroke => stroke.points || []); if (!points.length) return;
+    const pad = Math.max(...item.strokes.map(stroke => (stroke.strokeWidth || 4) * .8));
+    const minX = Math.min(...points.map(p => p.x)) - pad; const minY = Math.min(...points.map(p => p.y)) - pad;
+    const maxX = Math.max(...points.map(p => p.x)) + pad; const maxY = Math.max(...points.map(p => p.y)) + pad;
+    item.x = Math.max(0,minX); item.y = Math.max(0,minY); item.w = Math.max(1,Math.min(LOGICAL_WIDTH,maxX)-item.x); item.h = Math.max(1,Math.min(state.pageHeight,maxY)-item.y);
+    item.path = item.strokes.map(stroke => stroke.points?.map((p,i) => `${i?'L':'M'}${(p.x-item.x).toFixed(1)},${(p.y-item.y).toFixed(1)}`).join(' ') + (stroke.closed?' Z':'')).filter(Boolean).join(' ');
+    const first = item.strokes[0]; item.color = first.color; item.strokeWidth = first.strokeWidth;
+  }
+  function setEraser(enabled) {
+    brushMode = enabled ? 'eraser' : $('#brush-type').value;
+    $('#eraser-tool').setAttribute('aria-pressed',String(enabled)); $('#toggle-draw').setAttribute('aria-pressed','true');
+    $('#canvas')?.classList.toggle('eraser-active',enabled); $$('.artboard-canvas').forEach(board => board.classList.toggle('eraser-active',enabled));
   }
   function beginDrawing(event) {
     if ($('#toggle-draw').getAttribute('aria-pressed') !== 'true') return;
     event.preventDefault(); event.stopPropagation();
+    const target = event.currentTarget; const panelIndex = Number(target.dataset.panelIndex); if (state.active !== panelIndex) setActivePanel(panelIndex,true);
     if (brushMode === 'eraser') {
-      const point = pointOnCanvas(event); const strokes = currentPanel().items.filter(item => item.type === 'drawing' && point.x >= item.x - 10 && point.x <= item.x + item.w + 10 && point.y >= item.y - 10 && point.y <= item.y + item.h + 10);
-      if (strokes.length) { snapshot(); currentPanel().items = currentPanel().items.filter(item => item.id !== strokes.at(-1).id); commit(); }
-      else toast('El borrador quita trazos hechos aquí; las imágenes originales permanecen intactas.');
-      return;
+      erasing = { panelIndex, canvas:target, radius:Math.max(5,Number($('#brush-size').value)*1.4), changed:false, snapshot:false };
+      target.setPointerCapture(event.pointerId); eraseAtPoint(pointOnCanvas(event,target)); return;
     }
-    drawing = { points: [pointOnCanvas(event)], color: selectedColor, size: Number($('#brush-size').value), opacity: brushMode === 'marker' ? 0.55 : brushMode === 'pencil' ? 0.66 : 1 };
-    canvas.setPointerCapture(event.pointerId);
+    drawing = { points:[pointOnCanvas(event,target)], color:selectedColor, size:Number($('#brush-size').value), brush:brushMode, opacity:brushMode === 'marker' ? .4 : brushMode === 'pencil' ? .75 : 1, panelIndex, canvas:target };
+    target.setPointerCapture(event.pointerId);
+  }
+  function eraseAtPoint(point) {
+    if (!erasing) return;
+    const items = state.panels[erasing.panelIndex].items;
+    for (const item of [...items]) {
+      if (item.type !== 'drawing') continue;
+      const strokes = drawingStrokes(item); let changedItem = false; const result = [];
+      for (const stroke of strokes) {
+        if (!stroke.points?.length) { result.push(stroke); continue; }
+        let segment = []; const segments = []; let strokeChanged = false;
+        for (const p of stroke.points) {
+          const hit = Math.hypot(p.x-point.x,p.y-point.y) <= erasing.radius;
+          if (hit) { if (segment.length > 1) segments.push(segment); segment=[]; changedItem=true; strokeChanged=true; if (!erasing.snapshot) { snapshot(); erasing.snapshot=true; } }
+          else segment.push(p);
+        }
+        if (segment.length > 1) segments.push(segment);
+        if (!strokeChanged) result.push(stroke);
+        else segments.forEach(points => result.push({...stroke,points,closed:false}));
+      }
+      if (changedItem) { item.strokes = result; if (!item.strokes.length) items.splice(items.indexOf(item),1); else updateDrawingBounds(item); erasing.changed=true; }
+    }
   }
   function continueDrawing(event) {
-    if (!drawing || !canvas.hasPointerCapture(event.pointerId)) return;
-    drawing.points.push(pointOnCanvas(event)); drawPreview();
+    if (erasing && erasing.canvas.hasPointerCapture(event.pointerId)) { eraseAtPoint(pointOnCanvas(event,erasing.canvas)); return; }
+    if (!drawing || !drawing.canvas.hasPointerCapture(event.pointerId)) return;
+    drawing.points.push(pointOnCanvas(event,drawing.canvas)); drawPreview();
   }
   function drawPreview() {
-    $$('.temporary-stroke').forEach(node => node.remove());
     if (!drawing || drawing.points.length < 2) return;
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.classList.add('temporary-stroke'); svg.setAttribute('viewBox', `0 0 ${LOGICAL_WIDTH} ${state.pageHeight}`);
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); path.setAttribute('d', drawing.points.map((p, i) => `${i ? 'L' : 'M'}${p.x},${p.y}`).join(' '));
-    path.setAttribute('fill', 'none'); path.setAttribute('stroke', drawing.color); path.setAttribute('stroke-width', drawing.size); path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round'); path.setAttribute('opacity', drawing.opacity); svg.append(path); canvas.append(svg);
+    drawing.canvas.querySelector('.temporary-stroke')?.remove();
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.classList.add('temporary-stroke'); svg.setAttribute('viewBox',`0 0 ${LOGICAL_WIDTH} ${state.pageHeight}`);
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',drawing.points.map((p,i)=>`${i?'L':'M'}${p.x},${p.y}`).join(' ')); path.setAttribute('fill','none'); path.setAttribute('stroke',drawing.color); path.setAttribute('stroke-width',drawing.size*(drawing.brush==='marker'?1.8:drawing.brush==='pencil'?.65:1)); path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round'); path.setAttribute('opacity',drawing.opacity); if(drawing.brush==='pencil')path.setAttribute('stroke-dasharray','1 1'); svg.append(path); drawing.canvas.append(svg);
   }
   function finishDrawing(event) {
+    if (erasing) {
+      const current = erasing; if(current.canvas.hasPointerCapture(event.pointerId))current.canvas.releasePointerCapture(event.pointerId); erasing=null;
+      if(current.changed)commit(); return;
+    }
     if (!drawing) return;
-    if (drawing.points.length < 2) { drawing = null; return; }
-    const points = drawing.points; const pressure = points.reduce((sum, point) => sum + point.pressure, 0) / points.length;
-    const strokeWidth = Math.max(1, drawing.size * (0.45 + pressure * 0.95)); const pad = Math.max(10, strokeWidth * 2);
-    const minX = Math.max(0, Math.min(...points.map(point => point.x)) - pad); const minY = Math.max(0, Math.min(...points.map(point => point.y)) - pad);
-    const maxX = Math.min(LOGICAL_WIDTH, Math.max(...points.map(point => point.x)) + pad); const maxY = Math.min(state.pageHeight, Math.max(...points.map(point => point.y)) + pad);
-    const width = Math.max(1, maxX - minX); const height = Math.max(1, maxY - minY);
-    const path = points.map((point, i) => `${i ? 'L' : 'M'}${(point.x - minX).toFixed(1)},${(point.y - minY).toFixed(1)}`).join(' ');
-    snapshot(); const item = { id: id(), type: 'drawing', name: 'Trazo', x: minX, y: minY, w: width, h: height, path, color: drawing.color, strokeWidth, opacity: drawing.opacity, locked: false, rotation: 0 };
-    currentPanel().items.push(item); drawing = null; selectItem(item.id); commit();
-    if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    const current = drawing; const target = current.canvas; if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId); drawing=null; target.querySelector('.temporary-stroke')?.remove();
+    if (current.points.length < 2) return;
+    const pressure = current.points.reduce((sum,p)=>sum+p.pressure,0)/current.points.length;
+    const strokeWidth = Math.max(1,current.size*(.45+pressure*.95)); const first=current.points[0],last=current.points.at(-1);
+    const closed = current.points.length > 4 && Math.hypot(first.x-last.x,first.y-last.y) <= Math.max(14,strokeWidth*2);
+    const stroke = {points:current.points.map(({x,y})=>({x,y})),color:current.color,strokeWidth,opacity:current.opacity,brush:current.brush,closed};
+    const panel=state.panels[current.panelIndex]; let item=drawingObjectId ? panel.items.find(entry=>entry.id===drawingObjectId&&entry.type==='drawing') : null;
+    snapshot();
+    if(item){item.strokes.push(stroke);updateDrawingBounds(item);}
+    else {item={id:id(),type:'drawing',name:drawingObjectId?'Dibujo':'Trazo',x:0,y:0,w:1,h:1,path:'',strokes:[stroke],color:stroke.color,strokeWidth:stroke.strokeWidth,fillEnabled:false,fillColor:'#F87209',locked:false,rotation:0};updateDrawingBounds(item);panel.items.push(item);if(drawingObjectId)drawingObjectId=item.id;}
+    state.selected=item.id; commit();
   }
   async function renderPanelPng(panel) {
     const preset = FORMAT[state.format]; const logicalHeight = state.pageHeight;
@@ -502,15 +640,28 @@
       if (item.type === 'image') {
         try { const image = await loadImage(item.src); drawContained(ctx, image, item.w, item.h); } catch { /* Missing image stays represented by its source path in the editable project. */ }
       } else if (item.type === 'drawing') {
-        ctx.globalAlpha = item.opacity || 1; ctx.strokeStyle = item.color; ctx.lineWidth = item.strokeWidth; ctx.lineCap = ctx.lineJoin = 'round'; const path = new Path2D(item.path); ctx.stroke(path);
+        const strokes = item.strokes?.length ? item.strokes : [{path:item.path,color:item.color,strokeWidth:item.strokeWidth,opacity:item.opacity,brush:'pen'}];
+        strokes.forEach(stroke => {
+          ctx.save(); ctx.globalAlpha = stroke.opacity ?? item.opacity ?? 1; ctx.strokeStyle = stroke.color || item.color || '#292725'; ctx.lineWidth = (stroke.strokeWidth || item.strokeWidth || 5) * (stroke.brush === 'marker' ? 1.8 : stroke.brush === 'pencil' ? .65 : 1); ctx.lineCap = ctx.lineJoin = 'round';
+          if (stroke.brush === 'pencil') ctx.setLineDash([1,1]);
+          const path = new Path2D(stroke.path || (stroke.points || []).map((p,i)=>`${i?'L':'M'}${p.x-item.x} ${p.y-item.y}${i===stroke.points.length-1&&stroke.closed?' Z':''}`).join(' '));
+          if (item.fillEnabled && stroke.closed) { ctx.fillStyle = item.fillColor || '#F87209'; ctx.fill(path); }
+          ctx.stroke(path); ctx.restore();
+        });
       } else {
-        ctx.fillStyle = '#fff'; ctx.strokeStyle = '#292725'; ctx.lineWidth = 4; ctx.beginPath();
-        if (item.kind === 'narration') ctx.roundRect(-item.w / 2, -item.h / 2, item.w, item.h, 14);
-        else ctx.ellipse(0, 0, item.w / 2, item.h / 2, 0, 0, Math.PI * 2);
-        ctx.fill(); ctx.stroke();
-        if (item.tail && !['narration', 'sfx', 'thought'].includes(item.kind)) { const tailX = -item.w / 2 + (item.tailX ?? 28) / 100 * item.w; ctx.beginPath(); ctx.moveTo(tailX - 10, item.h * 0.34); ctx.lineTo(tailX + 10, item.h * 0.34); ctx.lineTo(tailX + 5, item.h / 2 + 15); ctx.closePath(); ctx.fill(); ctx.stroke(); }
-        ctx.fillStyle = item.kind === 'sfx' ? '#F87209' : '#292725'; ctx.font = `${item.kind === 'sfx' ? '700 ' : ''}${item.fontSize || 17}px Fredoka, sans-serif`; ctx.textAlign = item.align || 'center'; ctx.textBaseline = 'middle';
-        wrapText(ctx, item.text, 0, 0, item.w * 0.82, (item.fontSize || 17) * 1.25);
+        const form = getBubbleForm(item); const angle = (item.tailAngle ?? 90) * Math.PI / 180; const ux=Math.cos(angle), uy=Math.sin(angle); const radiusX=item.w*.49, radiusY=item.h*.49;
+        const denom = form==='rounded' ? Math.max(Math.abs(ux)/radiusX,Math.abs(uy)/radiusY) : Math.sqrt(ux*ux/(radiusX*radiusX)+uy*uy/(radiusY*radiusY));
+        const bx=ux/denom, by=uy/denom, tipX=bx+ux*(item.tailLength??34), tipY=by+uy*(item.tailLength??34);
+        if (item.kind === 'sfx') {
+          ctx.fillStyle='#F87209';ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.shadowColor='#292725';ctx.shadowBlur=0;ctx.shadowOffsetX=3;ctx.shadowOffsetY=4;
+        } else { ctx.fillStyle = item.kind==='narration'?'#fff5df':'#fff'; ctx.strokeStyle = '#292725'; ctx.lineWidth = 4; }
+        if (item.kind !== 'sfx') {
+          if (item.tail && ['dialogue','shout'].includes(item.kind)) { const half=12,tx=-uy,ty=ux; ctx.beginPath();ctx.moveTo(bx-tx*half,by-ty*half);ctx.lineTo(tipX,tipY);ctx.lineTo(bx+tx*half,by+ty*half);ctx.closePath();ctx.fill();ctx.stroke(); }
+          ctx.beginPath(); if(form==='rounded')ctx.roundRect(-item.w/2,-item.h/2,item.w,item.h,24);else ctx.ellipse(0,0,item.w/2,item.h/2,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+          if(item.kind==='thought'&&item.tail){[14,9,5].forEach((diameter,i)=>{const t=[.34,.62,.86][i];ctx.beginPath();ctx.arc(bx+ux*(item.tailLength??34)*t,by+uy*(item.tailLength??34)*t,diameter/2,0,Math.PI*2);ctx.fill();ctx.stroke();});}
+        }
+        ctx.fillStyle = item.kind === 'sfx' ? '#F87209' : '#292725'; ctx.font = `${['sfx','shout'].includes(item.kind) ? '700 ' : ''}${item.kind==='shout'?Math.max(24,item.fontSize||24):item.fontSize || 17}px Fredoka, sans-serif`; ctx.textAlign = item.align || 'center'; ctx.textBaseline = 'middle';
+        wrapText(ctx, ['sfx','shout'].includes(item.kind)?String(item.text||'').toUpperCase():item.text, 0, 0, item.w * 0.82, (item.fontSize || 17) * 1.25);
       }
       ctx.restore();
     }
@@ -579,49 +730,6 @@
     throw new Error('No proyecto.json found in source archive');
   }
 
-  function previewEpisode() {
-    const dialog = $('#preview-dialog'); $('#preview-title').textContent = state.title;
-    const list = $('#preview-panels'); list.innerHTML = '';
-    state.panels.forEach((panel, index) => {
-      const section = document.createElement('section'); section.className = 'preview-panel';
-      section.innerHTML = `<strong>Viñeta ${index + 1}</strong><div class="preview-art"></div>`;
-      const art = section.querySelector('.preview-art'); const h = state.pageHeight;
-      art.style.aspectRatio = `600 / ${h}`;
-      panel.items.forEach(item => {
-        if (item.x + item.w <= 0 || item.y + item.h <= 0 || item.x >= LOGICAL_WIDTH || item.y >= h) return;
-        const element = item.type === 'image' ? document.createElement('img') : document.createElement('div');
-        if (item.type === 'image') { element.src = item.src; element.alt = item.name; }
-        else if (item.type === 'bubble') { element.textContent = item.text; element.className = `preview-bubble bubble-${item.kind}`; }
-        else { element.className = 'preview-stroke'; element.style.background = item.color; }
-        element.style.left = `${item.x / LOGICAL_WIDTH * 100}%`; element.style.top = `${item.y / h * 100}%`;
-        element.style.width = `${item.w / LOGICAL_WIDTH * 100}%`; element.style.height = `${item.h / h * 100}%`; art.append(element);
-      });
-      list.append(section);
-    });
-    dialog.showModal();
-  }
-  function showBoardOverview() {
-    const list = $('#board-panels'); list.innerHTML = ''; $('#board-title').textContent = state.title || 'Mesa de trabajo';
-    state.panels.forEach((panel, index) => {
-      const tile = document.createElement('button'); tile.className = `board-tile${index === state.active ? ' active' : ''}`;
-      const art = document.createElement('span'); art.className = 'board-tile-art'; art.style.aspectRatio = `600 / ${state.pageHeight}`;
-      panel.items.forEach(item => {
-        const element = item.type === 'image' ? document.createElement('img') : document.createElement('span');
-        element.className = `board-item${item.type === 'bubble' ? ` preview-bubble bubble-${item.kind}` : ''}`;
-        element.style.left = `${item.x / LOGICAL_WIDTH * 100}%`; element.style.top = `${item.y / state.pageHeight * 100}%`;
-        element.style.width = `${item.w / LOGICAL_WIDTH * 100}%`; element.style.height = `${item.h / state.pageHeight * 100}%`;
-        element.style.transform = `rotate(${item.rotation || 0}deg)`;
-        if (item.type === 'image') { element.src = item.src; element.alt = ''; }
-        else if (item.type === 'bubble') element.textContent = item.text || '';
-        else { element.style.background = `linear-gradient(135deg, transparent 45%, ${item.color} 48%, ${item.color} 52%, transparent 55%)`; }
-        art.append(element);
-      });
-      const label = document.createElement('span'); label.className = 'board-tile-label'; label.innerHTML = `<b>Viñeta ${index + 1}</b><small>${panel.items.length} capas</small>`;
-      tile.append(art,label); tile.onclick = () => { state.active = index; state.selected = null; autosave(); $('#board-dialog').close(); render(); }; list.append(tile);
-    });
-    $('#board-dialog').showModal();
-  }
-
   function installEvents() {
     const labeledIcon = (selector, iconName, label) => { const button = $(selector); button.innerHTML = `${svgIcon(iconName)}<span>${label}</span>`; };
     $('#undo').innerHTML = svgIcon('undo'); $('#redo').innerHTML = svgIcon('redo');
@@ -631,6 +739,7 @@
     labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías');
     $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
     $('#new-project').onclick = newProject;
+    $$('.template-card').forEach(button => button.onclick = () => { $('#template-dialog').close(); createProjectFromTemplate(button.dataset.template); });
     $('#import-project').onclick = () => $('#project-file').click();
     $('#project-file').onchange = event => importProjectFile(event.target.files[0]);
     $('#back-home').onclick = showHome;
@@ -640,9 +749,6 @@
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;
     $('#add-bubble').onclick = () => addBubble($('#bubble-kind').value);
-    $('#preview').onclick = previewEpisode;
-    $('#board-view').onclick = showBoardOverview;
-    $('#preview-dialog form').onsubmit = () => $('#preview-dialog').close();
     $('#export-preset').onchange = event => changeFormat(event.target.value);
     $('#toggle-grid').onclick = event => { state.grid = !state.grid; event.currentTarget.setAttribute('aria-pressed', String(state.grid)); render(); };
     $('#zoom-in').onclick = () => { state.zoom = Math.min(1.8, state.zoom + 0.1); render(); };
@@ -669,10 +775,12 @@
       addResource(resource); event.target.value = '';
     };
     $('#toggle-draw').onclick = event => { const enabled = event.currentTarget.getAttribute('aria-pressed') !== 'true'; setDrawMode(enabled); };
-    $('#brush-type').onchange = event => { brushMode = event.target.value; };
+    $('#brush-type').onchange = event => { brushMode = event.target.value; $('#eraser-tool').setAttribute('aria-pressed','false'); };
+    $('#eraser-tool').innerHTML = `${svgIcon('eraser')}<span>Borrador</span>`;
+    $('#eraser-tool').onclick = () => setEraser($('#eraser-tool').getAttribute('aria-pressed') !== 'true');
+    $('#group-drawing').onclick = () => { if(drawingObjectId){finishDrawingObject();return;} drawingObjectId = currentItem()?.type === 'drawing' ? currentItem().id : '__new_drawing_object__'; $('#end-drawing-object').hidden=false; $('#group-drawing').textContent='Objeto en curso'; toast('Los siguientes trazos se unirán en un solo objeto.'); };
+    $('#end-drawing-object').onclick = finishDrawingObject;
     $('#color-palette').addEventListener('click', event => { if (event.target.matches('.color-swatch')) selectedColor = event.target.dataset.color; });
-    canvas.addEventListener('pointerdown', beginDrawing); canvas.addEventListener('pointermove', continueDrawing); canvas.addEventListener('pointerup', finishDrawing); canvas.addEventListener('pointercancel', () => { drawing = null; });
-    canvas.addEventListener('click', event => { if (event.target === canvas && $('#toggle-draw').getAttribute('aria-pressed') !== 'true') selectItem(null); });
     $('#project-list').addEventListener('click', event => {
       const filter = event.target.closest('[data-project-filter]');
       if (filter) { $$('.project-filter').forEach(button => button.classList.toggle('active', button === filter)); renderProjectList(filter.dataset.projectFilter); }
@@ -685,8 +793,11 @@
     });
   }
   function setDrawMode(enabled) {
-    $('#toggle-draw').setAttribute('aria-pressed', String(enabled)); $('#draw-toolbar').hidden = !enabled; render();
+    $('#toggle-draw').setAttribute('aria-pressed', String(enabled)); $('#draw-toolbar').hidden = !enabled;
+    if(!enabled){drawingObjectId=null;$('#end-drawing-object').hidden=true;$('#group-drawing').textContent='Agrupar trazos';$('#eraser-tool').setAttribute('aria-pressed','false');brushMode=$('#brush-type').value;}
+    render();
   }
+  function finishDrawingObject() { drawingObjectId=null; $('#end-drawing-object').hidden=true; $('#group-drawing').textContent='Agrupar trazos'; toast('Objeto de dibujo cerrado.'); }
   function installPalette() {
     const root = $('#color-palette');
     PALETTE.forEach(color => { const button = document.createElement('button'); button.className = 'color-swatch'; button.dataset.color = color; button.style.background = color; button.title = color; button.setAttribute('aria-label', `Trazo ${color}`); if (color === '#FFFFFF') button.classList.add('white-swatch'); root.append(button); });
