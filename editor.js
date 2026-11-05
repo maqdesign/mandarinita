@@ -46,7 +46,30 @@
   let selectedColor = PALETTE[0];
   let brushMode = 'pen';
   let drawing = null;
+  let pendingDeleteId = null;
   const canvas = $('#canvas');
+
+  // Small inline subset of the open-source Lucide icon set (ISC) keeps controls crisp offline.
+  const ICON = {
+    more: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+    image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+    bubble: '<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/>',
+    up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>',
+    lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    unlock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.5-2"/>',
+    pen: '<path d="m12 19 7-7 3 3-7 7-3-3zM18 13l-1.5-1.5M2 22l6-1 12-12a2.1 2.1 0 0 0-3-3L5 18z"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    undo: '<path d="M3 7v6h6M21 17a9 9 0 0 0-15-6.7L3 13"/>', redo: '<path d="M21 7v6h-6M3 17a9 9 0 0 1 15-6.7l3 2.7"/>',
+    grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+    zoomIn: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/>', zoomOut: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M8 11h6"/>',
+    layers: '<path d="m12 2 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/>',
+    focus: '<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/>',
+    board: '<rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/>',
+    fit: '<path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/><path d="M9 9h6v6H9z"/>',
+    trash: '<path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/>',
+    copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>'
+  };
+  const svgIcon = (name, cls = 'ui-icon') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICON[name] || ICON.image}</svg>`;
 
   function id() { return crypto.randomUUID?.() || Math.random().toString(36).slice(2, 12); }
   function makeProject(title = 'Episodio nuevo') {
@@ -107,7 +130,7 @@
   }
   function currentPanel() { return state.panels[state.active]; }
   function currentItem() { return currentPanel()?.items.find(item => item.id === state.selected); }
-  function isOffstage(item) { return item.x + item.w <= 0 || item.y + item.h <= 0 || item.x >= LOGICAL_WIDTH || item.y >= state.pageHeight; }
+  function isOffstage(item) { return item.x < 0 || item.y < 0 || item.x + item.w > LOGICAL_WIDTH || item.y + item.h > state.pageHeight; }
   function formatBounds(format = state.format) { return { width: LOGICAL_WIDTH, height: FORMAT[format].logicalHeight }; }
   function escapeHTML(value) { return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char])); }
   function showHome() {
@@ -123,19 +146,34 @@
     const projects = listProjects();
     list.innerHTML = '';
     if (!projects.length) {
-      list.innerHTML = '<div class="home-empty"><span>✳</span><b>Aquí aparecerán tus episodios</b><p>Crea uno nuevo o importa un archivo .mandarinita que guardaste antes.</p></div>';
+      list.innerHTML = `<div class="home-empty">${svgIcon('image','home-empty-icon')}<b>Aquí aparecerán tus episodios</b><p>Crea uno nuevo o importa un archivo .mandarinita que guardaste antes.</p></div>`;
       return;
     }
     projects.forEach(record => {
+      let project; try { project = JSON.parse(localStorage.getItem(PROJECT_KEY(record.id)) || '{}'); } catch { project = {}; }
       const card = document.createElement('article'); card.className = 'project-card';
-      const name = document.createElement('div'); name.className = 'project-card-main';
+      const preview = document.createElement('div'); preview.className = 'project-card-preview'; preview.setAttribute('aria-hidden','true');
+      const firstPanel = project.panels?.[0];
+      (firstPanel?.items || []).slice(0,8).forEach(item => {
+        const layer = document.createElement('div'); layer.className = `project-preview-item ${item.type === 'bubble' ? `preview-${item.kind}` : ''}`;
+        layer.style.left = `${Math.max(-10,Math.min(100,item.x/600*100))}%`; layer.style.top = `${Math.max(-10,Math.min(100,item.y/(project.pageHeight || 400)*100))}%`;
+        layer.style.width = `${Math.max(5,item.w/600*100)}%`; layer.style.height = `${Math.max(5,item.h/(project.pageHeight || 400)*100)}%`;
+        if (item.type === 'image') { const image = document.createElement('img'); image.src = item.src; image.alt = ''; layer.append(image); }
+        else if (item.type === 'bubble') layer.textContent = item.text || '';
+        else { const stroke = document.createElement('span'); stroke.style.cssText = `position:absolute;inset:0;background:linear-gradient(135deg,transparent 46%,${item.color || '#282522'} 48%,${item.color || '#282522'} 52%,transparent 54%)`; layer.append(stroke); }
+        preview.append(layer);
+      });
+      const main = document.createElement('div'); main.className = 'project-card-main';
       const reviewState = record.status === 'review';
-      name.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${reviewState ? 'ready' : ''}">${reviewState ? 'En revisión' : 'Borrador'}</span><small>Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
-      const actions = document.createElement('div'); actions.className = 'project-card-actions';
-      const open = document.createElement('button'); open.textContent = 'Abrir'; open.className = 'button primary'; open.onclick = () => openProject(record.id);
-      const duplicate = document.createElement('button'); duplicate.textContent = 'Duplicar'; duplicate.className = 'button'; duplicate.onclick = () => duplicateProject(record.id);
-      const remove = document.createElement('button'); remove.textContent = 'Borrar'; remove.className = 'button danger'; remove.onclick = () => deleteProject(record.id);
-      actions.append(open, duplicate, remove); card.append(name, actions); list.append(card);
+      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${reviewState ? 'ready' : ''}">${reviewState ? 'En revisión' : 'Borrador'}</span><small>${project.panels?.length || 0} viñetas · Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
+      const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${record.title}`); open.append(preview,main); open.onclick = () => openProject(record.id);
+      const menu = document.createElement('details'); menu.className = 'project-card-menu';
+      menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">Duplicar archivo</button><button type="button" data-action="delete" class="danger">Borrar archivo</button></div>`;
+      menu.addEventListener('click', event => event.stopPropagation());
+      menu.querySelector('[data-action="duplicate"]').onclick = () => { menu.open = false; duplicateProject(record.id); };
+      menu.querySelector('[data-action="delete"]').onclick = () => { menu.open = false; requestDeleteProject(record.id); };
+      card.append(open,menu);
+      list.append(card);
     });
   }
   function openProject(projectId) {
@@ -155,9 +193,11 @@
       saveProject(copy); renderProjectList();
     } catch { toast('No pude duplicar ese proyecto.'); }
   }
+  function requestDeleteProject(projectId) {
+    const record = listProjects().find(p => p.id === projectId); if (!record) return;
+    pendingDeleteId = projectId; $('#delete-title').textContent = `¿Borrar “${record.title}”?`; $('#delete-project-dialog').showModal();
+  }
   function deleteProject(projectId) {
-    const record = listProjects().find(p => p.id === projectId);
-    if (!record || !window.confirm(`¿Borrar “${record.title}” de este dispositivo?`)) return;
     localStorage.removeItem(PROJECT_KEY(projectId));
     localStorage.setItem(PROJECTS_KEY, JSON.stringify(listProjects().filter(p => p.id !== projectId)));
     renderProjectList();
@@ -235,7 +275,8 @@
       button.innerHTML = `<span class="panel-number">${index + 1}</span>Viñeta<span class="mini-count">${panel.items.length} capas</span>`;
       button.onclick = () => { state.active = index; state.selected = null; render(); };
       const up = document.createElement('button'); const down = document.createElement('button');
-      up.className = down.className = 'panel-move'; up.textContent = '↑'; down.textContent = '↓';
+      up.className = down.className = 'panel-move';
+      up.innerHTML = svgIcon('up'); down.innerHTML = svgIcon('down');
       up.setAttribute('aria-label', `Mover viñeta ${index + 1} antes`); down.setAttribute('aria-label', `Mover viñeta ${index + 1} después`);
       up.disabled = index === 0; down.disabled = index === state.panels.length - 1;
       up.onclick = () => movePanel(index, -1); down.onclick = () => movePanel(index, 1);
@@ -310,7 +351,7 @@
   }
   function renderInspector() {
     const item = currentItem(); const box = $('#inspector-content');
-    if (!item) { box.innerHTML = '<div class="empty-state"><span>✳</span><b>Selecciona un elemento</b><p>Su contorno y tirador naranja aparecerán en el lienzo.</p></div>'; return; }
+    if (!item) { box.innerHTML = `<div class="empty-state">${svgIcon('image')}<b>Selecciona un elemento</b><p>Su contorno y tirador naranja aparecerán en el lienzo.</p></div>`; return; }
     const variantControl = item.variants?.length ? `<div class="field"><label>Variación del mismo personaje</label><select id="p-variant">${item.variants.map((variant, i) => `<option value="${i}" ${i === item.variantIndex ? 'selected' : ''}>${escapeHTML(variant.name)}</option>`).join('')}</select></div>` : '';
     const bubbleControls = item.type === 'bubble' ? `<div class="field"><label>Tipo</label><select id="p-kind"><option value="dialogue">Diálogo normal</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW / CRASH</option></select></div><div class="field"><label>Tamaño de letra</label><input id="p-font" type="range" min="10" max="44" value="${item.fontSize || 17}"></div><div class="field"><label>Alineación</label><select id="p-align"><option value="center">Centrada</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div><label class="check-field"><input id="p-tail" type="checkbox" ${item.tail ? 'checked' : ''}> Cola del globo</label><div class="field"><label>Posición de la cola</label><input id="p-tail-x" type="range" min="10" max="90" value="${item.tailX ?? 28}"></div><label class="check-field"><input id="p-autogrow" type="checkbox" ${item.autoGrow === false ? '' : 'checked'}> Ajustar alto al texto</label>` : '';
     const drawingControls = item.type === 'drawing' ? `<div class="field"><label>Color del trazo</label><input id="p-color" type="color" value="${item.color}"></div><div class="field"><label>Grosor</label><input id="p-stroke-width" type="range" min="1" max="40" value="${item.strokeWidth}"></div>` : '';
@@ -340,7 +381,7 @@
     $('#layer-count').textContent = `${items.length} ${items.length === 1 ? 'capa' : 'capas'}`;
     items.forEach(item => {
       const row = document.createElement('div'); row.className = `layer-row${item.id === state.selected ? ' active' : ''}${isOffstage(item) ? ' layer-offstage' : ''}`;
-      row.innerHTML = `<span class="layer-icon">${item.type === 'bubble' ? '◯' : item.type === 'drawing' ? '✎' : '▧'}</span><span class="layer-name">${escapeHTML(item.name)}</span><button class="layer-order" aria-label="Subir capa">↑</button><button class="layer-order down" aria-label="Bajar capa">↓</button><button class="lock" aria-label="${item.locked ? 'Desbloquear' : 'Bloquear'}">${item.locked ? '🔒' : '◦'}</button>`;
+      row.innerHTML = `<span class="layer-icon">${svgIcon(item.type === 'bubble' ? 'bubble' : item.type === 'drawing' ? 'pen' : 'image')}</span><span class="layer-name">${escapeHTML(item.name)}</span><button class="layer-order" aria-label="Subir capa">${svgIcon('up')}</button><button class="layer-order down" aria-label="Bajar capa">${svgIcon('down')}</button><button class="lock" aria-label="${item.locked ? 'Desbloquear' : 'Bloquear'}">${svgIcon(item.locked ? 'lock' : 'unlock')}</button>`;
       row.onclick = () => selectItem(item.id);
       row.querySelector('.lock').onclick = event => { event.stopPropagation(); snapshot(); item.locked = !item.locked; commit(); };
       row.querySelector('.layer-order').onclick = event => { event.stopPropagation(); reorderLayer(item.id, 1); };
@@ -360,7 +401,10 @@
   }
   function recoverItem(itemId) {
     const item = currentPanel().items.find(entry => entry.id === itemId); if (!item) return;
-    snapshot(); item.x = Math.max(8, Math.min(LOGICAL_WIDTH - item.w - 8, item.x)); item.y = Math.max(8, Math.min(state.pageHeight - item.h - 8, item.y)); commit(); selectItem(item.id);
+    snapshot();
+    const scale = Math.min(1, (LOGICAL_WIDTH - 16) / item.w, (state.pageHeight - 16) / item.h);
+    if (scale < 1) { item.w *= scale; item.h *= scale; }
+    item.x = Math.max(8, Math.min(LOGICAL_WIDTH - item.w - 8, item.x)); item.y = Math.max(8, Math.min(state.pageHeight - item.h - 8, item.y)); commit(); selectItem(item.id);
   }
   function movePanel(index, delta) {
     const next = index + delta; if (next < 0 || next >= state.panels.length) return;
@@ -437,12 +481,13 @@
   function finishDrawing(event) {
     if (!drawing) return;
     if (drawing.points.length < 2) { drawing = null; return; }
-    const points = drawing.points; const pad = Math.max(10, drawing.size * 2);
+    const points = drawing.points; const pressure = points.reduce((sum, point) => sum + point.pressure, 0) / points.length;
+    const strokeWidth = Math.max(1, drawing.size * (0.45 + pressure * 0.95)); const pad = Math.max(10, strokeWidth * 2);
     const minX = Math.max(0, Math.min(...points.map(point => point.x)) - pad); const minY = Math.max(0, Math.min(...points.map(point => point.y)) - pad);
     const maxX = Math.min(LOGICAL_WIDTH, Math.max(...points.map(point => point.x)) + pad); const maxY = Math.min(state.pageHeight, Math.max(...points.map(point => point.y)) + pad);
     const width = Math.max(1, maxX - minX); const height = Math.max(1, maxY - minY);
     const path = points.map((point, i) => `${i ? 'L' : 'M'}${(point.x - minX).toFixed(1)},${(point.y - minY).toFixed(1)}`).join(' ');
-    snapshot(); const item = { id: id(), type: 'drawing', name: 'Trazo', x: minX, y: minY, w: width, h: height, path, color: drawing.color, strokeWidth: drawing.size, opacity: drawing.opacity, locked: false, rotation: 0 };
+    snapshot(); const item = { id: id(), type: 'drawing', name: 'Trazo', x: minX, y: minY, w: width, h: height, path, color: drawing.color, strokeWidth, opacity: drawing.opacity, locked: false, rotation: 0 };
     currentPanel().items.push(item); drawing = null; selectItem(item.id); commit();
     if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
   }
@@ -504,10 +549,9 @@
   }
   async function exportReview() {
     state.format = $('#export-preset').value; state.status = 'review'; autosave();
-    const clone = captureState(); clone.selected = null;
     const title = state.title || 'Episodio nuevo'; const slug = slugify(title) || 'episodio-nuevo';
     const catalog = { schemaVersion: 1, editorialPolicy: 'manual-approval', episodes: [{ id: slug, title: { es: title }, episodeNumber: null, status: 'review', type: 'comic', complete: false, source: { kind: 'editor-draft', instagramMediaId: null, instagramPermalink: null }, panels: state.panels.map((panel, index) => ({ order: index + 1, alt: { es: `Viñeta ${index + 1} pendiente de revisión` }, src: `assets/episodes/drafts/${slug}/vineta-${String(index + 1).padStart(2, '0')}.png` })) }] };
-    const files = [{ name: 'proyecto.json', data: new TextEncoder().encode(JSON.stringify(clone, null, 2)) }, { name: 'metadata-review.json', data: new TextEncoder().encode(JSON.stringify(catalog, null, 2)) }];
+    const files = [{ name: 'metadata-review.json', data: new TextEncoder().encode(JSON.stringify(catalog, null, 2)) }];
     for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index]); files.push({ name: `assets/episodes/drafts/${slug}/vineta-${String(index + 1).padStart(2, '0')}.png`, data: new Uint8Array(await image.arrayBuffer()) }); }
     download(zipStore(files), `${slug}-revision.zip`); toast('Paquete de revisión listo. El estado sigue pendiente de aprobación.');
   }
@@ -556,8 +600,36 @@
     });
     dialog.showModal();
   }
+  function showBoardOverview() {
+    const list = $('#board-panels'); list.innerHTML = ''; $('#board-title').textContent = state.title || 'Mesa de trabajo';
+    state.panels.forEach((panel, index) => {
+      const tile = document.createElement('button'); tile.className = `board-tile${index === state.active ? ' active' : ''}`;
+      const art = document.createElement('span'); art.className = 'board-tile-art'; art.style.aspectRatio = `600 / ${state.pageHeight}`;
+      panel.items.forEach(item => {
+        const element = item.type === 'image' ? document.createElement('img') : document.createElement('span');
+        element.className = `board-item${item.type === 'bubble' ? ` preview-bubble bubble-${item.kind}` : ''}`;
+        element.style.left = `${item.x / LOGICAL_WIDTH * 100}%`; element.style.top = `${item.y / state.pageHeight * 100}%`;
+        element.style.width = `${item.w / LOGICAL_WIDTH * 100}%`; element.style.height = `${item.h / state.pageHeight * 100}%`;
+        element.style.transform = `rotate(${item.rotation || 0}deg)`;
+        if (item.type === 'image') { element.src = item.src; element.alt = ''; }
+        else if (item.type === 'bubble') element.textContent = item.text || '';
+        else { element.style.background = `linear-gradient(135deg, transparent 45%, ${item.color} 48%, ${item.color} 52%, transparent 55%)`; }
+        art.append(element);
+      });
+      const label = document.createElement('span'); label.className = 'board-tile-label'; label.innerHTML = `<b>Viñeta ${index + 1}</b><small>${panel.items.length} capas</small>`;
+      tile.append(art,label); tile.onclick = () => { state.active = index; state.selected = null; autosave(); $('#board-dialog').close(); render(); }; list.append(tile);
+    });
+    $('#board-dialog').showModal();
+  }
 
   function installEvents() {
+    const labeledIcon = (selector, iconName, label) => { const button = $(selector); button.innerHTML = `${svgIcon(iconName)}<span>${label}</span>`; };
+    $('#undo').innerHTML = svgIcon('undo'); $('#redo').innerHTML = svgIcon('redo');
+    labeledIcon('#upload-asset','plus',''); labeledIcon('#toggle-library','image','Biblioteca');
+    labeledIcon('#toggle-layers','layers','Capas'); labeledIcon('#focus-mode','focus','Lienzo amplio');
+    labeledIcon('#add-panel','plus','Viñeta'); labeledIcon('#add-bubble','bubble','Añadir globo');
+    labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías');
+    $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
     $('#new-project').onclick = newProject;
     $('#import-project').onclick = () => $('#project-file').click();
     $('#project-file').onchange = event => importProjectFile(event.target.files[0]);
@@ -565,11 +637,11 @@
     $('#save-project').onclick = () => { autosave(); toast('Guardado en este dispositivo.'); };
     $('#download-source').onclick = exportSource;
     $('#export-project').onclick = exportReview;
-    $('#open-project').onclick = showHome;
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;
     $('#add-bubble').onclick = () => addBubble($('#bubble-kind').value);
     $('#preview').onclick = previewEpisode;
+    $('#board-view').onclick = showBoardOverview;
     $('#preview-dialog form').onsubmit = () => $('#preview-dialog').close();
     $('#export-preset').onchange = event => changeFormat(event.target.value);
     $('#toggle-grid').onclick = event => { state.grid = !state.grid; event.currentTarget.setAttribute('aria-pressed', String(state.grid)); render(); };
@@ -581,7 +653,12 @@
     $('#mobile-library').onclick = () => $('#library-panel').classList.toggle('open');
     $('#mobile-properties').onclick = () => $('#inspector-panel').classList.toggle('open');
     $('#focus-mode').onclick = event => { const active = $('#app-shell').classList.toggle('focus-mode'); event.currentTarget.setAttribute('aria-pressed', String(active)); };
-    $('#theme-toggle').onclick = () => { const dark = document.documentElement.classList.toggle('theme-dark'); localStorage.setItem('mandarinita-editor-theme', dark ? 'dark' : 'light'); };
+    $('#theme-toggle').onclick = () => {
+      const choices = ['system','light','dark']; const current = getThemeChoice(); const next = choices[(choices.indexOf(current) + 1) % choices.length];
+      localStorage.setItem('mandarinita-editor-theme', next); applyTheme(next);
+    };
+    $('#theme-toggle').querySelector('.ui-icon').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z"/></svg>';
+    $('#confirm-delete').onclick = () => { if (pendingDeleteId) deleteProject(pendingDeleteId); pendingDeleteId = null; };
     $('#undo').onclick = () => { if (!undoStack.length) return; redoStack.push(JSON.stringify(state)); state = JSON.parse(undoStack.pop()); commit(); };
     $('#redo').onclick = () => { if (!redoStack.length) return; undoStack.push(JSON.stringify(state)); state = JSON.parse(redoStack.pop()); commit(); };
     $('#upload-asset').onclick = () => $('#asset-file').click();
@@ -618,7 +695,21 @@
   function crc32(bytes) { let crc = -1; for (const byte of bytes) { crc ^= byte; for (let i = 0; i < 8; i++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0); } return (crc ^ -1) >>> 0; }
   function loadImage(src) { return new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = reject; image.src = src; }); }
 
+  function getThemeChoice() {
+    const saved = localStorage.getItem('mandarinita-editor-theme');
+    return saved === 'dark' || saved === 'light' ? saved : 'system';
+  }
+  function applyTheme(choice = getThemeChoice()) {
+    const systemDark = matchMedia('(prefers-color-scheme: dark)').matches;
+    const dark = choice === 'dark' || (choice === 'system' && systemDark);
+    document.documentElement.classList.toggle('theme-dark', dark);
+    document.documentElement.dataset.themeChoice = choice;
+    const label = choice === 'system' ? 'Sistema' : choice === 'dark' ? 'Oscuro' : 'Claro';
+    $('#theme-toggle').title = `Tema: ${label} · cambiar`;
+    $('#theme-toggle').setAttribute('aria-label', `Tema ${label}. Cambiar tema`);
+  }
   migrateLegacyProject();
-  if (localStorage.getItem('mandarinita-editor-theme') === 'dark') document.documentElement.classList.add('theme-dark');
+  applyTheme();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (getThemeChoice() === 'system') applyTheme('system'); });
   installEvents(); setupResourceFilters(); installPalette(); renderProjectList();
 })();

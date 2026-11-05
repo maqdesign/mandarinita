@@ -28,7 +28,7 @@ La biblioteca reconoce Mando y Señor Mandarino como una sola identidad con alia
 
 Para una persona, la arquitectura mínima futura es Cloudflare Access con código por correo para Mauricio, una Pages Function/Worker y R2 para los archivos fuente y revisiones. No hace falta una base relacional para guardar paquetes de proyecto; se puede empezar sin D1. El coste práctico es configurar la cuenta Access, el allowlist de correo, el bucket y la política de conflictos/versiones. R2 no debe exponerse como escritura pública y los secretos permanecen del lado del Worker.
 
-Supabase aportaría autenticación, Postgres y Storage integrados y sería más sencillo si se requiere una aplicación multiplataforma o relaciones complejas, con el coste de operar otro proveedor y modelar políticas/tablas. Para el MVP de una sola persona sobre Pages, Cloudflare evita añadir una dependencia. No se crea almacenamiento de nube hasta conocer el correo exacto que debe autorizar Access.
+Supabase aportaría autenticación, Postgres y Storage integrados y sería más sencillo si se requiere una aplicación multiplataforma o relaciones complejas, con el coste de operar otro proveedor y modelar políticas/tablas. Para el MVP de una sola persona sobre Pages, Cloudflare evita añadir una dependencia. Mauricio ya proporcionó el correo que debe permitirse en Access; la cuenta aún tiene que habilitar R2 desde el Dashboard antes de crear el bucket y enlazarlo al Worker.
 
 ## Próximos hitos
 

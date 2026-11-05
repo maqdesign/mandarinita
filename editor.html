@@ -20,30 +20,30 @@
     <main class="home-main">
       <div class="home-heading">
         <div><span class="eyebrow">ARCHIVO LOCAL</span><h1 id="home-title">Mis episodios</h1><p>Tus proyectos se guardan en este dispositivo. Descarga el archivo fuente para moverlos entre dispositivos.</p></div>
-        <div class="home-actions"><button class="button primary" id="new-project">＋ Nuevo episodio</button><button class="button" id="import-project">Importar archivo</button><input id="project-file" type="file" accept=".mandarinita,.man,.zip,.json,application/zip,application/json" hidden></div>
+        <div class="home-actions"><button class="button primary" id="new-project"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Nuevo episodio</button><button class="button" id="import-project">Importar archivo .mandarinita</button><input id="project-file" type="file" accept=".mandarinita,.man,.zip,.json,application/zip,application/json" hidden></div>
       </div>
       <div id="project-list" class="project-list"></div>
-      <p class="home-footnote">El archivo editable usa el formato ZIP de Mandarinita con extensión <code>.mandarinita</code>. También se pueden importar proyectos JSON anteriores.</p>
+      <p class="home-footnote">Tus proyectos se guardan en este navegador. El archivo editable conserva capas y propiedades para abrirlos en otro dispositivo.</p>
     </main>
   </section>
 
   <section id="editor-view" class="editor-view" hidden>
     <header class="topbar">
-      <button class="home-back" id="back-home" aria-label="Volver a mis episodios">← <span>Mis episodios</span></button>
+      <button class="home-back" id="back-home"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6M9 12h12"/></svg></span><span>Mis episodios</span></button>
       <a class="brand" href="index.html"><img src="assets/mandarinita-logo.svg" alt="Mandarinita" width="112"></a>
       <div class="project"><span class="eyebrow">TALLER MANDARINITA</span><strong id="project-title" contenteditable="true" aria-label="Título del episodio">Un episodio nuevo</strong><small id="save-state">Borrador local</small></div>
       <div class="top-actions">
-        <button id="undo" title="Deshacer">↶</button><button id="redo" title="Rehacer">↷</button>
+        <button id="undo" title="Deshacer" aria-label="Deshacer"></button><button id="redo" title="Rehacer" aria-label="Rehacer"></button>
         <button id="save-project" class="quiet">Guardar</button>
         <button id="download-source" class="quiet">Archivo editable</button>
         <button id="export-project" class="primary">Exportar revisión</button>
-        <button id="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema">◐</button>
+        <button id="theme-toggle" title="Tema según el sistema" aria-label="Tema según el sistema"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z"/></svg></span></button>
       </div>
     </header>
     <main class="app-shell" id="app-shell">
       <aside class="library" id="library-panel">
-        <div class="side-head"><div><span class="eyebrow">BIBLIOTECA DE RECURSOS</span><h1>Componentes</h1></div><button id="upload-asset" class="round" title="Importar dibujo">＋</button><input id="asset-file" type="file" accept="image/*" hidden></div>
-        <label class="search"><span>⌕</span><input id="asset-search" type="search" placeholder="Personaje, alias u objeto" aria-label="Buscar recursos"></label>
+        <div class="side-head"><div><span class="eyebrow">BIBLIOTECA DE RECURSOS</span><h1>Componentes</h1></div><button id="upload-asset" class="round" title="Importar dibujo" aria-label="Importar dibujo"></button><input id="asset-file" type="file" accept="image/*" hidden></div>
+        <label class="search"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg><input id="asset-search" type="search" placeholder="Personaje, alias u objeto" aria-label="Buscar recursos"></label>
         <nav class="filters" aria-label="Filtrar recursos">
           <button class="active" data-filter="all">Todo</button><button data-filter="character">Personajes</button><button data-filter="object">Objetos</button><button data-filter="background">Fondos</button>
         </nav>
@@ -53,12 +53,12 @@
       </aside>
       <section class="workspace">
         <div class="workspace-bar">
-          <div class="breadcrumbs"><span>EPISODIO</span><b>›</b><span id="current-panel-label">VIÑETA 1</span></div>
+          <div class="breadcrumbs"><span>EPISODIO</span><span class="breadcrumb-separator" aria-hidden="true"></span><span id="current-panel-label">VIÑETA 1</span></div>
           <div class="tools">
-            <button id="toggle-library" title="Mostrar/ocultar biblioteca">Biblioteca</button><button id="toggle-layers" title="Mostrar/ocultar inspector">Capas</button><button id="focus-mode" title="Ampliar el lienzo" aria-pressed="false">⛶ Lienzo</button>
-            <button id="add-panel">＋ Viñeta</button><select id="bubble-kind" aria-label="Tipo de globo"><option value="dialogue">＋ Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW</option></select><button id="add-bubble">Añadir globo</button>
-            <button id="toggle-draw" aria-pressed="false">✎ Dibujar</button>
-            <span class="divider"></span><button id="toggle-grid" aria-pressed="true">▦ Guías</button><button id="zoom-out" aria-label="Alejar">−</button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Acercar">＋</button><button id="fit">Ajustar</button>
+            <button id="toggle-library" title="Mostrar/ocultar biblioteca">Biblioteca</button><button id="toggle-layers" title="Mostrar/ocultar inspector">Capas</button><button id="focus-mode" title="Ampliar el lienzo" aria-pressed="false">Lienzo amplio</button>
+            <button id="add-panel">Viñeta</button><select id="bubble-kind" aria-label="Tipo de globo"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW</option></select><button id="add-bubble">Añadir globo</button>
+            <button id="toggle-draw" aria-pressed="false">Dibujar</button>
+            <span class="divider"></span><button id="toggle-grid" aria-pressed="true">Guías</button><button id="zoom-out" aria-label="Alejar"></button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Acercar"></button><button id="fit">Ajustar</button>
             <select id="export-preset" aria-label="Formato del lienzo"><option value="web">Web · 3:2</option><option value="square">Instagram · 1:1</option><option value="portrait">Instagram · 4:5</option></select>
             <button class="mobile-drawer" id="mobile-library">Recursos</button><button class="mobile-drawer" id="mobile-properties">Propiedades</button>
           </div>
@@ -68,17 +68,19 @@
           <div id="color-palette" class="color-palette" aria-label="Colores rápidos"></div><label>Ancho <input id="brush-size" type="range" min="2" max="24" value="5"></label><span>Apple Pencil y táctil</span>
         </div>
         <div class="stage-wrap"><div class="stage" id="stage"><div id="canvas" class="canvas" role="application" aria-label="Lienzo de viñeta"></div></div></div>
-        <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Viñetas del episodio</strong></div><button id="preview">Vista previa</button></div><div id="panel-list" class="panel-list"></div></div>
+        <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Viñetas del episodio</strong></div><div class="strip-actions"><button id="board-view">Mesa de trabajo</button><button id="preview">Vista previa</button></div></div><div id="panel-list" class="panel-list"></div></div>
       </section>
       <aside class="inspector" id="inspector-panel">
         <div class="side-head"><div><span class="eyebrow">EDICIÓN</span><h2>Propiedades y capas</h2></div></div>
-        <div id="inspector-content" class="inspector-content"><div class="empty-state"><span>✳</span><b>Selecciona un elemento</b><p>El contorno naranja confirma qué elemento está seleccionado.</p></div></div>
+        <div id="inspector-content" class="inspector-content"><div class="empty-state"><b>Selecciona un elemento</b><p>El contorno naranja confirma qué elemento está seleccionado.</p></div></div>
         <div id="offstage-panel" class="offstage-panel" hidden><div class="layer-title"><span class="eyebrow">FUERA DEL LIENZO</span><span id="offstage-count">0</span></div><div id="offstage-list"></div></div>
         <div class="layers"><div class="layer-title"><span class="eyebrow">CAPAS</span><span id="layer-count">0 elementos</span></div><div id="layer-list"></div></div>
       </aside>
     </main>
   </section>
-  <dialog id="preview-dialog"><form method="dialog"><button class="close" aria-label="Cerrar">×</button></form><span class="eyebrow">VISTA PREVIA · ORDEN DE LECTURA</span><h2 id="preview-title">Un episodio nuevo</h2><div id="preview-panels"></div></dialog>
+  <dialog id="preview-dialog"><form method="dialog"><button class="close" aria-label="Cerrar"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button></form><span class="eyebrow">VISTA PREVIA · ORDEN DE LECTURA</span><h2 id="preview-title">Un episodio nuevo</h2><div id="preview-panels"></div></dialog>
+  <dialog id="board-dialog" class="board-dialog"><form method="dialog"><button class="close" aria-label="Cerrar"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></span></button></form><span class="eyebrow">TODAS LAS VIÑETAS</span><h2 id="board-title">Mesa de trabajo</h2><p class="board-help">Toca una viñeta para abrirla y editarla en el lienzo.</p><div id="board-panels" class="board-preview-grid"></div></dialog>
+  <dialog id="delete-project-dialog" class="confirm-dialog" aria-labelledby="delete-title"><form method="dialog"><span class="eyebrow">ARCHIVO LOCAL</span><h2 id="delete-title">¿Borrar este episodio?</h2><p>Se quitará de este dispositivo. Si tienes un archivo .mandarinita descargado, podrás volver a importarlo.</p><div class="dialog-actions"><button value="cancel" class="button">Cancelar</button><button id="confirm-delete" value="delete" class="button danger">Borrar episodio</button></div></form></dialog>
   <div id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

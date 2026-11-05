@@ -387,6 +387,14 @@
 .random-confirm-dialog[open]{animation:dialog-in .18s ease-out}
 .sticker-pack-grid .sticker-pack-cover{display:block;flex:0 0 60px;width:60px;height:60px;object-fit:contain;border-radius:14px;background:#fff7e9}
 @media(max-width:480px){.reader-bottom{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}.reader-footer-meta{grid-column:1;width:100%;min-width:0;flex-wrap:nowrap;justify-content:flex-start;gap:8px}.reader-bottom>div.reader-actions{grid-column:1;display:flex;width:100%;justify-content:space-between;gap:8px;flex-wrap:nowrap}.reader-prev-episode,.reader-next-episode{min-width:0;min-height:42px;flex:1;gap:5px;padding:0 8px;font-size:.72rem}.reader-prev-episode svg,.reader-next-episode .ui-icon{width:16px;height:16px;flex:0 0 16px}.reader-episode-label-long{display:none}.reader-episode-label-short{display:inline}.random-confirm-actions{gap:8px}.random-confirm-actions button{min-width:0;flex:1;padding:0 8px;font-size:.72rem}.sticker-pack-grid .sticker-pack-cover{flex-basis:52px;width:52px;height:52px}}
+
+/* Homepage cast preview uses only approved transparent character cutouts. */
+.character-cast-grid{width:min(100%,470px);justify-self:center;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:end;gap:9px 7px;padding:8px 4px}
+.character-cast-cell{height:126px;min-width:0;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px}
+.character-cast-cell img{width:100%;height:101px;object-fit:contain;mix-blend-mode:normal;border-radius:0}
+.character-cast-cell:nth-child(4){grid-column:1;grid-row:2}.character-cast-cell:nth-child(5){grid-column:2;grid-row:2}.character-cast-cell:nth-child(6){grid-column:3;grid-row:2}.character-cast-cell:nth-child(7){grid-column:4;grid-row:2}
+.character-cast-cell figcaption{font-size:.66rem;font-weight:700;color:#5d5148;text-align:center;line-height:1.2}
+@media(max-width:680px){.character-cast-grid{width:min(100%,410px);gap:8px 5px}.character-cast-cell{height:116px}.character-cast-cell img{height:90px}}
 @media(prefers-reduced-motion:reduce){.reader-prev-episode,.random-confirm-actions button{transition:none}}
 
 /* Keep the full transparent character art inside its portrait frame. */
