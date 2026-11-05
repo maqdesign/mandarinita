@@ -453,3 +453,12 @@
 .reader-stage.is-swiping.swipe-preview-from-left .reader-image-viewport #reader-swipe-preview{transform:translateX(calc(-100% + var(--swipe-distance,0)));object-position:right center}
 .reader-stage.is-advancing-episode .reader-image-viewport #reader-image{transform:translateX(-115%)}
 @media(prefers-reduced-motion:reduce){.reader-stage .reader-image-viewport img{transition:none!important}}
+
+/* Contrast fields for the approved transparent guest portraits. */
+.character-group .cast-grid-guest .cast-don-guineo .cast-portrait{background:#dceafa;}
+.character-group .cast-grid-guest .cast-manzanillo .cast-portrait{background:#e3f0dc;}
+.character-group .cast-grid-guest .cast-sandy .cast-portrait{background:#f7dfe0;}
+.character-group .cast-grid-guest .cast-cherrys .cast-portrait{background:#d9f0eb;}
+.character-group .cast-grid-guest .cast-superfreso .cast-portrait{background:#ffedb8;}
+.character-group .cast-grid-guest .cast-don-pepino .cast-portrait{background:#dceafa;}
+.character-group .cast-grid-guest .cast-champi .cast-portrait{background:#f7e6d9;}
