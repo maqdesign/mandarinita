@@ -28,24 +28,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261105-card-actions-3">
+  <link rel="stylesheet" href="styles.css?v=20261106-global-header-1">
   <script defer src="app.js?v=20261105-card-actions-3"></script><script defer src="global-search.js?v=20261104-reader-archive-5"></script>
 </head>
 <body>
   <a class="skip-link" href="#main"><span data-es="Saltar al contenido" data-en="Skip to content">Saltar al contenido</span></a>
   <header class="site-header">
-    <a class="brand" href="#inicio" aria-label="Mandarinita, inicio"><img src="assets/mandarinita-logo.svg" width="405" height="151" alt="Mandarinita®"></a>
-    <button class="menu-button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir navegación"><span></span><span></span></button>
-    <nav id="main-nav" class="main-nav" aria-label="Navegación principal">
-      <a href="#historietas"><span data-es="Historietas" data-en="Comics">Historietas</span></a>
-      <a href="episodios.html"><span data-es="Todos los episodios" data-en="All episodes">Todos los episodios</span></a>
-      <a href="personajes.html"><span data-es="Personajes" data-en="Characters">Personajes</span></a>
-      <a href="#portafolio"><span data-es="Portafolio" data-en="Portfolio">Portafolio</span></a>
-      <a href="#historia"><span data-es="Proyecto" data-en="About">Proyecto</span></a>
-      <button class="global-search-trigger" type="button" aria-label="Buscar episodios"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></button>
-      <button class="language-toggle" type="button" aria-label="Switch language to English">EN</button>
-    </nav>
-  </header>
+  <a class="brand" href="#inicio" aria-label="Mandarinita, inicio"><img src="assets/mandarinita-logo.svg" width="405" height="151" alt="Mandarinita®"></a>
+  <nav id="main-nav" class="main-nav" aria-label="Navegación principal"><a href="#historietas"><span data-es="Historietas" data-en="Comics">Historietas</span></a><a href="episodios.html"><span data-es="Todos los episodios" data-en="All episodes">Todos los episodios</span></a><a href="personajes.html"><span data-es="Personajes" data-en="Characters">Personajes</span></a><a href="bocetos.html"><span data-es="Bocetos" data-en="Sketches">Bocetos</span></a><a href="index.html#portafolio"><span data-es="Portafolio" data-en="Portfolio">Portafolio</span></a><a href="index.html#historia"><span data-es="Proyecto" data-en="About">Proyecto</span></a><button class="language-toggle" type="button" aria-label="Switch language to English">EN</button></nav>
+  <div class="site-header-tools"><button class="global-search-trigger" type="button" aria-label="Buscar episodios"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></button><button class="menu-button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir navegación"><span></span><span></span></button></div>
+</header>
 
   <main id="main">
     <section class="hero" id="inicio" aria-labelledby="hero-title">
@@ -144,7 +136,7 @@
       </header>
       <div class="reader-stage" tabindex="-1">
         <div class="reader-loading" role="status"><img src="assets/mandarinita-logo.svg" alt=""><span data-es="Mandarinita está dibujando…" data-en="Mandarinita is drawing…">Mandarinita está dibujando…</span></div>
-        <figure><img id="reader-image" src="" alt=""></figure>
+        <figure><div class="reader-image-viewport"><img id="reader-image" src="" alt=""><img id="reader-swipe-preview" alt="" aria-hidden="true"></div></figure>
         <button class="reader-arrow reader-prev" type="button" aria-label="Viñeta anterior"><svg class="ui-icon ui-icon-prev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 12H4m7 7-7-7 7-7"/></svg></button>
         <button class="reader-arrow reader-next" type="button" aria-label="Viñeta siguiente"><svg class="ui-icon ui-icon-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg></button>
         <div class="reader-swipe-hint" aria-hidden="true"><span class="reader-swipe-arrow">←</span><span data-es="Sigue para el siguiente episodio" data-en="Keep going to the next episode">Sigue para el siguiente episodio</span><span class="reader-swipe-progress"><i></i></span></div>
