@@ -505,6 +505,18 @@
 .reader-stage.is-advancing-episode .reader-image-viewport #reader-image{transform:translateX(-115%)}
 @media(prefers-reduced-motion:reduce){.reader-stage .reader-image-viewport img{transition:none!important}}
 
+/* In phone landscape, give the reader's image the height left by its fixed controls. */
+@media(max-width:900px) and (max-height:600px) and (orientation:landscape){
+  .reader{top:12px;bottom:12px;height:calc(100dvh - 24px);max-height:calc(100dvh - 24px);translate:0 0}
+  .reader-shell{height:100%;grid-template-rows:auto minmax(0,1fr) auto;gap:6px;padding:10px 14px}
+  .reader-stage{width:100%;height:auto;min-height:0;aspect-ratio:auto;margin:0 auto}
+  .reader-stage figure{height:100%;padding-bottom:20px}
+  .reader-stage .reader-image-viewport img{max-height:100%!important}
+  .reader-shortcuts{display:none!important}
+  .reader-bottom{gap:5px;padding-top:4px}
+  .reader-next-episode,.reader-restart{min-height:40px}
+}
+
 /* Contrast fields for the approved transparent guest portraits. */
 .character-group .cast-grid-guest .cast-don-guineo .cast-portrait{background:#dceafa;}
 .character-group .cast-grid-guest .cast-manzanillo .cast-portrait{background:#e3f0dc;}
