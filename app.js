@@ -1,6 +1,28 @@
 const languageButton = document.querySelector('.language-toggle');
 const menuButton = document.querySelector('.menu-button');
 const navigation = document.querySelector('.main-nav');
+// Share the same in-flight catalog request between the home cards, character
+// appearances, archive and global search instead of downloading it repeatedly.
+window.mandarinitaEpisodesCatalogPromise ||= fetch('episodes.json', { cache: 'no-cache' }).then(response => {
+  if (!response.ok) throw new Error('Episode catalog unavailable');
+  return response.json();
+});
+window.mandarinitaSetEpisodeThumbnail = (image, source, sizes, onFailure) => {
+  const thumbnail = source.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-$1.webp');
+  const compact = source.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-320-$1.webp');
+  const originalUrl = new URL(source, location.href).href;
+  image.sizes = sizes;
+  image.srcset = `${compact} 320w, ${thumbnail} 480w`;
+  image.src = thumbnail;
+  image.addEventListener('error', () => {
+    if (image.srcset) {
+      image.removeAttribute('srcset');
+      image.src = thumbnail;
+    } else if (image.src !== originalUrl) {
+      image.src = source;
+    } else onFailure?.();
+  });
+};
 const accessibleEnglish = {
   aria: {
     'Mandarinita, inicio': 'Mandarinita, home',
@@ -174,9 +196,7 @@ async function loadApprovedEpisodes() {
   const grid = document.querySelector('.work-grid');
   if (!grid) return;
   try {
-    const response = await fetch('episodes.json', { cache: 'no-cache' });
-    if (!response.ok) throw new Error('Catalog unavailable');
-    const catalog = await response.json();
+    const catalog = await window.mandarinitaEpisodesCatalogPromise;
     if (catalog.schemaVersion !== 1 || catalog.editorialPolicy !== 'manual-approval' || !Array.isArray(catalog.episodes)) throw new Error('Invalid catalog');
     const approved = [];
     for (const entry of catalog.episodes) {
@@ -221,7 +241,7 @@ async function loadApprovedEpisodes() {
       for (const {entry,ordered,key} of chosen) {
         const article=document.createElement('article');article.className='work-card catalog-card';
         const button=document.createElement('button');button.className='work-image';button.type='button';button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${catalogTitle(entry,'en')}`);
-        const cover=document.createElement('img');const fullResolutionSrc=ordered[0].sourceSrc||ordered[0].src;cover.src=fullResolutionSrc.replace(/([^/]+)\.(png|jpe?g|webp)$/i,'thumb-$1.webp');cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';cover.addEventListener('error',()=>{if(cover.src!==new URL(fullResolutionSrc,location.href).href)cover.src=fullResolutionSrc;},{once:true});button.append(cover);button.addEventListener('click',()=>openReader(key));
+        const cover=document.createElement('img');const fullResolutionSrc=ordered[0].sourceSrc||ordered[0].src;cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';window.mandarinitaSetEpisodeThumbnail(cover,fullResolutionSrc,'(min-width:1200px) 32vw, (min-width:641px) 40vw, 80vw');button.append(cover);button.addEventListener('click',()=>openReader(key));
         const copy=document.createElement('div');copy.className='work-copy';
         const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
         const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
@@ -252,9 +272,7 @@ async function loadCharacterEpisodeActions() {
     node.textContent = language === 'en' ? en : es;
   };
   try {
-    const response = await fetch('episodes.json', { cache: 'no-cache' });
-    if (!response.ok) throw new Error('Episode catalog unavailable');
-    const catalog = await response.json();
+    const catalog = await window.mandarinitaEpisodesCatalogPromise;
     if (catalog.schemaVersion !== 1 || !Array.isArray(catalog.episodes)) throw new Error('Invalid episode catalog');
     const episodes = catalog.episodes.filter(entry => entry.status === 'published' && entry.type === 'comic' && entry.complete === true && Number.isInteger(entry.episodeNumber));
     for (const card of cards) {
