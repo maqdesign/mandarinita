@@ -506,7 +506,7 @@
 @media(prefers-reduced-motion:reduce){.reader-stage .reader-image-viewport img{transition:none!important}}
 
 /* In phone landscape, give the reader's image the height left by its fixed controls. */
-@media(max-width:900px) and (max-height:600px) and (orientation:landscape){
+@media(max-height:600px) and (orientation:landscape){
   .reader{top:12px;bottom:12px;height:calc(100dvh - 24px);max-height:calc(100dvh - 24px);translate:0 0}
   .reader-shell{height:100%;grid-template-rows:auto minmax(0,1fr) auto;gap:6px;padding:10px 14px}
   .reader-stage{width:100%;height:auto;min-height:0;aspect-ratio:auto;margin:0 auto}
