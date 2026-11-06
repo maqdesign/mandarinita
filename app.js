@@ -85,6 +85,9 @@ const accessibleEnglish = {
   }
 };
 function syncAccessibleLanguage() {
+  document.querySelectorAll('[data-es-aria-label][data-en-aria-label]').forEach(node => {
+    node.setAttribute('aria-label', language === 'en' ? node.dataset.enAriaLabel : node.dataset.esAriaLabel);
+  });
   for (const [attribute, translations] of Object.entries(accessibleEnglish)) {
     const selector = attribute === 'aria' ? '[aria-label]:not(.language-toggle):not(.menu-button)' : 'img[alt]';
     const name = attribute === 'aria' ? 'data-es-aria-label' : 'data-es-alt';
