@@ -274,21 +274,9 @@
           "sourceSrc": "assets/episodes/ep-044-el-teletrabajo/44.4.png",
           "watermarkedSrc": "assets/watermarked/episodes/ep-044-el-teletrabajo/44.4.webp",
           "watermarkedThumbnailSrc": "assets/watermarked/episodes/ep-044-el-teletrabajo/thumb-44.4.webp"
-        },
-        {
-          "order": 5,
-          "originalPosition": 5,
-          "src": "assets/episodes/ep-044-el-teletrabajo/44-boceto.png",
-          "alt": {
-            "es": "Lámina 5 original del episodio El teletrabajo.",
-            "en": "Original page 5 from Working from home."
-          },
-          "sourceSrc": "assets/episodes/ep-044-el-teletrabajo/44-boceto.png",
-          "watermarkedSrc": "assets/watermarked/episodes/ep-044-el-teletrabajo/44-boceto.webp",
-          "watermarkedThumbnailSrc": "assets/watermarked/episodes/ep-044-el-teletrabajo/thumb-44-boceto.webp"
         }
       ],
-      "editorialNote": "Las cuatro páginas finales y la quinta lámina que el usuario identificó como boceto forman la secuencia publicada.",
+      "editorialNote": "Las cuatro páginas finales forman la secuencia publicada; el boceto permanece en la sección Bocetos.",
       "publishedAt": "2020-09-12",
       "characters": [
         "mando-mandarinita"
@@ -431,21 +419,9 @@
           "sourceSrc": "assets/episodes/ep-052-fruitflix/52.4.png",
           "watermarkedSrc": "assets/watermarked/episodes/ep-052-fruitflix/52.4.webp",
           "watermarkedThumbnailSrc": "assets/watermarked/episodes/ep-052-fruitflix/thumb-52.4.webp"
-        },
-        {
-          "order": 5,
-          "originalPosition": 5,
-          "src": "assets/episodes/ep-052-fruitflix/52-boceto.png",
-          "alt": {
-            "es": "Lámina 5 original del episodio Fruitflix.",
-            "en": "Original page 5 from Fruitflix."
-          },
-          "sourceSrc": "assets/episodes/ep-052-fruitflix/52-boceto.png",
-          "watermarkedSrc": "assets/watermarked/episodes/ep-052-fruitflix/52-boceto.webp",
-          "watermarkedThumbnailSrc": "assets/watermarked/episodes/ep-052-fruitflix/thumb-52-boceto.webp"
         }
       ],
-      "editorialNote": "Las cuatro páginas finales y la quinta lámina que el usuario identificó como boceto forman la secuencia publicada.",
+      "editorialNote": "Las cuatro páginas finales forman la secuencia publicada; el boceto permanece en la sección Bocetos.",
       "publishedAt": "2020-11-07",
       "characters": [
         "mandy-mandarinita",
