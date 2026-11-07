@@ -489,6 +489,66 @@
 .character-group .cast-grid-support .cast-support:nth-child(3) .cast-portrait{background:#f7dfe0;}
 .character-group .cast-grid-support .cast-support:nth-child(4) .cast-portrait{background:#ffedb8;}
 .character-group .cast-grid-guest .cast-card.cast-pera .cast-portrait{background:#e4e0ff;}
+
+/* Follow the visitor's system theme while keeping comic artwork untouched. */
+@media(prefers-color-scheme:dark){
+  :root{
+    color-scheme:dark;
+    --green:#a2c678;
+    --ink:#f4ece5;
+    --muted:#c5b9b1;
+    --canvas:#171310;
+    --paper:#241e1a;
+    --soft:#332a25;
+    --line:#4a3e36;
+    --purple:#c89bd9;
+    --shadow:0 20px 50px rgba(0,0,0,.34);
+  }
+  body{background:var(--canvas);color:var(--ink)}
+  .brand img{content:url("assets/mandarinita-logo-white.svg")}
+  .site-header{background:rgba(36,30,26,.96);border-bottom-color:rgba(255,255,255,.09)}
+  .main-nav{background:var(--paper);box-shadow:0 14px 24px rgba(0,0,0,.3)}
+  .skip-link,.button-dark{background:#30221b;color:#fff}
+  .button-light{background:var(--soft);color:var(--ink)}
+  .hero-highlight{color:#30221b}
+  .reader-callout,.site-footer{background:#30221b;color:#fff}
+  .story-section{background:#222a1d;color:var(--ink)}
+  .story-inner>div>p:not(.eyebrow){color:var(--muted)}
+  .work-card,.portfolio,.portfolio-card,.history-note,.reader,.reader-close,
+  .reader-arrow,.reader-text-prev,.reader-text-next,.character-profile,
+  .archive-controls select,.global-search-dialog,.global-search-close,
+  .global-search-box input,.sketch-panels img,.sketch-single,
+  .cast-card-text,.sticker-pack-grid .sticker-pack,.portfolio-art-open,
+  .character-group .cast-no-image,.character-group .cast-grid-guest .cast-card,
+  .reader-shortcuts summary,.reader-shortcuts-panel,.reader-utility-button,
+  .episode-grid .work-meta .episode-share,.work-grid .episode-share,
+  .reader-prev-episode,.random-confirm-actions button,.character-archive-filter,
+  .work-grid .episode-download,.portrait-download,.image-action{
+    background:var(--paper);
+    color:var(--ink);
+  }
+  .characters-strip,.character-profile:nth-child(2){background:var(--soft)}
+  .global-search-trigger:hover,.global-search-trigger:focus-visible,
+  .portfolio-art-open:hover,.portfolio-art-open:focus-visible,
+  .reader-close:hover,.reader-arrow:hover:not(:disabled),
+  .reader-text-prev:hover,.reader-text-next:hover,
+  .reader-shortcuts summary:hover,.reader-utility-button:hover,
+  .reader-prev-episode:hover,.random-confirm-actions button:hover{background:var(--soft)}
+  .reader-loading{background:rgba(36,30,26,.97);color:var(--green)}
+  .reader-close,.reader-arrow,.reader-text-prev,.reader-text-next,
+  .reader-shortcuts summary,.reader-utility-button,.reader-prev-episode,
+  .archive-controls select,.global-search-close,.image-action{
+    background:var(--soft);
+    border-color:var(--line);
+  }
+  .reader-stage figcaption{background:var(--paper);color:var(--muted)}
+  .character-episode-button:disabled{background:var(--soft);color:var(--muted)}
+  .portfolio-art-open{border-color:var(--line)}
+  .archive-controls select,.global-search-box input{border-color:var(--line)}
+  .reader::backdrop,.global-search-dialog::backdrop,.random-confirm-dialog::backdrop{background:rgba(0,0,0,.78)}
+  .reader-image-viewport img,.episode-grid .work-image img,.work-image img,
+  .sketch-panels img,.sketch-single,.cast-portrait img{filter:none!important}
+}
 .character-group .cast-grid-support .cast-support:nth-child(1) .cast-portrait{background:#dceafa;}
 .character-group .cast-grid-support .cast-support:nth-child(2) .cast-portrait{background:#f7e6d9;}
 
