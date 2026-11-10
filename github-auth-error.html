@@ -22,7 +22,7 @@
   </main>
   <script>
     const reason = new URLSearchParams(location.search).get('reason');
-    if (reason === 'not-authorized') document.querySelector('#message').textContent = 'La cuenta de GitHub no coincide con el correo privado configurado para este taller. Cambia a la cuenta autorizada e inténtalo de nuevo.';
+    if (reason === 'not-authorized') document.querySelector('#message').textContent = 'La cuenta de GitHub no tiene verificado el correo autorizado para este taller. Añádelo y verifícalo en GitHub, o cambia a la cuenta que ya lo tenga verificado, y vuelve a intentarlo.';
     if (reason === 'cancelled') document.querySelector('#message').textContent = 'Cancelaste el acceso de GitHub. Puedes intentarlo otra vez cuando quieras.';
   </script>
 </body>

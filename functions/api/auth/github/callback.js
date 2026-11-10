@@ -35,7 +35,7 @@ export async function onRequestGet({ request, env }) {
   if (!userResponse.ok || !emailsResponse.ok) return json({ error: 'No se pudo verificar la cuenta de GitHub.' }, 502);
   const [user, emails] = await Promise.all([userResponse.json(), emailsResponse.json()]);
   const allowedEmail = env.MANDARINITA_SYNC_EMAIL.trim().toLowerCase();
-  const verified = emails.some(entry => entry.verified && entry.primary && entry.email.toLowerCase() === allowedEmail);
+  const verified = emails.some(entry => entry.verified && entry.email.toLowerCase() === allowedEmail);
   if (!verified) return new Response(null, { status: 303, headers: {
     Location: new URL('/github-auth-error.html?reason=not-authorized', request.url).toString(),
     'Set-Cookie': 'mandarinita_oauth_state=; Path=/api/auth/github/callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax',
