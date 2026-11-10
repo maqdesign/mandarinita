@@ -89,3 +89,40 @@ body{background:var(--canvas-surround);color:var(--ink)}
 @media(max-width:720px){.home-header{gap:0}.home-account-actions{gap:6px;margin-left:auto}.home-account-actions .cloud-connect,.home-account-actions .install-app{margin-left:0}}
 @media(max-width:420px){.home-header{padding-inline:8px}.home-header .brand img{width:82px}.home-account-actions{gap:5px}.home-account-actions .cloud-connect,.home-account-actions .install-app{font-size:9px;padding:6px 7px}}
 .canvas.drop-target{outline:3px solid var(--orange);outline-offset:3px}.asset-card[draggable="true"]{cursor:grab;touch-action:pan-y}.asset-card[draggable="true"]:active{cursor:grabbing}.asset-drag-ghost{position:fixed;z-index:50;display:flex;align-items:center;gap:8px;max-width:190px;padding:6px 9px;border:1px solid var(--orange);border-radius:8px;background:var(--surface);color:var(--ink);box-shadow:0 5px 18px #17141138;pointer-events:none;font-size:11px}.asset-drag-ghost img{width:32px;height:32px;object-fit:contain}.placed img{filter:var(--item-image-filter,none)}.canvas-context-menu{position:fixed;z-index:40;display:flex;flex-direction:column;gap:3px;min-width:205px;max-width:min(260px,calc(100vw - 16px));padding:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);box-shadow:0 12px 32px #17141138}.canvas-context-menu[hidden]{display:none}.canvas-context-menu button{width:100%;min-height:40px;padding:8px 11px;border:0;border-radius:6px;background:transparent;color:inherit;text-align:left;font:500 12px 'Work Sans',sans-serif;touch-action:manipulation}.canvas-context-menu button:hover,.canvas-context-menu button:focus-visible{background:var(--surface-soft)}.canvas-context-menu button.danger{color:#b84325}
+
+/* Workbench refinements: thumbnails keep the whole frame in view; the storyboard stays docked. */
+.project-card-preview{display:grid;place-items:center}
+.project-preview-canvas{position:relative;height:100%;width:auto;max-width:100%;overflow:hidden;background-color:#fff;background-image:linear-gradient(#eee9e2 1px,transparent 1px),linear-gradient(90deg,#eee9e2 1px,transparent 1px);background-size:12px 12px}
+.project-preview-item{transform-origin:center center}
+.project-preview-item img{object-fit:contain;overflow:visible}
+.workspace{flex:1 1 auto;min-height:0}
+.stage-wrap{display:block;flex:1 1 0;min-height:0;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y;cursor:default}
+.stage{min-height:min-content;align-content:start;justify-items:center}
+.story-strip{flex:0 0 126px;height:126px;max-height:126px;min-height:0;overflow:hidden;border-top:1px solid var(--line);padding:6px 12px 8px;background:var(--surface)}
+.story-strip .strip-title{margin:0 0 5px}
+.story-strip .strip-title .eyebrow{font-size:8px}
+.story-strip .strip-title strong{font-size:11px}
+.panel-list{display:flex;gap:8px;max-width:100%;min-height:0;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;padding:0 0 4px}
+.panel-card{width:88px;flex:0 0 88px}
+.stage-wrap.pan-ready{cursor:grab}
+.stage-wrap.panning{cursor:grabbing;user-select:none}
+.asset-card img{touch-action:none;-webkit-user-drag:none;user-select:none}
+@media(max-width:720px){
+ .stage-wrap{padding:10px 10px 10px 56px;overflow:auto}
+ .story-strip{flex:0 0 98px;height:98px;max-height:98px;padding:5px 8px}
+ .story-strip .strip-title{margin-bottom:3px}
+ .panel-card{width:70px;flex-basis:70px}
+}
+
+/* Keep the editor viewport bounded so the reading-order dock never falls below the fold. */
+.editor-view{height:100dvh;min-height:0;overflow:hidden}
+.editor-view[hidden],#project-home[hidden]{display:none!important}
+.topbar{flex:0 0 auto}
+.app-shell{height:0;min-height:0;flex:1 1 0;overflow:hidden}
+.workspace{height:100%;min-height:0;flex:1 1 0}
+.stage-wrap{height:0;min-height:0;flex:1 1 0}
+@media(max-width:720px){.app-shell{height:auto;min-height:0;flex:1 1 0}.workspace{height:auto;min-height:0}.stage-wrap{height:0;min-height:0;flex:1 1 0}}
+
+.bg-remove-tools{padding:9px;border-radius:9px;background:var(--surface-soft)}.bg-remove-tools small{display:block;margin:4px 0 8px;color:var(--muted);font-size:10px;line-height:1.4}.bg-remove-tools button{width:100%;margin-top:5px}
+.story-strip .strip-title{display:flex;align-items:center;justify-content:space-between;gap:8px}.story-strip #add-cta-panel{flex:none;padding:5px 9px;border:1px solid var(--line);border-radius:7px;background:var(--surface-soft);font-size:10px;white-space:nowrap}.story-strip #add-cta-panel:hover{border-color:var(--orange);color:var(--orange)}
+@media(max-width:640px){.app-shell{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)}.library{display:none!important}.library.open{display:flex!important;position:fixed!important;z-index:30;inset:0 min(12vw,52px) 0 0!important;max-width:none!important;box-shadow:10px 0 30px #17141144}.workspace{grid-column:1;grid-row:1;width:100%;min-width:0}.stage-wrap{width:100%;padding:10px 10px 10px 48px}.story-strip{width:100%}.topbar{max-width:100vw}.bg-remove-tools button{min-height:40px}}

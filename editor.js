@@ -38,7 +38,14 @@
     { name: 'Sofá azul · episodio 9.2', aliases: ['mueble azul', 'sofa', 'sofá', 'sala', 'episodio 9'], src: 'assets/episodes/ep-009-la-cena/09.2.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globos, sofá y sombras siguen unidos.' },
     { name: 'Escena frente al televisor · episodio 19', aliases: ['televisor', 'tv', 'episodio 19'], src: 'assets/episodes/ep-019-noche-de-peliculas/19.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globo, televisor y forma azul en primer plano siguen unidos.' },
     { name: 'Sofá azul · episodio 51', aliases: ['mueble azul', 'sofa', 'sofá', 'episodio 51'], src: 'assets/episodes/ep-051-tienes-hambre/51.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globos, sofá y sombras siguen unidos.' },
-    { name: 'Olla y fondo azul · episodio 52', aliases: ['olla', 'fondo azul', 'episodio 52'], src: 'assets/episodes/ep-052-fruitflix/52.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; olla, personajes, globos, fondo azul y marca siguen unidos.' }
+    { name: 'Olla y fondo azul · episodio 52', aliases: ['olla', 'fondo azul', 'episodio 52'], src: 'assets/episodes/ep-052-fruitflix/52.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; olla, personajes, globos, fondo azul y marca siguen unidos.' },
+    { name: 'Fila de supermercado · episodio 37', aliases: ['supermercado', 'carrito', 'fila', 'compra', 'episodio 37'], src: 'assets/episodes/ep-037-distanciamiento-social/37.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; fila, carrito, personajes y separador están aplanados en la misma lámina.' },
+    { name: 'Cocina y fregadero · episodio 22', aliases: ['cocina', 'fregadero', 'gabinete', 'platos', 'episodio 22'], src: 'assets/episodes/ep-022-el-fregao/22.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; gabinete, fregadero, platos, personajes y bocetos siguen unidos.' },
+    { name: 'Calle con autobús y lluvia · episodio 14', aliases: ['calle', 'autobús', 'bus', 'lluvia', 'episodio 14'], src: 'assets/episodes/ep-014-un-dia-malo/14.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; calle, lluvia, personajes y autobús siguen unidos.' },
+    { name: 'Tienda y muebles · episodio 28', aliases: ['tienda', 'fachada', 'sofá amarillo', 'cajas', 'episodio 28'], src: 'assets/episodes/ep-028-trukea/28.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; fachada, interiores, personajes, sofá y cajas siguen unidos.' },
+    { name: 'Dormitorio y cama · episodio 5', aliases: ['dormitorio', 'cama', 'sueño', 'descanso', 'episodio 5'], src: 'assets/episodes/ep-005-cinco-minutos-mas/05.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; cama, personaje y detalles del fondo siguen unidos.' },
+    { name: 'Escritorio y silla giratoria · episodio 35', aliases: ['escritorio', 'silla', 'oficina', 'cucaracha', 'episodio 35'], src: 'assets/episodes/ep-035-la-cucaracha/35.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; escritorio, silla, personajes y matamoscas siguen unidos.' },
+    { name: 'Trabajo remoto · episodio 44', aliases: ['trabajo', 'laptop', 'computadora', 'escritorio', 'episodio 44'], src: 'assets/episodes/ep-044-el-teletrabajo/44.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; laptop, escritorio, silla, personaje y objetos siguen unidos.' }
   ];
   const resources = [...people, ...stickers, ...objects, ...backgrounds];
   const $ = selector => document.querySelector(selector);
@@ -95,7 +102,7 @@
 
   function id() { return crypto.randomUUID?.() || Math.random().toString(36).slice(2, 12); }
   function makeProject(title = 'Episodio nuevo', contentType = 'episode') {
-    return { schemaVersion: 1, projectId: id(), title, contentType, status: 'draft', format: 'web', pageHeight: 400, active: 0, selected: null, zoom: 1, grid: true, panels: [{ id: id(), items: [] }, { id: id(), items: [] }], createdAt: Date.now(), updatedAt: Date.now() };
+    return { schemaVersion: 1, projectId: id(), title, contentType, status: 'draft', format: 'web', exportStyle: 'classic', pageHeight: 400, active: 0, selected: null, zoom: 1, grid: true, panels: [{ id: id(), items: [] }, { id: id(), items: [] }], createdAt: Date.now(), updatedAt: Date.now() };
   }
   function listProjects() {
     try { return JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]'); } catch { return []; }
@@ -115,6 +122,7 @@
     normalized.projectId ||= id();
     normalized.contentType ||= 'episode';
     normalized.format = FORMAT[normalized.format] ? normalized.format : 'web';
+    normalized.exportStyle = ['classic','cream','footer'].includes(normalized.exportStyle) ? normalized.exportStyle : 'classic';
     normalized.pageHeight = normalized.pageHeight || FORMAT[normalized.format].logicalHeight;
     normalized.panels = Array.isArray(normalized.panels) && normalized.panels.length ? normalized.panels : [{ id: id(), items: [] }, { id: id(), items: [] }];
     normalized.panels.forEach(p => { p.id ||= id(); p.items ||= []; });
@@ -239,6 +247,7 @@
   function autosave() {
     try {
       state.format = $('#export-preset').value;
+      state.exportStyle = $('#export-style')?.value || state.exportStyle || 'classic';
       state.updatedAt = Date.now();
       saveProject();
       $('#save-state').textContent = `Guardado local · ${new Date(state.updatedAt).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' })}`;
@@ -330,16 +339,21 @@
       let project; try { project = JSON.parse(localStorage.getItem(PROJECT_KEY(record.id)) || '{}'); } catch { project = {}; }
       const card = document.createElement('article'); card.className = 'project-card';
       const preview = document.createElement('div'); preview.className = 'project-card-preview'; preview.setAttribute('aria-hidden','true');
+      const pageHeight = Number(project.pageHeight) || 400;
+      const previewCanvas = document.createElement('div'); previewCanvas.className = 'project-preview-canvas';
+      previewCanvas.style.aspectRatio = `${LOGICAL_WIDTH} / ${pageHeight}`;
       const firstPanel = project.panels?.[0];
       (firstPanel?.items || []).slice(0,8).forEach(item => {
         const layer = document.createElement('div'); layer.className = `project-preview-item ${item.type === 'bubble' ? `preview-${item.kind}` : ''}`;
-        layer.style.left = `${Math.max(-10,Math.min(100,item.x/600*100))}%`; layer.style.top = `${Math.max(-10,Math.min(100,item.y/(project.pageHeight || 400)*100))}%`;
-        layer.style.width = `${Math.max(5,item.w/600*100)}%`; layer.style.height = `${Math.max(5,item.h/(project.pageHeight || 400)*100)}%`;
+        layer.style.left = `${item.x/LOGICAL_WIDTH*100}%`; layer.style.top = `${item.y/pageHeight*100}%`;
+        layer.style.width = `${Math.max(1,item.w/LOGICAL_WIDTH*100)}%`; layer.style.height = `${Math.max(1,item.h/pageHeight*100)}%`;
+        layer.style.transform = `rotate(${item.rotation || 0}deg) scale(${item.flipX ? -1 : 1},${item.flipY ? -1 : 1})`;
         if (item.type === 'image') { const image = document.createElement('img'); image.src = item.src; image.alt = ''; image.style.filter = item.blur ? `blur(${item.blur}px)` : ''; layer.append(image); }
         else if (item.type === 'bubble' || item.type === 'text') { layer.textContent = item.text || ''; if(item.type==='text')layer.classList.add('preview-text'); }
         else { const stroke = document.createElement('span'); stroke.style.cssText = `position:absolute;inset:0;background:linear-gradient(135deg,transparent 46%,${item.color || '#282522'} 48%,${item.color || '#282522'} 52%,transparent 54%)`; layer.append(stroke); }
-        preview.append(layer);
+        previewCanvas.append(layer);
       });
+      preview.append(previewCanvas);
       const main = document.createElement('div'); main.className = 'project-card-main';
       const reviewState = record.status === 'review';
       const kindLabels = {episode:'Episodio',copy:'Texto / copy',banner:'Banner',section:'Sección web'};
@@ -518,7 +532,9 @@
     });
   }
   function render() {
-    const stage = $('#stage'); stage.innerHTML = '';
+    const stage = $('#stage'); const viewport = $('#stage-wrap');
+    const savedScroll = viewport ? { left: viewport.scrollLeft, top: viewport.scrollTop } : null;
+    stage.innerHTML = '';
     const available = Math.max(300, stage.clientWidth || stage.parentElement.clientWidth || window.innerWidth - 32);
     const gap = 14;
     const baseColumns = Math.max(1, Math.floor((available + gap) / 300));
@@ -532,6 +548,8 @@
     $('#zoom-label').textContent = `${Math.round(scale * 100)}%`;
     $('#project-title').textContent = state.title || 'Episodio nuevo';
     $('#export-preset').value = state.format;
+    $('#export-style').value = state.exportStyle || 'classic';
+    $('#add-cta-panel').hidden = state.contentType !== 'episode';
     renderPanels();
     state.panels.forEach((panel, panelIndex) => {
       const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.dataset.panelIndex = panelIndex; wrapper.style.setProperty('--artboard-scale', scale);
@@ -541,6 +559,7 @@
       const artboard = document.createElement('div'); artboard.className = 'artboard-frame';
       artboard.style.width = `${LOGICAL_WIDTH * scale}px`; artboard.style.height = `${state.pageHeight * scale}px`;
       const boardCanvas = document.createElement('div'); boardCanvas.className = 'canvas artboard-canvas'; boardCanvas.dataset.panelIndex = panelIndex;
+      if (panel.backgroundColor) boardCanvas.style.backgroundColor = panel.backgroundColor;
       boardCanvas.setAttribute('role','application'); boardCanvas.setAttribute('aria-label',`Lienzo de viñeta ${panelIndex + 1}`);
       boardCanvas.style.width = `${LOGICAL_WIDTH}px`; boardCanvas.style.height = `${state.pageHeight}px`; boardCanvas.style.transform = `scale(${scale})`;
       boardCanvas.classList.toggle('grid-off', !state.grid); boardCanvas.classList.toggle('draw-active', $('#toggle-draw').getAttribute('aria-pressed') === 'true');
@@ -560,6 +579,7 @@
     });
     $('#current-panel-label').textContent = `VIÑETA ${state.active + 1}`;
     renderInspector(); renderLayers(); renderOffstage();
+    if (savedScroll && viewport) { viewport.scrollLeft = savedScroll.left; viewport.scrollTop = savedScroll.top; }
   }
   function renderPanels() {
     const list = $('#panel-list'); list.innerHTML = '';
@@ -685,7 +705,7 @@
     if (!item) { box.innerHTML = `<div class="empty-state">${svgIcon('image')}<b>Selecciona un elemento</b><p>Su contorno y tirador naranja aparecerán en el lienzo.</p></div>`; return; }
     const characterResource = item.type === 'image' && (item.category === 'character' || resources.some(resource => resource.name === item.resourceId && resource.category === 'character'));
     const replaceControl = characterResource ? '<button id="replace-character" class="button replace-character">Sustituir personaje</button>' : '';
-    const imageControls = item.type === 'image' ? `<div class="field"><label>Desenfoque · <span id="blur-value">${item.blur || 0}px</span></label><input id="p-blur" type="range" min="0" max="12" step="0.5" value="${item.blur || 0}"></div>` : '';
+    const imageControls = item.type === 'image' ? `<div class="field"><label>Desenfoque · <span id="blur-value">${item.blur || 0}px</span></label><input id="p-blur" type="range" min="0" max="12" step="0.5" value="${item.blur || 0}"></div><div class="field bg-remove-tools"><label>Quitar un fondo plano</label><input id="p-bg-tolerance" aria-label="Tolerancia del recorte de fondo" type="range" min="8" max="90" step="2" value="36"><small>Procesa el dibujo en este dispositivo. Da mejor resultado con fondos uniformes; no usa IA ni una API.</small><button id="remove-background" type="button" class="button">Recortar fondo</button>${item.originalSrc ? '<button id="restore-background" type="button" class="button">Restaurar imagen original</button>' : ''}</div>` : '';
     const textControls = item.type === 'text' ? `<div class="field"><label>Contenido</label><textarea id="p-text" rows="4">${escapeHTML(item.text||'')}</textarea></div><div class="field"><label>Tamaño de letra</label><input id="p-text-font" type="range" min="10" max="72" value="${item.fontSize||28}"></div><div class="field"><label>Alineación</label><select id="p-text-align"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option></select></div><div class="field"><label>Color</label><input id="p-text-color" type="color" value="${item.color||'#292725'}"></div>` : '';
     const variantControl = item.variants?.length ? `<div class="field"><label>Variación del mismo personaje</label><select id="p-variant">${item.variants.map((variant, i) => `<option value="${i}" ${i === item.variantIndex ? 'selected' : ''}>${escapeHTML(variant.name)}</option>`).join('')}</select></div>` : '';
     const bubbleControls = item.type === 'bubble' ? `<div class="field"><label>Tipo</label><select id="p-kind"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto de sonido</option></select></div>${['dialogue','thought'].includes(item.kind) ? `<div class="field"><label>Forma</label><select id="p-shape"><option value="auto">Adaptar al texto</option><option value="oval">Óvalo</option><option value="rounded">Rectángulo redondeado</option></select></div>` : ''}${item.kind === 'sfx' ? `<div class="field"><label>Estilo de efecto</label><select id="p-action-style"><option value="raised">Naranja con sombra</option><option value="outline">Contorno blanco</option><option value="impact">Sombra dramática</option></select></div>` : ''}<div class="field"><label>Tamaño de letra</label><input id="p-font" type="range" min="10" max="56" value="${item.fontSize || 17}"></div><div class="field"><label>Alineación</label><select id="p-align"><option value="center">Centrada</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div>${['dialogue','thought','shout'].includes(item.kind) ? `<label class="check-field"><input id="p-tail" type="checkbox" ${item.tail ? 'checked' : ''}> ${item.kind === 'thought' ? 'Burbujas de pensamiento' : 'Cola del globo'}</label>${item.tail ? `<div class="field"><label>Dirección de la cola</label><input id="p-tail-angle" type="range" min="-180" max="180" value="${item.tailAngle ?? 90}"></div><div class="field"><label>Largo de la cola</label><input id="p-tail-length" type="range" min="16" max="90" value="${item.tailLength ?? 34}"></div>` : ''}` : ''}<label class="check-field"><input id="p-autogrow" type="checkbox" ${item.autoGrow === false ? '' : 'checked'}> Ajustar alto al texto</label>` : '';
@@ -705,6 +725,12 @@
     blurInput?.addEventListener('keydown', () => { if (!blurSnapshotTaken) { snapshot(); blurSnapshotTaken = true; } });
     blurInput?.addEventListener('input', event => { item.blur = Number(event.target.value); $('#blur-value').textContent = `${item.blur}px`; const image = activeCanvas()?.querySelector(`[data-id="${item.id}"] img`); if (image) image.style.filter = item.blur ? `blur(${item.blur}px)` : ''; autosave(); });
     blurInput?.addEventListener('change', () => { blurSnapshotTaken = false; renderLayers(); });
+    $('#remove-background')?.addEventListener('click', async event => {
+      const button=event.currentTarget;button.disabled=true;button.textContent='Recortando…';
+      try { const removed=await removeFlatBackground(item.src,Number($('#p-bg-tolerance').value)); if(!removed.removed)throw new Error('No encontré una zona de fondo uniforme conectada al borde. Prueba otra imagen o un valor de tolerancia distinto.'); snapshot();item.originalSrc ||= item.src;item.src=removed.src;item.name ||= 'Dibujo con fondo recortado';commit();toast(`Fondo plano recortado localmente (${Math.round(removed.removed/removed.total*100)}% de píxeles).`); }
+      catch(error){button.disabled=false;button.textContent='Recortar fondo';toast(error instanceof Error?error.message:'No se pudo recortar el fondo.');}
+    });
+    $('#restore-background')?.addEventListener('click',()=>{snapshot();item.src=item.originalSrc;delete item.originalSrc;commit();toast('Imagen original restaurada.');});
     for (const [axis, property] of [['x','flipX'],['y','flipY']]) $(`#flip-${axis}`)?.addEventListener('click', () => { snapshot(); item[property] = !item[property]; commit(); });
     $('#p-variant')?.addEventListener('change', event => { snapshot(); item.variantIndex = Number(event.target.value); item.src = item.variants[item.variantIndex].src; commit(); });
     $('#replace-character')?.addEventListener('click', () => openCharacterPicker(item.id));
@@ -768,6 +794,14 @@
     state.active = Math.max(0,state.panels.findIndex(panel => panel.id === activeId)); commit();
   }
   function addPanel() { snapshot(); state.panels.push({ id: id(), items: [] }); state.active = state.panels.length - 1; state.selected = null; commit(); }
+  function addClosingPanel() {
+    const height = state.pageHeight; const panel = { id:id(), backgroundColor:'#FFF5D6', items:[] };
+    const addText = (name,text,y,h,fontSize,color='#292725',fontWeight=600) => ({id:id(),type:'text',name,text,x:42,y,w:516,h,fontSize,fontWeight,align:'center',color,rotation:0,locked:false});
+    panel.items.push(addText('Cierre · agradecimiento','¡Gracias por leer!',height*.34,64,38));
+    panel.items.push(addText('Cierre · seguir','Síguenos en @mandarinita.art',height*.50,54,27,'#F87209',700));
+    panel.items.push(addText('Cierre · compartir','Comparte esta historia si te hizo sonreír.',height*.65,82,22));
+    snapshot(); state.panels.push(panel); state.active=state.panels.length-1; state.selected=null; commit();
+  }
   function changeFormat(format) {
     if (!FORMAT[format]) return;
     const previous = state.pageHeight; state.format = format; state.pageHeight = FORMAT[format].logicalHeight;
@@ -986,7 +1020,22 @@
     $('#resource-picker-dialog').showModal();
   }
   function adjustZoom(factor) {
-    state.zoom = Math.max(.35, Math.min(2.5, (state.zoom || 1) * factor)); render();
+    if (!state) return;
+    const viewport = $('#stage-wrap'); const rect = viewport.getBoundingClientRect();
+    setZoom((state.zoom || 1) * factor, rect.left + rect.width / 2, rect.top + rect.height / 2);
+  }
+  function setZoom(nextZoom, clientX, clientY) {
+    if (!state) return;
+    const viewport = $('#stage-wrap'); const rect = viewport.getBoundingClientRect();
+    const oldZoom = state.zoom || 1; const next = Math.max(.35, Math.min(2.5, nextZoom));
+    if (Math.abs(next - oldZoom) < .002) return;
+    const localX = Math.max(0, Math.min(rect.width, clientX - rect.left));
+    const localY = Math.max(0, Math.min(rect.height, clientY - rect.top));
+    const contentX = viewport.scrollLeft + localX; const contentY = viewport.scrollTop + localY;
+    state.zoom = next; render();
+    const ratio = next / oldZoom;
+    viewport.scrollLeft = contentX * ratio - localX;
+    viewport.scrollTop = contentY * ratio - localY;
   }
   function setupResourceFilters() {
     $$('.filters button').forEach(button => button.onclick = () => {
@@ -1101,13 +1150,28 @@
     }
   }
   async function renderPanelPng(panel) {
-    const preset = FORMAT[state.format]; const logicalHeight = state.pageHeight;
-    const scale = Math.min(preset.width / LOGICAL_WIDTH, preset.height / logicalHeight);
-    const offsetX = (preset.width - LOGICAL_WIDTH * scale) / 2; const offsetY = (preset.height - logicalHeight * scale) / 2;
+    const preset = FORMAT[state.format]; const logicalHeight = state.pageHeight; const style = state.exportStyle || 'classic';
     const output = document.createElement('canvas'); output.width = preset.width; output.height = preset.height;
-    const ctx = output.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, output.width, output.height);
+    const ctx = output.getContext('2d');
+    const bounds = style === 'classic'
+      ? { x:output.width*.10, y:output.height*.085, w:output.width*.80, h:output.height*.84 }
+      : style === 'cream'
+        ? { x:output.width*.065, y:output.height*.075, w:output.width*.87, h:output.height*.85 }
+        : { x:output.width*.035, y:output.height*.035, w:output.width*.93, h:output.height*.79 };
+    ctx.fillStyle = style === 'classic' ? '#FFC928' : style === 'cream' ? '#FFF5D6' : '#FFFFFF'; ctx.fillRect(0,0,output.width,output.height);
+    if (style === 'classic') {
+      ctx.fillStyle = '#FFD84A';
+      for (let y=output.height*.015;y<output.height;y+=output.height*.055) for (let x=output.width*.015;x<output.width;x+=output.width*.055) { ctx.beginPath();ctx.arc(x,y,Math.max(4,output.width*.014),0,Math.PI*2);ctx.fill(); }
+    }
+    ctx.save(); ctx.shadowColor = style === 'classic' ? '#8D681733' : '#4D38251A'; ctx.shadowBlur = output.width*.015; ctx.shadowOffsetY = output.height*.007;
+    ctx.fillStyle = style === 'classic' ? '#FFFFFF' : '#FFFEFB'; roundedRect(ctx,bounds.x,bounds.y,bounds.w,bounds.h,output.width*.045);ctx.fill();ctx.restore();
+    if (style !== 'footer') { ctx.strokeStyle=style==='classic'?'#FFF8E9':'#E9DCC8';ctx.lineWidth=Math.max(2,output.width*.002);roundedRect(ctx,bounds.x,bounds.y,bounds.w,bounds.h,output.width*.045);ctx.stroke(); }
+    const scale = Math.min(bounds.w / LOGICAL_WIDTH, bounds.h / logicalHeight);
+    const offsetX = bounds.x + (bounds.w - LOGICAL_WIDTH * scale) / 2; const offsetY = bounds.y + (bounds.h - logicalHeight * scale) / 2;
+    ctx.save(); roundedRect(ctx,bounds.x,bounds.y,bounds.w,bounds.h,output.width*.045);ctx.clip();
+    ctx.fillStyle = panel.backgroundColor || '#FFFFFF'; ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
     for (const item of panel.items) {
-      ctx.save(); ctx.translate(offsetX + (item.x + item.w / 2) * scale, offsetY + (item.y + item.h / 2) * scale); ctx.rotate((item.rotation || 0) * Math.PI / 180); ctx.scale(item.flipX ? -1 : 1, item.flipY ? -1 : 1); ctx.scale(scale / 2, scale / 2);
+      ctx.save(); ctx.translate(offsetX + (item.x + item.w / 2) * scale, offsetY + (item.y + item.h / 2) * scale); ctx.rotate((item.rotation || 0) * Math.PI / 180); ctx.scale(item.flipX ? -1 : 1, item.flipY ? -1 : 1); ctx.scale(scale, scale);
       if (item.type === 'image') {
         try { const image = await loadImage(item.src); ctx.save(); ctx.filter = item.blur ? `blur(${item.blur * (scale / 2)}px)` : 'none'; drawContained(ctx, image, item.w, item.h); ctx.restore(); } catch { /* Missing image stays represented by its source path in the editable project. */ }
       } else if (item.type === 'drawing') {
@@ -1138,8 +1202,24 @@
       }
       ctx.restore();
     }
+    ctx.restore();
+    if (style === 'footer') {
+      ctx.fillStyle='#FFF5D6';ctx.fillRect(0,output.height*.86,output.width,output.height*.14);
+      ctx.fillStyle='#F87209';ctx.fillRect(output.width*.035,output.height*.86,output.width*.93,Math.max(4,output.height*.006));
+    }
+    const logo = await loadImage('/assets/mandarinita-logo.svg').catch(()=>null);
+    const logoW=output.width*.25, logoH=output.height*.075, logoX=(output.width-logoW)/2, logoY=style==='footer'?output.height*.875:0;
+    if (logo) {
+      ctx.fillStyle='#F5FFE0';roundedRect(ctx,logoX-output.width*.025,logoY,logoW+output.width*.05,logoH+output.height*.015,output.width*.045);ctx.fill();
+      ctx.drawImage(logo,logoX,logoY+output.height*.008,logoW,logoH);
+    }
+    const copyright=`© ${new Date().getFullYear()}. Mandarinita es una marca comercial mixta, registrada por Mauricio Quezada.`;
+    ctx.save();ctx.translate(output.width*.035,output.height*.51);ctx.rotate(-Math.PI/2);ctx.fillStyle='#50493D';ctx.font=`${Math.max(10,output.width*.012)}px "Work Sans",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(copyright,0,0,output.height*.9);ctx.restore();
+    ctx.save();ctx.translate(output.width*.965,output.height*.51);ctx.rotate(Math.PI/2);ctx.fillStyle='#E86408';ctx.font=`700 ${Math.max(12,output.width*.016)}px "Work Sans",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('www.mandarinita.art',0,0,output.height*.72);ctx.restore();
+    ctx.fillStyle='#E86408';ctx.font=`700 ${Math.max(12,output.width*.019)}px "Work Sans",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('@mandarinita.art',output.width/2,output.height*.965,output.width*.35);
     return new Promise(resolve => output.toBlob(resolve, 'image/png'));
   }
+  function roundedRect(ctx,x,y,w,h,r) { ctx.beginPath();if (ctx.roundRect) ctx.roundRect(x,y,w,h,r); else { ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath(); } }
   function drawContained(ctx, image, width, height) {
     const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight); const w = image.naturalWidth * scale; const h = image.naturalHeight * scale;
     ctx.drawImage(image, -w / 2, -h / 2, w, h);
@@ -1172,12 +1252,12 @@
     toast('Archivo editable .mandarinita descargado.');
   }
   async function exportReview() {
-    state.format = $('#export-preset').value; state.status = 'review'; const savedLocally = autosave();
+    state.format = $('#export-preset').value; state.exportStyle = $('#export-style').value || 'classic'; state.status = 'review'; const savedLocally = autosave();
     const title = state.title || 'Episodio nuevo'; const slug = slugify(title) || 'episodio-nuevo';
     const isEpisode=(state.contentType||'episode')==='episode';
     const metadata = isEpisode
-      ? { schemaVersion: 1, editorialPolicy: 'manual-approval', episodes: [{ id: slug, title: { es: title }, episodeNumber: null, status: 'review', type: 'comic', complete: false, source: { kind: 'editor-draft', instagramMediaId: null, instagramPermalink: null }, panels: state.panels.map((panel, index) => ({ order: index + 1, alt: { es: `Viñeta ${index + 1} pendiente de revisión` }, src: `assets/episodes/drafts/${slug}/vineta-${String(index + 1).padStart(2, '0')}.png` })) }] }
-      : { schemaVersion:1, editorialPolicy:'manual-approval', status:'review', published:false, contentType:state.contentType, title, projectSource:'proyecto.json', panels:state.panels.map((panel,index)=>({order:index+1,asset:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`,text:panel.items.filter(item=>item.type==='text'||item.type==='bubble').map(item=>({type:item.type,text:item.text||'',x:item.x,y:item.y,w:item.w,h:item.h,fontSize:item.fontSize||null,align:item.align||'center'}))})) };
+      ? { schemaVersion: 1, editorialPolicy: 'manual-approval', exportTemplate:state.exportStyle, episodes: [{ id: slug, title: { es: title }, episodeNumber: null, status: 'review', type: 'comic', complete: false, source: { kind: 'editor-draft', instagramMediaId: null, instagramPermalink: null }, panels: state.panels.map((panel, index) => ({ order: index + 1, alt: { es: `Viñeta ${index + 1} pendiente de revisión` }, src: `assets/episodes/drafts/${slug}/vineta-${String(index + 1).padStart(2, '0')}.png` })) }] }
+      : { schemaVersion:1, editorialPolicy:'manual-approval', exportTemplate:state.exportStyle, status:'review', published:false, contentType:state.contentType, title, projectSource:'proyecto.json', panels:state.panels.map((panel,index)=>({order:index+1,asset:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`,text:panel.items.filter(item=>item.type==='text'||item.type==='bubble').map(item=>({type:item.type,text:item.text||'',x:item.x,y:item.y,w:item.w,h:item.h,fontSize:item.fontSize||null,align:item.align||'center'}))})) };
     const files = [{ name: 'metadata-review.json', data: new TextEncoder().encode(JSON.stringify(metadata, null, 2)) }];
     for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index]); const path=isEpisode?`assets/episodes/drafts/${slug}/vineta-${String(index+1).padStart(2,'0')}.png`:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`; files.push({ name:path, data: new Uint8Array(await image.arrayBuffer()) }); }
     download(zipStore(files), `${slug}-revision.zip`); toast(savedLocally ? 'Paquete de revisión listo. No se publica automáticamente.' : 'Paquete listo; conserva el ZIP porque el borrador no cupo en este dispositivo.');
@@ -1185,6 +1265,22 @@
   function slugify(value) { return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function download(blob, filename) { const url = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 2000); }
   function loadImage(src) { return new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = reject; image.src = src; }); }
+  async function removeFlatBackground(src,tolerance) {
+    const image=await loadImage(src);const ratio=Math.min(1,2200/Math.max(image.naturalWidth,image.naturalHeight));const width=Math.max(1,Math.round(image.naturalWidth*ratio)),height=Math.max(1,Math.round(image.naturalHeight*ratio));
+    const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0,width,height);const output=ctx.getImageData(0,0,width,height),pixels=output.data;
+    const points=[[0,0],[width-1,0],[0,height-1],[width-1,height-1],[Math.floor(width/2),0],[Math.floor(width/2),height-1],[0,Math.floor(height/2)],[width-1,Math.floor(height/2)]];
+    const samples=points.map(([x,y])=>{const i=(y*width+x)*4;return [pixels[i],pixels[i+1],pixels[i+2]];});
+    const distance=(i,color)=>Math.hypot(pixels[i]-color[0],pixels[i+1]-color[1],pixels[i+2]-color[2]);
+    const clusters=samples.map(color=>samples.filter(other=>Math.hypot(color[0]-other[0],color[1]-other[1],color[2]-other[2])<=tolerance*1.4).length);const base=samples[clusters.indexOf(Math.max(...clusters))];
+    const softLimit=tolerance+18,total=width*height,seen=new Uint8Array(total),queue=new Int32Array(total);let head=0,tail=0;
+    const seed=index=>{if(index<0||index>=total||seen[index])return;const i=index*4;if(pixels[i+3]&&distance(i,base)<=softLimit){seen[index]=1;queue[tail++]=index;}};
+    for(let x=0;x<width;x++){seed(x);seed((height-1)*width+x);}for(let y=1;y<height-1;y++){seed(y*width);seed(y*width+width-1);}
+    let removed=0;
+    while(head<tail){const index=queue[head++],i=index*4,d=distance(i,base);if(d<=tolerance){output.data[i+3]=0;removed++;}else output.data[i+3]=Math.round(output.data[i+3]*(d-tolerance)/18);
+      const x=index%width;if(x)seed(index-1);if(x<width-1)seed(index+1);if(index>=width)seed(index-width);if(index<total-width)seed(index+width);
+    }
+    if(removed<Math.max(16,total*.002))return{removed:0,total};ctx.putImageData(output,0,0);return{src:canvas.toDataURL('image/png'),removed,total};
+  }
   async function importProjectFile(file) {
     if (!file) return;
     try {
@@ -1254,24 +1350,45 @@
     $('#export-project').onclick = exportReview;
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;
+    $('#add-cta-panel').onclick = addClosingPanel;
     $('#add-text').innerHTML = `${svgIcon('text')}<span>Texto</span>`; $('#add-text').onclick = () => addTextBlock();
     $('#add-bubble').onclick = () => addBubble($('#bubble-kind').value);
     $('#export-preset').onchange = event => changeFormat(event.target.value);
+    $('#export-style').onchange = () => { state.exportStyle=$('#export-style').value; autosave(); toast('La plantilla de firma se aplicará a cada viñeta exportada.'); };
     $('#toggle-grid').onclick = event => { state.grid = !state.grid; event.currentTarget.setAttribute('aria-pressed', String(state.grid)); render(); };
     $('#zoom-in').onclick = () => adjustZoom(1.1);
     $('#zoom-out').onclick = () => adjustZoom(1 / 1.1);
-    $('#fit').onclick = () => { state.zoom = 1; render(); };
+    $('#fit').onclick = () => setZoom(1, $('#stage-wrap').getBoundingClientRect().left + $('#stage-wrap').clientWidth / 2, $('#stage-wrap').getBoundingClientRect().top + $('#stage-wrap').clientHeight / 2);
     const viewport = $('#stage-wrap');
-    viewport.addEventListener('wheel', event => { if (!state) return; event.preventDefault(); adjustZoom(Math.exp(-event.deltaY * .002)); }, { passive:false });
+    let resizeFrame = 0;
+    window.addEventListener('resize', () => { if (!state) return; cancelAnimationFrame(resizeFrame); resizeFrame=requestAnimationFrame(render); });
+    viewport.addEventListener('wheel', event => {
+      if (!state || !(event.ctrlKey || event.metaKey)) return;
+      event.preventDefault(); setZoom((state.zoom || 1) * Math.exp(-event.deltaY * .002), event.clientX, event.clientY);
+    }, { passive:false });
+    let spacePanning = false; let stagePan = null;
+    window.addEventListener('keydown', event => { if (event.code === 'Space' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '') && !document.activeElement?.isContentEditable) { spacePanning = true; viewport.classList.add('pan-ready'); event.preventDefault(); } });
+    window.addEventListener('keyup', event => { if (event.code === 'Space') { spacePanning = false; viewport.classList.remove('pan-ready'); } });
+    viewport.addEventListener('pointerdown', event => {
+      if (!(event.button === 1 || (event.button === 0 && spacePanning))) return;
+      event.preventDefault(); stagePan = { x:event.clientX, y:event.clientY, left:viewport.scrollLeft, top:viewport.scrollTop, pointerId:event.pointerId };
+      viewport.setPointerCapture(event.pointerId); viewport.classList.add('panning');
+    });
+    viewport.addEventListener('pointermove', event => {
+      if (!stagePan || event.pointerId !== stagePan.pointerId) return;
+      viewport.scrollLeft = stagePan.left - (event.clientX - stagePan.x); viewport.scrollTop = stagePan.top - (event.clientY - stagePan.y);
+    });
+    const finishStagePan = event => { if (!stagePan || event.pointerId !== stagePan.pointerId) return; if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId); stagePan = null; viewport.classList.remove('panning'); };
+    viewport.addEventListener('pointerup', finishStagePan); viewport.addEventListener('pointercancel', finishStagePan);
     viewport.addEventListener('touchstart', event => {
       if (event.touches.length !== 2) return;
-      event.preventDefault(); const [a,b] = event.touches; pinchZoom = { distance:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY), zoom:state.zoom||1 };
+      event.preventDefault(); const [a,b] = event.touches; pinchZoom = { distance:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY), zoom:state.zoom||1, x:(a.clientX+b.clientX)/2, y:(a.clientY+b.clientY)/2 };
     }, { passive:false });
     viewport.addEventListener('touchmove', event => {
       if (!pinchZoom || event.touches.length !== 2) return;
       event.preventDefault(); const [a,b] = event.touches; const distance = Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
       const next = Math.max(.35,Math.min(2.5,pinchZoom.zoom*distance/pinchZoom.distance));
-      if (Math.abs(next-state.zoom) > .008) { state.zoom=next; render(); }
+      if (Math.abs(next-state.zoom) > .008) { pinchZoom.x=(a.clientX+b.clientX)/2; pinchZoom.y=(a.clientY+b.clientY)/2; setZoom(next,pinchZoom.x,pinchZoom.y); }
     }, { passive:false });
     viewport.addEventListener('touchend', event => { if (event.touches.length < 2) pinchZoom=null; });
     $('#toggle-library').onclick = () => $('#app-shell').classList.toggle('library-collapsed');

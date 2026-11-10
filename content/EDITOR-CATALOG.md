@@ -8,6 +8,7 @@ Este catálogo se deriva de los recursos visibles del repositorio y no concede a
 - 396 láminas registradas: 358 asociadas a entradas publicadas y 38 a entradas en revisión.
 - La revisión de contacto cubrió las 396 imágenes. Las entradas conservan en el índice su orden, ruta, texto alternativo, estado y título de origen.
 - Episodios del catálogo: [`editor-episodes.json`](editor-episodes.json).
+- El atlas visual [`editor-art-catalog.json`](../editor-art-catalog.json) reúne 424 láminas con notas de escenas, personajes, poses y objetos para búsqueda. Los términos de lugar incluyen supermercado, cocina, sala, dormitorio, tienda, calle y oficina.
 
 ## Personajes y assets
 
@@ -19,6 +20,12 @@ El catálogo de assets registra los 15 archivos de `assets/characters/`, incluid
 - Los fragmentos de viñeta y las ilustraciones con fondo sirven como referencia visual; no son componentes aislados y no deben recortarse automáticamente.
 - El asset de Morita es una silueta monocroma; se mantiene como tal, sin colorearla ni reconstruirla.
 - Ninguna etiqueta del catálogo genera emociones, relaciones o variantes que no estén dibujadas en una fuente existente.
+
+La pestaña **Fondos** del editor incluye referencias representativas a supermercado, cocina, calle, tienda, dormitorio y oficina, además de escenas con el sofá azul. Son láminas aplanadas con los personajes y otros elementos integrados; se muestran para consulta y búsqueda, no como fondos limpios para colocar. Los recortes de fondo disponibles en el editor son una herramienta local de tolerancia para fondos planos; no sustituye la extracción y revisión de fondos complejos.
+
+## Exportación del editor
+
+Cada viñeta del paquete de revisión incluye la firma de Mandarinita y el aviso de copyright, con una plantilla seleccionable: marco clásico amarillo, marco crema o pie limpio. La viñeta opcional **Añadir cierre** crea textos editables de agradecimiento, seguimiento y compartir. El paquete conserva `status: "review"` y requiere aprobación manual.
 
 ## Observaciones del dibujo a partir de los episodios
 

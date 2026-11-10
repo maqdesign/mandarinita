@@ -71,7 +71,7 @@
             <button id="add-panel">Viñeta</button><button id="add-text">Texto</button><select id="bubble-kind" aria-label="Tipo de texto"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW</option></select><button id="add-bubble">Añadir globo</button>
             <button id="toggle-draw" aria-pressed="false">Dibujar</button>
             <span class="divider"></span><button id="toggle-grid" aria-pressed="true">Guías</button><button id="zoom-out" aria-label="Alejar"></button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Acercar"></button><button id="fit">Ajustar</button>
-            <select id="export-preset" aria-label="Formato del lienzo"><option value="web">Web · 3:2</option><option value="square">Instagram · 1:1</option><option value="portrait">Instagram · 4:5</option></select>
+            <select id="export-preset" aria-label="Formato del lienzo"><option value="web">Web · 3:2</option><option value="square">Instagram · 1:1</option><option value="portrait">Instagram · 4:5</option></select><select id="export-style" aria-label="Plantilla de exportación"><option value="classic">Firma · marco clásico</option><option value="cream">Firma · marco crema</option><option value="footer">Firma · pie limpio</option></select>
             <button class="mobile-drawer" id="mobile-library">Recursos</button><button class="mobile-drawer" id="mobile-properties">Propiedades</button>
           </div>
         </div>
@@ -81,7 +81,7 @@
           <div id="color-palette" class="color-palette" aria-label="Colores rápidos"></div><label class="brush-width" aria-label="Ancho del trazo">Ancho<input id="brush-size" type="range" min="2" max="24" value="5"></label><button id="eraser-tool" class="draw-tool" aria-label="Borrador" title="Borrador" aria-pressed="false"></button><button id="group-drawing" class="draw-tool" aria-label="Agrupar trazos en un objeto" title="Agrupar trazos"></button><button id="end-drawing-object" class="draw-tool" aria-label="Terminar objeto" title="Terminar objeto" hidden></button>
         </div>
         <div class="stage-wrap" id="stage-wrap"><div class="stage" id="stage" aria-label="Mesa de trabajo con todas las viñetas"></div></div>
-        <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Arrastra las viñetas para ordenarlas</strong></div></div><div id="panel-list" class="panel-list"></div></div>
+        <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Arrastra las viñetas para ordenarlas</strong></div><button id="add-cta-panel" type="button" title="Añade una viñeta editable de agradecimiento y redes">Añadir cierre</button></div><div id="panel-list" class="panel-list"></div></div>
       </section>
       <aside class="inspector" id="inspector-panel">
         <div class="side-head"><div><span class="eyebrow">EDICIÓN</span><h2>Propiedades y capas</h2></div></div>
