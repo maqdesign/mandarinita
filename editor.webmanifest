@@ -2,7 +2,7 @@
   "id": "/editor",
   "name": "Taller Mandarinita · Editor de episodios",
   "short_name": "Taller Mandarinita",
-  "description": "Editor visual local para crear episodios de Mandarinita.",
+  "description": "Editor visual de episodios y contenido, con guardado local y sincronización privada opcional.",
   "lang": "es",
   "start_url": "/editor",
   "scope": "/",

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#fffaf3">
+  <title>Acceso a Taller Mandarinita</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body{min-height:100vh;display:grid;place-items:center;padding:24px;background:#f4f1ec;color:#302d2a;font:16px 'Work Sans',sans-serif}
+    main{width:min(100%,520px);padding:36px;border:1px solid #ebe7e1;border-radius:18px;background:#fffaf3;box-shadow:0 18px 50px #302d2a12}
+    h1{font:600 30px Fredoka,sans-serif;margin:8px 0}p{line-height:1.6;color:#77716a}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.actions a{display:inline-block;padding:11px 15px;border:1px solid #ebe7e1;border-radius:9px;background:white;color:#302d2a;text-decoration:none;font-weight:600}.actions a:first-child{background:#f87209;border-color:#f87209;color:white}
+    @media(max-width:540px){main{padding:24px}}
+  </style>
+</head>
+<body>
+  <main>
+    <span class="eyebrow">TALLER MANDARINITA</span>
+    <h1 id="title">No se pudo iniciar sesión</h1>
+    <p id="message">Vuelve a intentarlo o regresa al sitio.</p>
+    <div class="actions"><a href="/api/auth/github">Intentar de nuevo</a><a href="/">Volver al sitio</a></div>
+  </main>
+  <script>
+    const reason = new URLSearchParams(location.search).get('reason');
+    if (reason === 'not-authorized') document.querySelector('#message').textContent = 'La cuenta de GitHub no coincide con el correo privado configurado para este taller. Cambia a la cuenta autorizada e inténtalo de nuevo.';
+    if (reason === 'cancelled') document.querySelector('#message').textContent = 'Cancelaste el acceso de GitHub. Puedes intentarlo otra vez cuando quieras.';
+  </script>
+</body>
+</html>

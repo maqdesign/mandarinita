@@ -11,12 +11,11 @@
   const PALETTE = ['#282522', '#F87209', '#607D3B', '#A8522B', '#FFFFFF', '#F7C843', '#6CA8A4'];
   const people = [
     { name: 'Mando Mandarinita', aliases: ['mando', 'mandarino', 'señor mandarino', 'sr. mandarino'], variants: [
-      { name: 'Cuerpo', src: 'assets/characters/mando-transparent.webp' },
-      { name: 'Retrato neutral', src: 'assets/sr-mandarino-neutral.png' },
-      { name: 'Sonrisa', src: 'assets/mandarinita-smile.png' },
-      { name: 'Sticker · expresión', src: 'assets/stickers/sticker-pack-06.webp' }
+      { name: 'Pose completa · episodio 46.3', src: 'assets/characters/mando-transparent.webp' }
     ] },
-    { name: 'Mandy Mandarinita', aliases: ['mandy', 'mandarinita'], variants: [{ name: 'Cuerpo', src: 'assets/characters/mandy-transparent.webp' }] },
+    { name: 'Mandy Mandarinita', aliases: ['mandy', 'mandarinita'], variants: [
+      { name: 'Pose completa aislada', src: 'assets/characters/mandy-transparent.webp' }
+    ] },
     { name: 'Greg el Zanahorio', aliases: ['greg', 'zanahorio', 'zanahoria'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/greg-transparent.webp' }] },
     { name: 'Limón Agrio', aliases: ['limón', 'limon agrio'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/limon-agrio-transparent.webp' }] },
     { name: 'Aguacatelo', aliases: ['aguacate'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/aguacatelo-transparent.png' }] },
@@ -27,22 +26,30 @@
     { name: 'Sticker frutal · 04', aliases: ['sticker 4'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-04.webp' }] },
     { name: 'Sticker frutal · 07', aliases: ['sticker 7'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-07.webp' }] }
   ].map(x => ({ ...x, category: 'character', approvedCutout: true }));
+  const stickers = [
+    { name: 'Sticker frutal · 06', aliases: ['sticker 6', 'expresión frutal'], variants: [{ name: 'Sticker existente', src: 'assets/stickers/sticker-pack-06.webp' }], category: 'character', approvedCutout: true }
+  ];
   const objects = [
     { name: 'Objeto · sobre', aliases: ['sobre', 'carta'], src: 'assets/art-envelope-2022.webp', category: 'object', approvedCutout: false, note: 'Ilustración completa, no es un recorte independiente.' },
     { name: 'Objeto · clip', aliases: ['clip', 'paperclip'], src: 'assets/art-paperclip-2022.webp', category: 'object', approvedCutout: false, note: 'Ilustración completa, no es un recorte independiente.' }
   ];
   const backgrounds = [
-    { name: 'Sala y mueble azul · episodio 19', aliases: ['sala', 'mueble azul', 'sofa', 'sofá', 'episodio 19'], src: 'assets/episodes/ep-019-noche-de-peliculas/19.1.png', category: 'background', approvedCutout: false },
-    { name: 'Mueble azul · episodio 51', aliases: ['mueble azul', 'sofa', 'sofá', 'episodio 51'], src: 'assets/episodes/ep-051-tienes-hambre/51.1.png', category: 'background', approvedCutout: false },
-    { name: 'Sala · episodio 52', aliases: ['sala', 'sofa', 'sofá', 'episodio 52'], src: 'assets/episodes/ep-052-fruitflix/52.1.png', category: 'background', approvedCutout: false }
+    { name: 'Sillón azul · episodio 9.1', aliases: ['mueble azul', 'sillon', 'sillón', 'sala', 'episodio 9'], src: 'assets/episodes/ep-009-la-cena/09.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, televisor, mesa, sombras y fondo siguen unidos.' },
+    { name: 'Sofá azul · episodio 9.2', aliases: ['mueble azul', 'sofa', 'sofá', 'sala', 'episodio 9'], src: 'assets/episodes/ep-009-la-cena/09.2.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globos, sofá y sombras siguen unidos.' },
+    { name: 'Escena frente al televisor · episodio 19', aliases: ['televisor', 'tv', 'episodio 19'], src: 'assets/episodes/ep-019-noche-de-peliculas/19.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globo, televisor y forma azul en primer plano siguen unidos.' },
+    { name: 'Sofá azul · episodio 51', aliases: ['mueble azul', 'sofa', 'sofá', 'episodio 51'], src: 'assets/episodes/ep-051-tienes-hambre/51.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globos, sofá y sombras siguen unidos.' },
+    { name: 'Olla y fondo azul · episodio 52', aliases: ['olla', 'fondo azul', 'episodio 52'], src: 'assets/episodes/ep-052-fruitflix/52.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; olla, personajes, globos, fondo azul y marca siguen unidos.' }
   ];
-  const resources = [...people, ...objects, ...backgrounds];
+  const resources = [...people, ...stickers, ...objects, ...backgrounds];
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
   let state = null;
   let undoStack = [];
   let redoStack = [];
   let resourceFilter = 'all';
+  let referenceRecords = null;
+  let referenceLoad = null;
+  let referenceLoadFailed = false;
   let selectedColor = PALETTE[0];
   let brushMode = 'pen';
   let drawing = null;
@@ -52,6 +59,10 @@
   let panelDrag = null;
   let installPromptEvent = null;
   let pinchZoom = null;
+  let cloudUser = null;
+  let cloudConfigured = false;
+  let cloudReady = false;
+  const cloudTimers = new Map();
 
   // Small inline subset of the open-source Lucide icon set (ISC) keeps controls crisp offline.
   const ICON = {
@@ -112,11 +123,117 @@
   }
   function saveProject(project = state) {
     project.updatedAt = Date.now();
-    localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
+    const projectKey = PROJECT_KEY(project.projectId);
+    const previousIndex = localStorage.getItem(PROJECTS_KEY);
     const index = listProjects().filter(p => p.id !== project.projectId);
     index.push({ id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: project.updatedAt });
     index.sort((a, b) => b.updatedAt - a.updatedAt);
     localStorage.setItem(PROJECTS_KEY, JSON.stringify(index));
+    try { localStorage.setItem(projectKey, JSON.stringify(project)); }
+    catch (error) {
+      try { if (previousIndex === null) localStorage.removeItem(PROJECTS_KEY); else localStorage.setItem(PROJECTS_KEY, previousIndex); } catch { /* Keep the original storage error visible to the caller. */ }
+      throw error;
+    }
+    scheduleCloudSave(project);
+  }
+  function setCloudStatus(message, connected = Boolean(cloudUser)) {
+    const button = $('#github-sync');
+    if (!button) return;
+    button.textContent = connected ? `GitHub · ${cloudUser.login}` : cloudConfigured ? (message || 'Conectar GitHub') : 'Nube pendiente';
+    button.classList.toggle('connected', connected);
+    button.title = connected ? 'Proyectos sincronizados con el almacenamiento privado' : message || 'Conectar la cuenta privada de GitHub';
+    button.setAttribute('aria-label', button.title);
+    const footnote = $('#home-footnote');
+    if (footnote) footnote.textContent = connected
+      ? 'Tus borradores se guardan en este dispositivo y se sincronizan con tu almacenamiento privado de GitHub.'
+      : 'Tus borradores se guardan en este navegador. El archivo .mandarinita sirve para moverlos a otro dispositivo.';
+  }
+  async function cloudFetch(path, options = {}) {
+    const response = await fetch(path, { ...options, credentials: 'same-origin', headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) } });
+    let body = {};
+    try { body = await response.json(); } catch { /* Surface status when a proxy returned a non-JSON response. */ }
+    if (!response.ok) throw new Error(body.error || `Sincronización: ${response.status}`);
+    return body;
+  }
+  function scheduleCloudSave(project) {
+    if (!cloudUser || !cloudReady || !project?.projectId) return;
+    clearTimeout(cloudTimers.get(project.projectId));
+    const snapshot = JSON.stringify(project);
+    const timer = setTimeout(async () => {
+      try {
+        await cloudFetch(`/api/projects/${encodeURIComponent(project.projectId)}`, { method: 'PUT', body: snapshot });
+        if (state?.projectId === project.projectId) $('#save-state').textContent = 'Sincronizado con GitHub';
+        setCloudStatus('', true);
+      } catch (error) {
+        setCloudStatus('Error al sincronizar · reintentar', false);
+        if (state?.projectId === project.projectId) $('#save-state').textContent = 'Guardado local · nube pendiente';
+      } finally { cloudTimers.delete(project.projectId); }
+    }, 900);
+    cloudTimers.set(project.projectId, timer);
+  }
+  function storeRemoteProject(project) {
+    validateEditableProject(project);
+    const record = { id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: Number(project.updatedAt) || Date.now() };
+    const index = listProjects().filter(entry => entry.id !== project.projectId);
+    index.push(record); index.sort((a, b) => b.updatedAt - a.updatedAt);
+    localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(index));
+  }
+  async function syncCloudProjects() {
+    if (!cloudUser || cloudReady) return;
+    try {
+      const { projects: remoteProjects } = await cloudFetch('/api/projects');
+      const localProjects = listProjects();
+      const remoteById = new Map(remoteProjects.map(project => [project.id, project]));
+      for (const remote of remoteProjects) {
+        const record = localProjects.find(entry => entry.id === remote.id);
+        let local;
+        try { local = JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id)) || 'null'); } catch { local = null; }
+        if (!local || remote.updatedAt > (Number(local.updatedAt) || 0)) {
+          const response = await fetch(`/api/projects/${encodeURIComponent(remote.id)}`, { credentials: 'same-origin', cache: 'no-store' });
+          if (!response.ok) throw new Error('No se pudo descargar un proyecto de la nube.');
+          const project = await response.json();
+          storeRemoteProject(project);
+        }
+      }
+      cloudReady = true;
+      for (const record of listProjects()) {
+        const remote = remoteById.get(record.id);
+        if (!remote || record.updatedAt > remote.updatedAt) {
+          try { scheduleCloudSave(JSON.parse(localStorage.getItem(PROJECT_KEY(record.id)) || 'null')); } catch { /* Ignore an unreadable local draft. */ }
+        }
+      }
+      setCloudStatus('', true);
+      renderProjectList();
+    } catch {
+      setCloudStatus('GitHub conectado · sincronización pendiente', false);
+    }
+  }
+  async function setupCloudSync() {
+    const button = $('#github-sync');
+    button.onclick = async () => {
+      if (cloudUser) {
+        try { await cloudFetch('/api/auth/logout', { method: 'POST' }); } catch { /* The server may already have ended the session. */ }
+        cloudUser = null; cloudReady = false; setCloudStatus(cloudConfigured ? 'Conectar con GitHub' : 'Sincronización sin configurar', false); toast('Sesión de GitHub cerrada.'); return;
+      }
+      if (!cloudConfigured) { toast('La sincronización requiere configurar OAuth de GitHub y almacenamiento R2 en Cloudflare.'); return; }
+      window.location.assign('/api/auth/github');
+    };
+    try {
+      const session = await cloudFetch('/api/auth/session');
+      cloudConfigured = session.configured;
+      cloudUser = session.user;
+      if (cloudUser) await syncCloudProjects();
+      else setCloudStatus(cloudConfigured ? 'Conectar con GitHub' : 'Sincronización sin configurar', false);
+    } catch {
+      cloudConfigured = false;
+      setCloudStatus('Sincronización disponible al configurar Cloudflare', false);
+    }
+    const result = new URLSearchParams(location.search).get('github');
+    if (result === 'connected') toast('GitHub conectado. Los proyectos se están sincronizando.');
+    else if (result === 'not-authorized') toast('La cuenta no tiene el correo autorizado para este taller.');
+    else if (result === 'cancelled') toast('Se canceló el inicio de sesión.');
+    if (result) history.replaceState({}, '', location.pathname + location.hash);
   }
   function autosave() {
     try {
@@ -124,9 +241,17 @@
       state.updatedAt = Date.now();
       saveProject();
       $('#save-state').textContent = `Guardado local · ${new Date(state.updatedAt).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' })}`;
+      return true;
     } catch {
+      if (cloudUser && cloudReady) {
+        scheduleCloudSave(state);
+        $('#save-state').textContent = 'Almacenamiento local lleno · copia en la nube pendiente';
+        toast('No cupo en este dispositivo. Intento conservar el borrador en tu nube privada.');
+        return true;
+      }
       $('#save-state').textContent = 'Espacio local lleno · descarga el .mandarinita';
       toast('No cupo en el almacenamiento local. Descarga el archivo editable para conservarlo.');
+      return false;
     }
   }
   function snapshot() {
@@ -154,6 +279,35 @@
   function isOffstage(item) { return item.x < 0 || item.y < 0 || item.x + item.w > LOGICAL_WIDTH || item.y + item.h > state.pageHeight; }
   function formatBounds(format = state.format) { return { width: LOGICAL_WIDTH, height: FORMAT[format].logicalHeight }; }
   function escapeHTML(value) { return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char])); }
+  const atlasSearchTranslations = new Map([
+    ['mueble azul', ['sofa', 'couch']], ['sillon', ['sofa', 'couch']], ['sofa', ['sofa', 'couch']], ['sala', ['living room', 'sofa']],
+    ['televisor', ['television', 'tv']], ['vehiculo', ['vehicle', 'bus', 'car']], ['autobus', ['bus']], ['carro', ['car', 'vehicle']],
+    ['olla', ['pot']], ['fondo', ['background', 'scene']], ['muebles', ['furniture', 'sofa']],
+    ['de pie', ['standing']], ['sentado', ['seated']], ['sentada', ['seated']], ['sentados', ['seated']], ['sentadas', ['seated']],
+    ['corriendo', ['running']], ['corre', ['running']], ['caminando', ['walking']], ['cayendo', ['falling', 'tilting']], ['acostado', ['lying']], ['acostada', ['lying']],
+    ['hablando', ['speaking', 'talking']], ['gritando', ['shouting']], ['sonrisa', ['smiling', 'smile']], ['sonriendo', ['smiling', 'smile']], ['feliz', ['smiling', 'smile']], ['alegre', ['smiling', 'smile']], ['contento', ['smiling', 'smile']],
+    ['muy feliz', ['smiling', 'smile']], ['muy alegre', ['smiling', 'smile']], ['sorprendido', ['surprised', 'startled', 'wide eyes', 'wide-eyed']], ['sorprendida', ['surprised', 'startled', 'wide eyes', 'wide-eyed']], ['sorpresa', ['surprised', 'startled', 'wide eyes', 'wide-eyed']], ['asustado', ['startled', 'wide eyes']], ['asustada', ['startled', 'wide eyes']],
+    ['enojado', ['furrowed brows', 'brows lowered', 'narrowed brows']], ['enojada', ['furrowed brows', 'brows lowered', 'narrowed brows']], ['enfadado', ['furrowed brows', 'brows lowered', 'narrowed brows']], ['enfadada', ['furrowed brows', 'brows lowered', 'narrowed brows']], ['ceño fruncido', ['furrowed brows', 'brows lowered', 'narrowed brows']],
+    ['ojos cerrados', ['eyes closed']], ['ojos abiertos', ['eyes open', 'wide eyes']], ['boca abierta', ['open mouth', 'mouth open']], ['bigote', ['moustache']], ['hoja', ['leaf']]
+  ]);
+  function normalizeAtlasSearch(value) { return String(value).toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+  function matchesReferenceSearch(reference, query) {
+    const text = normalizeAtlasSearch(`${reference.characterName} ${reference.aliases.join(' ')} ${reference.episodeNumber} ${reference.panelName} ${reference.pose} ${reference.expression} ${reference.searchDescription || ''}`);
+    if (!query) return true;
+    const normalized = normalizeAtlasSearch(query);
+    if (text.includes(normalized)) return true;
+    const groups = [];
+    let remainder = normalized;
+    for (const [phrase, translations] of [...atlasSearchTranslations].sort((a, b) => b[0].length - a[0].length)) {
+      const key = normalizeAtlasSearch(phrase);
+      if (!remainder.includes(key)) continue;
+      groups.push(translations.map(normalizeAtlasSearch));
+      remainder = remainder.replace(key, ' ');
+    }
+    const stopWords = new Set(['de', 'del', 'el', 'la', 'las', 'los', 'en', 'con', 'y', 'a', 'al', 'un', 'una', 'unos', 'unas', 'por']);
+    for (const word of remainder.split(/[^\p{L}\p{N}]+/u).filter(token => token && !stopWords.has(token))) groups.push([word]);
+    return groups.length > 0 && groups.every(group => group.some(term => text.includes(term)));
+  }
   function showHome() {
     $('#editor-view').hidden = true; $('#project-home').hidden = false; renderProjectList();
   }
@@ -235,6 +389,7 @@
   function deleteProject(projectId) {
     localStorage.removeItem(PROJECT_KEY(projectId));
     localStorage.setItem(PROJECTS_KEY, JSON.stringify(listProjects().filter(p => p.id !== projectId)));
+    if (cloudUser) cloudFetch(`/api/projects/${encodeURIComponent(projectId)}`, { method: 'DELETE' }).catch(() => toast('Se borró en este dispositivo; no pude borrar la copia en la nube.'));
     renderProjectList();
   }
   function captureState() { return JSON.parse(JSON.stringify(state)); }
@@ -354,7 +509,7 @@
       boardCanvas.setAttribute('role','application'); boardCanvas.setAttribute('aria-label',`Lienzo de viñeta ${panelIndex + 1}`);
       boardCanvas.style.width = `${LOGICAL_WIDTH}px`; boardCanvas.style.height = `${state.pageHeight}px`; boardCanvas.style.transform = `scale(${scale})`;
       boardCanvas.classList.toggle('grid-off', !state.grid); boardCanvas.classList.toggle('draw-active', $('#toggle-draw').getAttribute('aria-pressed') === 'true');
-      boardCanvas.addEventListener('pointerdown', beginDrawing); boardCanvas.addEventListener('pointermove', continueDrawing); boardCanvas.addEventListener('pointerup', finishDrawing); boardCanvas.addEventListener('pointercancel', () => { drawing = null; });
+      boardCanvas.addEventListener('pointerdown', beginDrawing); boardCanvas.addEventListener('pointermove', continueDrawing); boardCanvas.addEventListener('pointerup', finishDrawing); boardCanvas.addEventListener('pointercancel', cancelDrawing);
       boardCanvas.addEventListener('click', event => { if (event.target === boardCanvas) { setActivePanel(panelIndex); if ($('#toggle-draw').getAttribute('aria-pressed') !== 'true') selectItem(null); } });
       artboard.append(boardCanvas); wrapper.append(artboard); stage.append(wrapper);
       panel.items.forEach((item, index) => renderItem(item, index, panelIndex, boardCanvas));
@@ -392,7 +547,7 @@
     const element = document.createElement('div');
     element.className = `placed${state.selected === item.id ? ' selected' : ''}${item.type === 'bubble' ? ` bubble bubble-${item.kind}${item.tail ? ' has-tail' : ''}` : ''}${item.type === 'drawing' ? ' drawing' : ''}${isOffstage(item) ? ' offstage' : ''}`;
     element.dataset.id = item.id;
-    element.style.cssText = `left:${item.x}px;top:${item.y}px;width:${item.w}px;height:${item.h}px;transform:rotate(${item.rotation || 0}deg);--tail-x:${item.tailX ?? 28}%;z-index:${index + 1};`;
+    element.style.cssText = `left:${item.x}px;top:${item.y}px;width:${item.w}px;height:${item.h}px;transform:rotate(${item.rotation || 0}deg) scale(${item.flipX ? -1 : 1},${item.flipY ? -1 : 1});--tail-x:${item.tailX ?? 28}%;z-index:${index + 1};`;
     if (item.type === 'image') {
       const img = document.createElement('img'); img.src = item.src; img.alt = item.name; element.append(img);
     } else if (item.type === 'drawing') {
@@ -482,7 +637,8 @@
     const bubbleControls = item.type === 'bubble' ? `<div class="field"><label>Tipo</label><select id="p-kind"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto de sonido</option></select></div>${['dialogue','thought'].includes(item.kind) ? `<div class="field"><label>Forma</label><select id="p-shape"><option value="auto">Adaptar al texto</option><option value="oval">Óvalo</option><option value="rounded">Rectángulo redondeado</option></select></div>` : ''}${item.kind === 'sfx' ? `<div class="field"><label>Estilo de efecto</label><select id="p-action-style"><option value="raised">Naranja con sombra</option><option value="outline">Contorno blanco</option><option value="impact">Sombra dramática</option></select></div>` : ''}<div class="field"><label>Tamaño de letra</label><input id="p-font" type="range" min="10" max="56" value="${item.fontSize || 17}"></div><div class="field"><label>Alineación</label><select id="p-align"><option value="center">Centrada</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div>${['dialogue','thought','shout'].includes(item.kind) ? `<label class="check-field"><input id="p-tail" type="checkbox" ${item.tail ? 'checked' : ''}> ${item.kind === 'thought' ? 'Burbujas de pensamiento' : 'Cola del globo'}</label>${item.tail ? `<div class="field"><label>Dirección de la cola</label><input id="p-tail-angle" type="range" min="-180" max="180" value="${item.tailAngle ?? 90}"></div><div class="field"><label>Largo de la cola</label><input id="p-tail-length" type="range" min="16" max="90" value="${item.tailLength ?? 34}"></div>` : ''}` : ''}<label class="check-field"><input id="p-autogrow" type="checkbox" ${item.autoGrow === false ? '' : 'checked'}> Ajustar alto al texto</label>` : '';
     const drawingControls = item.type === 'drawing' ? `<div class="field"><label>Relleno del contorno cerrado</label><label class="check-field"><input id="p-fill" type="checkbox" ${item.fillEnabled ? 'checked' : ''}> Aplicar relleno</label><input id="p-fill-color" type="color" value="${item.fillColor || '#F87209'}"></div><div class="field"><label>Color del trazo</label><input id="p-color" type="color" value="${item.color || '#282522'}"></div><div class="field"><label>Grosor</label><input id="p-stroke-width" type="range" min="1" max="40" value="${item.strokeWidth || 5}"></div>` : '';
     const recoverControl = isOffstage(item) ? '<button id="bring-in" class="button recovery">Recuperar dentro del lienzo</button>' : '';
-    box.innerHTML = `<div class="field"><label>Nombre de capa</label><input id="p-name" value=""></div>${replaceControl}${variantControl}${bubbleControls}${textControls}${drawingControls}<div class="field-row"><div class="field"><label>X</label><input id="p-x" type="number" value="${Math.round(item.x)}"></div><div class="field"><label>Y</label><input id="p-y" type="number" value="${Math.round(item.y)}"></div></div><div class="field-row"><div class="field"><label>Ancho</label><input id="p-w" type="number" value="${Math.round(item.w)}"></div><div class="field"><label>Alto</label><input id="p-h" type="number" value="${Math.round(item.h)}"></div></div><div class="field"><label>Giro</label><input id="p-rot" type="range" min="-180" max="180" value="${item.rotation || 0}"></div><div class="inspector-buttons"><button id="duplicate">Duplicar</button><button id="lock">${item.locked ? 'Desbloquear' : 'Bloquear'}</button><button id="delete" class="danger">Borrar</button></div>${recoverControl}`;
+    const flipControls = ['image','drawing'].includes(item.type) ? `<div class="field"><label>Voltear</label><div class="inspector-buttons flip-buttons"><button id="flip-x" aria-pressed="${!!item.flipX}">Horizontal</button><button id="flip-y" aria-pressed="${!!item.flipY}">Vertical</button></div></div>` : '';
+    box.innerHTML = `<div class="field"><label>Nombre de capa</label><input id="p-name" value=""></div>${replaceControl}${variantControl}${bubbleControls}${textControls}${drawingControls}<div class="field-row"><div class="field"><label>X</label><input id="p-x" type="number" value="${Math.round(item.x)}"></div><div class="field"><label>Y</label><input id="p-y" type="number" value="${Math.round(item.y)}"></div></div><div class="field-row"><div class="field"><label>Ancho</label><input id="p-w" type="number" value="${Math.round(item.w)}"></div><div class="field"><label>Alto</label><input id="p-h" type="number" value="${Math.round(item.h)}"></div></div><div class="field"><label>Giro</label><input id="p-rot" type="range" min="-180" max="180" value="${item.rotation || 0}"></div>${flipControls}<div class="inspector-buttons"><button id="duplicate">Duplicar</button><button id="lock">${item.locked ? 'Desbloquear' : 'Bloquear'}</button><button id="delete" class="danger">Borrar</button></div>${recoverControl}`;
     $('#p-name').value = item.name;
     for (const name of ['kind', 'align']) { const input = $(`#p-${name}`); if (input) input.value = item[name] || (name === 'align' ? 'center' : 'dialogue'); }
     if ($('#p-action-style')) $('#p-action-style').value = item.actionStyle || 'raised';
@@ -490,6 +646,7 @@
     if ($('#p-text-align')) $('#p-text-align').value=item.align||'center';
     const setProp = (selector, property, numeric = true) => $(`#p-${selector}`)?.addEventListener('change', event => { snapshot(); item[property] = numeric ? Number(event.target.value) : event.target.value; commit(); });
     setProp('name', 'name', false); setProp('x', 'x'); setProp('y', 'y'); setProp('w', 'w'); setProp('h', 'h'); setProp('rot', 'rotation');
+    for (const [axis, property] of [['x','flipX'],['y','flipY']]) $(`#flip-${axis}`)?.addEventListener('click', () => { snapshot(); item[property] = !item[property]; commit(); });
     $('#p-variant')?.addEventListener('change', event => { snapshot(); item.variantIndex = Number(event.target.value); item.src = item.variants[item.variantIndex].src; commit(); });
     $('#replace-character')?.addEventListener('click', () => openCharacterPicker(item.id));
     $('#p-text')?.addEventListener('input',event=>{item.text=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.value=item.text;autosave();});
@@ -562,6 +719,34 @@
 
   function renderResources() {
     const grid = $('#asset-grid'); const query = $('#asset-search').value.trim().toLocaleLowerCase('es');
+    if (resourceFilter === 'reference') {
+      $('#background-note').hidden = true;
+      if (!referenceRecords && !referenceLoadFailed) {
+        grid.innerHTML = '<div class="resource-note" role="status">Cargando el atlas de referencias…</div>';
+        if (!referenceLoad) referenceLoad = loadCharacterReferences().then(records => { referenceRecords = records; }).catch(() => { referenceLoadFailed = true; }).finally(() => { referenceLoad = null; if (resourceFilter === 'reference') renderResources(); });
+        return;
+      }
+      if (referenceLoadFailed) {
+        grid.innerHTML = '<div class="resource-note" role="status">No pude cargar el atlas. Comprueba la conexión y vuelve a intentarlo.<button type="button" class="reference-retry">Reintentar</button></div>';
+        grid.querySelector('.reference-retry').onclick = () => { referenceLoadFailed = false; renderResources(); };
+        return;
+      }
+      const characterSelect = $('#reference-character-select');
+      if (characterSelect.options.length === 1) {
+        const characters = [...new Map(referenceRecords.filter(reference => reference.characterId).map(reference => [reference.characterId, reference.characterName])).entries()].sort((a, b) => a[1].localeCompare(b[1], 'es'));
+        characters.forEach(([id, name]) => { const option = document.createElement('option'); option.value = id; option.textContent = name; characterSelect.append(option); });
+      }
+      const selectedCharacter = characterSelect.value;
+      const matchingReferences = referenceRecords.filter(reference => (!selectedCharacter || reference.characterId === selectedCharacter) && (query || reference.characterId) && matchesReferenceSearch(reference, query));
+      const candidates = matchingReferences.slice(0, 100);
+      const characterCount = new Set(referenceRecords.filter(reference => reference.characterId).map(reference => reference.characterId)).size;
+      const sceneCount = referenceRecords.filter(reference => reference.referenceType === 'scene').length;
+      $('#reference-note').textContent = query
+        ? `Atlas: ${characterCount} personajes y ${sceneCount} escenas indexadas. ${matchingReferences.length > candidates.length ? `Mostrando ${candidates.length} de ` : ''}${matchingReferences.length} resultados para “${query}”. Las etiquetas sirven para localizar; confirma la fuente. Las escenas no se insertan como componentes.`
+        : `Atlas de consulta: ${characterCount} personajes y ${sceneCount} escenas. Busca un personaje, objeto, mueble, vehículo, lugar o episodio. Las etiquetas son ayudas de búsqueda; las escenas completas no se insertan como componentes.`;
+      renderReferenceCards(candidates, grid);
+      return;
+    }
     const candidates = resources.filter(resource => (resourceFilter === 'all' || resource.category === resourceFilter) && `${resource.name} ${(resource.aliases || []).join(' ')}`.toLocaleLowerCase('es').includes(query));
     grid.innerHTML = '';
     const isBackground = resourceFilter === 'background'; $('#background-note').hidden = !isBackground;
@@ -577,6 +762,121 @@
       if (resource.approvedCutout) card.onclick = () => addResource(resource);
       grid.append(card);
     });
+  }
+  async function loadCharacterReferences() {
+    const response = await fetch('/editor-art-catalog.json', { cache: 'no-cache' });
+    if (!response.ok) throw new Error('No se pudo descargar el catálogo.');
+    const catalog = await response.json();
+    const names = {
+      mando: ['Mando Mandarinita', ['Mando', 'mandarino', 'Sr. Mandarino', 'Señor Mandarino']],
+      mandy: ['Mandy Mandarinita', ['Mandy', 'Mandarinita']],
+      greg: ['Greg el Zanahorio', ['Greg', 'zanahorio', 'zanahoria']],
+      'don-guineo': ['Don Guineo', ['guineo', 'banana']],
+      'don-pepino': ['Don Pepino', ['pepino']],
+      'limon-agrio': ['Limón Agrio', ['limón', 'limon agrio']],
+      aguacatelo: ['Aguacatelo', ['aguacate']],
+      morita: ['Morita', ['mora']],
+      sandy: ['Sandy la Sandía', ['Sandy', 'sandía']],
+      'champi-ñon': ['Champi Ñón', ['Champi', 'champiñón']],
+      gato: ['Gato', ['gato']]
+    };
+    const records = new Map();
+    const add = record => {
+      const key = `${record.characterId}:${record.sourcePanel}`;
+      const existing = records.get(key);
+      if (!existing || record.source === 'pilot-atlas') records.set(key, record);
+    };
+    for (const panel of catalog.panels || []) {
+      if ((panel.visualTags || []).length || panel.visualNote) {
+        const panelName = panel.source.split('/').at(-1) || '';
+        const episodeFolder = panel.source.split('/').find(part => part.startsWith('ep-')) || '';
+        const episodeTitle = episodeFolder.replace(/^ep-\d+-/, '').replaceAll('-', ' ');
+        records.set(`scene:${panel.source}`, {
+          referenceType: 'scene', characterId: null, characterName: 'Escena y elementos', aliases: panel.visualTags || [],
+          episodeNumber: panel.episodeNumber, panelName, sourcePanel: `/${panel.source}`,
+          pose: (panel.visualTags || []).join(' · ') || 'Escena catalogada',
+          expression: panel.visualNote || `Referencia del episodio ${panel.episodeNumber}`,
+          searchDescription: `${episodeTitle} ${(panel.visualTags || []).join(' ')} ${panel.visualNote || ''}`,
+          certainty: panel.visualTagsStatus || 'catalog-reference', sourceReview: panel.sourceReview || 'index-only', catalogStatus: panel.catalogStatus || 'review', reviewReason: panel.reviewReason || '', source: 'scene-catalog'
+        });
+      }
+      if (!['full-resolution', 'large-preview'].includes(panel.sourceReview)) continue;
+      for (const appearance of panel.characterAppearances || []) {
+        if (appearance.certainty !== 'high') continue;
+        const [characterName, aliases] = names[appearance.characterId] || [appearance.characterId, []];
+        add({
+          characterId: appearance.characterId, characterName, aliases,
+          episodeNumber: panel.episodeNumber,
+          panelName: panel.source.split('/').at(-1) || '',
+          sourcePanel: `/${panel.source}`,
+          pose: appearance.pose || 'Pose observada; descripción pendiente',
+          expression: appearance.expression || 'Expresión pendiente de documentar',
+          certainty: appearance.certainty, sourceReview: panel.sourceReview, source: 'panel-review'
+        });
+      }
+    }
+    for (const pilot of catalog.characterAtlasPilots || []) {
+      for (const reference of pilot.referencePanels || []) {
+        const pathParts = reference.sourcePanel.split('/'); const episodeFolder = pathParts.find(part => part.startsWith('ep-')) || ''; const episodeMatch = episodeFolder.match(/^ep-(\d+)-/); const panelName = pathParts.at(-1) || '';
+        add({
+          characterId: pilot.characterId,
+          characterName: pilot.displayName || pilot.characterId,
+          aliases: pilot.searchAliases || [],
+          episodeNumber: episodeMatch ? Number(episodeMatch[1]) : 0,
+          panelName,
+          sourcePanel: reference.sourcePanel.startsWith('/') ? reference.sourcePanel : `/${reference.sourcePanel}`,
+          pose: typeof reference.pose === 'string' ? reference.pose : reference.pose.join('; '),
+          expression: typeof reference.expression === 'string' ? reference.expression : reference.expression.join('; '),
+          certainty: reference.certainty, sourceReview: reference.sourceReview || 'catalog-review', source: 'pilot-atlas'
+        });
+      }
+    }
+    const pageCharacterIds = { 'Champi Ñón': 'champi-ñon', 'Los Cherrys': 'los-cherrys', 'Don Guineo': 'don-guineo', 'Don Manzanillo': 'don-manzanillo', 'Don Pepino': 'don-pepino', 'Sandy la Sandía': 'sandy', Superfreso: 'superfreso' };
+    for (const asset of catalog.directCharacterAssets || []) {
+      const listedOpaque = Boolean(asset.canonicalName && asset.characterPageStatus === 'listed' && asset.assetUse === 'opaque-scene-reference' && !asset.editorCutoutApproved);
+      const supplementalPortrait = asset.assetUse === 'existing-transparent-variant' && asset.catalogStatus === 'review';
+      if (!listedOpaque && !supplementalPortrait) continue;
+      const panelName = asset.source.split('/').at(-1) || asset.source;
+      const supplementalIdentity = asset.relatedToCanonicalCharacter || (asset.source.endsWith('/sr-mandarino-neutral.png') ? 'Mando Mandarinita' : null);
+      const displayName = asset.canonicalName || (supplementalIdentity ? `${supplementalIdentity} · referencia suplementaria` : 'Retrato transparente · identidad pendiente');
+      const supplementalCharacterId = supplementalIdentity === 'Mandy Mandarinita' ? 'mandy' : supplementalIdentity === 'Mando Mandarinita' ? 'mando' : null;
+      add({
+        characterId: supplementalCharacterId || (asset.canonicalName ? pageCharacterIds[asset.canonicalName] || `page:${asset.source}` : `asset:${asset.source}`), characterName: displayName,
+        aliases: asset.searchAliases || [], episodeNumber: null, panelName,
+        sourcePanel: `/${asset.source}`, pose: supplementalPortrait ? 'Retrato existente; fuente de episodio pendiente de enlazar' : 'Posición pendiente de cotejar con episodios',
+        expression: asset.visualNote || asset.pageAltText || 'Expresión pendiente de documentar', searchDescription: `${asset.visualNote || ''} ${asset.relatedToCanonicalCharacter || ''}`,
+        certainty: supplementalPortrait ? 'supplemental-source-unlinked' : 'listed-character-asset', sourceReview: supplementalPortrait ? 'asset-source-unlinked' : 'character-page-asset', source: supplementalPortrait ? 'supplemental-asset' : 'character-page', catalogStatus: asset.catalogStatus || 'review'
+      });
+    }
+    const panelOrder = name => Number(name.match(/\.(\d+)(?:\.[^.]+)?$/)?.[1] ?? Number.MAX_SAFE_INTEGER);
+    return [...records.values()].sort((a, b) => (a.episodeNumber ?? Number.MAX_SAFE_INTEGER) - (b.episodeNumber ?? Number.MAX_SAFE_INTEGER) || panelOrder(a.panelName) - panelOrder(b.panelName) || a.characterName.localeCompare(b.characterName, 'es') || a.panelName.localeCompare(b.panelName, 'es'));
+  }
+  function renderReferenceCards(candidates, grid) {
+    grid.innerHTML = '';
+    if (!candidates.length) { grid.innerHTML = '<div class="resource-note">No encontré referencias con ese término.</div>'; return; }
+    candidates.forEach(reference => {
+      const card = document.createElement('button'); card.type = 'button'; card.className = 'atlas-reference-card';
+      const number = String(reference.episodeNumber).padStart(2, '0');
+      card.setAttribute('aria-label', `Ver referencia de ${reference.characterName}, ${reference.episodeNumber ? `episodio ${reference.episodeNumber}, ` : 'página de personajes, '}${reference.panelName}`);
+      const reviewBadge = reference.catalogStatus === 'review' ? ' · En revisión' : reference.source === 'scene-catalog' && reference.sourceReview === 'index-only' ? ' · Etiquetas por cotejar' : '';
+      card.innerHTML = `<img src="${escapeHTML(reference.sourcePanel)}" alt="" loading="lazy"><span>${escapeHTML(reference.characterName)}</span><small>${reference.episodeNumber ? `Ep. ${number}` : 'Personajes'} · ${escapeHTML(reference.panelName)}${reviewBadge}</small><small>${escapeHTML(reference.pose)}</small>`;
+      card.onclick = () => openReferencePreview(reference);
+      grid.append(card);
+    });
+  }
+  function openReferencePreview(reference) {
+    const dialog = $('#reference-preview-dialog');
+    $('#reference-preview-title').textContent = reference.characterName;
+    $('#reference-preview-subtitle').textContent = reference.sourceReview === 'unlinked-file-review' ? `Episodio ${reference.episodeNumber} · archivo sin vínculo editorial · en revisión` : reference.episodeNumber ? `Episodio ${reference.episodeNumber} · ${reference.panelName}${reference.catalogStatus === 'review' ? ' · Episodio en revisión' : ''}` : reference.source === 'supplemental-asset' ? `Arte suplementario · ${reference.panelName}` : `Página de personajes · ${reference.panelName}`;
+    $('#reference-preview-pose-label').textContent = reference.referenceType === 'scene' ? 'Etiquetas de búsqueda' : reference.source === 'character-page' ? 'Pose catalogada' : reference.source === 'supplemental-asset' ? 'Estado de la fuente' : 'Pose observada';
+    $('#reference-preview-expression-label').textContent = reference.referenceType === 'scene' ? 'Nota visual del catálogo' : reference.source === 'character-page' ? 'Descripción del sitio' : reference.source === 'supplemental-asset' ? 'Nota del recurso' : 'Expresión observable';
+    $('#reference-preview-pose').textContent = reference.pose;
+    $('#reference-preview-expression').textContent = reference.expression;
+    $('#reference-preview-image').src = reference.sourcePanel;
+    $('#reference-preview-image').alt = reference.episodeNumber ? `Panel completo de ${reference.characterName}, episodio ${reference.episodeNumber}, ${reference.panelName}` : `Imagen de referencia de ${reference.characterName}, ${reference.panelName}`;
+    $('#reference-preview-source').href = reference.sourcePanel;
+    $('#reference-preview-note').textContent = reference.source === 'character-page' ? 'Imagen original de la página de personajes. Se conserva íntegra como referencia y no se inserta como componente.' : reference.source === 'supplemental-asset' ? 'Este arte transparente ya existe en el repositorio, pero aún no tiene una fuente de episodio enlazada. Se conserva como referencia, no como componente insertable.' : reference.reviewReason || 'La viñeta se conserva completa como referencia. No se puede insertar como componente.';
+    dialog.showModal();
   }
   function openCharacterPicker(itemId) {
     const grid = $('#replace-resource-grid'); grid.innerHTML = '';
@@ -599,9 +899,19 @@
   function setupResourceFilters() {
     $$('.filters button').forEach(button => button.onclick = () => {
       $$('.filters button').forEach(candidate => candidate.classList.toggle('active', candidate === button));
-      resourceFilter = button.dataset.filter; renderResources();
+      resourceFilter = button.dataset.filter;
+      const viewingReferences = resourceFilter === 'reference';
+      $('#library-title').textContent = viewingReferences ? 'Referencias' : 'Componentes';
+      $('#upload-asset').hidden = viewingReferences;
+      $('#component-note').hidden = viewingReferences;
+      $('#reference-note').hidden = !viewingReferences;
+      $('#reference-character-filter').hidden = !viewingReferences;
+      $('#asset-search').placeholder = viewingReferences ? 'Personaje, episodio, pose o emoción' : 'Personaje, alias u objeto';
+      $('#asset-search').setAttribute('aria-label', viewingReferences ? 'Buscar referencias por personaje, episodio, pose o emoción' : 'Buscar recursos');
+      renderResources();
     });
     $('#asset-search').oninput = renderResources;
+    $('#reference-character-select').onchange = renderResources;
     renderResources();
   }
 
@@ -686,6 +996,18 @@
     else {item={id:id(),type:'drawing',name:drawingObjectId?'Dibujo':'Trazo',x:0,y:0,w:1,h:1,path:'',strokes:[stroke],color:stroke.color,strokeWidth:stroke.strokeWidth,fillEnabled:false,fillColor:'#F87209',locked:false,rotation:0};updateDrawingBounds(item);panel.items.push(item);if(drawingObjectId)drawingObjectId=item.id;}
     state.selected=item.id; commit();
   }
+  function cancelDrawing(event) {
+    const target = event.currentTarget;
+    if (drawing?.canvas === target) {
+      if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId);
+      target.querySelector('.temporary-stroke')?.remove(); drawing = null;
+    }
+    if (erasing?.canvas === target) {
+      const current = erasing;
+      if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId);
+      erasing = null; if (current.changed) commit();
+    }
+  }
   async function renderPanelPng(panel) {
     const preset = FORMAT[state.format]; const logicalHeight = state.pageHeight;
     const scale = Math.min(preset.width / LOGICAL_WIDTH, preset.height / logicalHeight);
@@ -693,7 +1015,7 @@
     const output = document.createElement('canvas'); output.width = preset.width; output.height = preset.height;
     const ctx = output.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, output.width, output.height);
     for (const item of panel.items) {
-      ctx.save(); ctx.translate(offsetX + (item.x + item.w / 2) * scale, offsetY + (item.y + item.h / 2) * scale); ctx.rotate((item.rotation || 0) * Math.PI / 180); ctx.scale(scale / 2, scale / 2);
+      ctx.save(); ctx.translate(offsetX + (item.x + item.w / 2) * scale, offsetY + (item.y + item.h / 2) * scale); ctx.rotate((item.rotation || 0) * Math.PI / 180); ctx.scale(item.flipX ? -1 : 1, item.flipY ? -1 : 1); ctx.scale(scale / 2, scale / 2);
       if (item.type === 'image') {
         try { const image = await loadImage(item.src); drawContained(ctx, image, item.w, item.h); } catch { /* Missing image stays represented by its source path in the editable project. */ }
       } else if (item.type === 'drawing') {
@@ -758,7 +1080,7 @@
     toast('Archivo editable .mandarinita descargado.');
   }
   async function exportReview() {
-    state.format = $('#export-preset').value; state.status = 'review'; autosave();
+    state.format = $('#export-preset').value; state.status = 'review'; const savedLocally = autosave();
     const title = state.title || 'Episodio nuevo'; const slug = slugify(title) || 'episodio-nuevo';
     const isEpisode=(state.contentType||'episode')==='episode';
     const metadata = isEpisode
@@ -766,7 +1088,7 @@
       : { schemaVersion:1, editorialPolicy:'manual-approval', status:'review', published:false, contentType:state.contentType, title, projectSource:'proyecto.json', panels:state.panels.map((panel,index)=>({order:index+1,asset:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`,text:panel.items.filter(item=>item.type==='text'||item.type==='bubble').map(item=>({type:item.type,text:item.text||'',x:item.x,y:item.y,w:item.w,h:item.h,fontSize:item.fontSize||null,align:item.align||'center'}))})) };
     const files = [{ name: 'metadata-review.json', data: new TextEncoder().encode(JSON.stringify(metadata, null, 2)) }];
     for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index]); const path=isEpisode?`assets/episodes/drafts/${slug}/vineta-${String(index+1).padStart(2,'0')}.png`:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`; files.push({ name:path, data: new Uint8Array(await image.arrayBuffer()) }); }
-    download(zipStore(files), `${slug}-revision.zip`); toast('Paquete de revisión listo. No se publica automáticamente.');
+    download(zipStore(files), `${slug}-revision.zip`); toast(savedLocally ? 'Paquete de revisión listo. No se publica automáticamente.' : 'Paquete listo; conserva el ZIP porque el borrador no cupo en este dispositivo.');
   }
   function slugify(value) { return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function download(blob, filename) { const url = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 2000); }
@@ -777,19 +1099,46 @@
       let project;
       if (file.name.toLowerCase().endsWith('.json')) project = JSON.parse(await file.text());
       else project = JSON.parse(await readZipProject(await file.arrayBuffer()));
+      validateEditableProject(project);
       state = normalizeProject(project); state.projectId = id(); state.title ||= file.name.replace(/\.(mandarinita|man|zip|json)$/i, ''); undoStack = []; redoStack = [];
       saveProject(); showEditor(); toast('Proyecto editable importado.');
-    } catch (error) { console.error(error); toast('No pude abrir ese archivo. Importa un .mandarinita, ZIP del editor o proyecto JSON.'); }
+    } catch (error) { console.error(error); toast(error instanceof Error ? error.message : 'No pude abrir ese archivo editable.'); }
+  }
+  function validateEditableProject(project) {
+    if (!project || typeof project !== 'object' || Array.isArray(project) || !Array.isArray(project.panels) || !project.panels.length || !project.panels.every(panel => panel && typeof panel === 'object' && Array.isArray(panel.items))) {
+      throw new Error('El archivo no contiene un proyecto editable con viñetas y capas.');
+    }
+    if (project.schemaVersion !== undefined && project.schemaVersion !== 1) throw new Error(`La versión ${project.schemaVersion} del archivo no es compatible con este editor.`);
+    if (project.contentType !== undefined && !['episode', 'copy', 'banner', 'section'].includes(project.contentType)) throw new Error('El archivo tiene un tipo de contenido no compatible.');
+    const itemTypes = new Set(['image', 'text', 'bubble', 'drawing']);
+    const bubbleKinds = new Set(['dialogue', 'thought', 'narration', 'shout', 'sfx']);
+    for (const panel of project.panels) for (const item of panel.items) {
+      if (!item || typeof item !== 'object' || !itemTypes.has(item.type)) throw new Error('El proyecto contiene una capa con un tipo no compatible.');
+      if (item.type === 'bubble' && !bubbleKinds.has(item.kind)) throw new Error('El proyecto contiene un tipo de globo no compatible.');
+      if (item.type === 'image') {
+        const source = String(item.src || '');
+        const embedded = /^data:image\/[a-z0-9.+-]+(?:;[^,]*)?,/i.test(source);
+        const local = /^\/?assets\/[a-zA-Z0-9/_.-]+$/.test(source) && !source.split('/').includes('..');
+        if (!embedded && !local) throw new Error('Una capa apunta a una imagen externa o no válida. Descarga e incrusta el recurso antes de importar.');
+      }
+    }
+    project.schemaVersion ??= 1;
   }
   function readZipProject(buffer) {
     const view = new DataView(buffer); const bytes = new Uint8Array(buffer); let offset = 0;
     while (offset + 30 < view.byteLength && view.getUint32(offset, true) === 0x04034b50) {
-      const method = view.getUint16(offset + 8, true); const compressedSize = view.getUint32(offset + 18, true); const nameLength = view.getUint16(offset + 26, true); const extraLength = view.getUint16(offset + 28, true);
+      const method = view.getUint16(offset + 8, true); const expectedCrc = view.getUint32(offset + 14, true); const compressedSize = view.getUint32(offset + 18, true); const uncompressedSize = view.getUint32(offset + 22, true); const nameLength = view.getUint16(offset + 26, true); const extraLength = view.getUint16(offset + 28, true);
       const nameStart = offset + 30; const name = new TextDecoder().decode(bytes.slice(nameStart, nameStart + nameLength)); const dataStart = nameStart + nameLength + extraLength; const data = bytes.slice(dataStart, dataStart + compressedSize);
-      if (['proyecto.json', 'project.json'].includes(name)) { if (method !== 0) throw new Error('ZIP compression is not supported yet'); return new TextDecoder().decode(data); }
+      if (dataStart + compressedSize > view.byteLength || nameStart + nameLength > view.byteLength) throw new Error('El archivo editable está incompleto o dañado.');
+      if (method !== 0) throw new Error('El ZIP usa una compresión que este editor aún no admite.');
+      if (compressedSize !== uncompressedSize) throw new Error('El tamaño del archivo dentro del ZIP no coincide.');
+      if (['proyecto.json', 'project.json'].includes(name)) {
+        if (crc32(data) !== expectedCrc) throw new Error('La comprobación de integridad del proyecto falló. Vuelve a descargar o exportar el archivo.');
+        return new TextDecoder().decode(data);
+      }
       offset = dataStart + compressedSize;
     }
-    throw new Error('No proyecto.json found in source archive');
+    throw new Error('El ZIP no contiene proyecto.json. Importa un .mandarinita creado por este editor.');
   }
 
   function installEvents() {
@@ -806,7 +1155,7 @@
     $('#import-project').onclick = () => $('#project-file').click();
     $('#project-file').onchange = event => importProjectFile(event.target.files[0]);
     $('#back-home').onclick = showHome;
-    $('#save-project').onclick = () => { autosave(); toast('Guardado en este dispositivo.'); };
+    $('#save-project').onclick = () => { if (autosave()) toast(cloudUser ? 'Guardado local; sincronizando con GitHub.' : 'Guardado en este dispositivo.'); };
     $('#download-source').onclick = exportSource;
     $('#export-project').onclick = exportReview;
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
@@ -913,6 +1262,6 @@
   migrateLegacyProject();
   applyTheme();
   matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (getThemeChoice() === 'system') applyTheme('system'); });
-  installEvents(); setupResourceFilters(); installPalette(); renderProjectList();
+  installEvents(); setupResourceFilters(); installPalette(); renderProjectList(); setupCloudSync();
   if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('/editor-service-worker.js', { scope:'/' }).catch(() => {});
 })();

@@ -1,8 +1,9 @@
-const CACHE_NAME = 'mandarinita-editor-v1';
+const CACHE_NAME = 'mandarinita-editor-v11';
 const APP_SHELL = [
   '/editor.html',
   '/editor.css',
   '/editor.js',
+  '/editor-art-catalog.json',
   '/editor.webmanifest',
   '/assets/mandarinita-logo.svg',
   '/assets/mandarinita-pwa-192.png',
@@ -28,13 +29,14 @@ self.addEventListener('fetch', event => {
   if (request.mode === 'navigate') {
     if (url.pathname === '/editor' || url.pathname === '/editor/') {
       event.respondWith(fetch(request).then(response => {
+        if (!response.ok || response.redirected || new URL(response.url).origin !== self.location.origin) return response;
         const copy = response.clone(); caches.open(CACHE_NAME).then(cache => cache.put('/editor', copy)); return response;
       }).catch(async () => await caches.match('/editor') || await caches.match('/editor.html')));
     }
     return;
   }
 
-  const isEditorFile = /^\/(editor\.(?:css|js|webmanifest)|assets\/)/.test(url.pathname);
+  const isEditorFile = /^\/(editor\.(?:css|js|webmanifest)|editor-art-catalog\.json|assets\/)/.test(url.pathname);
   if (!isEditorFile) return;
   event.respondWith(caches.match(request).then(async cached => {
     if (cached) return cached;
