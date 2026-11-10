@@ -96,7 +96,8 @@
     ,marker: '<path d="m15 4 5 5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20zM3 21h18"/>',
     pencil: '<path d="m15 5 4 4M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20z"/>',
     layersPlus: '<path d="m12 2 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5M19 3v6M16 6h6"/>',
-    text: '<path d="M4 6V4h16v2M12 4v16M8 20h8"/>'
+    text: '<path d="M4 6V4h16v2M12 4v16M8 20h8"/>',
+    close: '<path d="m6 6 12 12M18 6 6 18"/>'
   };
   const svgIcon = (name, cls = 'ui-icon') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICON[name] || ICON.image}</svg>`;
 
@@ -705,7 +706,7 @@
     if (!item) { box.innerHTML = `<div class="empty-state">${svgIcon('image')}<b>Selecciona un elemento</b><p>Su contorno y tirador naranja aparecerán en el lienzo.</p></div>`; return; }
     const characterResource = item.type === 'image' && (item.category === 'character' || resources.some(resource => resource.name === item.resourceId && resource.category === 'character'));
     const replaceControl = characterResource ? '<button id="replace-character" class="button replace-character">Sustituir personaje</button>' : '';
-    const imageControls = item.type === 'image' ? `<div class="field"><label>Desenfoque · <span id="blur-value">${item.blur || 0}px</span></label><input id="p-blur" type="range" min="0" max="12" step="0.5" value="${item.blur || 0}"></div><div class="field bg-remove-tools"><label>Quitar un fondo plano</label><input id="p-bg-tolerance" aria-label="Tolerancia del recorte de fondo" type="range" min="8" max="90" step="2" value="36"><small>Procesa el dibujo en este dispositivo. Da mejor resultado con fondos uniformes; no usa IA ni una API.</small><button id="remove-background" type="button" class="button">Recortar fondo</button>${item.originalSrc ? '<button id="restore-background" type="button" class="button">Restaurar imagen original</button>' : ''}</div>` : '';
+    const imageControls = item.type === 'image' ? `<div class="field"><label for="p-blur">Desenfoque · <span id="blur-value">${item.blur || 0}px</span></label><input id="p-blur" type="range" min="0" max="36" step="0.5" value="${item.blur || 0}"><small>Se conserva en el proyecto y también aparece en la exportación.</small></div><div class="field bg-remove-tools"><label>Quitar un fondo plano</label><input id="p-bg-tolerance" aria-label="Tolerancia del recorte de fondo" type="range" min="8" max="90" step="2" value="36"><small>Procesa el dibujo en este dispositivo. Da mejor resultado con fondos uniformes; no usa IA ni una API.</small><button id="remove-background" type="button" class="button">Recortar fondo</button>${item.originalSrc ? '<button id="restore-background" type="button" class="button">Restaurar imagen original</button>' : ''}</div>` : '';
     const textControls = item.type === 'text' ? `<div class="field"><label>Contenido</label><textarea id="p-text" rows="4">${escapeHTML(item.text||'')}</textarea></div><div class="field"><label>Tamaño de letra</label><input id="p-text-font" type="range" min="10" max="72" value="${item.fontSize||28}"></div><div class="field"><label>Alineación</label><select id="p-text-align"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option></select></div><div class="field"><label>Color</label><input id="p-text-color" type="color" value="${item.color||'#292725'}"></div>` : '';
     const variantControl = item.variants?.length ? `<div class="field"><label>Variación del mismo personaje</label><select id="p-variant">${item.variants.map((variant, i) => `<option value="${i}" ${i === item.variantIndex ? 'selected' : ''}>${escapeHTML(variant.name)}</option>`).join('')}</select></div>` : '';
     const bubbleControls = item.type === 'bubble' ? `<div class="field"><label>Tipo</label><select id="p-kind"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto de sonido</option></select></div>${['dialogue','thought'].includes(item.kind) ? `<div class="field"><label>Forma</label><select id="p-shape"><option value="auto">Adaptar al texto</option><option value="oval">Óvalo</option><option value="rounded">Rectángulo redondeado</option></select></div>` : ''}${item.kind === 'sfx' ? `<div class="field"><label>Estilo de efecto</label><select id="p-action-style"><option value="raised">Naranja con sombra</option><option value="outline">Contorno blanco</option><option value="impact">Sombra dramática</option></select></div>` : ''}<div class="field"><label>Tamaño de letra</label><input id="p-font" type="range" min="10" max="56" value="${item.fontSize || 17}"></div><div class="field"><label>Alineación</label><select id="p-align"><option value="center">Centrada</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div>${['dialogue','thought','shout'].includes(item.kind) ? `<label class="check-field"><input id="p-tail" type="checkbox" ${item.tail ? 'checked' : ''}> ${item.kind === 'thought' ? 'Burbujas de pensamiento' : 'Cola del globo'}</label>${item.tail ? `<div class="field"><label>Dirección de la cola</label><input id="p-tail-angle" type="range" min="-180" max="180" value="${item.tailAngle ?? 90}"></div><div class="field"><label>Largo de la cola</label><input id="p-tail-length" type="range" min="16" max="90" value="${item.tailLength ?? 34}"></div>` : ''}` : ''}<label class="check-field"><input id="p-autogrow" type="checkbox" ${item.autoGrow === false ? '' : 'checked'}> Ajustar alto al texto</label>` : '';
@@ -853,19 +854,20 @@
       card.innerHTML = `<img src="${thumb}" alt="" loading="lazy"><span>${escapeHTML(resource.name)}</span><small>${resource.approvedCutout ? 'Componente aislado' : resource.category === 'background' ? 'Referencia · lámina completa' : resource.note}</small>`;
       card.disabled = !resource.approvedCutout;
       if (resource.approvedCutout) {
-        card.draggable = true;
-        card.ondragstart = event => { event.dataTransfer.effectAllowed = 'copy'; event.dataTransfer.setData('application/x-mandarinita-resource', resource.name); };
+        // Use one pointer drag path on mouse, touch and Apple Pencil. Native HTML
+        // drag/drop is inconsistent for cards inside a scrolling iPad drawer.
+        card.draggable = false;
         card.onclick = () => { if (Date.now() >= suppressAssetClickUntil) addResource(resource); };
         let pointerDrag = null;
         card.addEventListener('pointerdown', event => {
-          if (event.pointerType === 'mouse') return;
           pointerDrag = { id:event.pointerId, x:event.clientX, y:event.clientY, started:false, ghost:null };
-          card.setPointerCapture(event.pointerId);
+          try { card.setPointerCapture(event.pointerId); } catch {}
         });
         card.addEventListener('pointermove', event => {
           if (!pointerDrag || pointerDrag.id !== event.pointerId) return;
           if (!pointerDrag.started && Math.hypot(event.clientX-pointerDrag.x,event.clientY-pointerDrag.y)>14) {
             pointerDrag.started=true; suppressAssetClickUntil=Date.now()+1000;
+            $('#library-panel').classList.add('dragging-from-library');
             const ghost=document.createElement('div'); ghost.className='asset-drag-ghost'; ghost.innerHTML=`<img src="${thumb}" alt=""><span>${escapeHTML(resource.name)}</span>`; document.body.append(ghost); pointerDrag.ghost=ghost;
           }
           if (pointerDrag.started) {
@@ -876,12 +878,16 @@
         });
         const finishPointerDrag = event => {
           if (!pointerDrag || pointerDrag.id!==event.pointerId) return;
-          if (pointerDrag.started) {
+          if (pointerDrag.started && event.type === 'pointerup') {
             event.preventDefault(); const target=document.elementFromPoint(event.clientX,event.clientY)?.closest('.artboard-canvas');
             const panelIndex=Number(target?.dataset.panelIndex); target?.classList.remove('drop-target');
-            if (target && Number.isInteger(panelIndex)) dropResourceAt(resource,panelIndex,target,event.clientX,event.clientY);
+            if (target && Number.isInteger(panelIndex)) {
+              dropResourceAt(resource,panelIndex,target,event.clientX,event.clientY);
+              $('#library-panel').classList.remove('open','dragging-from-library');
+              $('#mobile-library').setAttribute('aria-expanded','false');
+            } else $('#library-panel').classList.remove('dragging-from-library');
             suppressAssetClickUntil=Date.now()+800;
-          }
+          } else $('#library-panel').classList.remove('dragging-from-library');
           pointerDrag.ghost?.remove(); pointerDrag=null;
         };
         card.addEventListener('pointerup',finishPointerDrag); card.addEventListener('pointercancel',finishPointerDrag);
@@ -1334,7 +1340,7 @@
     document.addEventListener('keydown', event => { if (event.key === 'Escape') closeCanvasContextMenu(); });
     const labeledIcon = (selector, iconName, label) => { const button = $(selector); button.innerHTML = `${svgIcon(iconName)}<span>${label}</span>`; };
     $('#undo').innerHTML = svgIcon('undo'); $('#redo').innerHTML = svgIcon('redo');
-    labeledIcon('#upload-asset','plus',''); labeledIcon('#toggle-library','image','Biblioteca');
+    labeledIcon('#upload-asset','plus',''); labeledIcon('#close-library','close',''); labeledIcon('#toggle-library','image','Biblioteca');
     labeledIcon('#toggle-layers','layers','Capas'); labeledIcon('#focus-mode','focus','Lienzo amplio');
     labeledIcon('#add-panel','plus','Viñeta'); labeledIcon('#add-bubble','bubble','Añadir globo');
     labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías');
@@ -1396,7 +1402,13 @@
       if (matchMedia('(max-width:1100px)').matches) { const open=$('#inspector-panel').classList.toggle('open'); event.currentTarget.setAttribute('aria-pressed',String(open)); }
       else { const collapsed=$('#app-shell').classList.toggle('inspector-collapsed'); event.currentTarget.setAttribute('aria-pressed',String(!collapsed)); }
     };
-    $('#mobile-library').onclick = () => $('#library-panel').classList.toggle('open');
+    const setLibraryOpen = open => {
+      $('#library-panel').classList.toggle('open', open);
+      $('#mobile-library').setAttribute('aria-expanded', String(open));
+      if (open) $('#close-library').focus({ preventScroll:true });
+    };
+    $('#mobile-library').onclick = () => setLibraryOpen(!$('#library-panel').classList.contains('open'));
+    $('#close-library').onclick = () => setLibraryOpen(false);
     $('#mobile-properties').onclick = () => $('#inspector-panel').classList.toggle('open');
     $('#focus-mode').onclick = event => { const active = $('#app-shell').classList.toggle('focus-mode'); event.currentTarget.setAttribute('aria-pressed', String(active)); };
     $('#theme-toggle').onclick = () => {
@@ -1439,7 +1451,7 @@
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'z') { event.preventDefault(); $('#undo').click(); }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'y') { event.preventDefault(); $('#redo').click(); }
       if (event.key === 'Delete' && state?.selected && !['TEXTAREA', 'INPUT'].includes(document.activeElement.tagName)) $('#delete')?.click();
-      if (event.key === 'Escape') { $('#library-panel').classList.remove('open'); $('#inspector-panel').classList.remove('open'); }
+      if (event.key === 'Escape') { $('#library-panel').classList.remove('open','dragging-from-library'); $('#mobile-library').setAttribute('aria-expanded','false'); $('#inspector-panel').classList.remove('open'); }
     });
   }
   function setDrawMode(enabled) {
