@@ -32,6 +32,7 @@
 ## No aprobadas como referencia
 - Imágenes generadas para pruebas del hero con anatomía humana, guantes, ropa, lentes o accesorios inventados.
 - Hoja de stickers generada, si contradice dibujos originales.
+- `assets/character-sheet-original.jpg`: Mauricio confirmó el 6 de noviembre de 2026 que fue generada por IA y no contiene sus dibujos. Excluirla del canon, de referencias de estilo y de cualquier extracción o creación de poses.
 - Logotipos recreados por IA.
 
 ## Puerta de aprobación para nueva imagen del hero

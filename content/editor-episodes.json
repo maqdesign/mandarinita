@@ -1,0 +1,5028 @@
+{
+  "source": "episodes.json",
+  "schemaVersion": 1,
+  "episodeCount": 104,
+  "panelCount": 396,
+  "episodes": [
+    {
+      "id": "archive-comic-rage-2019",
+      "title": {
+        "es": "¡Grrrrr!",
+        "en": "Grrrr!"
+      },
+      "episodeNumber": null,
+      "status": "review",
+      "type": "illustration",
+      "complete": false,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": null,
+          "src": "assets/comic-rage-2019.webp",
+          "alt": {
+            "es": "Ilustración original de 2019 con expresiones de enojo y alegría.",
+            "en": "Original 2019 illustration with angry and joyful expressions."
+          }
+        }
+      ]
+    },
+    {
+      "id": "archive-comic-focus-2019",
+      "title": {
+        "es": "¿Quién dice?",
+        "en": "Who says?"
+      },
+      "episodeNumber": null,
+      "status": "review",
+      "type": "illustration",
+      "complete": false,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": null,
+          "src": "assets/comic-focus-2019.webp",
+          "alt": {
+            "es": "Historieta original de 2019 sobre estar enfocado.",
+            "en": "Original 2019 comic about staying focused."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-001-la-mosca",
+      "title": {
+        "es": "La mosca",
+        "en": "The fly"
+      },
+      "episodeNumber": 1,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-001-la-mosca/01.1.png",
+          "alt": {
+            "es": "Lámina A original del episodio La mosca.",
+            "en": "Original page A from The Fly."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/comic-focus-2019.webp",
+          "alt": {
+            "es": "Lámina B original del episodio La mosca.",
+            "en": "Original page B from The Fly."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-001-la-mosca/01.3.png",
+          "alt": {
+            "es": "Lámina C original del episodio La mosca.",
+            "en": "Original page C from The Fly."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/comic-rage-2019.webp",
+          "alt": {
+            "es": "Lámina D original del episodio La mosca.",
+            "en": "Original page D from The Fly."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-002-ansiosa",
+      "title": {
+        "es": "Ansiosa",
+        "en": "Anxious"
+      },
+      "episodeNumber": 2,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-002-ansiosa/02.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio Ansiosa.",
+            "en": "Page 1 from Anxious."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-002-ansiosa/02.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio Ansiosa.",
+            "en": "Page 2 from Anxious."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-002-ansiosa/02.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio Ansiosa.",
+            "en": "Page 3 from Anxious."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-002-ansiosa/02.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio Ansiosa.",
+            "en": "Page 4 from Anxious."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-044-el-teletrabajo",
+      "title": {
+        "es": "El teletrabajo",
+        "en": "Working from home"
+      },
+      "episodeNumber": 44,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 5,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-044-el-teletrabajo/44.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio El teletrabajo.",
+            "en": "Page 1 from Working from home."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-044-el-teletrabajo/44.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio El teletrabajo.",
+            "en": "Page 2 from Working from home."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-044-el-teletrabajo/44.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio El teletrabajo.",
+            "en": "Page 3 from Working from home."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-044-el-teletrabajo/44.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio El teletrabajo.",
+            "en": "Page 4 from Working from home."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-044-el-teletrabajo/44-boceto.png",
+          "alt": {
+            "es": "Lámina 5 original del episodio El teletrabajo.",
+            "en": "Original page 5 from Working from home."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-051-tienes-hambre",
+      "title": {
+        "es": "¿Tienes hambre?",
+        "en": "Are you hungry?"
+      },
+      "episodeNumber": 51,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-051-tienes-hambre/51.1.png",
+          "alt": {
+            "es": "Lámina 1 de ¿Tienes hambre?: las mandarinas están en el sofá y una pregunta si la otra tiene hambre.",
+            "en": "Page 1 of Are you hungry?: the mandarins sit on the sofa and one asks if the other is hungry."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-051-tienes-hambre/51.2.png",
+          "alt": {
+            "es": "Lámina 2 de ¿Tienes hambre?: una mandarina prepara un sándwich y la otra responde que no.",
+            "en": "Page 2 of Are you hungry?: one mandarin makes a sandwich while the other says no."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-051-tienes-hambre/51.3.png",
+          "alt": {
+            "es": "Lámina 3 de ¿Tienes hambre?: la mandarina disfruta el sándwich mientras su pareja la mira.",
+            "en": "Page 3 of Are you hungry?: one mandarin enjoys the sandwich as her partner watches."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-051-tienes-hambre/51.4.png",
+          "alt": {
+            "es": "Lámina 4 de ¿Tienes hambre?: una mandarina reprocha que no le hayan ofrecido compartir el sándwich.",
+            "en": "Page 4 of Are you hungry?: one mandarin complains that she was not offered any of the sandwich."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-052-fruitflix",
+      "title": {
+        "es": "Fruitflix",
+        "en": "Fruitflix"
+      },
+      "episodeNumber": 52,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 5,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-052-fruitflix/52.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio Fruitflix.",
+            "en": "Page 1 from Fruitflix."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-052-fruitflix/52.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio Fruitflix.",
+            "en": "Page 2 from Fruitflix."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-052-fruitflix/52.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio Fruitflix.",
+            "en": "Page 3 from Fruitflix."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-052-fruitflix/52.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio Fruitflix.",
+            "en": "Page 4 from Fruitflix."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-052-fruitflix/52-boceto.png",
+          "alt": {
+            "es": "Lámina 5 original del episodio Fruitflix.",
+            "en": "Original page 5 from Fruitflix."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-085-lo-que-siempre-te-pasa",
+      "title": {
+        "es": "Lo que siempre te pasa, contado sin palabras por Mandarinita",
+        "en": "What always happens to you, told without words by Mandarinita"
+      },
+      "episodeNumber": 85,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-085-lo-que-siempre-te-pasa/85.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita.",
+            "en": "Page 1 from episode 85: What always happens to you, told without words by Mandarinita."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-085-lo-que-siempre-te-pasa/85.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita.",
+            "en": "Page 2 from episode 85: What always happens to you, told without words by Mandarinita."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-085-lo-que-siempre-te-pasa/85.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita.",
+            "en": "Page 3 from episode 85: What always happens to you, told without words by Mandarinita."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-085-lo-que-siempre-te-pasa/85.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 85: Lo que siempre te pasa, contado sin palabras por Mandarinita.",
+            "en": "Page 4 from episode 85: What always happens to you, told without words by Mandarinita."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto",
+      "title": {
+        "es": "¡Ups! Le dimos un botoncito nuevo… y miren esto.",
+        "en": "Oops! We gave it a new little button… take a look."
+      },
+      "episodeNumber": 103,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 9,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 1 from episode 103."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 2 from episode 103."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 3 from episode 103."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 4 from episode 103."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.5.png",
+          "alt": {
+            "es": "Lámina 5 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 5 from episode 103."
+          }
+        },
+        {
+          "order": 6,
+          "originalPosition": 6,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.6.png",
+          "alt": {
+            "es": "Lámina 6 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 6 from episode 103."
+          }
+        },
+        {
+          "order": 7,
+          "originalPosition": 7,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.7.png",
+          "alt": {
+            "es": "Lámina 7 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 7 from episode 103."
+          }
+        },
+        {
+          "order": 8,
+          "originalPosition": 8,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.8.png",
+          "alt": {
+            "es": "Lámina 8 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 8 from episode 103."
+          }
+        },
+        {
+          "order": 9,
+          "originalPosition": 9,
+          "src": "assets/episodes/ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto/103.9.png",
+          "alt": {
+            "es": "Lámina 9 del episodio 103: ¡Ups! Le dimos un botoncito nuevo… y miren esto..",
+            "en": "Page 9 from episode 103."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l",
+      "title": {
+        "es": "La mandarina que informa: ¿por qué los choferes no ponen las luces direccionales para rebasar? Ya sabes…",
+        "en": "The Mandarin Reports: Why do drivers not use their turn signals to pass? You know…"
+      },
+      "episodeNumber": 99,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 99: La mandarina que informa: ¿por qué los choferes no ponen las luces direccionales para rebasar? Ya sabes….",
+            "en": "Page 1 from episode 99."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 99: La mandarina que informa: ¿por qué los choferes no ponen las luces direccionales para rebasar? Ya sabes….",
+            "en": "Page 2 from episode 99."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 99: La mandarina que informa: ¿por qué los choferes no ponen las luces direccionales para rebasar? Ya sabes….",
+            "en": "Page 3 from episode 99."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 99: La mandarina que informa: ¿por qué los choferes no ponen las luces direccionales para rebasar? Ya sabes….",
+            "en": "Page 4 from episode 99."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini",
+      "title": {
+        "es": "¡El tiempo “vuela”! ¡Ya tenemos 4 años compartiendo mandarinitas contigo! ¿No es eso algo sorprendente? Ha sido difícil mantener el ritmo y no siempre podemos publicar pero gracias por mantenerse con nosotros a pesar de todo. Comparte con amigos y familiares si deseas apoyarnos para que podamos seguir activos.",
+        "en": "Time flies! Four years of sharing Mandarinita with you! It has been hard to keep up, and we cannot always post, but thank you for staying with us. Share with friends and family if you would like to help us keep going."
+      },
+      "episodeNumber": 98,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini/98.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 98: ¡El tiempo “vuela”! ¡Ya tenemos 4 años compartiendo mandarinitas contigo! ¿No es eso algo sorprendente? Ha sido difícil mantener el ritmo y no siempre podemos publicar pero gracias por mantenerse con nosotros a pesar de todo. Comparte con amigos y familiares si deseas apoyarnos para que podamos seguir activos..",
+            "en": "Page 1 from episode 98."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini/98.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 98: ¡El tiempo “vuela”! ¡Ya tenemos 4 años compartiendo mandarinitas contigo! ¿No es eso algo sorprendente? Ha sido difícil mantener el ritmo y no siempre podemos publicar pero gracias por mantenerse con nosotros a pesar de todo. Comparte con amigos y familiares si deseas apoyarnos para que podamos seguir activos..",
+            "en": "Page 2 from episode 98."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini/98.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 98: ¡El tiempo “vuela”! ¡Ya tenemos 4 años compartiendo mandarinitas contigo! ¿No es eso algo sorprendente? Ha sido difícil mantener el ritmo y no siempre podemos publicar pero gracias por mantenerse con nosotros a pesar de todo. Comparte con amigos y familiares si deseas apoyarnos para que podamos seguir activos..",
+            "en": "Page 3 from episode 98."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini/98.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 98: ¡El tiempo “vuela”! ¡Ya tenemos 4 años compartiendo mandarinitas contigo! ¿No es eso algo sorprendente? Ha sido difícil mantener el ritmo y no siempre podemos publicar pero gracias por mantenerse con nosotros a pesar de todo. Comparte con amigos y familiares si deseas apoyarnos para que podamos seguir activos..",
+            "en": "Page 4 from episode 98."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-097-reveri-que-se-trae-entre-manos-mando-mandarino-atentos-p",
+      "title": {
+        "es": "“Réveri”… ¿Qué se trae entre manos Mando Mandarino? Atentos porque ¡este jueves nace un nuevo proyecto de los creadores de Mandarinita! @reveri.art",
+        "en": "“Réveri”… What Is Mando Up To? Stay Tuned—A New Project from Mandarinita’s Creators Launches This Thursday! @reveri.art"
+      },
+      "episodeNumber": 97,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-097-reveri-que-se-trae-entre-manos-mando-mandarino-atentos-p/97.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 97: “Réveri”… ¿Qué se trae entre manos Mando Mandarino? Atentos porque ¡este jueves nace un nuevo proyecto de los creadores de Mandarinita! @reveri.art.",
+            "en": "Page 1 from episode 97."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-097-reveri-que-se-trae-entre-manos-mando-mandarino-atentos-p/97.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 97: “Réveri”… ¿Qué se trae entre manos Mando Mandarino? Atentos porque ¡este jueves nace un nuevo proyecto de los creadores de Mandarinita! @reveri.art.",
+            "en": "Page 2 from episode 97."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-097-reveri-que-se-trae-entre-manos-mando-mandarino-atentos-p/97.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 97: “Réveri”… ¿Qué se trae entre manos Mando Mandarino? Atentos porque ¡este jueves nace un nuevo proyecto de los creadores de Mandarinita! @reveri.art.",
+            "en": "Page 3 from episode 97."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-097-reveri-que-se-trae-entre-manos-mando-mandarino-atentos-p/97.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 97: “Réveri”… ¿Qué se trae entre manos Mando Mandarino? Atentos porque ¡este jueves nace un nuevo proyecto de los creadores de Mandarinita! @reveri.art.",
+            "en": "Page 4 from episode 97."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue",
+      "title": {
+        "es": "Cada vez que lavo el auto 🚙 seguro que también te pasa. Cuenta en los comentarios si te ha pasado o menciona a ese amigo que siempre le pasa",
+        "en": "Every time I wash my car 🚙, it happens to you too. Tell us in the comments—or tag that friend it always happens to."
+      },
+      "episodeNumber": 100,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 100: Cada vez que lavo el auto 🚙 seguro que también te pasa. Cuenta en los comentarios si te ha pasado o menciona a ese amigo que siempre le pasa.",
+            "en": "Page 1 from episode 100."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 100: Cada vez que lavo el auto 🚙 seguro que también te pasa. Cuenta en los comentarios si te ha pasado o menciona a ese amigo que siempre le pasa.",
+            "en": "Page 2 from episode 100."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 100: Cada vez que lavo el auto 🚙 seguro que también te pasa. Cuenta en los comentarios si te ha pasado o menciona a ese amigo que siempre le pasa.",
+            "en": "Page 3 from episode 100."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 100: Cada vez que lavo el auto 🚙 seguro que también te pasa. Cuenta en los comentarios si te ha pasado o menciona a ese amigo que siempre le pasa.",
+            "en": "Page 4 from episode 100."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe",
+      "title": {
+        "es": "¿Eres motoconcho o pasajero? Comenta tus maravillosas experiencias… OJO: No tengo nada en contra de los motoconcho. A excepción de los que se ajustan al estereotipo :)",
+        "en": "Motoconcho driver or passenger? Share your stories… NOTE: I have nothing against motoconcho drivers, except the ones who fit the stereotype :)"
+      },
+      "episodeNumber": 101,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 101: ¿Eres motoconcho o pasajero? Comenta tus maravillosas experiencias… OJO: No tengo nada en contra de los motoconcho. A excepción de los que se ajustan al estereotipo :).",
+            "en": "Page 1 from episode 101."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 101: ¿Eres motoconcho o pasajero? Comenta tus maravillosas experiencias… OJO: No tengo nada en contra de los motoconcho. A excepción de los que se ajustan al estereotipo :).",
+            "en": "Page 2 from episode 101."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 101: ¿Eres motoconcho o pasajero? Comenta tus maravillosas experiencias… OJO: No tengo nada en contra de los motoconcho. A excepción de los que se ajustan al estereotipo :).",
+            "en": "Page 3 from episode 101."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 101: ¿Eres motoconcho o pasajero? Comenta tus maravillosas experiencias… OJO: No tengo nada en contra de los motoconcho. A excepción de los que se ajustan al estereotipo :).",
+            "en": "Page 4 from episode 101."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-102-hoy-se-siente-como-uno-de-esos-jueves-que-no-pidieron-in",
+      "title": {
+        "es": "Hoy se siente como uno de esos jueves que no pidieron invitación pero igual llegaron… 😅 ¿Alguien más siente que este jueves está siendo innecesariamente jueves? 🍊",
+        "en": "It feels like one of those Thursdays nobody invited, but it showed up anyway… 😅 Is anyone else having an unnecessarily Thursday kind of Thursday? 🍊"
+      },
+      "episodeNumber": 102,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-102-hoy-se-siente-como-uno-de-esos-jueves-que-no-pidieron-in/102.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 102: Hoy se siente como uno de esos jueves que no pidieron invitación pero igual llegaron… 😅 ¿Alguien más siente que este jueves está siendo innecesariamente jueves? 🍊.",
+            "en": "Page 1 from episode 102."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-096-por-que-me-espias",
+      "title": {
+        "es": "¿Por qué me espías?",
+        "en": "Why Are You Spying on Me?"
+      },
+      "episodeNumber": 96,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-096-por-que-me-espias/96.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 96: ¿Por qué me espías?.",
+            "en": "Page 1 from episode 96."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-096-por-que-me-espias/96.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 96: ¿Por qué me espías?.",
+            "en": "Page 2 from episode 96."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-096-por-que-me-espias/96.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 96: ¿Por qué me espías?.",
+            "en": "Page 3 from episode 96."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-096-por-que-me-espias/96.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 96: ¿Por qué me espías?.",
+            "en": "Page 4 from episode 96."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-095-ensayando-para-quedarse-en-casa",
+      "title": {
+        "es": "Ensayando para quedarse en casa",
+        "en": "Practicing Staying Home"
+      },
+      "episodeNumber": 95,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-095-ensayando-para-quedarse-en-casa/95.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 95: Ensayando para quedarse en casa.",
+            "en": "Page 1 from episode 95."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-095-ensayando-para-quedarse-en-casa/95.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 95: Ensayando para quedarse en casa.",
+            "en": "Page 2 from episode 95."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-095-ensayando-para-quedarse-en-casa/95.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 95: Ensayando para quedarse en casa.",
+            "en": "Page 3 from episode 95."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-095-ensayando-para-quedarse-en-casa/95.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 95: Ensayando para quedarse en casa.",
+            "en": "Page 4 from episode 95."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-094-el-dia-mas-largo-del-ano",
+      "title": {
+        "es": "El día más largo del año",
+        "en": "The Longest Day of the Year"
+      },
+      "episodeNumber": 94,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-094-el-dia-mas-largo-del-ano/94.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 94: El día más largo del año.",
+            "en": "Page 1 from episode 94."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-094-el-dia-mas-largo-del-ano/94.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 94: El día más largo del año.",
+            "en": "Page 2 from episode 94."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-094-el-dia-mas-largo-del-ano/94.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 94: El día más largo del año.",
+            "en": "Page 3 from episode 94."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-094-el-dia-mas-largo-del-ano/94.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 94: El día más largo del año.",
+            "en": "Page 4 from episode 94."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-093-el-vaso-de-la-licuadora",
+      "title": {
+        "es": "El vaso de la licuadora",
+        "en": "The Blender Jar"
+      },
+      "episodeNumber": 93,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 93: El vaso de la licuadora.",
+            "en": "Page 1 from episode 93."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 93: El vaso de la licuadora.",
+            "en": "Page 2 from episode 93."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 93: El vaso de la licuadora.",
+            "en": "Page 3 from episode 93."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 93: El vaso de la licuadora.",
+            "en": "Page 4 from episode 93."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-092-cada-vez-menos",
+      "title": {
+        "es": "Cada vez menos",
+        "en": "Less and Less"
+      },
+      "episodeNumber": 92,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-092-cada-vez-menos/92.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 92: Cada vez menos.",
+            "en": "Page 1 from episode 92."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-092-cada-vez-menos/92.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 92: Cada vez menos.",
+            "en": "Page 2 from episode 92."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-092-cada-vez-menos/92.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 92: Cada vez menos.",
+            "en": "Page 3 from episode 92."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-092-cada-vez-menos/92.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 92: Cada vez menos.",
+            "en": "Page 4 from episode 92."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve",
+      "title": {
+        "es": "Una nave es enviada a impactar un asteroide, de verdad verdad",
+        "en": "A Spaceship Is Sent to Hit an Asteroid, for Real"
+      },
+      "episodeNumber": 91,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve/91.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 91: Una nave es enviada a impactar un asteroide, de verdad verdad.",
+            "en": "Page 1 from episode 91."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve/91.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 91: Una nave es enviada a impactar un asteroide, de verdad verdad.",
+            "en": "Page 2 from episode 91."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve/91.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 91: Una nave es enviada a impactar un asteroide, de verdad verdad.",
+            "en": "Page 3 from episode 91."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve/91.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 91: Una nave es enviada a impactar un asteroide, de verdad verdad.",
+            "en": "Page 4 from episode 91."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-090-hoy-fue-juernes",
+      "title": {
+        "es": "Hoy fue juernes",
+        "en": "Juernes (Thu-riday)!"
+      },
+      "episodeNumber": 90,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-090-hoy-fue-juernes/90.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 90: Hoy fue juernes.",
+            "en": "Page 1 from episode 90."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-089-persiguiendo-tus-suenos-o-ellos-a-ti",
+      "title": {
+        "es": "¿Persiguiendo tus sueños o ellos a ti?",
+        "en": "Episode 89"
+      },
+      "episodeNumber": 89,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "panelCount": 7,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 1 from episode 89."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 2 from episode 89."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 3 from episode 89."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 4 from episode 89."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.5.png",
+          "alt": {
+            "es": "Lámina 5 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 5 from episode 89."
+          }
+        },
+        {
+          "order": 6,
+          "originalPosition": 6,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.6.png",
+          "alt": {
+            "es": "Lámina 6 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 6 from episode 89."
+          }
+        },
+        {
+          "order": 7,
+          "originalPosition": 7,
+          "src": "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.7.png",
+          "alt": {
+            "es": "Lámina 7 del episodio 89: ¿Persiguiendo tus sueños o ellos a ti?.",
+            "en": "Page 7 from episode 89."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-088-buena-organizacion-digital",
+      "title": {
+        "es": "Buena organización digital",
+        "en": "Good Digital Organization"
+      },
+      "episodeNumber": 88,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-088-buena-organizacion-digital/88.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 88: Buena organización digital.",
+            "en": "Page 1 from episode 88."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-088-buena-organizacion-digital/88.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 88: Buena organización digital.",
+            "en": "Page 2 from episode 88."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-088-buena-organizacion-digital/88.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 88: Buena organización digital.",
+            "en": "Page 3 from episode 88."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-088-buena-organizacion-digital/88.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 88: Buena organización digital.",
+            "en": "Page 4 from episode 88."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap",
+      "title": {
+        "es": "“Eso es mental” decían… nada fácil la temperatura en la capital…",
+        "en": "“They Said It Was All in Your Head”… The Capital’s Heat Is No Joke"
+      },
+      "episodeNumber": 87,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap/87.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 87: “Eso es mental” decían… nada fácil la temperatura en la capital….",
+            "en": "Page 1 from episode 87."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap/87.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 87: “Eso es mental” decían… nada fácil la temperatura en la capital….",
+            "en": "Page 2 from episode 87."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap/87.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 87: “Eso es mental” decían… nada fácil la temperatura en la capital….",
+            "en": "Page 3 from episode 87."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap/87.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 87: “Eso es mental” decían… nada fácil la temperatura en la capital….",
+            "en": "Page 4 from episode 87."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-086-melon-musk",
+      "title": {
+        "es": "Melon Musk",
+        "en": "Melon Musk"
+      },
+      "episodeNumber": 86,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-086-melon-musk/86.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 86: Melon Musk.",
+            "en": "Page 1 from episode 86."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-086-melon-musk/86.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 86: Melon Musk.",
+            "en": "Page 2 from episode 86."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-086-melon-musk/86.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 86: Melon Musk.",
+            "en": "Page 3 from episode 86."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-086-melon-musk/86.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 86: Melon Musk.",
+            "en": "Page 4 from episode 86."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-084-como-se-llama-la-obra",
+      "title": {
+        "es": "¿Cómo se llama la obra?",
+        "en": "What’s That Artwork Called?"
+      },
+      "episodeNumber": 84,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-084-como-se-llama-la-obra/84.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 84: ¿Cómo se llama la obra?.",
+            "en": "Page 1 from episode 84."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-084-como-se-llama-la-obra/84.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 84: ¿Cómo se llama la obra?.",
+            "en": "Page 2 from episode 84."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-084-como-se-llama-la-obra/84.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 84: ¿Cómo se llama la obra?.",
+            "en": "Page 3 from episode 84."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-084-como-se-llama-la-obra/84.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 84: ¿Cómo se llama la obra?.",
+            "en": "Page 4 from episode 84."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-083-cuando-uno-cree-que-va-de-robo",
+      "title": {
+        "es": "Cuando uno cree que va de robo",
+        "en": "When You Think You’re About to Steal Something"
+      },
+      "episodeNumber": 83,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-083-cuando-uno-cree-que-va-de-robo/83.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 83: Cuando uno cree que va de robo.",
+            "en": "Page 1 from episode 83."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-083-cuando-uno-cree-que-va-de-robo/83.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 83: Cuando uno cree que va de robo.",
+            "en": "Page 2 from episode 83."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-083-cuando-uno-cree-que-va-de-robo/83.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 83: Cuando uno cree que va de robo.",
+            "en": "Page 3 from episode 83."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-083-cuando-uno-cree-que-va-de-robo/83.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 83: Cuando uno cree que va de robo.",
+            "en": "Page 4 from episode 83."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-082-yo-como-que-te-he-visto",
+      "title": {
+        "es": "“Yo como que te he visto”",
+        "en": "“I Feel Like I’ve Seen You”"
+      },
+      "episodeNumber": 82,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 82: “Yo como que te he visto”.",
+            "en": "Page 1 from episode 82."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 82: “Yo como que te he visto”.",
+            "en": "Page 2 from episode 82."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 82: “Yo como que te he visto”.",
+            "en": "Page 3 from episode 82."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 82: “Yo como que te he visto”.",
+            "en": "Page 4 from episode 82."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-081-el-conteo-eterno",
+      "title": {
+        "es": "El conteo eterno",
+        "en": "The Endless Countdown"
+      },
+      "episodeNumber": 81,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-081-el-conteo-eterno/81.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 81: El conteo eterno.",
+            "en": "Page 1 from episode 81."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-081-el-conteo-eterno/81.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 81: El conteo eterno.",
+            "en": "Page 2 from episode 81."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-081-el-conteo-eterno/81.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 81: El conteo eterno.",
+            "en": "Page 3 from episode 81."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-081-el-conteo-eterno/81.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 81: El conteo eterno.",
+            "en": "Page 4 from episode 81."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-",
+      "title": {
+        "es": "Siempre se pierde. Seguro que eso no le pasa a ustedes, ¿o sí?",
+        "en": "You Always Get Lost. That Never Happens to You, Right?"
+      },
+      "episodeNumber": 80,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-/80.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 80: Siempre se pierde. Seguro que eso no le pasa a ustedes, ¿o sí?.",
+            "en": "Page 1 from episode 80."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-/80.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 80: Siempre se pierde. Seguro que eso no le pasa a ustedes, ¿o sí?.",
+            "en": "Page 2 from episode 80."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-/80.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 80: Siempre se pierde. Seguro que eso no le pasa a ustedes, ¿o sí?.",
+            "en": "Page 3 from episode 80."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-/80.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 80: Siempre se pierde. Seguro que eso no le pasa a ustedes, ¿o sí?.",
+            "en": "Page 4 from episode 80."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-079-cuando-dice-mandarinadas",
+      "title": {
+        "es": "Cuando dice Mandarinadas",
+        "en": "When Mandarinita Says"
+      },
+      "episodeNumber": 79,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-079-cuando-dice-mandarinadas/79.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 79: Cuando dice Mandarinadas.",
+            "en": "Page 1 from episode 79."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-079-cuando-dice-mandarinadas/79.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 79: Cuando dice Mandarinadas.",
+            "en": "Page 2 from episode 79."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-079-cuando-dice-mandarinadas/79.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 79: Cuando dice Mandarinadas.",
+            "en": "Page 3 from episode 79."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-079-cuando-dice-mandarinadas/79.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 79: Cuando dice Mandarinadas.",
+            "en": "Page 4 from episode 79."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-078-esta-en-su-adn",
+      "title": {
+        "es": "Está en su ADN",
+        "en": "It’s in Their DNA"
+      },
+      "episodeNumber": 78,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-078-esta-en-su-adn/78.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 78: Está en su ADN.",
+            "en": "Page 1 from episode 78."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-078-esta-en-su-adn/78.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 78: Está en su ADN.",
+            "en": "Page 2 from episode 78."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-078-esta-en-su-adn/78.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 78: Está en su ADN.",
+            "en": "Page 3 from episode 78."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-078-esta-en-su-adn/78.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 78: Está en su ADN.",
+            "en": "Page 4 from episode 78."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-077-no-arrojar-papeles",
+      "title": {
+        "es": "No arrojar papeles",
+        "en": "No Littering"
+      },
+      "episodeNumber": 77,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-077-no-arrojar-papeles/77.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 77: No arrojar papeles.",
+            "en": "Page 1 from episode 77."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-077-no-arrojar-papeles/77.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 77: No arrojar papeles.",
+            "en": "Page 2 from episode 77."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-077-no-arrojar-papeles/77.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 77: No arrojar papeles.",
+            "en": "Page 3 from episode 77."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-077-no-arrojar-papeles/77.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 77: No arrojar papeles.",
+            "en": "Page 4 from episode 77."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-076-stop",
+      "title": {
+        "es": "STOP!",
+        "en": "Episode 76"
+      },
+      "episodeNumber": 76,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "panelCount": 12,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-076-stop/76.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 76: STOP!.",
+            "en": "Page 1 from episode 76."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-076-stop/76.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 76: STOP!.",
+            "en": "Page 2 from episode 76."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-076-stop/76.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 76: STOP!.",
+            "en": "Page 3 from episode 76."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-076-stop/76.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 76: STOP!.",
+            "en": "Page 4 from episode 76."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-076-stop/76.5.png",
+          "alt": {
+            "es": "Lámina 5 del episodio 76: STOP!.",
+            "en": "Page 5 from episode 76."
+          }
+        },
+        {
+          "order": 6,
+          "originalPosition": 6,
+          "src": "assets/episodes/ep-076-stop/76.6.png",
+          "alt": {
+            "es": "Lámina 6 del episodio 76: STOP!.",
+            "en": "Page 6 from episode 76."
+          }
+        },
+        {
+          "order": 7,
+          "originalPosition": 7,
+          "src": "assets/episodes/ep-076-stop/76.7.png",
+          "alt": {
+            "es": "Lámina 7 del episodio 76: STOP!.",
+            "en": "Page 7 from episode 76."
+          }
+        },
+        {
+          "order": 8,
+          "originalPosition": 8,
+          "src": "assets/episodes/ep-076-stop/76.8.png",
+          "alt": {
+            "es": "Lámina 8 del episodio 76: STOP!.",
+            "en": "Page 8 from episode 76."
+          }
+        },
+        {
+          "order": 9,
+          "originalPosition": 9,
+          "src": "assets/episodes/ep-076-stop/76.9.png",
+          "alt": {
+            "es": "Lámina 9 del episodio 76: STOP!.",
+            "en": "Page 9 from episode 76."
+          }
+        },
+        {
+          "order": 10,
+          "originalPosition": 10,
+          "src": "assets/episodes/ep-076-stop/76.10.png",
+          "alt": {
+            "es": "Lámina 10 del episodio 76: STOP!.",
+            "en": "Page 10 from episode 76."
+          }
+        },
+        {
+          "order": 11,
+          "originalPosition": 11,
+          "src": "assets/episodes/ep-076-stop/76.11.png",
+          "alt": {
+            "es": "Lámina 11 del episodio 76: STOP!.",
+            "en": "Page 11 from episode 76."
+          }
+        },
+        {
+          "order": 12,
+          "originalPosition": 12,
+          "src": "assets/episodes/ep-076-stop/76.12.png",
+          "alt": {
+            "es": "Lámina 12 del episodio 76: STOP!.",
+            "en": "Page 12 from episode 76."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-073-ique-calor-parte-2",
+      "title": {
+        "es": "iQué calor! Parte-2",
+        "en": "Episode 73"
+      },
+      "episodeNumber": 73,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "panelCount": 2,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-073-ique-calor-parte-2/73.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 73: iQué calor! Parte-2.",
+            "en": "Page 1 from episode 73."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-073-ique-calor-parte-2/73.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 73: iQué calor! Parte-2.",
+            "en": "Page 2 from episode 73."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-074-friendo",
+      "title": {
+        "es": "Friendo",
+        "en": "Frying"
+      },
+      "episodeNumber": 74,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-074-friendo/74.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 74: Friendo.",
+            "en": "Page 1 from episode 74."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-074-friendo/74.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 74: Friendo.",
+            "en": "Page 2 from episode 74."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-074-friendo/74.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 74: Friendo.",
+            "en": "Page 3 from episode 74."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-074-friendo/74.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 74: Friendo.",
+            "en": "Page 4 from episode 74."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-072-acurrucados",
+      "title": {
+        "es": "Acurrucados",
+        "en": "Cuddled Up"
+      },
+      "episodeNumber": 72,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 2,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-072-acurrucados/72.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 72: Acurrucados.",
+            "en": "Page 1 from episode 72."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-072-acurrucados/72.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 72: Acurrucados.",
+            "en": "Page 2 from episode 72."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-071-chuaaaaaaa",
+      "title": {
+        "es": "Chuaaaaaaa",
+        "en": "Chuaaaaaaa"
+      },
+      "episodeNumber": 71,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-071-chuaaaaaaa/71.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 71: Chuaaaaaaa.",
+            "en": "Page 1 from episode 71."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-071-chuaaaaaaa/71.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 71: Chuaaaaaaa.",
+            "en": "Page 2 from episode 71."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-071-chuaaaaaaa/71.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 71: Chuaaaaaaa.",
+            "en": "Page 3 from episode 71."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-071-chuaaaaaaa/71.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 71: Chuaaaaaaa.",
+            "en": "Page 4 from episode 71."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-070-emociones-graficas",
+      "title": {
+        "es": "Emociones gráficas",
+        "en": "Graphic Emotions"
+      },
+      "episodeNumber": 70,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-070-emociones-graficas/70.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 70: Emociones gráficas.",
+            "en": "Page 1 from episode 70."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-070-emociones-graficas/70.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 70: Emociones gráficas.",
+            "en": "Page 2 from episode 70."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-070-emociones-graficas/70.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 70: Emociones gráficas.",
+            "en": "Page 3 from episode 70."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-070-emociones-graficas/70.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 70: Emociones gráficas.",
+            "en": "Page 4 from episode 70."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-069-yo-tambien-merezco-graduarme",
+      "title": {
+        "es": "Yo también merezco graduarme",
+        "en": "I Deserve to Graduate Too"
+      },
+      "episodeNumber": 69,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-069-yo-tambien-merezco-graduarme/69.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 69: Yo también merezco graduarme.",
+            "en": "Page 1 from episode 69."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-068-tu-otra-vez",
+      "title": {
+        "es": "¿Tú otra vez?",
+        "en": "You Again?"
+      },
+      "episodeNumber": 68,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-068-tu-otra-vez/68.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 68: ¿Tú otra vez?.",
+            "en": "Page 1 from episode 68."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-067-el-mejor-momento-para-hablar",
+      "title": {
+        "es": "El “mejor” momento para hablar",
+        "en": "The “Best” Time to Talk"
+      },
+      "episodeNumber": 67,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-067-el-mejor-momento-para-hablar/67.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 67: El “mejor” momento para hablar.",
+            "en": "Page 1 from episode 67."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-066-vacaciones-silenciosas",
+      "title": {
+        "es": "Vacaciones silenciosas",
+        "en": "Silent Vacations"
+      },
+      "episodeNumber": 66,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-066-vacaciones-silenciosas/66.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 66: Vacaciones silenciosas.",
+            "en": "Page 1 from episode 66."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-065-aunque-corras-no-podras-escapar",
+      "title": {
+        "es": "Aunque corras no podrás escapar",
+        "en": "You Can Run, but You Can’t Escape"
+      },
+      "episodeNumber": 65,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-065-aunque-corras-no-podras-escapar/65.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 65: Aunque corras no podrás escapar.",
+            "en": "Page 1 from episode 65."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-064-bombas-de-tiempo",
+      "title": {
+        "es": "Bombas de tiempo",
+        "en": "Time Bombs"
+      },
+      "episodeNumber": 64,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-064-bombas-de-tiempo/64.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 64: Bombas de tiempo.",
+            "en": "Page 1 from episode 64."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-063-llegara-la-pizza",
+      "title": {
+        "es": "¿Llegará la pizza?",
+        "en": "Will the Pizza Get Here?"
+      },
+      "episodeNumber": 63,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-063-llegara-la-pizza/63.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 63: ¿Llegará la pizza?.",
+            "en": "Page 1 from episode 63."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-062-fruitgle",
+      "title": {
+        "es": "“Fruitgle”",
+        "en": "“Fruitgle”"
+      },
+      "episodeNumber": 62,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-062-fruitgle/62.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 62: “Fruitgle”.",
+            "en": "Page 1 from episode 62."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-061-llego-el-delivery",
+      "title": {
+        "es": "Llegó el delivery",
+        "en": "Delivery’s Here"
+      },
+      "episodeNumber": 61,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-061-llego-el-delivery/61.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 61: Llegó el delivery.",
+            "en": "Page 1 from episode 61."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-061-llego-el-delivery/61.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 61: Llegó el delivery.",
+            "en": "Page 2 from episode 61."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-061-llego-el-delivery/61.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 61: Llegó el delivery.",
+            "en": "Page 3 from episode 61."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-061-llego-el-delivery/61.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 61: Llegó el delivery.",
+            "en": "Page 4 from episode 61."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-060-el-pedido",
+      "title": {
+        "es": "El pedido",
+        "en": "The Order"
+      },
+      "episodeNumber": 60,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-060-el-pedido/60.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 60: El pedido.",
+            "en": "Page 1 from episode 60."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-060-el-pedido/60.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 60: El pedido.",
+            "en": "Page 2 from episode 60."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-060-el-pedido/60.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 60: El pedido.",
+            "en": "Page 3 from episode 60."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-060-el-pedido/60.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 60: El pedido.",
+            "en": "Page 4 from episode 60."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-059-no-juegues-asi",
+      "title": {
+        "es": "No juegues así",
+        "en": "Don’t Play Like That"
+      },
+      "episodeNumber": 59,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-059-no-juegues-asi/59.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 59: No juegues así.",
+            "en": "Page 1 from episode 59."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-059-no-juegues-asi/59.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 59: No juegues así.",
+            "en": "Page 2 from episode 59."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-059-no-juegues-asi/59.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 59: No juegues así.",
+            "en": "Page 3 from episode 59."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-059-no-juegues-asi/59.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 59: No juegues así.",
+            "en": "Page 4 from episode 59."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-058-perdi-mi-celular",
+      "title": {
+        "es": "Perdí mi celular",
+        "en": "I Lost My Phone"
+      },
+      "episodeNumber": 58,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-058-perdi-mi-celular/58.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 58: Perdí mi celular.",
+            "en": "Page 1 from episode 58."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-058-perdi-mi-celular/58.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 58: Perdí mi celular.",
+            "en": "Page 2 from episode 58."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-058-perdi-mi-celular/58.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 58: Perdí mi celular.",
+            "en": "Page 3 from episode 58."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-058-perdi-mi-celular/58.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 58: Perdí mi celular.",
+            "en": "Page 4 from episode 58."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-056-procrastinacion",
+      "title": {
+        "es": "Procrastinación",
+        "en": "Procrastination"
+      },
+      "episodeNumber": 56,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-056-procrastinacion/56.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 56: Procrastinación.",
+            "en": "Page 1 from episode 56."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-056-procrastinacion/56.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 56: Procrastinación.",
+            "en": "Page 2 from episode 56."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-056-procrastinacion/56.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 56: Procrastinación.",
+            "en": "Page 3 from episode 56."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-056-procrastinacion/56.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 56: Procrastinación.",
+            "en": "Page 4 from episode 56."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-057-dejame-un-chin",
+      "title": {
+        "es": "déjame un chin",
+        "en": "Just a Little"
+      },
+      "episodeNumber": 57,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-057-dejame-un-chin/57.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 57: déjame un chin.",
+            "en": "Page 1 from episode 57."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-057-dejame-un-chin/57.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 57: déjame un chin.",
+            "en": "Page 2 from episode 57."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-057-dejame-un-chin/57.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 57: déjame un chin.",
+            "en": "Page 3 from episode 57."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-057-dejame-un-chin/57.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 57: déjame un chin.",
+            "en": "Page 4 from episode 57."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-055-quiero-compania",
+      "title": {
+        "es": "quiero “compañía”",
+        "en": "I Want “Company”"
+      },
+      "episodeNumber": 55,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-055-quiero-compania/55.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 55: quiero “compañía”.",
+            "en": "Page 1 from episode 55."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-055-quiero-compania/55.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 55: quiero “compañía”.",
+            "en": "Page 2 from episode 55."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-055-quiero-compania/55.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 55: quiero “compañía”.",
+            "en": "Page 3 from episode 55."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-055-quiero-compania/55.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 55: quiero “compañía”.",
+            "en": "Page 4 from episode 55."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-054-quisquilloso-o-descuidada",
+      "title": {
+        "es": "¿Quisquilloso o descuidada?",
+        "en": "Picky or Careless?"
+      },
+      "episodeNumber": 54,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-054-quisquilloso-o-descuidada/54.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 54: ¿Quisquilloso o descuidada?.",
+            "en": "Page 1 from episode 54."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-054-quisquilloso-o-descuidada/54.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 54: ¿Quisquilloso o descuidada?.",
+            "en": "Page 2 from episode 54."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-054-quisquilloso-o-descuidada/54.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 54: ¿Quisquilloso o descuidada?.",
+            "en": "Page 3 from episode 54."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-054-quisquilloso-o-descuidada/54.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 54: ¿Quisquilloso o descuidada?.",
+            "en": "Page 4 from episode 54."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-053-ellas-vs-ellos",
+      "title": {
+        "es": "Ellas vs. ellos",
+        "en": "Women vs. Men"
+      },
+      "episodeNumber": 53,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-053-ellas-vs-ellos/53.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 53: Ellas vs. ellos.",
+            "en": "Page 1 from episode 53."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-053-ellas-vs-ellos/53.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 53: Ellas vs. ellos.",
+            "en": "Page 2 from episode 53."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-053-ellas-vs-ellos/53.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 53: Ellas vs. ellos.",
+            "en": "Page 3 from episode 53."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-053-ellas-vs-ellos/53.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 53: Ellas vs. ellos.",
+            "en": "Page 4 from episode 53."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-050-a-que-fue-que-vine",
+      "title": {
+        "es": "“¿A qué fue que vine?”",
+        "en": "“What Did I Come Here For?”"
+      },
+      "episodeNumber": 50,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-050-a-que-fue-que-vine/50.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 50: “¿A qué fue que vine?”.",
+            "en": "Page 1 from episode 50."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-050-a-que-fue-que-vine/50.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 50: “¿A qué fue que vine?”.",
+            "en": "Page 2 from episode 50."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-050-a-que-fue-que-vine/50.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 50: “¿A qué fue que vine?”.",
+            "en": "Page 3 from episode 50."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-050-a-que-fue-que-vine/50.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 50: “¿A qué fue que vine?”.",
+            "en": "Page 4 from episode 50."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-049-no-se-vale-picar",
+      "title": {
+        "es": "¿No se vale picar?",
+        "en": "Can’t You Have a Bite?"
+      },
+      "episodeNumber": 49,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-049-no-se-vale-picar/49.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 49: ¿No se vale picar?.",
+            "en": "Page 1 from episode 49."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-049-no-se-vale-picar/49.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 49: ¿No se vale picar?.",
+            "en": "Page 2 from episode 49."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-049-no-se-vale-picar/49.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 49: ¿No se vale picar?.",
+            "en": "Page 3 from episode 49."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-049-no-se-vale-picar/49.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 49: ¿No se vale picar?.",
+            "en": "Page 4 from episode 49."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-048-interrupciones",
+      "title": {
+        "es": "Interrupciones",
+        "en": "Interruptions"
+      },
+      "episodeNumber": 48,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-048-interrupciones/48.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 48: Interrupciones.",
+            "en": "Page 1 from episode 48."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-048-interrupciones/48.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 48: Interrupciones.",
+            "en": "Page 2 from episode 48."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-048-interrupciones/48.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 48: Interrupciones.",
+            "en": "Page 3 from episode 48."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-048-interrupciones/48.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 48: Interrupciones.",
+            "en": "Page 4 from episode 48."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-046-sorpresa",
+      "title": {
+        "es": "¡Sorpresa!",
+        "en": "Surprise!"
+      },
+      "episodeNumber": 46,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-046-sorpresa/46.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 46: ¡Sorpresa!.",
+            "en": "Page 1 from episode 46."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-046-sorpresa/46.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 46: ¡Sorpresa!.",
+            "en": "Page 2 from episode 46."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-046-sorpresa/46.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 46: ¡Sorpresa!.",
+            "en": "Page 3 from episode 46."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-046-sorpresa/46.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 46: ¡Sorpresa!.",
+            "en": "Page 4 from episode 46."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-047-gases-toxicos",
+      "title": {
+        "es": "Gases tóxicos",
+        "en": "Toxic Fumes"
+      },
+      "episodeNumber": 47,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-047-gases-toxicos/47.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 47: Gases tóxicos.",
+            "en": "Page 1 from episode 47."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-047-gases-toxicos/47.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 47: Gases tóxicos.",
+            "en": "Page 2 from episode 47."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-047-gases-toxicos/47.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 47: Gases tóxicos.",
+            "en": "Page 3 from episode 47."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-047-gases-toxicos/47.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 47: Gases tóxicos.",
+            "en": "Page 4 from episode 47."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-045-frustraciones-de-la-vida",
+      "title": {
+        "es": "frustraciones de la vida",
+        "en": "Life’s Frustrations"
+      },
+      "episodeNumber": 45,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-045-frustraciones-de-la-vida/45.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 45: frustraciones de la vida.",
+            "en": "Page 1 from episode 45."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-045-frustraciones-de-la-vida/45.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 45: frustraciones de la vida.",
+            "en": "Page 2 from episode 45."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-045-frustraciones-de-la-vida/45.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 45: frustraciones de la vida.",
+            "en": "Page 3 from episode 45."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-045-frustraciones-de-la-vida/45.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 45: frustraciones de la vida.",
+            "en": "Page 4 from episode 45."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-043-otro-vaso",
+      "title": {
+        "es": "“¿Otro vaso?”",
+        "en": "“Another Glass?”"
+      },
+      "episodeNumber": 43,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-043-otro-vaso/43.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 43: “¿Otro vaso?”.",
+            "en": "Page 1 from episode 43."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-043-otro-vaso/43.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 43: “¿Otro vaso?”.",
+            "en": "Page 2 from episode 43."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-043-otro-vaso/43.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 43: “¿Otro vaso?”.",
+            "en": "Page 3 from episode 43."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-043-otro-vaso/43.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 43: “¿Otro vaso?”.",
+            "en": "Page 4 from episode 43."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-042-cuando-lo-tienes-frente-a-tus-ojos",
+      "title": {
+        "es": "Cuando lo tienes frente a tus ojos",
+        "en": "When It’s Right in Front of You"
+      },
+      "episodeNumber": 42,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 42: Cuando lo tienes frente a tus ojos.",
+            "en": "Page 1 from episode 42."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 42: Cuando lo tienes frente a tus ojos.",
+            "en": "Page 2 from episode 42."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 42: Cuando lo tienes frente a tus ojos.",
+            "en": "Page 3 from episode 42."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 42: Cuando lo tienes frente a tus ojos.",
+            "en": "Page 4 from episode 42."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-041-agarra-eso-ahi",
+      "title": {
+        "es": "“Agarra eso ahí”",
+        "en": "“Hand Me That”"
+      },
+      "episodeNumber": 41,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-041-agarra-eso-ahi/41.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 41: “Agarra eso ahí”.",
+            "en": "Page 1 from episode 41."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-041-agarra-eso-ahi/41.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 41: “Agarra eso ahí”.",
+            "en": "Page 2 from episode 41."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-041-agarra-eso-ahi/41.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 41: “Agarra eso ahí”.",
+            "en": "Page 3 from episode 41."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-041-agarra-eso-ahi/41.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 41: “Agarra eso ahí”.",
+            "en": "Page 4 from episode 41."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-040-quiero-una-mascota-parte-2",
+      "title": {
+        "es": "Quiero una mascota -parte 2",
+        "en": "I Want a Pet, Part 2"
+      },
+      "episodeNumber": 40,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-040-quiero-una-mascota-parte-2/40.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 40: Quiero una mascota -parte 2.",
+            "en": "Page 1 from episode 40."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-040-quiero-una-mascota-parte-2/40.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 40: Quiero una mascota -parte 2.",
+            "en": "Page 2 from episode 40."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-040-quiero-una-mascota-parte-2/40.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 40: Quiero una mascota -parte 2.",
+            "en": "Page 3 from episode 40."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-040-quiero-una-mascota-parte-2/40.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 40: Quiero una mascota -parte 2.",
+            "en": "Page 4 from episode 40."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-039-quiero-una-mascota-parte-1",
+      "title": {
+        "es": "Quiero una mascota -parte 1",
+        "en": "I Want a Pet, Part 1"
+      },
+      "episodeNumber": 39,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 39: Quiero una mascota -parte 1.",
+            "en": "Page 1 from episode 39."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 39: Quiero una mascota -parte 1.",
+            "en": "Page 2 from episode 39."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 39: Quiero una mascota -parte 1.",
+            "en": "Page 3 from episode 39."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 39: Quiero una mascota -parte 1.",
+            "en": "Page 4 from episode 39."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-038-la-cartera-del-infinito",
+      "title": {
+        "es": "La cartera del infinito",
+        "en": "The Infinite Wallet"
+      },
+      "episodeNumber": 38,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-038-la-cartera-del-infinito/38.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 38: La cartera del infinito.",
+            "en": "Page 1 from episode 38."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-038-la-cartera-del-infinito/38.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 38: La cartera del infinito.",
+            "en": "Page 2 from episode 38."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-038-la-cartera-del-infinito/38.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 38: La cartera del infinito.",
+            "en": "Page 3 from episode 38."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-038-la-cartera-del-infinito/38.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 38: La cartera del infinito.",
+            "en": "Page 4 from episode 38."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-037-distanciamiento-social",
+      "title": {
+        "es": "Distanciamiento social",
+        "en": "Social Distancing"
+      },
+      "episodeNumber": 37,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-037-distanciamiento-social/37.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 37: Distanciamiento social.",
+            "en": "Page 1 from episode 37."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-037-distanciamiento-social/37.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 37: Distanciamiento social.",
+            "en": "Page 2 from episode 37."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-037-distanciamiento-social/37.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 37: Distanciamiento social.",
+            "en": "Page 3 from episode 37."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-037-distanciamiento-social/37.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 37: Distanciamiento social.",
+            "en": "Page 4 from episode 37."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-036-la-compra",
+      "title": {
+        "es": "La compra",
+        "en": "Grocery Shopping"
+      },
+      "episodeNumber": 36,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-036-la-compra/36.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 36: La compra.",
+            "en": "Page 1 from episode 36."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-036-la-compra/36.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 36: La compra.",
+            "en": "Page 2 from episode 36."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-036-la-compra/36.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 36: La compra.",
+            "en": "Page 3 from episode 36."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-036-la-compra/36.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 36: La compra.",
+            "en": "Page 4 from episode 36."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-035-la-cucaracha",
+      "title": {
+        "es": "La cucaracha",
+        "en": "The Cockroach"
+      },
+      "episodeNumber": 35,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-035-la-cucaracha/35.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 35: La cucaracha.",
+            "en": "Page 1 from episode 35."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-035-la-cucaracha/35.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 35: La cucaracha.",
+            "en": "Page 2 from episode 35."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-035-la-cucaracha/35.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 35: La cucaracha.",
+            "en": "Page 3 from episode 35."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-035-la-cucaracha/35.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 35: La cucaracha.",
+            "en": "Page 4 from episode 35."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-034-la-cosa",
+      "title": {
+        "es": "La “cosa”",
+        "en": "The “Thing”"
+      },
+      "episodeNumber": 34,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-034-la-cosa/34.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 34: La “cosa”.",
+            "en": "Page 1 from episode 34."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-034-la-cosa/34.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 34: La “cosa”.",
+            "en": "Page 2 from episode 34."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-034-la-cosa/34.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 34: La “cosa”.",
+            "en": "Page 3 from episode 34."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-034-la-cosa/34.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 34: La “cosa”.",
+            "en": "Page 4 from episode 34."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-033-repetir-ropa",
+      "title": {
+        "es": "Repetir ropa",
+        "en": "Repeating Outfits"
+      },
+      "episodeNumber": 33,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-033-repetir-ropa/33.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 33: Repetir ropa.",
+            "en": "Page 1 from episode 33."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-033-repetir-ropa/33.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 33: Repetir ropa.",
+            "en": "Page 2 from episode 33."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-033-repetir-ropa/33.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 33: Repetir ropa.",
+            "en": "Page 3 from episode 33."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-033-repetir-ropa/33.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 33: Repetir ropa.",
+            "en": "Page 4 from episode 33."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-032-frutify",
+      "title": {
+        "es": "“Frutify”",
+        "en": "“Frutify”"
+      },
+      "episodeNumber": 32,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-032-frutify/32.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 32: “Frutify”.",
+            "en": "Page 1 from episode 32."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-032-frutify/32.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 32: “Frutify”.",
+            "en": "Page 2 from episode 32."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-032-frutify/32.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 32: “Frutify”.",
+            "en": "Page 3 from episode 32."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-032-frutify/32.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 32: “Frutify”.",
+            "en": "Page 4 from episode 32."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-031-que-calor",
+      "title": {
+        "es": "¡Qué calor!",
+        "en": "It’s So Hot!"
+      },
+      "episodeNumber": 31,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-031-que-calor/31.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 31: ¡Qué calor!.",
+            "en": "Page 1 from episode 31."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-031-que-calor/31.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 31: ¡Qué calor!.",
+            "en": "Page 2 from episode 31."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-031-que-calor/31.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 31: ¡Qué calor!.",
+            "en": "Page 3 from episode 31."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-031-que-calor/31.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 31: ¡Qué calor!.",
+            "en": "Page 4 from episode 31."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-030-el-gran-lava-o",
+      "title": {
+        "es": "El gran lava’o",
+        "en": "The Big Wash"
+      },
+      "episodeNumber": 30,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-030-el-gran-lava-o/30.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 30: El gran lava’o.",
+            "en": "Page 1 from episode 30."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-030-el-gran-lava-o/30.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 30: El gran lava’o.",
+            "en": "Page 2 from episode 30."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-030-el-gran-lava-o/30.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 30: El gran lava’o.",
+            "en": "Page 3 from episode 30."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-030-el-gran-lava-o/30.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 30: El gran lava’o.",
+            "en": "Page 4 from episode 30."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-027-de-donde-salio",
+      "title": {
+        "es": "\"¿De dónde salió?\"",
+        "en": "“Where Did That Come From?”"
+      },
+      "episodeNumber": 27,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-027-de-donde-salio/27.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 27: \"¿De dónde salió?\".",
+            "en": "Page 1 from episode 27."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-027-de-donde-salio/27.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 27: \"¿De dónde salió?\".",
+            "en": "Page 2 from episode 27."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-027-de-donde-salio/27.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 27: \"¿De dónde salió?\".",
+            "en": "Page 3 from episode 27."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-027-de-donde-salio/27.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 27: \"¿De dónde salió?\".",
+            "en": "Page 4 from episode 27."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-029-cafe",
+      "title": {
+        "es": "Café",
+        "en": "Coffee"
+      },
+      "episodeNumber": 29,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-029-cafe/29.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 29: Café.",
+            "en": "Page 1 from episode 29."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-029-cafe/29.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 29: Café.",
+            "en": "Page 2 from episode 29."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-029-cafe/29.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 29: Café.",
+            "en": "Page 3 from episode 29."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-029-cafe/29.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 29: Café.",
+            "en": "Page 4 from episode 29."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-028-trukea",
+      "title": {
+        "es": "\"Trukea\"",
+        "en": "Trukea"
+      },
+      "episodeNumber": 28,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-028-trukea/28.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 28: \"Trukea\".",
+            "en": "Page 1 from episode 28."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-028-trukea/28.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 28: \"Trukea\".",
+            "en": "Page 2 from episode 28."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-028-trukea/28.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 28: \"Trukea\".",
+            "en": "Page 3 from episode 28."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-028-trukea/28.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 28: \"Trukea\".",
+            "en": "Page 4 from episode 28."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-026-tutoriales-de-youtube",
+      "title": {
+        "es": "Tutoriales de YouTube™",
+        "en": "YouTube Tutorials"
+      },
+      "episodeNumber": 26,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-026-tutoriales-de-youtube/26.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 26: Tutoriales de YouTube™.",
+            "en": "Page 1 from episode 26."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-026-tutoriales-de-youtube/26.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 26: Tutoriales de YouTube™.",
+            "en": "Page 2 from episode 26."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-026-tutoriales-de-youtube/26.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 26: Tutoriales de YouTube™.",
+            "en": "Page 3 from episode 26."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-026-tutoriales-de-youtube/26.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 26: Tutoriales de YouTube™.",
+            "en": "Page 4 from episode 26."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-025-quien-era-ese",
+      "title": {
+        "es": "“¿Quién era ese?”",
+        "en": "“Who Was That?”"
+      },
+      "episodeNumber": 25,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-025-quien-era-ese/25.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 25: “¿Quién era ese?”.",
+            "en": "Page 1 from episode 25."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-025-quien-era-ese/25.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 25: “¿Quién era ese?”.",
+            "en": "Page 2 from episode 25."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-025-quien-era-ese/25.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 25: “¿Quién era ese?”.",
+            "en": "Page 3 from episode 25."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-025-quien-era-ese/25.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 25: “¿Quién era ese?”.",
+            "en": "Page 4 from episode 25."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-024-como-me-queda",
+      "title": {
+        "es": "¿Cómo me queda?",
+        "en": "How Does It Look on Me?"
+      },
+      "episodeNumber": 24,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-024-como-me-queda/24.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 24: ¿Cómo me queda?.",
+            "en": "Page 1 from episode 24."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-024-como-me-queda/24.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 24: ¿Cómo me queda?.",
+            "en": "Page 2 from episode 24."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-024-como-me-queda/24.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 24: ¿Cómo me queda?.",
+            "en": "Page 3 from episode 24."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-024-como-me-queda/24.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 24: ¿Cómo me queda?.",
+            "en": "Page 4 from episode 24."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-023-organizadora-compulsiva",
+      "title": {
+        "es": "Organizadora compulsiva",
+        "en": "Compulsive Organizer"
+      },
+      "episodeNumber": 23,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-023-organizadora-compulsiva/23.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 23: Organizadora compulsiva.",
+            "en": "Page 1 from episode 23."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-023-organizadora-compulsiva/23.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 23: Organizadora compulsiva.",
+            "en": "Page 2 from episode 23."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-023-organizadora-compulsiva/23.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 23: Organizadora compulsiva.",
+            "en": "Page 3 from episode 23."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-023-organizadora-compulsiva/23.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 23: Organizadora compulsiva.",
+            "en": "Page 4 from episode 23."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-022-el-fregao",
+      "title": {
+        "es": "\"El fregao\"",
+        "en": "Episode 22"
+      },
+      "episodeNumber": 22,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "panelCount": 10,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-022-el-fregao/22.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 22: \"El fregao\".",
+            "en": "Page 1 from episode 22."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-022-el-fregao/22.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 22: \"El fregao\".",
+            "en": "Page 2 from episode 22."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-022-el-fregao/22.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 22: \"El fregao\".",
+            "en": "Page 3 from episode 22."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-022-el-fregao/22.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 22: \"El fregao\".",
+            "en": "Page 4 from episode 22."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-022-el-fregao/22.5.png",
+          "alt": {
+            "es": "Lámina 5 del episodio 22: \"El fregao\".",
+            "en": "Page 5 from episode 22."
+          }
+        },
+        {
+          "order": 6,
+          "originalPosition": 6,
+          "src": "assets/episodes/ep-022-el-fregao/22.6.png",
+          "alt": {
+            "es": "Lámina 6 del episodio 22: \"El fregao\".",
+            "en": "Page 6 from episode 22."
+          }
+        },
+        {
+          "order": 7,
+          "originalPosition": 7,
+          "src": "assets/episodes/ep-022-el-fregao/22.7.png",
+          "alt": {
+            "es": "Lámina 7 del episodio 22: \"El fregao\".",
+            "en": "Page 7 from episode 22."
+          }
+        },
+        {
+          "order": 8,
+          "originalPosition": 8,
+          "src": "assets/episodes/ep-022-el-fregao/22.8.png",
+          "alt": {
+            "es": "Lámina 8 del episodio 22: \"El fregao\".",
+            "en": "Page 8 from episode 22."
+          }
+        },
+        {
+          "order": 9,
+          "originalPosition": 9,
+          "src": "assets/episodes/ep-022-el-fregao/22.9.png",
+          "alt": {
+            "es": "Lámina 9 del episodio 22: \"El fregao\".",
+            "en": "Page 9 from episode 22."
+          }
+        },
+        {
+          "order": 10,
+          "originalPosition": 10,
+          "src": "assets/episodes/ep-022-el-fregao/22.10.png",
+          "alt": {
+            "es": "Lámina 10 del episodio 22: \"El fregao\".",
+            "en": "Page 10 from episode 22."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-021-nada",
+      "title": {
+        "es": "\"¡Nada!\"",
+        "en": "“Nothing!”"
+      },
+      "episodeNumber": 21,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-021-nada/21.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 21: \"¡Nada!\".",
+            "en": "Page 1 from episode 21."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-021-nada/21.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 21: \"¡Nada!\".",
+            "en": "Page 2 from episode 21."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-021-nada/21.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 21: \"¡Nada!\".",
+            "en": "Page 3 from episode 21."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-021-nada/21.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 21: \"¡Nada!\".",
+            "en": "Page 4 from episode 21."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-020-el-jarron-de-agua",
+      "title": {
+        "es": "El jarrón de agua",
+        "en": "The Water Pitcher"
+      },
+      "episodeNumber": 20,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-020-el-jarron-de-agua/20.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 20: El jarrón de agua.",
+            "en": "Page 1 from episode 20."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-020-el-jarron-de-agua/20.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 20: El jarrón de agua.",
+            "en": "Page 2 from episode 20."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-020-el-jarron-de-agua/20.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 20: El jarrón de agua.",
+            "en": "Page 3 from episode 20."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-020-el-jarron-de-agua/20.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 20: El jarrón de agua.",
+            "en": "Page 4 from episode 20."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-017-el-pela-o-y-el-mentiole",
+      "title": {
+        "es": "El pela'o y el \"mentiolé\"",
+        "en": "The Bald Guy and the “Mentiolé”"
+      },
+      "episodeNumber": 17,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 17: El pela'o y el \"mentiolé\".",
+            "en": "Page 1 from episode 17."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 17: El pela'o y el \"mentiolé\".",
+            "en": "Page 2 from episode 17."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 17: El pela'o y el \"mentiolé\".",
+            "en": "Page 3 from episode 17."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 17: El pela'o y el \"mentiolé\".",
+            "en": "Page 4 from episode 17."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-019-noche-de-peliculas",
+      "title": {
+        "es": "Noche de películas",
+        "en": "Movie Night"
+      },
+      "episodeNumber": 19,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-019-noche-de-peliculas/19.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 19: Noche de películas.",
+            "en": "Page 1 from episode 19."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-019-noche-de-peliculas/19.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 19: Noche de películas.",
+            "en": "Page 2 from episode 19."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-019-noche-de-peliculas/19.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 19: Noche de películas.",
+            "en": "Page 3 from episode 19."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-019-noche-de-peliculas/19.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 19: Noche de películas.",
+            "en": "Page 4 from episode 19."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-018-coronavirus",
+      "title": {
+        "es": "Coronavirus",
+        "en": "Coronavirus"
+      },
+      "episodeNumber": 18,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-018-coronavirus/18.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 18: Coronavirus.",
+            "en": "Page 1 from episode 18."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-018-coronavirus/18.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 18: Coronavirus.",
+            "en": "Page 2 from episode 18."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-018-coronavirus/18.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 18: Coronavirus.",
+            "en": "Page 3 from episode 18."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-018-coronavirus/18.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 18: Coronavirus.",
+            "en": "Page 4 from episode 18."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-015-salon-de-la-es-pera",
+      "title": {
+        "es": "Salón de la Es-pera",
+        "en": "Episode 15"
+      },
+      "episodeNumber": 15,
+      "status": "review",
+      "type": "comic",
+      "complete": false,
+      "panelCount": 5,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 15: Salón de la Es-pera.",
+            "en": "Page 1 from episode 15."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 15: Salón de la Es-pera.",
+            "en": "Page 2 from episode 15."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 15: Salón de la Es-pera.",
+            "en": "Page 3 from episode 15."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 15: Salón de la Es-pera.",
+            "en": "Page 4 from episode 15."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-015-salon-de-la-es-pera/15.5.jpg",
+          "alt": {
+            "es": "Lámina 5 del episodio 15: Salón de la Es-pera.",
+            "en": "Page 5 from episode 15."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-016-mandarino-vs-agua-fria",
+      "title": {
+        "es": "Mandarino vs agua fría",
+        "en": "Mr. Mandarin vs. Cold Water"
+      },
+      "episodeNumber": 16,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-016-mandarino-vs-agua-fria/16.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 16: Mandarino vs agua fría.",
+            "en": "Page 1 from episode 16."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-016-mandarino-vs-agua-fria/16.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 16: Mandarino vs agua fría.",
+            "en": "Page 2 from episode 16."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-016-mandarino-vs-agua-fria/16.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 16: Mandarino vs agua fría.",
+            "en": "Page 3 from episode 16."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-016-mandarino-vs-agua-fria/16.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 16: Mandarino vs agua fría.",
+            "en": "Page 4 from episode 16."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-014-un-dia-malo",
+      "title": {
+        "es": "Un día malo",
+        "en": "A Bad Day"
+      },
+      "episodeNumber": 14,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-014-un-dia-malo/14.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 14: Un día malo.",
+            "en": "Page 1 from episode 14."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-014-un-dia-malo/14.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 14: Un día malo.",
+            "en": "Page 2 from episode 14."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-014-un-dia-malo/14.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 14: Un día malo.",
+            "en": "Page 3 from episode 14."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-014-un-dia-malo/14.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 14: Un día malo.",
+            "en": "Page 4 from episode 14."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-013-siempre-con-sueno",
+      "title": {
+        "es": "Siempre con sueño",
+        "en": "Always Sleepy"
+      },
+      "episodeNumber": 13,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-013-siempre-con-sueno/13.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 13: Siempre con sueño.",
+            "en": "Page 1 from episode 13."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-013-siempre-con-sueno/13.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 13: Siempre con sueño.",
+            "en": "Page 2 from episode 13."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-013-siempre-con-sueno/13.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 13: Siempre con sueño.",
+            "en": "Page 3 from episode 13."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-013-siempre-con-sueno/13.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 13: Siempre con sueño.",
+            "en": "Page 4 from episode 13."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-012-enero-sin-fin",
+      "title": {
+        "es": "enero sin fin",
+        "en": "Endless January"
+      },
+      "episodeNumber": 12,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-012-enero-sin-fin/12.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 12: enero sin fin.",
+            "en": "Page 1 from episode 12."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-012-enero-sin-fin/12.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 12: enero sin fin.",
+            "en": "Page 2 from episode 12."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-012-enero-sin-fin/12.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 12: enero sin fin.",
+            "en": "Page 3 from episode 12."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-012-enero-sin-fin/12.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 12: enero sin fin.",
+            "en": "Page 4 from episode 12."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-011-el-virus-vuelve-y-vuelve",
+      "title": {
+        "es": "el virus vuelve y vuelve",
+        "en": "The Virus Keeps Coming Back"
+      },
+      "episodeNumber": 11,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-011-el-virus-vuelve-y-vuelve/11.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 11: el virus vuelve y vuelve.",
+            "en": "Page 1 from episode 11."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-011-el-virus-vuelve-y-vuelve/11.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 11: el virus vuelve y vuelve.",
+            "en": "Page 2 from episode 11."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-011-el-virus-vuelve-y-vuelve/11.3.jpg",
+          "alt": {
+            "es": "Lámina 3 del episodio 11: el virus vuelve y vuelve.",
+            "en": "Page 3 from episode 11."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-011-el-virus-vuelve-y-vuelve/11.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 11: el virus vuelve y vuelve.",
+            "en": "Page 4 from episode 11."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-010-fabrica-de-recuerdos",
+      "title": {
+        "es": "Fábrica de recuerdos",
+        "en": "The Memory Factory"
+      },
+      "episodeNumber": 10,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-010-fabrica-de-recuerdos/10.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 10: Fábrica de recuerdos.",
+            "en": "Page 1 from episode 10."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-010-fabrica-de-recuerdos/10.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 10: Fábrica de recuerdos.",
+            "en": "Page 2 from episode 10."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-010-fabrica-de-recuerdos/10.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 10: Fábrica de recuerdos.",
+            "en": "Page 3 from episode 10."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-010-fabrica-de-recuerdos/10.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 10: Fábrica de recuerdos.",
+            "en": "Page 4 from episode 10."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-009-la-cena",
+      "title": {
+        "es": "La cena",
+        "en": "Dinner"
+      },
+      "episodeNumber": 9,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-009-la-cena/09.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 9: La cena.",
+            "en": "Page 1 from episode 9."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-009-la-cena/09.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 9: La cena.",
+            "en": "Page 2 from episode 9."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-009-la-cena/09.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 9: La cena.",
+            "en": "Page 3 from episode 9."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-009-la-cena/09.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 9: La cena.",
+            "en": "Page 4 from episode 9."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-006-parodia",
+      "title": {
+        "es": "parodia",
+        "en": "Parody"
+      },
+      "episodeNumber": 6,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 5,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-006-parodia/06.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 6: parodia.",
+            "en": "Page 1 from episode 6."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-006-parodia/06.2.jpg",
+          "alt": {
+            "es": "Lámina 2 del episodio 6: parodia.",
+            "en": "Page 2 from episode 6."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-006-parodia/06.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 6: parodia.",
+            "en": "Page 3 from episode 6."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-006-parodia/06.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 6: parodia.",
+            "en": "Page 4 from episode 6."
+          }
+        },
+        {
+          "order": 5,
+          "originalPosition": 5,
+          "src": "assets/episodes/ep-006-parodia/06.5.jpg",
+          "alt": {
+            "es": "Lámina 5 del episodio 6: parodia.",
+            "en": "Page 5 from episode 6."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-005-cinco-minutos-mas",
+      "title": {
+        "es": "Cinco minutos más",
+        "en": "Five More Minutes"
+      },
+      "episodeNumber": 5,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-005-cinco-minutos-mas/05.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 5: Cinco minutos más.",
+            "en": "Page 1 from episode 5."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-005-cinco-minutos-mas/05.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 5: Cinco minutos más.",
+            "en": "Page 2 from episode 5."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-005-cinco-minutos-mas/05.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 5: Cinco minutos más.",
+            "en": "Page 3 from episode 5."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-005-cinco-minutos-mas/05.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 5: Cinco minutos más.",
+            "en": "Page 4 from episode 5."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-007-this-guy-is-on-fire",
+      "title": {
+        "es": "This guy is on fire",
+        "en": "This Guy Is on Fire"
+      },
+      "episodeNumber": 7,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-007-this-guy-is-on-fire/07.1.jpg",
+          "alt": {
+            "es": "Lámina 1 del episodio 7: This guy is on fire.",
+            "en": "Page 1 from episode 7."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-007-this-guy-is-on-fire/07.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 7: This guy is on fire.",
+            "en": "Page 2 from episode 7."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-007-this-guy-is-on-fire/07.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 7: This guy is on fire.",
+            "en": "Page 3 from episode 7."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-007-this-guy-is-on-fire/07.4.jpg",
+          "alt": {
+            "es": "Lámina 4 del episodio 7: This guy is on fire.",
+            "en": "Page 4 from episode 7."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-008-pepino-felino",
+      "title": {
+        "es": "Pepino Felino",
+        "en": "The Cucumber Cat"
+      },
+      "episodeNumber": 8,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 4,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-008-pepino-felino/08.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 8: Pepino Felino.",
+            "en": "Page 1 from episode 8."
+          }
+        },
+        {
+          "order": 2,
+          "originalPosition": 2,
+          "src": "assets/episodes/ep-008-pepino-felino/08.2.png",
+          "alt": {
+            "es": "Lámina 2 del episodio 8: Pepino Felino.",
+            "en": "Page 2 from episode 8."
+          }
+        },
+        {
+          "order": 3,
+          "originalPosition": 3,
+          "src": "assets/episodes/ep-008-pepino-felino/08.3.png",
+          "alt": {
+            "es": "Lámina 3 del episodio 8: Pepino Felino.",
+            "en": "Page 3 from episode 8."
+          }
+        },
+        {
+          "order": 4,
+          "originalPosition": 4,
+          "src": "assets/episodes/ep-008-pepino-felino/08.4.png",
+          "alt": {
+            "es": "Lámina 4 del episodio 8: Pepino Felino.",
+            "en": "Page 4 from episode 8."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-004-el-metro",
+      "title": {
+        "es": "El metro",
+        "en": "The Subway"
+      },
+      "episodeNumber": 4,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-004-el-metro/04.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 4: El metro.",
+            "en": "Page 1 from episode 4."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ep-003-preguntan-y-preguntan",
+      "title": {
+        "es": "Preguntan y  preguntan",
+        "en": "They keep asking, and asking"
+      },
+      "episodeNumber": 3,
+      "status": "published",
+      "type": "comic",
+      "complete": true,
+      "panelCount": 1,
+      "panels": [
+        {
+          "order": 1,
+          "originalPosition": 1,
+          "src": "assets/episodes/ep-003-preguntan-y-preguntan/03.1.png",
+          "alt": {
+            "es": "Lámina 1 del episodio 3: Preguntan y  preguntan.",
+            "en": "Page 1 from episode 3."
+          }
+        }
+      ]
+    }
+  ]
+}
