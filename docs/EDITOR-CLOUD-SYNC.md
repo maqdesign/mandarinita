@@ -1,43 +1,31 @@
 # Sincronización privada del taller
 
-## Alcance
+## Estado actual
 
-El editor conserva el guardado local y el archivo `.mandarinita`. Este cambio añade una vía opcional para iniciar sesión con GitHub y sincronizar el mismo catálogo privado de proyectos en distintos dispositivos. Solo se admite la cuenta que tenga verificado como principal el correo `mauricio@mandarinita.art`. La autorización de GitHub solicita únicamente `read:user` y `user:email`; no solicita acceso a repositorios ni permite publicar en el sitio.
+El editor y sus Pages Functions ya están desplegados en producción en `mandarinita.art`. El inicio de sesión usa GitHub OAuth y el almacenamiento privado usa el bucket R2 `mandarinita-editor-projects`, enlazado como `MANDARINITA_PROJECTS`. La autorización y el guardado se ejecutan en el servidor; el navegador nunca recibe `GITHUB_CLIENT_SECRET` ni `SESSION_SECRET`.
 
-Las rutas de Pages Functions están en `functions/api/`; el middleware protege la página del editor y el catálogo. El intercambio OAuth y la sesión firmada ocurren en el servidor. El navegador recibe una cookie `HttpOnly`, `Secure` y `SameSite=Lax`; no recibe el secreto OAuth ni un token de GitHub. Los archivos de proyecto se guardan en un bucket R2 privado, bajo el prefijo `users/mauricio/projects/`. No se introdujo una base de datos: para una sola persona y un listado pequeño de archivos, la clave, el título y la fecha de modificación que ofrece R2 son suficientes.
+La autenticación limita el acceso al correo de GitHub verificado que está configurado en Cloudflare. El flujo OAuth solicita `read:user` y `user:email`, no solicita repositorios ni permisos para publicar. La sesión usa cookie `HttpOnly`, `Secure`, `SameSite=Lax` y expira en siete días. Los proyectos se guardan bajo `users/mauricio/projects/`, con límite de 25 MB por proyecto.
 
-## Configuración pendiente en Cloudflare y GitHub
+## Guardado y conflictos
 
-La integración no se activa hasta que esta configuración exista. Revisé el proyecto Pages `mandarinita`: hoy está conectado a `maqdesign/mandarinita`, tiene previews de rama habilitados, pero su última publicación no usa Functions y no tiene variables de entorno.
+- Cada cambio se guarda primero en el dispositivo y la subida a R2 se agrupa tras una pausa breve.
+- Al conectar un dispositivo, el editor compara la copia local con la versión de R2. Los proyectos que faltan se descargan; los cambios locales pendientes se suben con una condición de versión.
+- Las escrituras usan ETags de R2 (`If-Match` para actualizar y `If-None-Match: *` para crear). Si la versión remota cambió desde la última sincronización, R2 rechaza la escritura y el editor conserva la copia local.
+- El editor ofrece descargar la copia local, reemplazarla con la versión de la nube o reemplazar la nube con la copia local. La última opción requiere una acción explícita.
+- No hay edición en tiempo real ni bloqueo del archivo. Si Mauricio edita un proyecto desde dos dispositivos, los cambios concurrentes producen un conflicto visible en lugar de reemplazarse en silencio.
+- La detección de conflictos compara el ETag con la última versión sincronizada en cada dispositivo. En la primera conexión de una instalación antigua que no tenga esa marca, cualquier diferencia entre la copia local y la remota requiere elección explícita.
 
-1. **Crear la app de GitHub.** Abre [GitHub Developer Settings](https://github.com/settings/developers) y elige **OAuth Apps → New OAuth App**. Usa:
-   - Application name: `Taller Mandarinita`
-   - Homepage URL: `https://mandarinita.art`
-   - Authorization callback URL: `https://mandarinita.art/api/auth/github/callback`
-   - Deja desactivado **Enable Device Flow**.
-   Después de crearla, copia el **Client ID**. Pulsa **Generate a new client secret** y guarda ese secreto directamente en Cloudflare; no lo envíes por chat ni lo publiques en una issue.
-2. **Crear el almacenamiento.** En el [Dashboard de Cloudflare](https://dash.cloudflare.com/?to=/:account/workers-and-pages), abre **R2 Object Storage** y crea un bucket privado llamado `mandarinita-editor-projects`.
-3. **Conectar R2 con Pages.** En **Workers & Pages → mandarinita → Settings → Bindings → Add → R2 bucket**, elige el bucket y escribe exactamente `MANDARINITA_PROJECTS` como nombre de binding. Cloudflare indica que hay que volver a desplegar para aplicar un binding nuevo.
-4. **Guardar variables y secretos.** En **Settings → Variables and Secrets**, configura los valores en el entorno Production:
-   - Variable de texto `GITHUB_CLIENT_ID`: el Client ID que mostró GitHub.
-   - Variable de texto `MANDARINITA_SYNC_EMAIL`: `mauricio@mandarinita.art`.
-   - Secreto cifrado `GITHUB_CLIENT_SECRET`: el secreto que GitHub acaba de generar.
-   - Secreto cifrado `SESSION_SECRET`: una cadena aleatoria de al menos 32 bytes, generada en tu dispositivo y pegada directamente en Cloudflare.
-5. **Avisarme con “listo”.** Entonces podré verificar la configuración, preparar el despliegue de prueba y comprobar el acceso con la cuenta autorizada. No configures una app OAuth para previews todavía: cada hostname de preview necesita su propio callback registrado y primero debemos elegir una URL de rama estable.
+Los proyectos no se borran de `episodes.json`, no se publican en la web ni se programan en Instagram. Los paquetes exportados siguen en revisión hasta que Mauricio los apruebe.
 
-La interfaz de Cloudflare permite guardar secretos cifrados desde **Variables and Secrets**; una vez guardados, no vuelvas a copiarlos a este chat. La configuración de producción debe repetirse en Preview solo cuando tengamos una URL estable y una OAuth App con ese callback.
+## Validación de lanzamiento
 
-El callback se debe cambiar si el dominio estable del proyecto no es `mandarinita.art`. Las URLs efímeras de preview no comparten el callback OAuth y no sirven para probar el login sin registrar antes una OAuth App con un callback apropiado.
+Antes de cualquier cambio en OAuth, R2, cuentas o permisos, validar:
 
-## Comportamiento y límites
+1. `GET /api/auth/session` devuelve `configured: true` con una sesión autenticada.
+2. Sin sesión, las rutas de proyectos responden `401`; sin configuración, responden `503`.
+3. Crear el mismo ID en dos sesiones solo permite la primera escritura (`If-None-Match: *`).
+4. Una escritura con ETag obsoleto responde `412` y conserva el objeto remoto.
+5. Tras un conflicto, el editor conserva el borrador local y permite descargarlo o elegir una versión.
+6. Los límites de 25 MB, la restricción de origen para escritura y el acceso privado de R2 siguen activos.
 
-- El guardado local sigue primero; la subida se programa después de una pausa breve. Si falla el almacenamiento local, el editor intenta enviar la copia de nube cuando la sesión ya está conectada. Si la nube falla, el borrador local y su exportación continúan disponibles.
-- Sin OAuth y R2 configurados, Pages devuelve una pantalla de acceso no disponible para las rutas privadas. La vista de trabajo local permanece accesible desde un servidor local; no se expone públicamente el catálogo de referencias.
-- Al iniciar sesión en un dispositivo, los proyectos remotos que falten se descargan; si las copias locales son más recientes, se suben. Si hay dos ediciones concurrentes, gana la de fecha `updatedAt` más reciente. Antes de usarlo como almacenamiento único, conviene añadir historial de versiones/conflictos.
-- El endpoint limita cada proyecto a 25 MB. Los datos personales se reducen al email autorizado y nombre de cuenta de GitHub; no se guarda el token OAuth.
-- Cerrar sesión no elimina proyectos locales ni del bucket.
-- Ninguna función escribe en `episodes.json`, publica en el sitio o programa Instagram. La aprobación y publicación siguen siendo pasos manuales.
-
-## Verificación previa a activar
-
-Comprobar que `GET /api/auth/status` devuelve `configured: true`, que un usuario con otro email recibe rechazo y que la sesión de Mauricio puede listar, descargar, guardar y borrar proyectos. Confirmar también que al cerrar sesión los endpoints de proyectos responden `401`, que R2 no tiene acceso público y que ninguna variable secreta aparece en HTML, JavaScript, logs o respuestas.
+Ningún valor secreto debe copiarse a archivos públicos, issues, commits, capturas o logs.

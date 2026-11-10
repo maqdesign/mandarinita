@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mandarinita-editor-v15';
+const CACHE_NAME = 'mandarinita-editor-v16';
 const APP_SHELL = [
   '/editor.html',
   '/editor.css',
@@ -20,17 +20,11 @@ self.addEventListener('activate', event => {
   event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('mandarinita-editor-') && key !== CACHE_NAME).map(key => caches.delete(key)))).then(() => self.clients.claim()));
 });
 
-self.addEventListener('fetch', async event => {
+self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-
-  // Keep this root-scoped worker from changing cache behavior on the public site.
-  if (request.mode !== 'navigate') {
-    const client = await self.clients.get(event.clientId);
-    if (!client || !/^\/editor(?:\.html|\/?$)/.test(new URL(client.url).pathname)) return;
-  }
 
   if (request.mode === 'navigate') {
     if (url.pathname === '/editor' || url.pathname === '/editor/') {
@@ -44,10 +38,16 @@ self.addEventListener('fetch', async event => {
 
   const isEditorFile = /^\/(editor\.(?:css|js|webmanifest)|editor-art-catalog\.json|assets\/)/.test(url.pathname);
   if (!isEditorFile) return;
-  event.respondWith(caches.match(request).then(async cached => {
+  // respondWith must be called synchronously during fetch dispatch. Check the
+  // client inside that promise so this root-scoped worker leaves the public
+  // site's requests and cache behavior untouched.
+  event.respondWith((async () => {
+    const client = await self.clients.get(event.clientId);
+    if (!client || !/^\/editor(?:\.html|\/?$)/.test(new URL(client.url).pathname)) return fetch(request);
+    const cached = await caches.match(request);
     if (cached) return cached;
     const response = await fetch(request);
     if (response.ok && response.type === 'basic') caches.open(CACHE_NAME).then(cache => cache.put(request, response.clone()));
     return response;
-  }));
+  })());
 });

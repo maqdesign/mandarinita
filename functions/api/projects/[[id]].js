@@ -43,7 +43,8 @@ export async function onRequestGet(context) {
         id: idFromKey,
         title: item.customMetadata?.title || 'Episodio sin título',
         updatedAt: Number(item.customMetadata?.updatedAt) || item.uploaded.getTime(),
-        bytes: item.size
+        bytes: item.size,
+        etag: item.httpEtag
       });
     }
     cursor = page.truncated ? page.cursor : undefined;
@@ -67,11 +68,18 @@ export async function onRequestPut(context) {
   catch { return json({ error: 'El archivo del proyecto no contiene JSON válido.' }, 400); }
   if (!project || project.projectId !== id || !Array.isArray(project.panels)) return json({ error: 'El proyecto no coincide con el identificador solicitado.' }, 400);
   const updatedAt = Number(project.updatedAt) || Date.now();
-  await env.MANDARINITA_PROJECTS.put(projectKey(id), JSON.stringify(project), {
+  const ifMatch = request.headers.get('If-Match');
+  const ifNoneMatch = request.headers.get('If-None-Match');
+  if ((ifMatch && ifNoneMatch) || (!ifMatch && ifNoneMatch !== '*')) {
+    return json({ error: 'Falta la versión esperada del proyecto. Vuelve a sincronizar antes de guardar.', code: 'precondition_required' }, 428);
+  }
+  const saved = await env.MANDARINITA_PROJECTS.put(projectKey(id), JSON.stringify(project), {
+    onlyIf: request.headers,
     httpMetadata: { contentType: 'application/vnd.mandarinita+json; charset=utf-8' },
     customMetadata: { title: String(project.title || 'Episodio sin título').slice(0, 180), updatedAt: String(updatedAt) }
   });
-  return json({ ok: true, id, title: String(project.title || 'Episodio sin título'), updatedAt });
+  if (!saved) return json({ error: 'Este proyecto cambió en otro dispositivo. Tu copia local se conservó; compara las dos versiones antes de continuar.', code: 'version_conflict' }, 412);
+  return json({ ok: true, id, title: String(project.title || 'Episodio sin título'), updatedAt, etag: saved.httpEtag }, 200, { ETag: saved.httpEtag });
 }
 
 export async function onRequestDelete(context) {
