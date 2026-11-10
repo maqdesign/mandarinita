@@ -85,3 +85,6 @@ body{background:var(--canvas-surround);color:var(--ink)}
 .flip-buttons{margin:0}.flip-buttons button[aria-pressed="true"]{border-color:var(--orange);background:#fff0e2;color:#c95600;font-weight:700}
 .cloud-connect{white-space:nowrap}.cloud-connect.connected{border-color:#607d3b;color:#436128}.theme-dark .cloud-connect.connected{color:#c0d69e}
 @media(max-width:720px){.home-header{height:auto;min-height:58px;padding:8px 12px;gap:8px;flex-wrap:wrap}.home-header .eyebrow{display:none}.home-header .brand img{width:100px}.cloud-connect,.install-app{font-size:10px;padding:7px 9px;margin-left:auto}}
+.home-header{justify-content:flex-start;gap:0}.home-header>.eyebrow{margin-left:10px;white-space:nowrap}.home-account-actions{display:flex;align-items:center;gap:8px;margin-left:auto}.home-account-actions .cloud-connect,.home-account-actions .install-app{margin-left:0}
+@media(max-width:720px){.home-header{gap:0}.home-account-actions{gap:6px;margin-left:auto}.home-account-actions .cloud-connect,.home-account-actions .install-app{margin-left:0}}
+@media(max-width:420px){.home-header{padding-inline:8px}.home-header .brand img{width:82px}.home-account-actions{gap:5px}.home-account-actions .cloud-connect,.home-account-actions .install-app{font-size:9px;padding:6px 7px}}
