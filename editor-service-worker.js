@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mandarinita-editor-v14';
+const CACHE_NAME = 'mandarinita-editor-v16';
 const APP_SHELL = [
   '/editor.html',
   '/editor.css',
@@ -38,10 +38,16 @@ self.addEventListener('fetch', event => {
 
   const isEditorFile = /^\/(editor\.(?:css|js|webmanifest)|editor-art-catalog\.json|assets\/)/.test(url.pathname);
   if (!isEditorFile) return;
-  event.respondWith(caches.match(request).then(async cached => {
+  // respondWith must be called synchronously during fetch dispatch. Check the
+  // client inside that promise so this root-scoped worker leaves the public
+  // site's requests and cache behavior untouched.
+  event.respondWith((async () => {
+    const client = await self.clients.get(event.clientId);
+    if (!client || !/^\/editor(?:\.html|\/?$)/.test(new URL(client.url).pathname)) return fetch(request);
+    const cached = await caches.match(request);
     if (cached) return cached;
     const response = await fetch(request);
     if (response.ok && response.type === 'basic') caches.open(CACHE_NAME).then(cache => cache.put(request, response.clone()));
     return response;
-  }));
+  })());
 });

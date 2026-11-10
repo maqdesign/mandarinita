@@ -70,7 +70,11 @@
   let cloudUser = null;
   let cloudConfigured = false;
   let cloudReady = false;
+  let cloudAuthExpired = false;
   const cloudTimers = new Map();
+  const cloudBases = new Map();
+  const cloudConflicts = new Set();
+  let pendingCloudConflict = null;
 
   // Small inline subset of the open-source Lucide icon set (ISC) keeps controls crisp offline.
   const ICON = {
@@ -132,7 +136,7 @@
     return normalized;
   }
   function saveProject(project = state) {
-    project.updatedAt = Date.now();
+    project.updatedAt = Math.max(Date.now(), Number(project.updatedAt)||0);
     const projectKey = PROJECT_KEY(project.projectId);
     const previousIndex = localStorage.getItem(PROJECTS_KEY);
     const index = listProjects().filter(p => p.id !== project.projectId);
@@ -146,15 +150,19 @@
     }
     scheduleCloudSave(project);
   }
-  function setCloudStatus(message, connected = Boolean(cloudUser)) {
+  function setCloudStatus(message = '', syncState = 'ready') {
     const button = $('#github-sync');
     if (!button) return;
-    button.textContent = connected ? `GitHub · ${cloudUser.login}` : cloudConfigured ? (message || 'Conectar GitHub') : 'Nube pendiente';
-    button.classList.toggle('connected', connected);
-    button.title = connected ? 'Proyectos sincronizados con el almacenamiento privado' : message || 'Conectar la cuenta privada de GitHub';
+    const signedIn = Boolean(cloudUser);
+    button.textContent = signedIn ? (cloudAuthExpired ? 'Reconectar GitHub' : `Salir · ${cloudUser.login}`) : cloudConfigured ? 'Conectar GitHub' : 'Nube pendiente';
+    button.classList.toggle('connected', signedIn);
+    button.title = signedIn ? (cloudAuthExpired ? 'Volver a iniciar sesión con GitHub' : `Cerrar sesión de GitHub · ${cloudUser.login}`) : message || 'Conectar la cuenta privada de GitHub';
     button.setAttribute('aria-label', button.title);
+    const text = message || (signedIn ? 'Sincronización al día' : 'Los borradores se guardan en este dispositivo.');
+    ['#cloud-status','#editor-cloud-status'].forEach(selector => { const region=$(selector); if(region){region.textContent=text;region.dataset.state=syncState;} });
+    ['#retry-cloud','#editor-retry-cloud'].forEach(selector => { const retry=$(selector); if(retry){retry.hidden=!(signedIn&&(syncState==='error'||cloudConflicts.size));retry.textContent=cloudConflicts.size?'Resolver conflicto':'Reintentar sincronización';} });
     const footnote = $('#home-footnote');
-    if (footnote) footnote.textContent = connected
+    if (footnote) footnote.textContent = signedIn
       ? 'Tus borradores se guardan en este dispositivo y se sincronizan con tu almacenamiento privado de GitHub.'
       : 'Tus borradores se guardan en este navegador. El archivo .mandarinita sirve para moverlos a otro dispositivo.';
   }
@@ -162,82 +170,182 @@
     const response = await fetch(path, { ...options, credentials: 'same-origin', headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) } });
     let body = {};
     try { body = await response.json(); } catch { /* Surface status when a proxy returned a non-JSON response. */ }
-    if (!response.ok) throw new Error(body.error || `Sincronización: ${response.status}`);
+    if (!response.ok) { const error=new Error(body.error || `Sincronización: ${response.status}`);error.status=response.status;error.code=body.code||'';throw error; }
     return body;
   }
+  function loadCloudBases() {
+    try { for (const [key,value] of Object.entries(JSON.parse(localStorage.getItem('mandarinita-editor-sync-bases-v1')||'{}'))) cloudBases.set(key,value); }
+    catch { /* A bad local sync index must not prevent local drafts from opening. */ }
+  }
+  function saveCloudBase(projectId, etag, localUpdatedAt) {
+    if (!etag) return;
+    cloudBases.set(projectId,{etag,localUpdatedAt:Number(localUpdatedAt)||0});
+    try { localStorage.setItem('mandarinita-editor-sync-bases-v1',JSON.stringify(Object.fromEntries(cloudBases))); }
+    catch { /* The remote copy is still authoritative even if this tiny cache cannot persist. */ }
+  }
+  async function readRemoteProject(projectId) {
+    const response=await fetch(`/api/projects/${encodeURIComponent(projectId)}`,{credentials:'same-origin',cache:'no-store'});
+    if (!response.ok) { const error=new Error('No se pudo descargar la versión de la nube.');error.status=response.status;throw error; }
+    return {project:await response.json(),etag:response.headers.get('ETag')};
+  }
+  async function pushCloudProject(project) {
+    const base=cloudBases.get(project.projectId);
+    const headers=base?.etag?{'If-Match':base.etag}:{'If-None-Match':'*'};
+    const result=await cloudFetch(`/api/projects/${encodeURIComponent(project.projectId)}`,{method:'PUT',body:JSON.stringify(project),headers});
+    saveCloudBase(project.projectId,result.etag||'',project.updatedAt);
+    return result;
+  }
+  function setSyncFailure(error) {
+    if(error?.status===401)cloudAuthExpired=true;
+    const message=error?.status===401?'La sesión venció. Vuelve a conectar GitHub para sincronizar.'
+      :error?.status===413?'El archivo supera el límite de 25 MB; descarga el .mandarinita como respaldo.'
+      :'No se pudo sincronizar. El borrador sigue guardado en este dispositivo.';
+    setCloudStatus(message,'error');
+    if(state)$('#save-state').textContent='Guardado local · sincronización pendiente';
+    toast(message);
+  }
+  function localProject(projectId) {
+    if (state?.projectId===projectId) return captureState();
+    try { return JSON.parse(localStorage.getItem(PROJECT_KEY(projectId))||'null'); } catch { return null; }
+  }
+  function markCloudConflict(projectId) {
+    cloudConflicts.add(projectId);
+    const local=localProject(projectId);
+    const title=local?.title||'este proyecto';
+    const message=`“${title}” también cambió en otro dispositivo. Tu copia local está segura; la nube no se sobrescribió.`;
+    setCloudStatus(message,'conflict');
+    if(state?.projectId===projectId)$('#save-state').textContent='Conflicto · copia local segura';
+    toast(message);
+  }
   function scheduleCloudSave(project) {
-    if (!cloudUser || !cloudReady || !project?.projectId) return;
+    if (!cloudUser || !cloudReady || !project?.projectId || cloudConflicts.has(project.projectId)) return;
     clearTimeout(cloudTimers.get(project.projectId));
     const snapshot = JSON.stringify(project);
     const timer = setTimeout(async () => {
       try {
-        await cloudFetch(`/api/projects/${encodeURIComponent(project.projectId)}`, { method: 'PUT', body: snapshot });
+        await pushCloudProject(JSON.parse(snapshot));
         if (state?.projectId === project.projectId) $('#save-state').textContent = 'Sincronizado con GitHub';
-        setCloudStatus('', true);
+        setCloudStatus('Sincronización al día','ready');
       } catch (error) {
-        setCloudStatus('Error al sincronizar · reintentar', false);
-        if (state?.projectId === project.projectId) $('#save-state').textContent = 'Guardado local · nube pendiente';
+        if(error.status===412){markCloudConflict(project.projectId);return;}
+        setSyncFailure(error);
       } finally { cloudTimers.delete(project.projectId); }
     }, 900);
     cloudTimers.set(project.projectId, timer);
   }
-  function storeRemoteProject(project) {
+  function storeRemoteProject(project,etag) {
     validateEditableProject(project);
     const record = { id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: Number(project.updatedAt) || Date.now() };
     const index = listProjects().filter(entry => entry.id !== project.projectId);
     index.push(record); index.sort((a, b) => b.updatedAt - a.updatedAt);
     localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
     localStorage.setItem(PROJECTS_KEY, JSON.stringify(index));
+    saveCloudBase(project.projectId,etag,project.updatedAt);
   }
   async function syncCloudProjects() {
     if (!cloudUser || cloudReady) return;
+    setCloudStatus('Sincronizando borradores…','busy');
     try {
       const { projects: remoteProjects } = await cloudFetch('/api/projects');
       const localProjects = listProjects();
       const remoteById = new Map(remoteProjects.map(project => [project.id, project]));
       for (const remote of remoteProjects) {
-        const record = localProjects.find(entry => entry.id === remote.id);
-        let local;
-        try { local = JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id)) || 'null'); } catch { local = null; }
-        if (!local || remote.updatedAt > (Number(local.updatedAt) || 0)) {
-          const response = await fetch(`/api/projects/${encodeURIComponent(remote.id)}`, { credentials: 'same-origin', cache: 'no-store' });
-          if (!response.ok) throw new Error('No se pudo descargar un proyecto de la nube.');
-          const project = await response.json();
-          storeRemoteProject(project);
+        let local;try { local=JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id))||'null'); } catch { local=null; }
+        if(!local){const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag||remote.etag);continue;}
+        const base=cloudBases.get(remote.id);
+        if(!base){
+          const latest=await readRemoteProject(remote.id);
+          if(JSON.stringify(local)===JSON.stringify(latest.project))saveCloudBase(remote.id,latest.etag,local.updatedAt);
+          else markCloudConflict(remote.id);
+        }else if(base.etag!==remote.etag){
+          if(Number(local.updatedAt)>Number(base.localUpdatedAt))markCloudConflict(remote.id);
+          else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);}
+        }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
+          cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
+          try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
+        }else saveCloudBase(remote.id,remote.etag,local.updatedAt);
+      }
+      for (const record of localProjects) {
+        if (!remoteById.has(record.id)) {
+          const local=localProject(record.id);
+          if(local)try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(record.id);else throw error;}
         }
       }
       cloudReady = true;
-      for (const record of listProjects()) {
-        const remote = remoteById.get(record.id);
-        if (!remote || record.updatedAt > remote.updatedAt) {
-          try { scheduleCloudSave(JSON.parse(localStorage.getItem(PROJECT_KEY(record.id)) || 'null')); } catch { /* Ignore an unreadable local draft. */ }
-        }
-      }
-      setCloudStatus('', true);
+      setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':'Sincronización al día',cloudConflicts.size?'conflict':'ready');
       renderProjectList();
-    } catch {
-      setCloudStatus('GitHub conectado · sincronización pendiente', false);
+    } catch (error) {
+      cloudReady=false;setSyncFailure(error);
     }
+  }
+  function openCloudConflictDialog() {
+    if(!cloudConflicts.size)return;
+    pendingCloudConflict=cloudConflicts.values().next().value;
+    const project=localProject(pendingCloudConflict);
+    $('#cloud-conflict-title').textContent=`“${project?.title||'Este proyecto'}” cambió en otro dispositivo`;
+    $('#cloud-conflict-dialog').showModal();
+  }
+  async function resolveCloudConflict(action) {
+    const projectId=pendingCloudConflict;if(!projectId)return;
+    const local=localProject(projectId);
+    if(!local){toast('No encontré la copia local de este proyecto.');return;}
+    if(action==='download'){downloadEditableProject(local);return;}
+    try{
+      const latest=await readRemoteProject(projectId);
+      if(action==='cloud'){
+        storeRemoteProject(latest.project,latest.etag);
+        cloudConflicts.delete(projectId);pendingCloudConflict=null;$('#cloud-conflict-dialog').close();
+        if(state?.projectId===projectId){state=normalizeProject(latest.project);showEditor();}else renderProjectList();
+        setCloudStatus(cloudConflicts.size?'Hay otros proyectos en conflicto. Revísalos antes de seguir.':'Sincronización al día',cloudConflicts.size?'conflict':'ready');
+        if(cloudConflicts.size)openCloudConflictDialog();
+        return;
+      }
+      if(action==='overwrite'){
+        if(!latest.etag)throw new Error('No recibí la versión actual de la nube; vuelve a sincronizar.');
+        clearTimeout(cloudTimers.get(projectId));cloudBases.set(projectId,{etag:latest.etag,localUpdatedAt:cloudBases.get(projectId)?.localUpdatedAt||0});
+        await pushCloudProject(local);
+        cloudConflicts.delete(projectId);pendingCloudConflict=null;$('#cloud-conflict-dialog').close();
+        if(state?.projectId===projectId)$('#save-state').textContent='Sincronizado con GitHub';
+        setCloudStatus(cloudConflicts.size?'Hay otros proyectos en conflicto. Revísalos antes de seguir.':'Sincronización al día',cloudConflicts.size?'conflict':'ready');
+        if(cloudConflicts.size)openCloudConflictDialog();
+      }
+    }catch(error){
+      if(error.status===412){markCloudConflict(projectId);return;}
+      setSyncFailure(error);
+    }
+  }
+  async function retryCloudSync() {
+    if(cloudConflicts.size){openCloudConflictDialog();return;}
+    cloudReady=false;setCloudStatus('Revisando cambios…','busy');await syncCloudProjects();
   }
   async function setupCloudSync() {
     const button = $('#github-sync');
     button.onclick = async () => {
+      if (cloudAuthExpired) { window.location.assign('/api/auth/github'); return; }
       if (cloudUser) {
         try { await cloudFetch('/api/auth/logout', { method: 'POST' }); } catch { /* The server may already have ended the session. */ }
-        cloudUser = null; cloudReady = false; setCloudStatus(cloudConfigured ? 'Conectar con GitHub' : 'Sincronización sin configurar', false); toast('Sesión de GitHub cerrada.'); return;
+        cloudUser = null; cloudReady = false; cloudAuthExpired=false; setCloudStatus('Sesión cerrada. Los borradores locales permanecen en este dispositivo.','signed-out'); toast('Sesión de GitHub cerrada.'); return;
       }
       if (!cloudConfigured) { toast('La sincronización requiere configurar OAuth de GitHub y almacenamiento R2 en Cloudflare.'); return; }
       window.location.assign('/api/auth/github');
     };
+    $('#retry-cloud').onclick=retryCloudSync;$('#editor-retry-cloud').onclick=retryCloudSync;
+    $('#conflict-download-local').onclick=()=>resolveCloudConflict('download');
+    $('#conflict-use-cloud').onclick=()=>resolveCloudConflict('cloud');
+    $('#conflict-overwrite-cloud').onclick=()=>resolveCloudConflict('overwrite');
+    $('#conflict-later').onclick=()=>{$('#cloud-conflict-dialog').close();pendingCloudConflict=null;};
+    $('#cloud-conflict-dialog').addEventListener('close',()=>{pendingCloudConflict=null;});
+    loadCloudBases();
     try {
       const session = await cloudFetch('/api/auth/session');
       cloudConfigured = session.configured;
       cloudUser = session.user;
+      cloudAuthExpired=false;
       if (cloudUser) await syncCloudProjects();
-      else setCloudStatus(cloudConfigured ? 'Conectar con GitHub' : 'Sincronización sin configurar', false);
-    } catch {
+      else setCloudStatus(cloudConfigured ? 'Conecta GitHub para sincronizar tus borradores.' : 'Sincronización sin configurar.','signed-out');
+    } catch (error) {
       cloudConfigured = false;
-      setCloudStatus('Sincronización disponible al configurar Cloudflare', false);
+      setCloudStatus(error.message||'No se pudo consultar la sesión.','error');
     }
     const result = new URLSearchParams(location.search).get('github');
     if (result === 'connected') toast('GitHub conectado. Los proyectos se están sincronizando.');
@@ -249,7 +357,7 @@
     try {
       state.format = $('#export-preset').value;
       state.exportStyle = $('#export-style')?.value || state.exportStyle || 'classic';
-      state.updatedAt = Date.now();
+      state.updatedAt = Math.max(Date.now(),(Number(state.updatedAt)||0)+1);
       saveProject();
       $('#save-state').textContent = `Guardado local · ${new Date(state.updatedAt).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' })}`;
       return true;
@@ -1251,11 +1359,15 @@
     return new Blob([...locals, ...centrals, end], { type: 'application/zip' });
   }
   function crc32(bytes) { let crc = -1; for (const byte of bytes) { crc ^= byte; for (let i = 0; i < 8; i++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0); } return (crc ^ -1) >>> 0; }
-  async function exportSource() {
-    const clone = captureState(); clone.selected = null; clone.updatedAt = Date.now();
+  function downloadEditableProject(project, notify=true) {
+    const clone = JSON.parse(JSON.stringify(project)); clone.selected = null;
     const bytes = new TextEncoder().encode(JSON.stringify(clone, null, 2));
-    download(zipStore([{ name: 'proyecto.json', data: bytes }]), `${slugify(state.title)}.mandarinita`);
-    toast('Archivo editable .mandarinita descargado.');
+    download(zipStore([{ name: 'proyecto.json', data: bytes }]), `${slugify(clone.title||'episodio')}.mandarinita`);
+    if(notify)toast('Archivo editable .mandarinita descargado.');
+  }
+  async function exportSource() {
+    const clone = captureState(); clone.selected = null;
+    downloadEditableProject(clone);
   }
   async function exportReview() {
     state.format = $('#export-preset').value; state.exportStyle = $('#export-style').value || 'classic'; state.status = 'review'; const savedLocally = autosave();
