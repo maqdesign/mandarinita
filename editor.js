@@ -952,9 +952,21 @@
       toast('Toca el fondo del dibujo para seleccionar su color.');
     });
     $('#remove-background')?.addEventListener('click', async event => {
-      const button=event.currentTarget;button.disabled=true;button.textContent='Recortando…';
-      try { const removed=await removeFlatBackground(item.src,Number($('#p-bg-tolerance').value),item.backgroundSample); if(!removed.removed)throw new Error('No pude retirar suficiente fondo conectado al borde. Elige el color directamente sobre el fondo y vuelve a intentarlo.'); snapshot();item.originalSrc ||= item.src;item.src=removed.src;item.name ||= 'Dibujo con fondo recortado';commit();toast(`Fondo plano recortado localmente (${Math.round(removed.removed/removed.total*100)}% de píxeles).`); }
-      catch(error){button.disabled=false;button.textContent='Recortar fondo';toast(error instanceof Error?error.message:'No se pudo recortar el fondo.');}
+      const button = event.currentTarget, status = $('#bg-remove-status');
+      button.disabled = true; button.textContent = 'Procesando imagen…';
+      if (status) { status.hidden = false; status.textContent = 'Recortando el fondo conectado al borde; puede tardar unos segundos.'; }
+      try {
+        const removed = await removeFlatBackground(item.src, Number($('#p-bg-tolerance').value), item.backgroundSample);
+        if (removed.alreadyTransparent) throw new Error('Esta imagen ya tiene transparencia en los bordes; no necesita recorte.');
+        if (!removed.removed) throw new Error('No pude retirar suficiente fondo conectado al borde. Elige el color directamente sobre el fondo y vuelve a intentarlo.');
+        snapshot(); item.originalSrc ||= item.src; item.src = removed.src; item.name ||= 'Dibujo con fondo recortado'; commit();
+        toast(`Fondo retirado (${Math.round(removed.removed / removed.total * 100)}% de píxeles). Puedes restaurar la imagen original.`);
+      } catch (error) {
+        button.disabled = false; button.textContent = '2 · Quitar fondo';
+        const message = error instanceof Error ? error.message : 'No se pudo recortar el fondo.';
+        if (status) { status.hidden = false; status.textContent = message; }
+        toast(message);
+      }
     });
     $('#restore-background')?.addEventListener('click',()=>{snapshot();item.src=item.originalSrc;delete item.originalSrc;delete item.backgroundSample;commit();toast('Imagen original restaurada.');});
     for (const [axis, property] of [['x','flipX'],['y','flipY']]) $(`#flip-${axis}`)?.addEventListener('click', () => { snapshot(); item[property] = !item[property]; commit(); });
@@ -1600,7 +1612,11 @@
     $('#undo').innerHTML = svgIcon('undo'); $('#redo').innerHTML = svgIcon('redo');
     labeledIcon('#upload-asset','plus',''); labeledIcon('#close-library','close',''); labeledIcon('#close-inspector','close',''); labeledIcon('#focus-mode','focus','Lienzo amplio');
     labeledIcon('#add-panel','plus','Viñeta'); labeledIcon('#add-bubble','bubble','Añadir globo');
-    $('#toggle-order-strip').innerHTML = `${svgIcon('down')}<span>Ocultar viñetas</span>`;
+    const orderToggle = $('#toggle-order-strip');
+    if (window.matchMedia('(max-width: 720px)').matches) {
+      $('.story-strip').classList.add('collapsed'); orderToggle.setAttribute('aria-expanded', 'false');
+      orderToggle.innerHTML = `${svgIcon('up')}<span>Mostrar viñetas</span>`;
+    } else orderToggle.innerHTML = `${svgIcon('down')}<span>Ocultar viñetas</span>`;
     labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías');
     $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
     $('#new-project').onclick = newProject;
