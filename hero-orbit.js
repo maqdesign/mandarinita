@@ -1,7 +1,8 @@
 (() => {
   const orbit = document.querySelector('.hero-episode-orbit');
-  const items = orbit?.querySelector('.episode-orbit-items');
-  if (!orbit || !items || !window.mandarinitaEpisodesCatalogPromise) return;
+  const backLayer = orbit?.querySelector('.episode-orbit-back');
+  const frontLayer = orbit?.querySelector('.episode-orbit-front');
+  if (!orbit || !backLayer || !frontLayer || !window.mandarinitaEpisodesCatalogPromise) return;
 
   const language = () => document.documentElement.lang === 'en' ? 'en' : 'es';
   const thumbnail = src => src.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-320-$1.webp');
@@ -15,7 +16,8 @@
   };
 
   const render = episodes => {
-    items.replaceChildren();
+    backLayer.replaceChildren();
+    frontLayer.replaceChildren();
     const cards = [];
     mix(episodes).slice(0, 6).forEach((episode, index) => {
       const panel = [...episode.panels].sort((a, b) => a.order - b.order)[0];
@@ -36,7 +38,7 @@
       const label = document.createElement('span');
       label.textContent = `EP. ${episode.episodeNumber}`;
       anchor.append(image, label);
-      items.append(anchor);
+      backLayer.append(anchor);
       cards.push({ anchor, episode, phase: -Math.PI / 2 + Math.PI * 2 * index / 6 });
     });
 
@@ -62,12 +64,10 @@
     let hovering = false;
     let focused = false;
     const tilt = -12 * Math.PI / 180;
-    const depth = () => Math.min(110, orbit.getBoundingClientRect().height * 0.26);
     const positionCards = () => {
       const bounds = orbit.getBoundingClientRect();
       const radiusX = bounds.width * 0.46;
       const radiusY = bounds.height * 0.34;
-      const zRadius = depth();
       cards.forEach(({ anchor, phase }) => {
         const theta = phase + angle;
         const orbitX = Math.cos(theta) * radiusX;
@@ -78,14 +78,15 @@
         // comes toward the reader and sits above the character artwork.
         const depthProgress = Math.min(1, Math.abs(y) / Math.max(radiusY, 1));
         const isBackHalf = y < 0;
-        const z = (isBackHalf ? -1 : 1) * depthProgress * zRadius;
         const back = isBackHalf ? depthProgress : 0;
+        const scale = isBackHalf ? 0.86 + (1 - depthProgress) * 0.12 : 0.98 + depthProgress * 0.12;
+        const targetLayer = isBackHalf ? backLayer : frontLayer;
+        if (anchor.parentElement !== targetLayer) targetLayer.append(anchor);
         anchor.style.left = '50%';
         anchor.style.top = '50%';
-        anchor.style.transform = `translate(-50%,-50%) translate3d(${x}px,${y}px,${z}px)`;
+        anchor.style.transform = `translate(-50%,-50%) translate(${x}px,${y}px) scale(${scale})`;
         anchor.style.filter = `blur(${(back * 1.15).toFixed(2)}px)`;
-        anchor.style.opacity = String((1 - back * 0.2).toFixed(2));
-        anchor.style.zIndex = isBackHalf ? '0' : '2';
+        anchor.style.opacity = String((1 - back * 0.16).toFixed(2));
       });
     };
     const tick = time => {
