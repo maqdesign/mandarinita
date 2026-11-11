@@ -28,7 +28,9 @@
       const image = document.createElement('img');
       image.src = thumbnail(panel.sourceSrc || panel.src);
       image.alt = '';
-      image.loading = 'eager';
+      // The orbit is decorative; let the hero artwork load first and fetch
+      // thumbnails only when they approach the viewport.
+      image.loading = 'lazy';
       image.fetchPriority = 'low';
       image.decoding = 'async';
       image.width = 320;
@@ -65,7 +67,9 @@
     let hovering = false;
     let focused = false;
     const tilt = -12 * Math.PI / 180;
+    let layoutDirty = true;
     const positionCards = () => {
+      layoutDirty = false;
       const bounds = orbit.getBoundingClientRect();
       const radiusX = bounds.width * 0.46;
       const radiusY = bounds.height * 0.34;
@@ -112,7 +116,10 @@
         anchor.style.left = '50%';
         anchor.style.top = '50%';
         anchor.style.transform = `translate(-50%,-50%) translate(${positionX}px,${positionY}px) scale(${scale})`;
-        anchor.style.filter = `blur(${(back * 1.5).toFixed(2)}px)`;
+        // Apply blur only to cards on the far half; front cards avoid an
+        // animated filter so the browser can composite them cheaply.
+        const blur = isBackHalf ? `${(back * 1.25).toFixed(2)}px` : 'none';
+        if (anchor.style.filter !== blur) anchor.style.filter = blur;
         anchor.style.opacity = String((1 - back * 0.16).toFixed(2));
       });
     };
@@ -122,9 +129,11 @@
         previousTime = 0;
         return;
       }
-      if (previousTime) angle = (angle + (time - previousTime) * Math.PI * 2 / 52000) % (Math.PI * 2);
+      if (previousTime) angle = (angle + (time - previousTime) * Math.PI * 2 / 76000) % (Math.PI * 2);
       previousTime = time;
       positionCards();
+      // Sleep between updates when reduced motion is requested or the page is
+      // hidden. The orbit otherwise uses one requestAnimationFrame loop.
       frame = requestAnimationFrame(tick);
     };
     const start = () => { if (!frame && visible && !paused && !reduceMotion.matches) frame = requestAnimationFrame(tick); };
@@ -145,7 +154,7 @@
       }, { threshold: 0.05 });
       observer.observe(orbit);
     }
-    if ('ResizeObserver' in window) new ResizeObserver(positionCards).observe(orbit);
+    if ('ResizeObserver' in window) new ResizeObserver(() => { layoutDirty = true; positionCards(); }).observe(orbit);
     positionCards();
     start();
     return updateLanguage;
