@@ -19,7 +19,7 @@
     backLayer.replaceChildren();
     frontLayer.replaceChildren();
     const cards = [];
-    mix(episodes).slice(0, 6).forEach((episode, index) => {
+    mix(episodes).slice(0, 12).forEach((episode, index) => {
       const panel = [...episode.panels].sort((a, b) => a.order - b.order)[0];
       if (!panel) return;
       const anchor = document.createElement('a');
@@ -40,7 +40,7 @@
       label.textContent = `EP. ${episode.episodeNumber}`;
       anchor.append(image, label);
       backLayer.append(anchor);
-      cards.push({ anchor, episode, phase: -Math.PI / 2 + Math.PI * 2 * index / 6 });
+      cards.push({ anchor, episode, index });
     });
 
     const updateLanguage = () => {
@@ -69,7 +69,15 @@
       const bounds = orbit.getBoundingClientRect();
       const radiusX = bounds.width * 0.46;
       const radiusY = bounds.height * 0.34;
-      cards.forEach(({ anchor, phase }) => {
+      const circumference = Math.PI * (3 * (radiusX + radiusY)
+        - Math.sqrt((3 * radiusX + radiusY) * (radiusX + 3 * radiusY)));
+      const cardWidth = parseFloat(getComputedStyle(cards[0]?.anchor || orbit).width) || 58;
+      const visibleCount = Math.max(6, Math.min(12, Math.floor(circumference / (cardWidth * 1.35))));
+      cards.forEach(({ anchor, index }) => {
+        const isVisible = index < visibleCount;
+        anchor.hidden = !isVisible;
+        if (!isVisible) return;
+        const phase = -Math.PI / 2 + Math.PI * 2 * index / visibleCount;
         const theta = phase + angle;
         const orbitX = Math.cos(theta) * radiusX;
         const orbitY = Math.sin(theta) * radiusY;
