@@ -6077,6 +6077,15 @@
           "expression": "wide eyes, tongue out",
           "componentStatus": "reference-only; flattened background, text and scene effects remain attached"
         }
+      ],
+      "reviewCutouts": [
+        {
+          "characterId": "morita",
+          "source": "assets/characters/review/morita-episode-59-1-review.png",
+          "recipe": "docs/art-review/cutouts/build-morita-59-1-review.py",
+          "status": "review",
+          "note": "Original pixels; a little contact shadow remains around the feet."
+        }
       ]
     },
     {
@@ -6109,6 +6118,15 @@
           "pose": "standing near the table",
           "expression": "wide eyes, tongue visible",
           "componentStatus": "reference-only; flattened background, text and scene effects remain attached"
+        }
+      ],
+      "reviewCutouts": [
+        {
+          "characterId": "morita",
+          "source": "assets/characters/review/morita-episode-59-2-review.png",
+          "recipe": "docs/art-review/cutouts/build-morita-59-2-review.py",
+          "status": "review",
+          "note": "Original pixels; the turquoise effect beside Morita is preserved for owner review."
         }
       ]
     },
@@ -6143,6 +6161,15 @@
           "expression": "eyes wide, tongue visible",
           "componentStatus": "reference-only; flattened background, text and scene effects remain attached"
         }
+      ],
+      "reviewCutouts": [
+        {
+          "characterId": "morita",
+          "source": "assets/characters/review/morita-episode-59-3-review.png",
+          "recipe": "docs/art-review/cutouts/build-morita-59-3-review.py",
+          "status": "review",
+          "note": "Original pixels; the detached dust effect is excluded from the character cutout."
+        }
       ]
     },
     {
@@ -6175,6 +6202,15 @@
           "pose": "running away beneath the table",
           "expression": "eyes wide, tongue visible",
           "componentStatus": "reference-only; flattened background, text and scene effects remain attached"
+        }
+      ],
+      "reviewCutouts": [
+        {
+          "characterId": "morita",
+          "source": "assets/characters/review/morita-episode-59-4-review.png",
+          "recipe": "docs/art-review/cutouts/build-morita-59-4-review.py",
+          "status": "review",
+          "note": "Original pixels; the detached dust marks are excluded from the character cutout."
         }
       ]
     },

@@ -28,9 +28,9 @@ Los dos recortes usan el panel original `assets/episodes/ep-014-un-dia-malo/14.1
 
 ## Morita · episodio 59
 
-Se añadieron dos recortes de estudio tomados de los paneles publicados `59.1` y `59.2`, conservando los píxeles de las poses originales. `morita-episode-59-1-review.png` muestra la pose de pie, pero conserva restos de sombra y requiere revisar el borde de las patas. `morita-episode-59-2-review.png` conserva la lengua y el efecto turquesa que aparece junto al personaje; Mauricio debe decidir si ese efecto debe permanecer unido al componente. Los procedimientos reproducibles son [`build-morita-59-1-review.py`](build-morita-59-1-review.py) y [`build-morita-59-2-review.py`](build-morita-59-2-review.py).
+Se añadieron cuatro recortes de estudio tomados de los paneles publicados `59.1` a `59.4`, conservando píxeles de las poses originales. `59.1` muestra la pose de pie con algo de sombra en los pies. `59.2` conserva la lengua y el efecto turquesa junto a Morita; Mauricio decidirá si se mantienen unidos. `59.3` y `59.4` muestran dos poses horizontales; se excluyeron los detalles de polvo separados del personaje. Los cuatro siguen pendientes de revisión y aprobación. Los procedimientos reproducibles son [`build-morita-59-1-review.py`](build-morita-59-1-review.py), [`build-morita-59-2-review.py`](build-morita-59-2-review.py), [`build-morita-59-3-review.py`](build-morita-59-3-review.py) y [`build-morita-59-4-review.py`](build-morita-59-4-review.py).
 
-Los dos archivos aparecen en Componentes → Personajes como **recortes en revisión** para poder examinarlos dentro del editor; siguen deshabilitados para insertar. No son variaciones aprobadas ni se han sumado al catálogo de componentes publicables. Los cinco recortes piloto anteriores también se muestran allí con el mismo estado de revisión.
+Los cuatro archivos aparecen en Componentes → Personajes como **recortes en revisión** para poder examinarlos dentro del editor; siguen deshabilitados para insertar. No son variaciones aprobadas ni se han sumado al catálogo de componentes publicables. Los cinco recortes piloto anteriores también se muestran allí con el mismo estado. La pestaña **Stickers** separa los stickers existentes de los personajes: los packs transparentes 02, 03, 04, 06 y 07 son insertables; los packs opacos 01 y 05 aparecen como referencias no insertables y conservan sus fondos originales.
 
 ## Sofá azul · episodio 9.2
 
@@ -38,6 +38,6 @@ Las propuestas `sofa-azul-episodio-51-1-borrador*.png` son estudios fallidos, no
 
 La primera alternativa, `sofa-azul-episodio-09-2-borrador.png`, se conserva como versión anterior; tiene una forma más recta y una paleta menos saturada, y queda supersedida por la propuesta del episodio 51.
 
-Los siete recortes de personaje se muestran en el editor únicamente para revisión; ninguno se añadió al manifiesto de componentes aprobados. Los recortes del episodio 14 incluyen retoques localizados en las puntas inferiores; los del episodio 1 conservan sombras; Morita 59.1 tiene restos de escena y 59.2 conserva el efecto turquesa. El estudio del sofá está rechazado y no es reutilizable. La hoja de contacto se regenera con [`build-review-contact-sheet.sh`](build-review-contact-sheet.sh).
+Los nueve recortes de personaje se muestran en el editor únicamente para revisión; ninguno se añadió al manifiesto de componentes aprobados. Los del episodio 14 incluyen retoques localizados en las puntas inferiores; los del episodio 1 conservan sombras; Morita 59.1 tiene algo de sombra de contacto y 59.2 conserva el efecto turquesa. El estudio del sofá está rechazado y no es reutilizable. La hoja de contacto se regenera con [`build-review-contact-sheet.sh`](build-review-contact-sheet.sh).
 
 El original del episodio sigue intacto y la ficha de su aparición en el catálogo conserva su ruta de origen.

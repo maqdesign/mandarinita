@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mandarinita-editor-v23';
+const CACHE_NAME = 'mandarinita-editor-v25';
 const APP_SHELL = [
   '/editor.css',
   '/editor.js',
@@ -24,6 +24,15 @@ const APP_SHELL = [
   '/assets/characters/superfreso-transparent.webp',
   '/assets/characters/review/morita-episode-59-1-review.png',
   '/assets/characters/review/morita-episode-59-2-review.png',
+  '/assets/characters/review/morita-episode-59-3-review.png',
+  '/assets/characters/review/morita-episode-59-4-review.png',
+  '/assets/stickers/sticker-pack-01.webp',
+  '/assets/stickers/sticker-pack-02.webp',
+  '/assets/stickers/sticker-pack-03.webp',
+  '/assets/stickers/sticker-pack-04.webp',
+  '/assets/stickers/sticker-pack-05.webp',
+  '/assets/stickers/sticker-pack-06.webp',
+  '/assets/stickers/sticker-pack-07.webp',
   '/docs/art-review/cutouts/mando-episodio-01-1-borrador.png',
   '/docs/art-review/cutouts/mandy-episodio-01-1-borrador.png',
   '/docs/art-review/cutouts/mando-episodio-01-3-borrador.png',

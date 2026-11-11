@@ -20,14 +20,14 @@
     { name: 'Limón Agrio', aliases: ['limón', 'limon agrio'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/limon-agrio-transparent.webp' }] },
     { name: 'Aguacatelo', aliases: ['aguacate'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/aguacatelo-transparent.png' }] },
     { name: 'Morita', aliases: ['mora'], variants: [{ name: 'Silueta monocroma', src: 'assets/characters/morita.png' }] },
-    { name: 'Sra. Pera', aliases: ['pera', 'señora pera'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/sra-pera-transparent.webp' }] },
-    { name: 'Sticker frutal · 02', aliases: ['sticker 2'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-02.webp' }] },
-    { name: 'Sticker zanahoria · 03', aliases: ['sticker 3'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-03.webp' }] },
-    { name: 'Sticker frutal · 04', aliases: ['sticker 4'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-04.webp' }] },
-    { name: 'Sticker frutal · 07', aliases: ['sticker 7'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-07.webp' }] }
+    { name: 'Sra. Pera', aliases: ['pera', 'señora pera'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/sra-pera-transparent.webp' }] }
   ].map(x => ({ ...x, category: 'character', approvedCutout: true }));
   const stickers = [
-    { name: 'Sticker frutal · 06', aliases: ['sticker 6', 'expresión frutal'], variants: [{ name: 'Sticker existente', src: 'assets/stickers/sticker-pack-06.webp' }], category: 'character', approvedCutout: true }
+    { name: 'Sticker frutal · 02', aliases: ['sticker 2', 'pack 2'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-02.webp' }], category: 'sticker', approvedCutout: true },
+    { name: 'Sticker zanahoria · 03', aliases: ['sticker 3', 'pack 3'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-03.webp' }], category: 'sticker', approvedCutout: true },
+    { name: 'Sticker frutal · 04', aliases: ['sticker 4', 'pack 4'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-04.webp' }], category: 'sticker', approvedCutout: true },
+    { name: 'Sticker frutal · 06', aliases: ['sticker 6', 'pack 6', 'expresión frutal'], variants: [{ name: 'Sticker existente', src: 'assets/stickers/sticker-pack-06.webp' }], category: 'sticker', approvedCutout: true },
+    { name: 'Sticker frutal · 07', aliases: ['sticker 7', 'pack 7'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-07.webp' }], category: 'sticker', approvedCutout: true }
   ];
   const objects = [
     { name: 'Objeto · sobre', aliases: ['sobre', 'carta'], src: 'assets/art-envelope-2022.webp', category: 'object', approvedCutout: false, note: 'Ilustración completa, no es un recorte independiente.' },
@@ -54,8 +54,14 @@
     { name: 'Mando · episodio 14.1', aliases: ['mando', 'mandarino', 'episodio 14'], src: 'docs/art-review/cutouts/mando-episodio-14-1-borrador.png', source: 'assets/episodes/ep-014-un-dia-malo/14.1.png', note: 'Borrador de recorte con retoque de las puntas de los pies; requiere revisión.' },
     { name: 'Greg · episodio 14.1', aliases: ['greg', 'zanahorio', 'episodio 14'], src: 'docs/art-review/cutouts/greg-episodio-14-1-borrador.png', source: 'assets/episodes/ep-014-un-dia-malo/14.1.png', note: 'Borrador de recorte con retoque de las puntas de los pies; requiere revisión.' },
     { name: 'Morita · pose de pie · episodio 59.1', aliases: ['morita', 'episodio 59', 'pose de pie'], src: 'assets/characters/review/morita-episode-59-1-review.png', source: 'assets/episodes/ep-059-no-juegues-asi/59.1.png', note: 'Borrador basado en los píxeles originales. Queda algo de sombra de la escena; revisar contorno y patas.' },
-    { name: 'Morita · lengua afuera · episodio 59.2', aliases: ['morita', 'episodio 59', 'lengua', 'sorprendida'], src: 'assets/characters/review/morita-episode-59-2-review.png', source: 'assets/episodes/ep-059-no-juegues-asi/59.2.png', note: 'Borrador basado en los píxeles originales. Conserva el efecto turquesa visible en esta pose; confirmar si debe formar parte del componente.' }
+    { name: 'Morita · lengua afuera · episodio 59.2', aliases: ['morita', 'episodio 59', 'lengua', 'sorprendida'], src: 'assets/characters/review/morita-episode-59-2-review.png', source: 'assets/episodes/ep-059-no-juegues-asi/59.2.png', note: 'Borrador basado en los píxeles originales. Conserva el efecto turquesa visible en esta pose; confirmar si debe formar parte del componente.' },
+    { name: 'Morita · pose horizontal · episodio 59.3', aliases: ['morita', 'episodio 59', 'horizontal'], src: 'assets/characters/review/morita-episode-59-3-review.png', source: 'assets/episodes/ep-059-no-juegues-asi/59.3.png', note: 'Recorte de píxeles originales en pose horizontal. Revisa la silueta y decide si se conserva sin los efectos de polvo del panel.' },
+    { name: 'Morita · pose horizontal · episodio 59.4', aliases: ['morita', 'episodio 59', 'horizontal'], src: 'assets/characters/review/morita-episode-59-4-review.png', source: 'assets/episodes/ep-059-no-juegues-asi/59.4.png', note: 'Recorte de píxeles originales en pose horizontal. El polvo independiente del panel no se incluyó; revisar la separación.' }
   ].map(resource => ({ ...resource, category: 'character', approvedCutout: false, reviewOnly: true }));
+  const stickerReviewAssets = [
+    { name: 'Sticker existente · pack 01', aliases: ['sticker 1', 'pack 1'], src: 'assets/stickers/sticker-pack-01.webp', source: 'assets/stickers/sticker-pack-01.webp', note: 'Asset cuadrado opaco del pack existente. Se conserva como referencia; no se le quitó el fondo ni se asignó a un personaje.', reviewKind: 'existing-sticker' },
+    { name: 'Sticker existente · pack 05', aliases: ['sticker 5', 'pack 5', 'logo'], src: 'assets/stickers/sticker-pack-05.webp', source: 'assets/stickers/sticker-pack-05.webp', note: 'Asset cuadrado opaco del pack existente. Contiene el logotipo sobre un círculo amarillo; se conserva como referencia, no como recorte de personaje.', reviewKind: 'existing-sticker' }
+  ].map(resource => ({ ...resource, category: 'sticker', approvedCutout: false, reviewOnly: true }));
   const backgroundColors = [
     { name: 'Blanco limpio', color: '#FFFFFF', source: 'Base' },
     { name: 'Crema Mandarinita', color: '#FFF8EC', source: 'Marca' },
@@ -72,7 +78,7 @@
     { name: 'Azul cielo', color: '#87DEFA', source: 'Episodio 52 · 52.1' },
     { name: 'Azul claro', color: '#93CCFF', source: 'Episodio 70 · 70.1' }
   ];
-  const resources = [...people, ...stickers, ...objects, ...backgrounds, ...reviewCharacterCutouts];
+  const resources = [...people, ...stickers, ...objects, ...backgrounds, ...reviewCharacterCutouts, ...stickerReviewAssets];
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
   let state = null;
@@ -1229,7 +1235,7 @@
     candidates.forEach(resource => {
       const card = document.createElement('button'); card.className = `asset-card${resource.approvedCutout ? '' : ' reference-card'}`;
       const thumb = resource.variants?.[0]?.src || resource.src;
-      card.innerHTML = `<img src="${thumb}" alt="" loading="lazy"><span>${escapeHTML(resource.name)}</span><small>${resource.approvedCutout ? 'Componente aprobado' : resource.reviewOnly ? 'Recorte en revisión · no insertable' : resource.category === 'background' ? 'Referencia · lámina completa' : resource.note}</small>`;
+      card.innerHTML = `<img src="${thumb}" alt="" loading="lazy"><span>${escapeHTML(resource.name)}</span><small>${resource.approvedCutout ? 'Componente aprobado' : resource.reviewKind === 'existing-sticker' ? 'Sticker existente · referencia no insertable' : resource.reviewOnly ? 'Recorte en revisión · no insertable' : resource.category === 'background' ? 'Referencia · lámina completa' : resource.note}</small>`;
       card.disabled = !resource.approvedCutout && !resource.reviewOnly;
       if (resource.reviewOnly) {
         card.setAttribute('aria-label', `Revisar ${resource.name}. No se puede insertar todavía.`);
@@ -1278,16 +1284,17 @@
   }
   function openCutoutReview(resource) {
     const dialog = $('#reference-preview-dialog');
+    const existingSticker = resource.reviewKind === 'existing-sticker';
     $('#reference-preview-title').textContent = resource.name;
-    $('#reference-preview-subtitle').textContent = 'Borrador de recorte · recurso pendiente de aprobación';
-    $('#reference-preview-pose-label').textContent = 'Estado del recorte';
+    $('#reference-preview-subtitle').textContent = existingSticker ? 'Sticker existente · referencia no insertable' : 'Borrador de recorte · recurso pendiente de aprobación';
+    $('#reference-preview-pose-label').textContent = existingSticker ? 'Tipo de recurso' : 'Estado del recorte';
     $('#reference-preview-expression-label').textContent = 'Nota de revisión';
-    $('#reference-preview-pose').textContent = 'Los píxeles proceden de la pose visible en el episodio enlazado.';
+    $('#reference-preview-pose').textContent = existingSticker ? 'Imagen del pack existente; no se cambió ni se separó del fondo.' : 'Los píxeles proceden de la pose visible en el episodio enlazado.';
     $('#reference-preview-expression').textContent = resource.note;
     $('#reference-preview-image').src = resource.src;
-    $('#reference-preview-image').alt = `Borrador transparente de ${resource.name}`;
+    $('#reference-preview-image').alt = existingSticker ? `Referencia del ${resource.name}` : `Borrador transparente de ${resource.name}`;
     $('#reference-preview-source').href = resource.source;
-    $('#reference-preview-note').textContent = 'Este recurso aparece para revisión en la biblioteca, pero todavía no se puede insertar en el lienzo. Al aprobarlo, se podrá activar como componente.';
+    $('#reference-preview-note').textContent = existingSticker ? 'La imagen original se mantiene intacta. No se puede insertar hasta confirmar su uso y, si corresponde, preparar un PNG transparente.' : 'Este recurso aparece para revisión en la biblioteca, pero todavía no se puede insertar en el lienzo. Al aprobarlo, se podrá activar como componente.';
     dialog.showModal();
   }
   function renderBackgroundColors(grid, query = '') {
@@ -1809,7 +1816,7 @@
     $('#tab-components').innerHTML=`${svgIcon('box')}<span>Componentes</span>`;
     $('#tab-layers').innerHTML=`${svgIcon('layers')}<span>Capas</span> <span id="layer-count-tab">0</span>`;
     labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#add-bubble','bubble','Añadir globo');
-    const filterIcons={all:'grid',character:'users',object:'box',background:'image',reference:'book'};
+    const filterIcons={all:'grid',character:'users',object:'box',background:'image',sticker:'layers',reference:'book'};
     $$('.filters [data-filter]').forEach(button=>{const label=button.textContent.trim();button.classList.add('has-icon');button.innerHTML=`${svgIcon(filterIcons[button.dataset.filter]||'grid')}<span class="button-label">${label}</span>`;button.setAttribute('aria-label',label);button.title=label;});
     const orderToggle = $('#toggle-order-strip');
     if (window.matchMedia('(max-width: 720px)').matches) {

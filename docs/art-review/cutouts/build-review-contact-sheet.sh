@@ -14,6 +14,8 @@ sources=(
   'greg-episodio-14-1-borrador.png|Greg · episodio 14.1'
   '../../../assets/characters/review/morita-episode-59-1-review.png|Morita · episodio 59.1'
   '../../../assets/characters/review/morita-episode-59-2-review.png|Morita · episodio 59.2'
+  '../../../assets/characters/review/morita-episode-59-3-review.png|Morita · episodio 59.3'
+  '../../../assets/characters/review/morita-episode-59-4-review.png|Morita · episodio 59.4'
 )
 
 tiles=()
