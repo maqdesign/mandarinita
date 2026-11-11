@@ -88,7 +88,10 @@
         const depthProgress = Math.min(1, Math.abs(y) / Math.max(radiusY, 1));
         const isBackHalf = y < 0;
         const back = isBackHalf ? depthProgress : 0;
-        const scale = isBackHalf ? 0.86 + (1 - depthProgress) * 0.12 : 0.98 + depthProgress * 0.12;
+        const scale = isBackHalf ? 1 - depthProgress * 0.18 : 1 + depthProgress * 0.14;
+        const orbitSpread = isBackHalf ? 1 - depthProgress * 0.05 : 1 + depthProgress * 0.04;
+        const positionX = x * orbitSpread;
+        const positionY = y * orbitSpread;
         const targetLayer = isBackHalf ? backLayer : frontLayer;
         if (anchor.parentElement !== targetLayer) targetLayer.append(anchor);
         // Inside each half, let the lowest card paint last. This keeps card
@@ -96,7 +99,7 @@
         anchor.style.zIndex = String(Math.max(0, Math.round((y + radiusY) * 100)));
         anchor.style.left = '50%';
         anchor.style.top = '50%';
-        anchor.style.transform = `translate(-50%,-50%) translate(${x}px,${y}px) scale(${scale})`;
+        anchor.style.transform = `translate(-50%,-50%) translate(${positionX}px,${positionY}px) scale(${scale})`;
         anchor.style.filter = `blur(${(back * 1.15).toFixed(2)}px)`;
         anchor.style.opacity = String((1 - back * 0.16).toFixed(2));
       });
