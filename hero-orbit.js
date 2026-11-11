@@ -15,8 +15,6 @@
   };
 
   const render = episodes => {
-    const lang = language();
-    orbit.setAttribute('aria-label', orbit.dataset[`label${lang === 'en' ? 'En' : 'Es'}`]);
     items.replaceChildren();
     const cards = [];
     mix(episodes).slice(0, 6).forEach((episode, index) => {
@@ -24,11 +22,6 @@
       if (!panel) return;
       const anchor = document.createElement('a');
       anchor.className = 'episode-orbit-card';
-      const title = episode.title?.[lang] || episode.title?.es || '';
-      anchor.href = `episodios.html?episode=${encodeURIComponent(episode.id)}&lang=${lang}`;
-      anchor.setAttribute('aria-label', lang === 'en'
-        ? `Episode ${episode.episodeNumber}: ${title}`
-        : `Episodio ${episode.episodeNumber}: ${title}`);
       anchor.dataset.orbitIndex = index;
       const image = document.createElement('img');
       image.src = thumbnail(panel.sourceSrc || panel.src);
@@ -44,8 +37,21 @@
       label.textContent = `EP. ${episode.episodeNumber}`;
       anchor.append(image, label);
       items.append(anchor);
-      cards.push({ anchor, phase: -Math.PI / 2 + Math.PI * 2 * index / 6 });
+      cards.push({ anchor, episode, phase: -Math.PI / 2 + Math.PI * 2 * index / 6 });
     });
+
+    const updateLanguage = () => {
+      const lang = language();
+      orbit.setAttribute('aria-label', orbit.dataset[`label${lang === 'en' ? 'En' : 'Es'}`]);
+      cards.forEach(({ anchor, episode }) => {
+        const title = episode.title?.[lang] || episode.title?.es || '';
+        anchor.href = `episodios.html?episode=${encodeURIComponent(episode.id)}&lang=${lang}`;
+        anchor.setAttribute('aria-label', lang === 'en'
+          ? `Episode ${episode.episodeNumber}: ${title}`
+          : `Episodio ${episode.episodeNumber}: ${title}`);
+      });
+    };
+    updateLanguage();
 
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
     let visible = true;
@@ -53,16 +59,21 @@
     let angle = 0;
     let previousTime = 0;
     let frame = 0;
+    let hovering = false;
+    let focused = false;
+    const tilt = -12 * Math.PI / 180;
     const depth = () => Math.min(110, orbit.getBoundingClientRect().height * 0.26);
     const positionCards = () => {
       const bounds = orbit.getBoundingClientRect();
-      const radiusX = bounds.width * 0.43;
-      const radiusY = bounds.height * 0.43;
+      const radiusX = bounds.width * 0.46;
+      const radiusY = bounds.height * 0.34;
       const zRadius = depth();
       cards.forEach(({ anchor, phase }) => {
         const theta = phase + angle;
-        const x = Math.cos(theta) * radiusX;
-        const y = Math.sin(theta) * radiusY;
+        const orbitX = Math.cos(theta) * radiusX;
+        const orbitY = Math.sin(theta) * radiusY;
+        const x = orbitX * Math.cos(tilt) - orbitY * Math.sin(tilt);
+        const y = orbitX * Math.sin(tilt) + orbitY * Math.cos(tilt);
         const z = Math.sin(theta) * zRadius;
         const back = Math.max(0, -z / zRadius);
         anchor.style.left = '50%';
@@ -86,12 +97,12 @@
     };
     const start = () => { if (!frame && visible && !paused && !reduceMotion.matches) frame = requestAnimationFrame(tick); };
     const stop = () => { if (frame) cancelAnimationFrame(frame); frame = 0; previousTime = 0; };
-    const setPaused = value => { paused = value; if (paused) stop(); else start(); };
+    const updatePaused = () => { paused = hovering || focused; if (paused) stop(); else start(); };
     cards.forEach(({ anchor }) => {
-      anchor.addEventListener('pointerenter', () => setPaused(true));
-      anchor.addEventListener('pointerleave', () => setPaused(false));
-      anchor.addEventListener('focus', () => setPaused(true));
-      anchor.addEventListener('blur', () => setPaused(false));
+      anchor.addEventListener('pointerenter', () => { hovering = true; updatePaused(); });
+      anchor.addEventListener('pointerleave', () => { hovering = false; updatePaused(); });
+      anchor.addEventListener('focus', () => { focused = true; updatePaused(); });
+      anchor.addEventListener('blur', () => { focused = false; updatePaused(); });
     });
     reduceMotion.addEventListener?.('change', () => { if (reduceMotion.matches) stop(); else start(); });
     document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' ? start() : stop());
@@ -105,6 +116,7 @@
     if ('ResizeObserver' in window) new ResizeObserver(positionCards).observe(orbit);
     positionCards();
     start();
+    return updateLanguage;
   };
 
   window.mandarinitaEpisodesCatalogPromise.then(catalog => {
@@ -112,13 +124,7 @@
       && entry.type === 'comic' && entry.complete === true
       && Number.isInteger(entry.episodeNumber) && entry.panels?.length);
     if (!episodes.length) return;
-    render(episodes);
-    document.querySelector('.language-toggle')?.addEventListener('click', () => render(episodes));
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(([entry]) => {
-        orbit.classList.toggle('is-offscreen', !entry.isIntersecting);
-      }, { threshold: 0.05 });
-      observer.observe(orbit);
-    }
+    const updateLanguage = render(episodes);
+    document.querySelector('.language-toggle')?.addEventListener('click', updateLanguage);
   }).catch(() => orbit.remove());
 })();

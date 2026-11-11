@@ -655,10 +655,11 @@
 .hero-art.hero-art-family .hero-family-image{position:absolute;z-index:1;inset:15% 15%;width:70%;height:70%;}
 .hero-episode-orbit{position:absolute;inset:0;pointer-events:none;transform-style:preserve-3d}
 .episode-orbit-track,.episode-orbit-items{position:absolute;inset:0;border-radius:50%;transform-style:preserve-3d}
-.episode-orbit-track{z-index:0;inset:7% 6%;border:1px dashed rgba(97,119,58,.32);box-shadow:0 0 0 8px rgba(248,114,9,.025),inset 0 0 0 1px rgba(255,255,255,.44)}
+.episode-orbit-track{z-index:0;inset:15% 4%;transform:rotate(-12deg);border:1px dashed rgba(97,119,58,.32);box-shadow:0 0 0 8px rgba(248,114,9,.025),inset 0 0 0 1px rgba(255,255,255,.44)}
 .episode-orbit-items{pointer-events:none}
 .episode-orbit-card{position:absolute;display:grid;grid-template-rows:1fr auto;gap:3px;place-items:center;width:88px;height:78px;padding:5px 5px 4px;border:1px solid rgba(109,87,64,.18);border-radius:13px;background:rgba(255,252,247,.96);box-shadow:0 7px 20px rgba(57,38,20,.14);color:#43352a;text-decoration:none;pointer-events:auto;transform:translate(-50%,-50%);transition:box-shadow .18s ease,scale .18s ease;will-change:transform,filter}
-.episode-orbit-card:hover,.episode-orbit-card:focus-visible{z-index:5;scale:1.12;box-shadow:0 10px 26px rgba(57,38,20,.22)}
+.episode-orbit-card:hover,.episode-orbit-card:focus-visible{scale:1.12;box-shadow:0 10px 26px rgba(57,38,20,.22)}
+.episode-orbit-card:focus-visible{z-index:5!important;filter:blur(0)!important;opacity:1!important}
 .episode-orbit-card:focus-visible{outline:3px solid #f87209;outline-offset:3px}
 .episode-orbit-card img{display:block;width:100%;height:54px;min-height:0;object-fit:cover;object-position:center;border-radius:8px;background:#f5ead8}
 .episode-orbit-card span{font-size:8px;font-weight:700;letter-spacing:.08em;color:#607d38;line-height:1.1}
