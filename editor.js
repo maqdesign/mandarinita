@@ -1522,9 +1522,19 @@
       $('#library-panel').classList.toggle('open', open);
       $('#mobile-library').setAttribute('aria-expanded', String(open));
       if (open) $('#close-library').focus({ preventScroll:true });
+      else if (matchMedia('(max-width:640px)').matches) $('#mobile-library').focus({ preventScroll:true });
     };
     $('#mobile-library').onclick = () => setLibraryOpen(!$('#library-panel').classList.contains('open'));
     $('#close-library').onclick = () => setLibraryOpen(false);
+    const mobileLibraryBreakpoint = matchMedia('(max-width:640px)');
+    const resetLibraryDrawerOnResize = event => {
+      if (event.matches || !$('#library-panel').classList.contains('open')) return;
+      $('#library-panel').classList.remove('open','dragging-from-library');
+      $('#mobile-library').setAttribute('aria-expanded','false');
+      $('#toggle-library').focus({ preventScroll:true });
+    };
+    if (mobileLibraryBreakpoint.addEventListener) mobileLibraryBreakpoint.addEventListener('change', resetLibraryDrawerOnResize);
+    else mobileLibraryBreakpoint.addListener(resetLibraryDrawerOnResize);
     $('#mobile-properties').onclick = () => $('#inspector-panel').classList.toggle('open');
     $('#focus-mode').onclick = event => { const active = $('#app-shell').classList.toggle('focus-mode'); event.currentTarget.setAttribute('aria-pressed', String(active)); };
     $('#theme-toggle').onclick = () => {
@@ -1567,7 +1577,11 @@
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'z') { event.preventDefault(); $('#undo').click(); }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'y') { event.preventDefault(); $('#redo').click(); }
       if (event.key === 'Delete' && state?.selected && !['TEXTAREA', 'INPUT'].includes(document.activeElement.tagName)) $('#delete')?.click();
-      if (event.key === 'Escape') { $('#library-panel').classList.remove('open','dragging-from-library'); $('#mobile-library').setAttribute('aria-expanded','false'); $('#inspector-panel').classList.remove('open'); }
+      if (event.key === 'Escape') {
+        if ($('#library-panel').classList.contains('open')) setLibraryOpen(false);
+        else $('#library-panel').classList.remove('dragging-from-library');
+        $('#inspector-panel').classList.remove('open');
+      }
     });
   }
   function setDrawMode(enabled) {
