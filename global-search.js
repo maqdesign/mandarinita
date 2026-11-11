@@ -1,3 +1,4 @@
+(() => {
 const searchDialog=document.querySelector('#global-search-dialog');
 const searchInput=document.querySelector('#global-search-input');
 const searchResults=document.querySelector('#global-search-results');
@@ -94,3 +95,4 @@ Promise.all([
   searchCatalogFailed=true;
   if(searchInput?.value.trim().length>=2)renderSearchResults();
 });
+})();
