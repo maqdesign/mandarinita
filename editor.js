@@ -47,6 +47,22 @@
     { name: 'Escritorio y silla giratoria · episodio 35', aliases: ['escritorio', 'silla', 'oficina', 'cucaracha', 'episodio 35'], src: 'assets/episodes/ep-035-la-cucaracha/35.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; escritorio, silla, personajes y matamoscas siguen unidos.' },
     { name: 'Trabajo remoto · episodio 44', aliases: ['trabajo', 'laptop', 'computadora', 'escritorio', 'episodio 44'], src: 'assets/episodes/ep-044-el-teletrabajo/44.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; laptop, escritorio, silla, personaje y objetos siguen unidos.' }
   ];
+  const backgroundColors = [
+    { name: 'Blanco limpio', color: '#FFFFFF', source: 'Base' },
+    { name: 'Crema Mandarinita', color: '#FFF8EC', source: 'Marca' },
+    { name: 'Naranja Mandarinita', color: '#F87209', source: 'Marca' },
+    { name: 'Verde Mandarinita', color: '#607D38', source: 'Marca' },
+    { name: 'Amarillo Mandarinita', color: '#FAC421', source: 'Marca' },
+    { name: 'Morado Mandarinita', color: '#68387D', source: 'Marca' },
+    { name: 'Miel cálida', color: '#FFDB9F', source: 'Episodio 5 · 05.1' },
+    { name: 'Arena dorada', color: '#EBD79B', source: 'Episodio 14 · 14.1' },
+    { name: 'Amarillo sol', color: '#FFC551', source: 'Episodio 31 · 31.1' },
+    { name: 'Lila vivo', color: '#B490FF', source: 'Episodio 36 · 36.1' },
+    { name: 'Cian tropical', color: '#36F0FF', source: 'Episodio 37 · 37.1' },
+    { name: 'Verde lima', color: '#B7FF48', source: 'Episodio 42 · 42.1' },
+    { name: 'Azul cielo', color: '#87DEFA', source: 'Episodio 52 · 52.1' },
+    { name: 'Azul claro', color: '#93CCFF', source: 'Episodio 70 · 70.1' }
+  ];
   const resources = [...people, ...stickers, ...objects, ...backgrounds];
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
@@ -420,6 +436,11 @@
     $('#current-panel-label').textContent = `VIÑETA ${index + 1}`;
     $$('.artboard-wrap').forEach((element, i) => element.classList.toggle('active', i === index));
     renderPanels(); renderInspector(); renderLayers(); renderOffstage();
+  }
+  function applyPanelBackground(color, name = color) {
+    if (!state || !currentPanel()) return;
+    snapshot(); currentPanel().backgroundColor = color; commit();
+    toast(`Fondo de la viñeta ${state.active + 1}: ${name}.`);
   }
   function isOffstage(item) { return item.x < 0 || item.y < 0 || item.x + item.w > LOGICAL_WIDTH || item.y + item.h > state.pageHeight; }
   function formatBounds(format = state.format) { return { width: LOGICAL_WIDTH, height: FORMAT[format].logicalHeight }; }
@@ -1081,10 +1102,11 @@
     const candidates = resources.filter(resource => (resourceFilter === 'all' || resource.category === resourceFilter) && `${resource.name} ${(resource.aliases || []).join(' ')}`.toLocaleLowerCase('es').includes(query));
     grid.innerHTML = '';
     const isBackground = resourceFilter === 'background'; $('#background-note').hidden = !isBackground;
+    if (isBackground) renderBackgroundColors(grid, query);
     if (resourceFilter === 'object' && !candidates.length) {
       grid.innerHTML = '<div class="resource-note">Todavía no hay objetos sueltos con transparencia. Los objetos importantes se ven dentro de las láminas; se podrán registrar como componentes cuando tengamos su dibujo aislado.</div>'; return;
     }
-    if (!candidates.length) { grid.innerHTML = '<div class="resource-note">No encontré recursos con ese nombre.</div>'; return; }
+    if (!candidates.length) { if (isBackground) return; grid.innerHTML = '<div class="resource-note">No encontré recursos con ese nombre.</div>'; return; }
     candidates.forEach(resource => {
       const card = document.createElement('button'); card.className = `asset-card${resource.approvedCutout ? '' : ' reference-card'}`;
       const thumb = resource.variants?.[0]?.src || resource.src;
@@ -1131,6 +1153,37 @@
       }
       grid.append(card);
     });
+  }
+  function renderBackgroundColors(grid, query = '') {
+    const matches = backgroundColors.filter(entry => `${entry.name} ${entry.source} ${entry.color}`.toLocaleLowerCase('es').includes(query));
+    const section = document.createElement('section'); section.className = 'background-palette-library';
+    const heading = document.createElement('div'); heading.className = 'background-palette-heading';
+    const title = document.createElement('strong'); title.textContent = 'Fondos de color';
+    const hint = document.createElement('small'); hint.textContent = `Se aplica a la viñeta ${state.active + 1}`;
+    heading.append(title, hint); section.append(heading);
+    if (matches.length) {
+      const options = document.createElement('div'); options.className = 'background-color-options';
+      matches.forEach(entry => {
+        const button = document.createElement('button'); button.type = 'button'; button.className = 'background-color-card';
+        button.setAttribute('aria-label', `Aplicar ${entry.name}, ${entry.color}, a la viñeta ${state.active + 1}`);
+        button.setAttribute('aria-pressed', String((currentPanel().backgroundColor || '#FFFFFF').toUpperCase() === entry.color));
+        const swatch = document.createElement('span'); swatch.className = 'background-color-swatch'; swatch.style.backgroundColor = entry.color; swatch.setAttribute('aria-hidden', 'true');
+        const copy = document.createElement('span'); copy.className = 'background-color-copy';
+        const name = document.createElement('b'); name.textContent = entry.name;
+        const source = document.createElement('small'); source.textContent = `${entry.source} · ${entry.color}`;
+        copy.append(name, source); button.append(swatch, copy);
+        button.onclick = () => applyPanelBackground(entry.color, entry.name);
+        options.append(button);
+      });
+      section.append(options);
+    } else {
+      const empty = document.createElement('small'); empty.className = 'background-palette-empty'; empty.textContent = 'No hay muestras con ese término.'; section.append(empty);
+    }
+    const custom = document.createElement('label'); custom.className = 'background-custom-color';
+    const customName = document.createElement('span'); customName.textContent = 'Elegir otro color';
+    const picker = document.createElement('input'); picker.type = 'color'; picker.value = currentPanel().backgroundColor || '#FFFFFF'; picker.setAttribute('aria-label', `Elegir fondo personalizado para la viñeta ${state.active + 1}`);
+    picker.addEventListener('change', () => applyPanelBackground(picker.value.toUpperCase(), 'color personalizado'));
+    custom.append(customName, picker); section.append(custom); grid.append(section);
   }
   async function loadCharacterReferences() {
     const response = await fetch('/editor-art-catalog.json', { cache: 'no-cache' });

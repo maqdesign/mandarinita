@@ -293,3 +293,18 @@ html.session-ended body{visibility:hidden!important}
 .story-strip.collapsed .strip-title{height:32px;margin:0}
 .story-strip.collapsed .strip-title strong,.story-strip.collapsed .panel-list{display:none}
 @media(max-width:720px){.story-strip.collapsed{flex-basis:40px!important;height:40px!important;max-height:40px!important;padding-block:3px}.story-strip #toggle-order-strip{min-height:32px}}
+.background-palette-library{grid-column:1/-1;display:grid;gap:8px;margin:0 0 3px;padding:10px;border:1px solid var(--line);border-radius:11px;background:var(--surface)}
+.background-palette-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.background-palette-heading strong{font:600 12px Fredoka,sans-serif}
+.background-palette-heading small,.background-palette-empty{color:var(--muted);font-size:9px;line-height:1.35}
+.background-color-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.background-color-card{display:flex;align-items:center;gap:6px;min-width:0;min-height:45px;padding:5px;border:1px solid var(--line);border-radius:8px;background:var(--surface-soft);text-align:left}
+.background-color-card[aria-pressed=true]{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
+.background-color-card:hover{border-color:var(--orange)}
+.background-color-swatch{flex:none;width:23px;height:23px;border:1px solid #302d2a30;border-radius:6px}
+.background-color-copy{display:grid;min-width:0;gap:2px}
+.background-color-copy b{overflow:hidden;color:var(--ink);font-size:9px;line-height:1.15;text-overflow:ellipsis;white-space:nowrap}
+.background-color-copy small{overflow:hidden;color:var(--muted);font-size:8px;line-height:1.1;text-overflow:ellipsis;white-space:nowrap}
+.background-custom-color{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--ink);font-size:10px;font-weight:600}
+.background-custom-color input{width:36px;height:30px;padding:2px;border:1px solid var(--line);border-radius:7px;background:var(--surface);cursor:pointer}
+.background-palette-library button:focus-visible,.background-custom-color input:focus-visible{outline:3px solid #f8720966;outline-offset:2px}

@@ -76,3 +76,9 @@ La comprobación de alfa separa catorce retratos con transparencia real y ocho r
 ## Validación del catálogo
 
 `node scripts/validate-episodes.mjs` valida `episodes.json`; el índice nuevo es una referencia editorial y no altera el catálogo de publicación. Cualquier componente aprobado deberá añadirse después al manifiesto de recursos del editor con su fuente, nombre canónico, alias de búsqueda y estado de aprobación.
+
+### Paleta de color y nueva inspección de utilería
+
+El editor ofrece una paleta por viñeta en **Componentes → Fondos**. Incluye blanco y crema, cuatro colores oficiales tomados de las variables de marca en `styles.css`, y ocho muestras visuales tomadas de zonas de fondo de episodios 5, 14, 31, 36, 37, 42, 52 y 70. Los valores de episodios son muestras dominantes, no fondos extraídos ni reconstruidos; conservan su referencia al panel para compararlos. Elegir una muestra cambia `backgroundColor` de la viñeta activa y el valor permanece editable en el proyecto fuente. También hay un selector personalizado.
+
+Se inspeccionó como posible utilería la licuadora del panel 93.1. El cuerpo visible está parcialmente tapado por otras figuras y por la línea de la mesa; el recorte de prueba también arrastraba píxeles ajenos. Se descartó ese borrador y no se añadió al catálogo de componentes. La fuente original permanece en el atlas como referencia; para aislarla fielmente hace falta una toma más despejada o el dibujo separado.
