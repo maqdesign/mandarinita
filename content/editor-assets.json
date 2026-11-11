@@ -12,7 +12,9 @@
       "width": 1180,
       "height": 1333,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "name": "Mando Mandarinita",
@@ -24,7 +26,9 @@
       "width": 1233,
       "height": 1276,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "name": "Greg el Zanahorio",
@@ -36,7 +40,9 @@
       "width": 1145,
       "height": 1374,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "name": "Limón Agrio",
@@ -48,7 +54,9 @@
       "width": 1290,
       "height": 1219,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "name": "Aguacatelo",
@@ -60,7 +68,9 @@
       "width": 342,
       "height": 536,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "name": "Aguacatelo · referencia de viñeta",
@@ -72,7 +82,8 @@
       "width": 446,
       "height": 536,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null
     },
     {
       "name": "Morita",
@@ -84,7 +95,9 @@
       "width": 1402,
       "height": 1122,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "name": "Don Guineo",
@@ -96,7 +109,8 @@
       "width": 287,
       "height": 306,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null
     },
     {
       "name": "Don Manzanillo",
@@ -108,7 +122,8 @@
       "width": 297,
       "height": 279,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null
     },
     {
       "name": "Sra. Pera",
@@ -120,7 +135,9 @@
       "width": 1024,
       "height": 1536,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "name": "Sandy la Sandía",
@@ -132,7 +149,8 @@
       "width": 375,
       "height": 572,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null
     },
     {
       "name": "Los Cherrys",
@@ -144,7 +162,8 @@
       "width": 298,
       "height": 284,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null
     },
     {
       "name": "Superfreso",
@@ -156,7 +175,8 @@
       "width": 1280,
       "height": 1265,
       "mode": "RGB",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null
     },
     {
       "name": "Don Pepino",
@@ -168,7 +188,8 @@
       "width": 388,
       "height": 496,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null
     },
     {
       "name": "Champi Ñón",
@@ -180,7 +201,8 @@
       "width": 191,
       "height": 184,
       "mode": "RGBA",
-      "sourcePage": "personajes.html"
+      "sourcePage": "personajes.html",
+      "stylePeriod": null
     },
     {
       "name": "Sr. Mandarino · neutral",
@@ -192,7 +214,8 @@
       "width": 500,
       "height": 500,
       "mode": "RGBA",
-      "sourcePage": "assets/"
+      "sourcePage": "assets/",
+      "stylePeriod": null
     },
     {
       "name": "Mandarinita · sonrisa",
@@ -204,7 +227,127 @@
       "width": 500,
       "height": 500,
       "mode": "RGBA",
-      "sourcePage": "assets/"
+      "sourcePage": "assets/",
+      "stylePeriod": null
+    },
+    {
+      "name": "Champi Ñón",
+      "path": "assets/characters/champi-transparent.webp",
+      "group": "invitado",
+      "appearance": "retrato original aislado, transparencia alfa real; una pose",
+      "editorUse": "drag-ready",
+      "format": "webp",
+      "width": 1059,
+      "height": 1300,
+      "mode": "RGBA",
+      "sourcePage": "personajes.html",
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "sourceEpisode": null,
+      "sourceNote": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. No se ha asignado un episodio fuente ni una época de estilo."
+    },
+    {
+      "name": "Los Cherrys",
+      "path": "assets/characters/cherrys-transparent.webp",
+      "group": "invitado",
+      "appearance": "retrato original aislado, transparencia alfa real; una pose",
+      "editorUse": "drag-ready",
+      "format": "webp",
+      "width": 1100,
+      "height": 963,
+      "mode": "RGBA",
+      "sourcePage": "personajes.html",
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "sourceEpisode": null,
+      "sourceNote": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. No se ha asignado un episodio fuente ni una época de estilo."
+    },
+    {
+      "name": "Don Guineo",
+      "path": "assets/characters/don-guineo-transparent.webp",
+      "group": "invitado",
+      "appearance": "retrato original aislado, transparencia alfa real; una pose",
+      "editorUse": "drag-ready",
+      "format": "webp",
+      "width": 954,
+      "height": 1300,
+      "mode": "RGBA",
+      "sourcePage": "personajes.html",
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "sourceEpisode": null,
+      "sourceNote": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. No se ha asignado un episodio fuente ni una época de estilo."
+    },
+    {
+      "name": "Don Pepino",
+      "path": "assets/characters/don-pepino-transparent.webp",
+      "group": "invitado",
+      "appearance": "retrato original aislado, transparencia alfa real; una pose",
+      "editorUse": "drag-ready",
+      "format": "webp",
+      "width": 729,
+      "height": 1300,
+      "mode": "RGBA",
+      "sourcePage": "personajes.html",
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "sourceEpisode": null,
+      "sourceNote": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. No se ha asignado un episodio fuente ni una época de estilo."
+    },
+    {
+      "name": "Don Manzanillo",
+      "path": "assets/characters/manzanillo-transparent.webp",
+      "group": "invitado",
+      "appearance": "retrato original aislado, transparencia alfa real; una pose",
+      "editorUse": "drag-ready",
+      "format": "webp",
+      "width": 1100,
+      "height": 1022,
+      "mode": "RGBA",
+      "sourcePage": "personajes.html",
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "sourceEpisode": null,
+      "sourceNote": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. No se ha asignado un episodio fuente ni una época de estilo."
+    },
+    {
+      "name": "Sandy la Sandía",
+      "path": "assets/characters/sandy-transparent.webp",
+      "group": "invitado",
+      "appearance": "retrato original aislado, transparencia alfa real; una pose",
+      "editorUse": "drag-ready",
+      "format": "webp",
+      "width": 1100,
+      "height": 1261,
+      "mode": "RGBA",
+      "sourcePage": "personajes.html",
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "sourceEpisode": null,
+      "sourceNote": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. No se ha asignado un episodio fuente ni una época de estilo."
+    },
+    {
+      "name": "Superfreso",
+      "path": "assets/characters/superfreso-transparent.webp",
+      "group": "invitado",
+      "appearance": "retrato original aislado, transparencia alfa real; una pose",
+      "editorUse": "drag-ready",
+      "format": "webp",
+      "width": 1100,
+      "height": 1066,
+      "mode": "RGBA",
+      "sourcePage": "personajes.html",
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "sourceEpisode": null,
+      "sourceNote": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. No se ha asignado un episodio fuente ni una época de estilo."
     }
   ]
 }

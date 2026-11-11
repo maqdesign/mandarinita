@@ -23,9 +23,18 @@ export async function onRequestGet({ request, env }) {
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code, redirect_uri: callback })
   });
-  if (!tokenResponse.ok) return json({ error: 'GitHub no pudo completar la autorización.' }, 502);
-  const token = await tokenResponse.json();
-  if (!token.access_token) return json({ error: 'GitHub rechazó la autorización.' }, 401);
+  let token;
+  try { token = await tokenResponse.json(); } catch { token = {}; }
+  if (!tokenResponse.ok || !token.access_token) {
+    // Never leave the temporary OAuth code visible in a raw error response.
+    // The detailed GitHub response can include configuration data; keep it out of
+    // the browser and logs, and send the user to an explanation instead.
+    return new Response(null, { status: 303, headers: {
+      Location: new URL('/github-auth-error.html?reason=oauth-exchange', request.url).toString(),
+      'Set-Cookie': 'mandarinita_oauth_state=; Path=/api/auth/github/callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax',
+      'Cache-Control': 'no-store'
+    } });
+  }
 
   const headers = { Authorization: `Bearer ${token.access_token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'Mandarinita-Editor' };
   const [userResponse, emailsResponse] = await Promise.all([

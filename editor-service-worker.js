@@ -7,7 +7,21 @@ const APP_SHELL = [
   '/assets/mandarinita-logo.svg',
   '/assets/mandarinita-pwa-192.png',
   '/assets/mandarinita-pwa-512.png',
-  '/assets/mandarinita-pwa-180.png'
+  '/assets/mandarinita-pwa-180.png',
+  '/assets/characters/mando-transparent.webp',
+  '/assets/characters/mandy-transparent.webp',
+  '/assets/characters/greg-transparent.webp',
+  '/assets/characters/limon-agrio-transparent.webp',
+  '/assets/characters/aguacatelo-transparent.png',
+  '/assets/characters/morita.png',
+  '/assets/characters/sra-pera-transparent.webp',
+  '/assets/characters/champi-transparent.webp',
+  '/assets/characters/cherrys-transparent.webp',
+  '/assets/characters/don-guineo-transparent.webp',
+  '/assets/characters/don-pepino-transparent.webp',
+  '/assets/characters/manzanillo-transparent.webp',
+  '/assets/characters/sandy-transparent.webp',
+  '/assets/characters/superfreso-transparent.webp'
 ];
 
 self.addEventListener('install', event => {

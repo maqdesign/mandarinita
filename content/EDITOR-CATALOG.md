@@ -14,9 +14,9 @@ Este catálogo se deriva de los recursos visibles del repositorio y no concede a
 
 La página de personajes nombra 14 personajes: Mandy y Mando Mandarinita; Greg el Zanahorio; Limón Agrio; Aguacatelo; Morita; Don Guineo; Don Manzanillo; Sra. Pera; Sandy la Sandía; Los Cherrys; Superfreso; Don Pepino; y Champi Ñón.
 
-El catálogo de assets registra los 15 archivos de `assets/characters/`, incluidos archivos que son referencias con fondo y no capas aisladas. Registra también dos retratos sueltos —Sr. Mandarino neutral y Mandarinita sonriente— sin inferir que representen poses de cuerpo completo. Ver [`editor-assets.json`](editor-assets.json) para dimensiones, transparencia, formato y uso recomendado.
+El catálogo de assets registra 22 archivos de `assets/characters/`: 14 retratos con transparencia y ocho referencias opacas que conservan partes de viñetas. Los siete nuevos retratos invitados fueron confirmados por Mauricio como personajes y dibujos suyos que reflejan su estilo; se integran en la biblioteca como poses completas reutilizables. Cada uno tiene una sola pose conocida y su episodio de origen/época de estilo aún no se ha clasificado. El manifiesto incluye dimensiones, transparencia, alias y estado de aprobación. Registra también dos retratos sueltos —Sr. Mandarino neutral y Mandarinita sonriente— como referencias suplementarias. Ver [`editor-assets.json`](editor-assets.json).
 
-- Las figuras recortadas con transparencia pueden probarse como capas conservando su archivo original y proporción.
+- Las figuras recortadas con transparencia pueden usarse como capas conservando su archivo original y proporción.
 - Los fragmentos de viñeta y las ilustraciones con fondo sirven como referencia visual; no son componentes aislados y no deben recortarse automáticamente.
 - El asset de Morita es una silueta monocroma; se mantiene como tal, sin colorearla ni reconstruirla.
 - Ninguna etiqueta del catálogo genera emociones, relaciones o variantes que no estén dibujadas en una fuente existente.

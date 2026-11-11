@@ -281,3 +281,15 @@ html.session-ended body{visibility:hidden!important}
  .panel-thumb{height:31px;font-size:9px}
  .panel-drag-handle,.panel-move{min-height:16px;padding:1px}
 }
+
+/* Opaque art: select its actual background color, then remove only the connected edge area. */
+.placed.sampling-background{cursor:crosshair!important;outline:2px dashed var(--orange);outline-offset:3px}
+.sampling-background-active,.sampling-background-active *{cursor:crosshair!important}
+.bg-remove-tools #sample-background[aria-pressed="true"]{border-color:var(--orange);background:#fff0e2;color:#c95600;font-weight:700}
+.strip-actions{display:flex;align-items:center;gap:6px}
+.story-strip #toggle-order-strip{display:inline-flex;align-items:center;gap:4px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:var(--surface-soft);font-size:10px;white-space:nowrap}
+.story-strip #toggle-order-strip .ui-icon{width:13px;height:13px}
+.story-strip.collapsed{flex-basis:42px!important;height:42px!important;max-height:42px!important;padding-block:4px}
+.story-strip.collapsed .strip-title{height:32px;margin:0}
+.story-strip.collapsed .strip-title strong,.story-strip.collapsed .panel-list{display:none}
+@media(max-width:720px){.story-strip.collapsed{flex-basis:40px!important;height:40px!important;max-height:40px!important;padding-block:3px}.story-strip #toggle-order-strip{min-height:32px}}

@@ -10645,7 +10645,9 @@
         "assets/episodes/ep-080-siempre-se-pierde-seguro-que-eso-no-le-pasa-a-ustedes-o-/80.1.png"
       ],
       "candidateSourceCertainty": "medium",
-      "candidateSourceEvidence": "Avocado body and prominent brown pit match. The episode scene is a whole composition; exact source of the transparent portrait is not established."
+      "candidateSourceEvidence": "Avocado body and prominent brown pit match. The episode scene is a whole composition; exact source of the transparent portrait is not established.",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "source": "assets/characters/aguacatelo.png",
@@ -10666,7 +10668,8 @@
       ],
       "editorCutoutApproved": false,
       "relatedToCanonicalCharacter": "Aguacatelo",
-      "identityEvidence": "visual match to the transparent Aguacatelo reference; this file itself is an opaque scene crop."
+      "identityEvidence": "visual match to the transparent Aguacatelo reference; this file itself is an opaque scene crop.",
+      "stylePeriod": null
     },
     {
       "source": "assets/characters/champi.png",
@@ -10693,7 +10696,8 @@
       "editorCutoutApproved": false,
       "verifiedSourcePanel": "assets/episodes/ep-004-el-metro/04.1.png",
       "sourceEvidence": "The character page identifies Champi Ñón waiting for the metro with Mando; the scene crop visually matches the episode 4 metro composition.",
-      "sourceReview": "matched-to-episode-scene"
+      "sourceReview": "matched-to-episode-scene",
+      "stylePeriod": null
     },
     {
       "source": "assets/characters/cherry.png",
@@ -10716,7 +10720,8 @@
         "cherry",
         "cerezas"
       ],
-      "editorCutoutApproved": false
+      "editorCutoutApproved": false,
+      "stylePeriod": null
     },
     {
       "source": "assets/characters/don-guineo.png",
@@ -10739,7 +10744,8 @@
         "guineo",
         "banana"
       ],
-      "editorCutoutApproved": false
+      "editorCutoutApproved": false,
+      "stylePeriod": null
     },
     {
       "source": "assets/characters/greg-transparent.webp",
@@ -10768,7 +10774,9 @@
         "assets/episodes/ep-082-yo-como-que-te-he-visto/82.1.png"
       ],
       "candidateSourceCertainty": "medium",
-      "candidateSourceEvidence": "Carrot form, leafy top and turquoise glasses match the character. These are candidate reference panels, not proof that the transparent crop came from one of them."
+      "candidateSourceEvidence": "Carrot form, leafy top and turquoise glasses match the character. These are candidate reference panels, not proof that the transparent crop came from one of them.",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "source": "assets/characters/limon-agrio-transparent.webp",
@@ -10798,7 +10806,9 @@
         "assets/episodes/ep-037-distanciamiento-social/37.2.png"
       ],
       "candidateSourceCertainty": "medium",
-      "candidateSourceEvidence": "Green citrus body, sunglasses and accessories match; the panel dialogue also names Limón Agrio. Exact source of the transparent portrait is not established."
+      "candidateSourceEvidence": "Green citrus body, sunglasses and accessories match; the panel dialogue also names Limón Agrio. Exact source of the transparent portrait is not established.",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "source": "assets/characters/mando-transparent.webp",
@@ -10825,7 +10835,9 @@
       "editorCutoutApproved": true,
       "verifiedSourcePanel": "assets/episodes/ep-046-sorpresa/46.3.png",
       "sourceEvidence": "personajes.html alt explicitly says the cutout comes from episode 46; full-resolution visual comparison matches the character pose in panel 46.3.",
-      "sourceReview": "matched-to-full-resolution-panel"
+      "sourceReview": "matched-to-full-resolution-panel",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "source": "assets/characters/mandy-transparent.webp",
@@ -10850,7 +10862,9 @@
       "editorCutoutApproved": true,
       "verifiedSourcePanel": "assets/episodes/ep-046-sorpresa/46.3.png",
       "sourceEvidence": "personajes.html alt explicitly says the cutout comes from episode 46; full-resolution visual comparison matches the character pose in panel 46.3.",
-      "sourceReview": "matched-to-full-resolution-panel"
+      "sourceReview": "matched-to-full-resolution-panel",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "source": "assets/characters/manzanillo.png",
@@ -10873,7 +10887,8 @@
         "manzanillo",
         "manzana"
       ],
-      "editorCutoutApproved": false
+      "editorCutoutApproved": false,
+      "stylePeriod": null
     },
     {
       "source": "assets/characters/morita.png",
@@ -10903,7 +10918,9 @@
         "assets/episodes/ep-059-no-juegues-asi/59.4.png"
       ],
       "candidateSourceCertainty": "medium",
-      "candidateSourceEvidence": "Panels address the visible black, large-eyed and tongue-out figure as Morita; exact source of the transparent portrait is not established."
+      "candidateSourceEvidence": "Panels address the visible black, large-eyed and tongue-out figure as Morita; exact source of the transparent portrait is not established.",
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "source": "assets/characters/pepino.png",
@@ -10928,7 +10945,8 @@
       "editorCutoutApproved": false,
       "verifiedSourcePanel": "assets/episodes/ep-008-pepino-felino/08.1.png",
       "sourceEvidence": "The opaque crop matches the character, speech balloons and mint background in panel 8.1. It is a scene reference, not an isolated asset.",
-      "sourceReview": "matched-to-episode-scene"
+      "sourceReview": "matched-to-episode-scene",
+      "stylePeriod": null
     },
     {
       "source": "assets/characters/sandy.png",
@@ -10956,7 +10974,8 @@
         "assets/episodes/ep-014-un-dia-malo/14.2.png"
       ],
       "candidateSourceCertainty": "medium",
-      "candidateSourceEvidence": "Watermelon passenger in public transport context, consistent with the character-page description. This scene shows a pink bow not present in the opaque reference, so retain medium certainty."
+      "candidateSourceEvidence": "Watermelon passenger in public transport context, consistent with the character-page description. This scene shows a pink bow not present in the opaque reference, so retain medium certainty.",
+      "stylePeriod": null
     },
     {
       "source": "assets/characters/sra-pera-transparent.webp",
@@ -10979,7 +10998,9 @@
         "señora pera",
         "pera"
       ],
-      "editorCutoutApproved": true
+      "editorCutoutApproved": true,
+      "stylePeriod": null,
+      "styleReference": true
     },
     {
       "source": "assets/characters/superfreso.jpeg",
@@ -11001,7 +11022,214 @@
         "superfreso",
         "fresa"
       ],
-      "editorCutoutApproved": false
+      "editorCutoutApproved": false,
+      "stylePeriod": null
+    },
+    {
+      "source": "assets/characters/champi-transparent.webp",
+      "width": 1059,
+      "height": 1300,
+      "sourceMode": "RGBA",
+      "hasTransparentPixels": true,
+      "visualReview": "owner-confirmed",
+      "catalogStatus": "approved",
+      "contactSheet": "docs/art-review/portraits-on-main-review.webp",
+      "contactSheetTile": 1,
+      "characterPageStatus": "listed",
+      "visualTagsStatus": "owner-confirmed",
+      "canonicalName": "Champi Ñón",
+      "pageAltText": "Champi Ñón, retrato transparente original",
+      "pageGroup": "guest",
+      "assetUse": "existing-transparent-portrait",
+      "searchAliases": [
+        "champi",
+        "champi ñon",
+        "champi non",
+        "hongo"
+      ],
+      "editorCutoutApproved": true,
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "verifiedSourcePanel": null,
+      "sourceReview": "owner-confirmed-character-portrait",
+      "sourceEvidence": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. El episodio y la época de estilo quedan sin clasificar."
+    },
+    {
+      "source": "assets/characters/cherrys-transparent.webp",
+      "width": 1100,
+      "height": 963,
+      "sourceMode": "RGBA",
+      "hasTransparentPixels": true,
+      "visualReview": "owner-confirmed",
+      "catalogStatus": "approved",
+      "contactSheet": "docs/art-review/portraits-on-main-review.webp",
+      "contactSheetTile": 2,
+      "characterPageStatus": "listed",
+      "visualTagsStatus": "owner-confirmed",
+      "canonicalName": "Los Cherrys",
+      "pageAltText": "Los Cherrys, retrato transparente original",
+      "pageGroup": "guest",
+      "assetUse": "existing-transparent-portrait",
+      "searchAliases": [
+        "cherrys",
+        "cherry",
+        "cerezas"
+      ],
+      "editorCutoutApproved": true,
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "verifiedSourcePanel": null,
+      "sourceReview": "owner-confirmed-character-portrait",
+      "sourceEvidence": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. El episodio y la época de estilo quedan sin clasificar."
+    },
+    {
+      "source": "assets/characters/don-guineo-transparent.webp",
+      "width": 954,
+      "height": 1300,
+      "sourceMode": "RGBA",
+      "hasTransparentPixels": true,
+      "visualReview": "owner-confirmed",
+      "catalogStatus": "approved",
+      "contactSheet": "docs/art-review/portraits-on-main-review.webp",
+      "contactSheetTile": 3,
+      "characterPageStatus": "listed",
+      "visualTagsStatus": "owner-confirmed",
+      "canonicalName": "Don Guineo",
+      "pageAltText": "Don Guineo, retrato transparente original",
+      "pageGroup": "guest",
+      "assetUse": "existing-transparent-portrait",
+      "searchAliases": [
+        "don guineo",
+        "guineo",
+        "banana",
+        "banano"
+      ],
+      "editorCutoutApproved": true,
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "verifiedSourcePanel": null,
+      "sourceReview": "owner-confirmed-character-portrait",
+      "sourceEvidence": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. El episodio y la época de estilo quedan sin clasificar."
+    },
+    {
+      "source": "assets/characters/don-pepino-transparent.webp",
+      "width": 729,
+      "height": 1300,
+      "sourceMode": "RGBA",
+      "hasTransparentPixels": true,
+      "visualReview": "owner-confirmed",
+      "catalogStatus": "approved",
+      "contactSheet": "docs/art-review/portraits-on-main-review.webp",
+      "contactSheetTile": 4,
+      "characterPageStatus": "listed",
+      "visualTagsStatus": "owner-confirmed",
+      "canonicalName": "Don Pepino",
+      "pageAltText": "Don Pepino, retrato transparente original",
+      "pageGroup": "guest",
+      "assetUse": "existing-transparent-portrait",
+      "searchAliases": [
+        "don pepino",
+        "pepino",
+        "pepino con gorra"
+      ],
+      "editorCutoutApproved": true,
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "verifiedSourcePanel": null,
+      "sourceReview": "owner-confirmed-character-portrait",
+      "sourceEvidence": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. El episodio y la época de estilo quedan sin clasificar."
+    },
+    {
+      "source": "assets/characters/manzanillo-transparent.webp",
+      "width": 1100,
+      "height": 1022,
+      "sourceMode": "RGBA",
+      "hasTransparentPixels": true,
+      "visualReview": "owner-confirmed",
+      "catalogStatus": "approved",
+      "contactSheet": "docs/art-review/portraits-on-main-review.webp",
+      "contactSheetTile": 5,
+      "characterPageStatus": "listed",
+      "visualTagsStatus": "owner-confirmed",
+      "canonicalName": "Don Manzanillo",
+      "pageAltText": "Don Manzanillo, retrato transparente original",
+      "pageGroup": "guest",
+      "assetUse": "existing-transparent-portrait",
+      "searchAliases": [
+        "don manzanillo",
+        "manzanillo",
+        "manzana"
+      ],
+      "editorCutoutApproved": true,
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "verifiedSourcePanel": null,
+      "sourceReview": "owner-confirmed-character-portrait",
+      "sourceEvidence": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. El episodio y la época de estilo quedan sin clasificar."
+    },
+    {
+      "source": "assets/characters/sandy-transparent.webp",
+      "width": 1100,
+      "height": 1261,
+      "sourceMode": "RGBA",
+      "hasTransparentPixels": true,
+      "visualReview": "owner-confirmed",
+      "catalogStatus": "approved",
+      "contactSheet": "docs/art-review/portraits-on-main-review.webp",
+      "contactSheetTile": 6,
+      "characterPageStatus": "listed",
+      "visualTagsStatus": "owner-confirmed",
+      "canonicalName": "Sandy la Sandía",
+      "pageAltText": "Sandy la Sandía, retrato transparente original",
+      "pageGroup": "guest",
+      "assetUse": "existing-transparent-portrait",
+      "searchAliases": [
+        "sandy",
+        "sandy la sandía",
+        "sandía",
+        "sandia"
+      ],
+      "editorCutoutApproved": true,
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "verifiedSourcePanel": null,
+      "sourceReview": "owner-confirmed-character-portrait",
+      "sourceEvidence": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. El episodio y la época de estilo quedan sin clasificar."
+    },
+    {
+      "source": "assets/characters/superfreso-transparent.webp",
+      "width": 1100,
+      "height": 1066,
+      "sourceMode": "RGBA",
+      "hasTransparentPixels": true,
+      "visualReview": "owner-confirmed",
+      "catalogStatus": "approved",
+      "contactSheet": "docs/art-review/portraits-on-main-review.webp",
+      "contactSheetTile": 7,
+      "characterPageStatus": "listed",
+      "visualTagsStatus": "owner-confirmed",
+      "canonicalName": "Superfreso",
+      "pageAltText": "Superfreso, retrato transparente original",
+      "pageGroup": "guest",
+      "assetUse": "existing-transparent-portrait",
+      "searchAliases": [
+        "superfreso",
+        "super freso",
+        "fresa"
+      ],
+      "editorCutoutApproved": true,
+      "ownerConfirmed": true,
+      "styleReference": true,
+      "stylePeriod": null,
+      "verifiedSourcePanel": null,
+      "sourceReview": "owner-confirmed-character-portrait",
+      "sourceEvidence": "Mauricio confirmó que el personaje y el dibujo son suyos y representan su estilo. El episodio y la época de estilo quedan sin clasificar."
     }
   ],
   "visualReviewScope": {
@@ -11415,10 +11643,16 @@
       "approved transparent character files in assets/characters/",
       "verified original layered drawings supplied by Mauricio"
     ],
+    "styleReferenceSources": [
+      "owner-confirmed original character portraits",
+      "approved original episode panels, linked to their episode and panel when known"
+    ],
     "excludedSources": [
       "assets/character-sheet-original.jpg"
     ],
-    "rule": "Only episode artwork and verified original character artwork define canonical design. AI-generated character-sheet art is excluded from character references and must not be used to create pose/expression variants."
+    "stylePeriodPolicy": "Do not infer or assign a style period automatically. Mauricio classifies style periods and can mark references as unknown.",
+    "generationPolicy": "AI-assisted variants and components are proposals saved with status review. They do not become canonical, insertable or publishable until Mauricio explicitly approves them.",
+    "rule": "Only episode artwork and verified original character artwork define canonical design. The generated character sheet is excluded from the reference set. Owner-confirmed original artwork may be used as style references for proposals, not as permission to invent hidden parts or unreviewed character traits."
   },
   "protagonistReviewScope": {
     "characters": [
@@ -12365,6 +12599,628 @@
         "purpose": "locate candidate Mando appearances for later full-resolution confirmation",
         "interpretation": "screening only; an unrecognized thumbnail is not evidence that Mando is absent"
       }
+    }
+  ],
+  "reusableAssetCandidates": [
+    {
+      "id": "blue-living-room-furniture",
+      "label": "Mueble azul de la sala",
+      "category": "scene-object-reference",
+      "searchAliases": [
+        "mueble azul",
+        "sofá azul",
+        "sillón turquesa",
+        "sofa"
+      ],
+      "sourceTags": [
+        "sofa-azul"
+      ],
+      "status": "reference-only",
+      "separationStatus": "not-separated",
+      "panelCount": 47,
+      "episodeCount": 12,
+      "episodeNumbers": [
+        9,
+        19,
+        26,
+        27,
+        32,
+        34,
+        39,
+        49,
+        50,
+        51,
+        55,
+        56
+      ],
+      "sourcePanels": [
+        "assets/episodes/ep-009-la-cena/09.1.png",
+        "assets/episodes/ep-009-la-cena/09.2.png",
+        "assets/episodes/ep-009-la-cena/09.3.png",
+        "assets/episodes/ep-009-la-cena/09.4.png",
+        "assets/episodes/ep-019-noche-de-peliculas/19.1.png",
+        "assets/episodes/ep-019-noche-de-peliculas/19.2.png",
+        "assets/episodes/ep-019-noche-de-peliculas/19.3.png",
+        "assets/episodes/ep-019-noche-de-peliculas/19.4.png",
+        "assets/episodes/ep-026-tutoriales-de-youtube/26.1.png",
+        "assets/episodes/ep-026-tutoriales-de-youtube/26.2.png",
+        "assets/episodes/ep-026-tutoriales-de-youtube/26.3.png",
+        "assets/episodes/ep-026-tutoriales-de-youtube/26.4.png",
+        "assets/episodes/ep-027-de-donde-salio/27.1.png",
+        "assets/episodes/ep-027-de-donde-salio/27.2.png",
+        "assets/episodes/ep-027-de-donde-salio/27.4.png",
+        "assets/episodes/ep-032-frutify/32.1.png",
+        "assets/episodes/ep-032-frutify/32.2.png",
+        "assets/episodes/ep-032-frutify/32.3.png",
+        "assets/episodes/ep-032-frutify/32.4.png",
+        "assets/episodes/ep-034-la-cosa/34.1.png",
+        "assets/episodes/ep-034-la-cosa/34.2.png",
+        "assets/episodes/ep-034-la-cosa/34.3.png",
+        "assets/episodes/ep-034-la-cosa/34.4.png",
+        "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.1.png",
+        "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.2.png",
+        "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.3.png",
+        "assets/episodes/ep-039-quiero-una-mascota-parte-1/39.4.png",
+        "assets/episodes/ep-049-no-se-vale-picar/49.1.png",
+        "assets/episodes/ep-049-no-se-vale-picar/49.2.png",
+        "assets/episodes/ep-049-no-se-vale-picar/49.3.png",
+        "assets/episodes/ep-049-no-se-vale-picar/49.4.png",
+        "assets/episodes/ep-050-a-que-fue-que-vine/50.1.png",
+        "assets/episodes/ep-050-a-que-fue-que-vine/50.2.png",
+        "assets/episodes/ep-050-a-que-fue-que-vine/50.3.png",
+        "assets/episodes/ep-050-a-que-fue-que-vine/50.4.png",
+        "assets/episodes/ep-051-tienes-hambre/51.1.png",
+        "assets/episodes/ep-051-tienes-hambre/51.2.png",
+        "assets/episodes/ep-051-tienes-hambre/51.3.png",
+        "assets/episodes/ep-051-tienes-hambre/51.4.png",
+        "assets/episodes/ep-055-quiero-compania/55.1.png",
+        "assets/episodes/ep-055-quiero-compania/55.2.png",
+        "assets/episodes/ep-055-quiero-compania/55.3.png",
+        "assets/episodes/ep-055-quiero-compania/55.4.png",
+        "assets/episodes/ep-056-procrastinacion/56.1.png",
+        "assets/episodes/ep-056-procrastinacion/56.2.png",
+        "assets/episodes/ep-056-procrastinacion/56.3.png",
+        "assets/episodes/ep-056-procrastinacion/56.4.png"
+      ],
+      "note": "Mueble recurrente de la sala. En las viñetas el personaje, las sombras y a veces los globos se superponen; localizar aquí no significa que el sofá esté recortado. Los conteos proceden de etiquetas de búsqueda del catálogo y sirven para priorizar revisión; no certifican que cada etiqueta esté presente en cada panel."
+    },
+    {
+      "id": "bedroom-bed",
+      "label": "Cama y ropa de cama",
+      "category": "scene-object-reference",
+      "searchAliases": [
+        "cama",
+        "cobija",
+        "manta",
+        "dormitorio"
+      ],
+      "sourceTags": [
+        "cama",
+        "manta"
+      ],
+      "status": "reference-only",
+      "separationStatus": "not-separated",
+      "panelCount": 40,
+      "episodeCount": 8,
+      "episodeNumbers": [
+        5,
+        13,
+        20,
+        21,
+        53,
+        72,
+        76,
+        89
+      ],
+      "sourcePanels": [
+        "assets/episodes/ep-005-cinco-minutos-mas/05.1.png",
+        "assets/episodes/ep-005-cinco-minutos-mas/05.2.png",
+        "assets/episodes/ep-005-cinco-minutos-mas/05.3.png",
+        "assets/episodes/ep-005-cinco-minutos-mas/05.4.png",
+        "assets/episodes/ep-013-siempre-con-sueno/13.1.jpg",
+        "assets/episodes/ep-013-siempre-con-sueno/13.4.jpg",
+        "assets/episodes/ep-020-el-jarron-de-agua/20.1.png",
+        "assets/episodes/ep-020-el-jarron-de-agua/20.2.png",
+        "assets/episodes/ep-020-el-jarron-de-agua/20.3.png",
+        "assets/episodes/ep-020-el-jarron-de-agua/20.4.png",
+        "assets/episodes/ep-021-nada/21.1.png",
+        "assets/episodes/ep-021-nada/21.2.png",
+        "assets/episodes/ep-021-nada/21.3.png",
+        "assets/episodes/ep-021-nada/21.4.png",
+        "assets/episodes/ep-053-ellas-vs-ellos/53.1.png",
+        "assets/episodes/ep-053-ellas-vs-ellos/53.2.png",
+        "assets/episodes/ep-053-ellas-vs-ellos/53.3.png",
+        "assets/episodes/ep-053-ellas-vs-ellos/53.4.png",
+        "assets/episodes/ep-072-acurrucados/72.1.png",
+        "assets/episodes/ep-072-acurrucados/72.2.png",
+        "assets/episodes/ep-072-acurrucados/72.3.png",
+        "assets/episodes/ep-076-stop/76.1.png",
+        "assets/episodes/ep-076-stop/76.2.png",
+        "assets/episodes/ep-076-stop/76.3.png",
+        "assets/episodes/ep-076-stop/76.4.png",
+        "assets/episodes/ep-076-stop/76.5.png",
+        "assets/episodes/ep-076-stop/76.6.png",
+        "assets/episodes/ep-076-stop/76.7.png",
+        "assets/episodes/ep-076-stop/76.8.png",
+        "assets/episodes/ep-076-stop/76.9.png",
+        "assets/episodes/ep-076-stop/76.10.png",
+        "assets/episodes/ep-076-stop/76.11.png",
+        "assets/episodes/ep-076-stop/76.12.png",
+        "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.1.png",
+        "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.2.png",
+        "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.3.png",
+        "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.4.png",
+        "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.5.png",
+        "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.6.png",
+        "assets/episodes/ep-089-persiguiendo-tus-suenos-o-ellos-a-ti/89.7.png"
+      ],
+      "note": "Escenas de descanso con cama y, en ocasiones, manta/personaje integrados. Los conteos proceden de etiquetas de búsqueda del catálogo y sirven para priorizar revisión; no certifican que cada etiqueta esté presente en cada panel."
+    },
+    {
+      "id": "kitchen-set",
+      "label": "Cocina y fregadero",
+      "category": "scene-object-reference",
+      "searchAliases": [
+        "cocina",
+        "fregadero",
+        "gabinete",
+        "platos",
+        "estufa"
+      ],
+      "sourceTags": [
+        "cocina",
+        "fregadero",
+        "gabinete",
+        "platos",
+        "estufa"
+      ],
+      "status": "reference-only",
+      "separationStatus": "not-separated",
+      "panelCount": 31,
+      "episodeCount": 6,
+      "episodeNumbers": [
+        22,
+        49,
+        55,
+        57,
+        60,
+        74
+      ],
+      "sourcePanels": [
+        "assets/episodes/ep-022-el-fregao/22.1.png",
+        "assets/episodes/ep-022-el-fregao/22.2.png",
+        "assets/episodes/ep-022-el-fregao/22.3.png",
+        "assets/episodes/ep-022-el-fregao/22.4.png",
+        "assets/episodes/ep-022-el-fregao/22.5.png",
+        "assets/episodes/ep-022-el-fregao/22.6.png",
+        "assets/episodes/ep-022-el-fregao/22.7.png",
+        "assets/episodes/ep-022-el-fregao/22.8.png",
+        "assets/episodes/ep-022-el-fregao/22.9.png",
+        "assets/episodes/ep-022-el-fregao/22.10.png",
+        "assets/episodes/ep-049-no-se-vale-picar/49.1.png",
+        "assets/episodes/ep-049-no-se-vale-picar/49.2.png",
+        "assets/episodes/ep-049-no-se-vale-picar/49.3.png",
+        "assets/episodes/ep-049-no-se-vale-picar/49.4.png",
+        "assets/episodes/ep-055-quiero-compania/55.1.png",
+        "assets/episodes/ep-055-quiero-compania/55.2.png",
+        "assets/episodes/ep-055-quiero-compania/55.3.png",
+        "assets/episodes/ep-055-quiero-compania/55.4.png",
+        "assets/episodes/ep-057-dejame-un-chin/57.1.jpg",
+        "assets/episodes/ep-057-dejame-un-chin/57.2.jpg",
+        "assets/episodes/ep-057-dejame-un-chin/57.3.jpg",
+        "assets/episodes/ep-057-dejame-un-chin/57.4.jpg",
+        "assets/episodes/ep-060-el-pedido/60.1.png",
+        "assets/episodes/ep-060-el-pedido/60.2.png",
+        "assets/episodes/ep-060-el-pedido/60.3.png",
+        "assets/episodes/ep-060-el-pedido/60.4.png",
+        "assets/episodes/ep-074-friendo/74.1.png",
+        "assets/episodes/ep-074-friendo/74.2.png",
+        "assets/episodes/ep-074-friendo/74.3.png",
+        "assets/episodes/ep-074-friendo/74.4.png",
+        "assets/episodes/ep-074-friendo/74.5.png"
+      ],
+      "note": "Conjunto de cocina recurrente. Gabinetes, fregadero, platos y personajes aparecen unidos en varias láminas. Los conteos proceden de etiquetas de búsqueda del catálogo y sirven para priorizar revisión; no certifican que cada etiqueta esté presente en cada panel."
+    },
+    {
+      "id": "desk-workspace",
+      "label": "Escritorio de trabajo",
+      "category": "scene-object-reference",
+      "searchAliases": [
+        "escritorio",
+        "silla",
+        "laptop",
+        "computadora",
+        "oficina"
+      ],
+      "sourceTags": [
+        "escritorio",
+        "silla",
+        "laptop",
+        "computadora"
+      ],
+      "status": "reference-only",
+      "separationStatus": "not-separated",
+      "panelCount": 58,
+      "episodeCount": 13,
+      "episodeNumbers": [
+        7,
+        35,
+        42,
+        44,
+        45,
+        48,
+        55,
+        56,
+        69,
+        76,
+        81,
+        88,
+        96
+      ],
+      "sourcePanels": [
+        "assets/episodes/ep-007-this-guy-is-on-fire/07.1.jpg",
+        "assets/episodes/ep-035-la-cucaracha/35.1.png",
+        "assets/episodes/ep-035-la-cucaracha/35.2.png",
+        "assets/episodes/ep-035-la-cucaracha/35.3.png",
+        "assets/episodes/ep-035-la-cucaracha/35.4.png",
+        "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.1.png",
+        "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.2.png",
+        "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.3.png",
+        "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.4.png",
+        "assets/episodes/ep-044-el-teletrabajo/44.1.png",
+        "assets/episodes/ep-044-el-teletrabajo/44.2.png",
+        "assets/episodes/ep-044-el-teletrabajo/44.3.png",
+        "assets/episodes/ep-044-el-teletrabajo/44.4.png",
+        "assets/episodes/ep-045-frustraciones-de-la-vida/45.1.png",
+        "assets/episodes/ep-045-frustraciones-de-la-vida/45.2.png",
+        "assets/episodes/ep-045-frustraciones-de-la-vida/45.3.png",
+        "assets/episodes/ep-045-frustraciones-de-la-vida/45.4.png",
+        "assets/episodes/ep-048-interrupciones/48.1.png",
+        "assets/episodes/ep-048-interrupciones/48.2.png",
+        "assets/episodes/ep-048-interrupciones/48.3.png",
+        "assets/episodes/ep-048-interrupciones/48.4.png",
+        "assets/episodes/ep-055-quiero-compania/55.1.png",
+        "assets/episodes/ep-055-quiero-compania/55.2.png",
+        "assets/episodes/ep-055-quiero-compania/55.3.png",
+        "assets/episodes/ep-055-quiero-compania/55.4.png",
+        "assets/episodes/ep-056-procrastinacion/56.1.png",
+        "assets/episodes/ep-056-procrastinacion/56.2.png",
+        "assets/episodes/ep-056-procrastinacion/56.3.png",
+        "assets/episodes/ep-056-procrastinacion/56.4.png",
+        "assets/episodes/ep-069-yo-tambien-merezco-graduarme/69.1.png",
+        "assets/episodes/ep-076-stop/76.1.png",
+        "assets/episodes/ep-076-stop/76.2.png",
+        "assets/episodes/ep-076-stop/76.3.png",
+        "assets/episodes/ep-076-stop/76.4.png",
+        "assets/episodes/ep-076-stop/76.5.png",
+        "assets/episodes/ep-076-stop/76.6.png",
+        "assets/episodes/ep-076-stop/76.7.png",
+        "assets/episodes/ep-076-stop/76.8.png",
+        "assets/episodes/ep-076-stop/76.9.png",
+        "assets/episodes/ep-076-stop/76.10.png",
+        "assets/episodes/ep-076-stop/76.11.png",
+        "assets/episodes/ep-076-stop/76.12.png",
+        "assets/episodes/ep-081-el-conteo-eterno/81.1.png",
+        "assets/episodes/ep-081-el-conteo-eterno/81.2.png",
+        "assets/episodes/ep-081-el-conteo-eterno/81.3.png",
+        "assets/episodes/ep-081-el-conteo-eterno/81.4.png",
+        "assets/episodes/ep-081-el-conteo-eterno/81.5.png",
+        "assets/episodes/ep-088-buena-organizacion-digital/88.6.jpg",
+        "assets/episodes/ep-088-buena-organizacion-digital/88.1.png",
+        "assets/episodes/ep-088-buena-organizacion-digital/88.2.png",
+        "assets/episodes/ep-088-buena-organizacion-digital/88.3.png",
+        "assets/episodes/ep-088-buena-organizacion-digital/88.4.png",
+        "assets/episodes/ep-088-buena-organizacion-digital/88.5.png",
+        "assets/episodes/ep-096-por-que-me-espias/96.1.png",
+        "assets/episodes/ep-096-por-que-me-espias/96.2.png",
+        "assets/episodes/ep-096-por-que-me-espias/96.3.png",
+        "assets/episodes/ep-096-por-que-me-espias/96.4.png",
+        "assets/episodes/ep-096-por-que-me-espias/96.5.png"
+      ],
+      "note": "Escenas de trabajo con mobiliario, equipo y personajes dentro de la composición. Los conteos proceden de etiquetas de búsqueda del catálogo y sirven para priorizar revisión; no certifican que cada etiqueta esté presente en cada panel."
+    },
+    {
+      "id": "screen-tv",
+      "label": "Televisor y pantalla",
+      "category": "scene-object-reference",
+      "searchAliases": [
+        "televisor",
+        "pantalla",
+        "TV",
+        "televisión"
+      ],
+      "sourceTags": [
+        "pantalla",
+        "televisor"
+      ],
+      "status": "reference-only",
+      "separationStatus": "not-separated",
+      "panelCount": 33,
+      "episodeCount": 10,
+      "episodeNumbers": [
+        9,
+        13,
+        19,
+        26,
+        32,
+        42,
+        52,
+        62,
+        65,
+        70
+      ],
+      "sourcePanels": [
+        "assets/episodes/ep-009-la-cena/09.1.png",
+        "assets/episodes/ep-009-la-cena/09.2.png",
+        "assets/episodes/ep-009-la-cena/09.3.png",
+        "assets/episodes/ep-009-la-cena/09.4.png",
+        "assets/episodes/ep-013-siempre-con-sueno/13.2.jpg",
+        "assets/episodes/ep-013-siempre-con-sueno/13.3.jpg",
+        "assets/episodes/ep-019-noche-de-peliculas/19.1.png",
+        "assets/episodes/ep-019-noche-de-peliculas/19.2.png",
+        "assets/episodes/ep-019-noche-de-peliculas/19.3.png",
+        "assets/episodes/ep-019-noche-de-peliculas/19.4.png",
+        "assets/episodes/ep-026-tutoriales-de-youtube/26.1.png",
+        "assets/episodes/ep-026-tutoriales-de-youtube/26.2.png",
+        "assets/episodes/ep-026-tutoriales-de-youtube/26.3.png",
+        "assets/episodes/ep-026-tutoriales-de-youtube/26.4.png",
+        "assets/episodes/ep-032-frutify/32.1.png",
+        "assets/episodes/ep-032-frutify/32.2.png",
+        "assets/episodes/ep-032-frutify/32.3.png",
+        "assets/episodes/ep-032-frutify/32.4.png",
+        "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.1.png",
+        "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.2.png",
+        "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.3.png",
+        "assets/episodes/ep-042-cuando-lo-tienes-frente-a-tus-ojos/42.4.png",
+        "assets/episodes/ep-052-fruitflix/52.1.png",
+        "assets/episodes/ep-052-fruitflix/52.2.png",
+        "assets/episodes/ep-052-fruitflix/52.3.png",
+        "assets/episodes/ep-052-fruitflix/52.4.png",
+        "assets/episodes/ep-062-fruitgle/62.1.png",
+        "assets/episodes/ep-065-aunque-corras-no-podras-escapar/65.1.png",
+        "assets/episodes/ep-070-emociones-graficas/70.1.png",
+        "assets/episodes/ep-070-emociones-graficas/70.2.png",
+        "assets/episodes/ep-070-emociones-graficas/70.3.png",
+        "assets/episodes/ep-070-emociones-graficas/70.4.png",
+        "assets/episodes/ep-070-emociones-graficas/70.5.png"
+      ],
+      "note": "Pantallas en salas, tutoriales y escenas de trabajo; las fuentes siguen siendo viñetas completas. Los conteos proceden de etiquetas de búsqueda del catálogo y sirven para priorizar revisión; no certifican que cada etiqueta esté presente en cada panel."
+    },
+    {
+      "id": "table-drinkware",
+      "label": "Mesa y vasos",
+      "category": "scene-object-reference",
+      "searchAliases": [
+        "mesa",
+        "vaso",
+        "jarrón",
+        "jarra",
+        "bebida"
+      ],
+      "sourceTags": [
+        "mesa",
+        "vaso"
+      ],
+      "status": "reference-only",
+      "separationStatus": "not-separated",
+      "panelCount": 31,
+      "episodeCount": 8,
+      "episodeNumbers": [
+        7,
+        20,
+        43,
+        57,
+        59,
+        60,
+        84,
+        93
+      ],
+      "sourcePanels": [
+        "assets/episodes/ep-007-this-guy-is-on-fire/07.4.jpg",
+        "assets/episodes/ep-020-el-jarron-de-agua/20.1.png",
+        "assets/episodes/ep-020-el-jarron-de-agua/20.2.png",
+        "assets/episodes/ep-020-el-jarron-de-agua/20.3.png",
+        "assets/episodes/ep-020-el-jarron-de-agua/20.4.png",
+        "assets/episodes/ep-043-otro-vaso/43.1.png",
+        "assets/episodes/ep-043-otro-vaso/43.2.png",
+        "assets/episodes/ep-043-otro-vaso/43.3.png",
+        "assets/episodes/ep-043-otro-vaso/43.4.png",
+        "assets/episodes/ep-057-dejame-un-chin/57.1.jpg",
+        "assets/episodes/ep-057-dejame-un-chin/57.2.jpg",
+        "assets/episodes/ep-057-dejame-un-chin/57.3.jpg",
+        "assets/episodes/ep-057-dejame-un-chin/57.4.jpg",
+        "assets/episodes/ep-059-no-juegues-asi/59.1.png",
+        "assets/episodes/ep-059-no-juegues-asi/59.2.png",
+        "assets/episodes/ep-059-no-juegues-asi/59.3.png",
+        "assets/episodes/ep-059-no-juegues-asi/59.4.png",
+        "assets/episodes/ep-060-el-pedido/60.1.png",
+        "assets/episodes/ep-060-el-pedido/60.2.png",
+        "assets/episodes/ep-060-el-pedido/60.3.png",
+        "assets/episodes/ep-060-el-pedido/60.4.png",
+        "assets/episodes/ep-084-como-se-llama-la-obra/84.1.png",
+        "assets/episodes/ep-084-como-se-llama-la-obra/84.2.png",
+        "assets/episodes/ep-084-como-se-llama-la-obra/84.3.png",
+        "assets/episodes/ep-084-como-se-llama-la-obra/84.4.png",
+        "assets/episodes/ep-084-como-se-llama-la-obra/84.5.png",
+        "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.1.png",
+        "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.2.png",
+        "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.3.png",
+        "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.4.png",
+        "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.5.png"
+      ],
+      "note": "Mesas, vasos y recipientes recurrentes; algunas fuentes presentan los propios vasos como personajes. Los conteos proceden de etiquetas de búsqueda del catálogo y sirven para priorizar revisión; no certifican que cada etiqueta esté presente en cada panel."
+    },
+    {
+      "id": "shopping-set",
+      "label": "Carrito y bolsas de compra",
+      "category": "scene-object-reference",
+      "searchAliases": [
+        "carrito",
+        "compra",
+        "bolsas",
+        "supermercado"
+      ],
+      "sourceTags": [
+        "carrito",
+        "bolsas"
+      ],
+      "status": "reference-only",
+      "separationStatus": "not-separated",
+      "panelCount": 12,
+      "episodeCount": 3,
+      "episodeNumbers": [
+        25,
+        36,
+        37
+      ],
+      "sourcePanels": [
+        "assets/episodes/ep-025-quien-era-ese/25.1.png",
+        "assets/episodes/ep-025-quien-era-ese/25.2.png",
+        "assets/episodes/ep-025-quien-era-ese/25.3.png",
+        "assets/episodes/ep-025-quien-era-ese/25.4.png",
+        "assets/episodes/ep-036-la-compra/36.1.png",
+        "assets/episodes/ep-036-la-compra/36.2.png",
+        "assets/episodes/ep-036-la-compra/36.3.png",
+        "assets/episodes/ep-036-la-compra/36.4.png",
+        "assets/episodes/ep-037-distanciamiento-social/37.1.png",
+        "assets/episodes/ep-037-distanciamiento-social/37.2.png",
+        "assets/episodes/ep-037-distanciamiento-social/37.3.png",
+        "assets/episodes/ep-037-distanciamiento-social/37.4.png"
+      ],
+      "note": "Utilería de compras presente en secuencias de supermercado; aún no hay recortes limpios del carrito o las bolsas. Los conteos proceden de etiquetas de búsqueda del catálogo y sirven para priorizar revisión; no certifican que cada etiqueta esté presente en cada panel."
+    },
+    {
+      "id": "vehicles",
+      "label": "Vehículos y transporte",
+      "category": "scene-object-reference",
+      "searchAliases": [
+        "vehículo",
+        "autobús",
+        "motocicleta",
+        "motoconcho",
+        "transporte"
+      ],
+      "sourceTags": [
+        "vehiculo",
+        "autobus",
+        "motocicleta",
+        "transito"
+      ],
+      "status": "reference-only",
+      "separationStatus": "not-separated",
+      "panelCount": 17,
+      "episodeCount": 5,
+      "episodeNumbers": [
+        14,
+        17,
+        27,
+        99,
+        101
+      ],
+      "sourcePanels": [
+        "assets/episodes/ep-014-un-dia-malo/14.1.png",
+        "assets/episodes/ep-014-un-dia-malo/14.2.png",
+        "assets/episodes/ep-014-un-dia-malo/14.3.png",
+        "assets/episodes/ep-014-un-dia-malo/14.4.png",
+        "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.1.png",
+        "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.2.png",
+        "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.3.png",
+        "assets/episodes/ep-017-el-pela-o-y-el-mentiole/17.4.png",
+        "assets/episodes/ep-027-de-donde-salio/27.3.jpg",
+        "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.1.png",
+        "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.2.png",
+        "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.3.png",
+        "assets/episodes/ep-099-la-mandarina-que-informa-por-que-los-choferes-no-ponen-l/99.4.png",
+        "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.1.png",
+        "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.2.png",
+        "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.3.png",
+        "assets/episodes/ep-101-eres-motoconcho-o-pasajero-comenta-tus-maravillosas-expe/101.4.png"
+      ],
+      "note": "Escenas de transporte. Se agrupan como referencias de búsqueda y no como un objeto único. Los conteos proceden de etiquetas de búsqueda del catálogo y sirven para priorizar revisión; no certifican que cada etiqueta esté presente en cada panel."
+    },
+    {
+      "id": "kitchen-utensils",
+      "label": "Utensilios de cocina",
+      "category": "scene-object-reference",
+      "searchAliases": [
+        "sartén",
+        "olla",
+        "licuadora",
+        "utensilios"
+      ],
+      "sourceTags": [
+        "sarten",
+        "olla",
+        "licuadora"
+      ],
+      "status": "reference-only",
+      "separationStatus": "not-separated",
+      "panelCount": 10,
+      "episodeCount": 2,
+      "episodeNumbers": [
+        74,
+        93
+      ],
+      "sourcePanels": [
+        "assets/episodes/ep-074-friendo/74.1.png",
+        "assets/episodes/ep-074-friendo/74.2.png",
+        "assets/episodes/ep-074-friendo/74.3.png",
+        "assets/episodes/ep-074-friendo/74.4.png",
+        "assets/episodes/ep-074-friendo/74.5.png",
+        "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.1.png",
+        "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.2.png",
+        "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.3.png",
+        "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.4.png",
+        "assets/episodes/ep-093-el-vaso-de-la-licuadora/93.5.png"
+      ],
+      "note": "Aparatos y utensilios en viñetas de cocina, sin separación del fondo. Los conteos proceden de etiquetas de búsqueda del catálogo y sirven para priorizar revisión; no certifican que cada etiqueta esté presente en cada panel."
+    },
+    {
+      "id": "fan-and-weather",
+      "label": "Ventilador y clima",
+      "category": "scene-object-reference",
+      "searchAliases": [
+        "ventilador",
+        "lluvia",
+        "fuego",
+        "clima"
+      ],
+      "sourceTags": [
+        "ventilador",
+        "lluvia",
+        "fuego"
+      ],
+      "status": "reference-only",
+      "separationStatus": "not-separated",
+      "panelCount": 17,
+      "episodeCount": 5,
+      "episodeNumbers": [
+        7,
+        14,
+        31,
+        73,
+        100
+      ],
+      "sourcePanels": [
+        "assets/episodes/ep-007-this-guy-is-on-fire/07.2.png",
+        "assets/episodes/ep-007-this-guy-is-on-fire/07.3.png",
+        "assets/episodes/ep-007-this-guy-is-on-fire/07.4.jpg",
+        "assets/episodes/ep-014-un-dia-malo/14.1.png",
+        "assets/episodes/ep-014-un-dia-malo/14.2.png",
+        "assets/episodes/ep-014-un-dia-malo/14.3.png",
+        "assets/episodes/ep-014-un-dia-malo/14.4.png",
+        "assets/episodes/ep-031-que-calor/31.1.png",
+        "assets/episodes/ep-031-que-calor/31.2.png",
+        "assets/episodes/ep-031-que-calor/31.3.png",
+        "assets/episodes/ep-031-que-calor/31.4.png",
+        "assets/episodes/ep-073-ique-calor-parte-2/73.1.png",
+        "assets/episodes/ep-073-ique-calor-parte-2/73.2.png",
+        "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.1.png",
+        "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.2.png",
+        "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.3.png",
+        "assets/episodes/ep-100-cada-vez-que-lavo-el-auto-seguro-que-tambien-te-pasa-cue/100.4.png"
+      ],
+      "note": "Motivos de escenas climáticas o efectos, agrupados solo para encontrar las fuentes. Los conteos proceden de etiquetas de búsqueda del catálogo y sirven para priorizar revisión; no certifican que cada etiqueta esté presente en cada panel."
     }
   ]
 }

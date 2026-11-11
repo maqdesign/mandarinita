@@ -67,6 +67,7 @@
   let installPromptEvent = null;
   let suppressAssetClickUntil = 0;
   let pinchZoom = null;
+  let backgroundPickerItemId = null;
   let cloudUser = null;
   let cloudConfigured = false;
   let cloudReady = false;
@@ -637,6 +638,29 @@
     renderInspector(); renderLayers();
   }
   function closeCanvasContextMenu() { const menu = $('#canvas-context-menu'); if (menu) menu.hidden = true; }
+  function clearBackgroundPicker() {
+    backgroundPickerItemId = null;
+    $$('.placed.sampling-background').forEach(element => element.classList.remove('sampling-background'));
+    $('#stage-wrap')?.classList.remove('sampling-background-active');
+  }
+  async function sampleImageColorAt(item, clientX, clientY, element, boardCanvas) {
+    const image = await loadImage(item.src), scale = canvasScale(boardCanvas), rect = element.getBoundingClientRect();
+    const dx = (clientX - (rect.left + rect.width / 2)) / scale, dy = (clientY - (rect.top + rect.height / 2)) / scale;
+    const angle = (item.rotation || 0) * Math.PI / 180;
+    let x = Math.cos(angle) * dx + Math.sin(angle) * dy, y = -Math.sin(angle) * dx + Math.cos(angle) * dy;
+    if (item.flipX) x = -x;
+    if (item.flipY) y = -y;
+    x += item.w / 2; y += item.h / 2;
+    const fit = Math.min(item.w / image.naturalWidth, item.h / image.naturalHeight);
+    const px = Math.floor((x - (item.w - image.naturalWidth * fit) / 2) / fit);
+    const py = Math.floor((y - (item.h - image.naturalHeight * fit) / 2) / fit);
+    if (px < 0 || py < 0 || px >= image.naturalWidth || py >= image.naturalHeight) throw new Error('Toca dentro del fondo visible de la imagen.');
+    const canvas = document.createElement('canvas'); canvas.width = canvas.height = 1;
+    const context = canvas.getContext('2d', { willReadFrequently: true }); context.drawImage(image, -px, -py);
+    const [r, g, b, alpha] = context.getImageData(0, 0, 1, 1).data;
+    if (alpha < 32) throw new Error('Ese píxel ya es transparente. Elige una zona opaca del fondo.');
+    return { r, g, b, hex: `#${[r, g, b].map(value => value.toString(16).padStart(2, '0')).join('')}`.toUpperCase() };
+  }
   function openCanvasContextMenu(item, panelIndex, x, y) {
     if ($('#toggle-draw').getAttribute('aria-pressed') === 'true') return;
     if (state.active !== panelIndex) setActivePanel(panelIndex, true);
@@ -741,7 +765,7 @@
   }
   function renderItem(item, index, panelIndex, boardCanvas) {
     const element = document.createElement('div');
-    element.className = `placed${state.selected === item.id && !item.locked ? ' selected' : ''}${item.locked ? ' locked' : ''}${item.type === 'bubble' ? ` bubble bubble-${item.kind}${item.tail ? ' has-tail' : ''}` : ''}${item.type === 'drawing' ? ' drawing' : ''}${isFullyOffstage(item) ? ' offstage' : ''}`;
+    element.className = `placed${state.selected === item.id && !item.locked ? ' selected' : ''}${item.locked ? ' locked' : ''}${backgroundPickerItemId === item.id ? ' sampling-background' : ''}${item.type === 'bubble' ? ` bubble bubble-${item.kind}${item.tail ? ' has-tail' : ''}` : ''}${item.type === 'drawing' ? ' drawing' : ''}${isFullyOffstage(item) ? ' offstage' : ''}`;
     element.dataset.id = item.id;
     element.style.cssText = `left:${item.x}px;top:${item.y}px;width:${item.w}px;height:${item.h}px;transform:rotate(${item.rotation || 0}deg) scale(${item.flipX ? -1 : 1},${item.flipY ? -1 : 1});--tail-x:${item.tailX ?? 28}%;z-index:${index + 1};`;
     if (item.type === 'image') {
@@ -793,6 +817,20 @@
     element.addEventListener('pointermove', event => { if (longPressTimer && longPressOrigin && Math.hypot(event.clientX-longPressOrigin.x,event.clientY-longPressOrigin.y)>10) { clearTimeout(longPressTimer); longPressTimer=null; } }, { capture:true });
     ['pointerup','pointercancel','pointerleave'].forEach(type => element.addEventListener(type, () => { if (longPressTimer) clearTimeout(longPressTimer); longPressTimer=null; }, { capture:true }));
     element.onpointerdown = event => {
+      if (backgroundPickerItemId === item.id) {
+        event.preventDefault(); event.stopPropagation();
+        sampleImageColorAt(item, event.clientX, event.clientY, element, boardCanvas).then(color => {
+          item.backgroundSample = [color.r, color.g, color.b]; clearBackgroundPicker(); autosave(); renderInspector();
+          const status = $('#bg-remove-status');
+          if (status) { status.hidden = false; status.textContent = `Color ${color.hex} seleccionado. Pulsa “Quitar fondo”.`; }
+          toast(`Color de fondo seleccionado: ${color.hex}.`);
+        }).catch(error => {
+          const status = $('#bg-remove-status');
+          if (status) { status.hidden = false; status.textContent = error instanceof Error ? error.message : 'No pude leer ese color.'; }
+          toast(status?.textContent || 'No pude leer ese color.');
+        });
+        return;
+      }
       if ($('#toggle-draw').getAttribute('aria-pressed') === 'true' || item.locked || event.target === handle || event.target.tagName === 'TEXTAREA') return;
       if (state.active !== panelIndex) setActivePanel(panelIndex, true);
       if (state.selected !== item.id) selectItem(item.id);
@@ -878,7 +916,8 @@
     if (item.locked) { box.innerHTML = `<div class="empty-state">${svgIcon('lock')}<b>${escapeHTML(item.name)} está protegido</b><p>Desbloquéalo desde la pestaña Capas para volver a editarlo.</p></div>`; return; }
     const characterResource = item.type === 'image' && (item.category === 'character' || resources.some(resource => resource.name === item.resourceId && resource.category === 'character'));
     const replaceControl = characterResource ? '<button id="replace-character" class="button replace-character">Sustituir personaje</button>' : '';
-    const imageControls = item.type === 'image' ? `<div class="field"><label for="p-blur">Desenfoque · <span id="blur-value">${item.blur || 0}px</span></label><input id="p-blur" type="range" min="0" max="36" step="0.5" value="${item.blur || 0}"><small>Se conserva en el proyecto y también aparece en la exportación.</small></div><div class="field bg-remove-tools"><label>Quitar un fondo plano</label><input id="p-bg-tolerance" aria-label="Tolerancia del recorte de fondo" type="range" min="8" max="90" step="2" value="36"><small>Procesa el dibujo en este dispositivo. Da mejor resultado con fondos uniformes; no usa IA ni una API.</small><button id="remove-background" type="button" class="button">Recortar fondo</button>${item.originalSrc ? '<button id="restore-background" type="button" class="button">Restaurar imagen original</button>' : ''}</div>` : '';
+    const sampleHex = item.backgroundSample ? `#${item.backgroundSample.map(value => value.toString(16).padStart(2, '0')).join('')}`.toUpperCase() : '';
+    const imageControls = item.type === 'image' ? `<div class="field"><label for="p-blur">Desenfoque · <span id="blur-value">${item.blur || 0}px</span></label><input id="p-blur" type="range" min="0" max="36" step="0.5" value="${item.blur || 0}"><small>Se conserva en el proyecto y también aparece en la exportación.</small></div><div class="field bg-remove-tools"><label for="p-bg-tolerance">Quitar fondo blanco o plano</label><input id="p-bg-tolerance" aria-label="Tolerancia del recorte de fondo" type="range" min="8" max="100" step="2" value="36"><small>Elige el color directamente sobre el dibujo para quitar fondos blancos u otros tonos planos. Se conserva el original para poder restaurarlo.</small><button id="sample-background" type="button" class="button" aria-pressed="${backgroundPickerItemId === item.id}">${backgroundPickerItemId === item.id ? 'Cancelar selección' : sampleHex ? `Cambiar color · ${sampleHex}` : '1 · Elegir color en el dibujo'}</button><button id="remove-background" type="button" class="button">2 · Quitar fondo</button><p id="bg-remove-status" class="bg-remove-status" role="status" aria-live="polite" ${item.backgroundSample ? '' : 'hidden'}>${item.backgroundSample ? `Color ${sampleHex} seleccionado. Pulsa “2 · Quitar fondo”.` : ''}</p>${item.originalSrc ? '<button id="restore-background" type="button" class="button">Restaurar imagen original</button>' : ''}</div>` : '';
     const textControls = item.type === 'text' ? `<div class="field"><label>Contenido</label><textarea id="p-text" rows="4">${escapeHTML(item.text||'')}</textarea></div><div class="field"><label>Tamaño de letra</label><input id="p-text-font" type="range" min="10" max="72" value="${item.fontSize||28}"></div><div class="field"><label>Alineación</label><select id="p-text-align"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option></select></div><div class="field"><label>Color</label><input id="p-text-color" type="color" value="${item.color||'#292725'}"></div>` : '';
     const variantControl = item.variants?.length ? `<div class="field"><label>Variación del mismo personaje</label><select id="p-variant">${item.variants.map((variant, i) => `<option value="${i}" ${i === item.variantIndex ? 'selected' : ''}>${escapeHTML(variant.name)}</option>`).join('')}</select></div>` : '';
     const bubbleControls = item.type === 'bubble' ? `<div class="field"><label>Tipo</label><select id="p-kind"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto de sonido</option></select></div>${['dialogue','thought'].includes(item.kind) ? `<div class="field"><label>Forma</label><select id="p-shape"><option value="auto">Adaptar al texto</option><option value="oval">Óvalo</option><option value="rounded">Rectángulo redondeado</option></select></div>` : ''}${item.kind === 'sfx' ? `<div class="field"><label>Estilo de efecto</label><select id="p-action-style"><option value="raised">Naranja con sombra</option><option value="outline">Contorno blanco</option><option value="impact">Sombra dramática</option></select></div>` : ''}<div class="field"><label>Tamaño de letra</label><input id="p-font" type="range" min="10" max="56" value="${item.fontSize || 17}"></div><div class="field"><label>Alineación</label><select id="p-align"><option value="center">Centrada</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div>${['dialogue','thought','shout'].includes(item.kind) ? `<label class="check-field"><input id="p-tail" type="checkbox" ${item.tail ? 'checked' : ''}> ${item.kind === 'thought' ? 'Burbujas de pensamiento' : 'Cola del globo'}</label>${item.tail ? `<div class="field"><label>Dirección de la cola</label><input id="p-tail-angle" type="range" min="-180" max="180" value="${item.tailAngle ?? 90}"></div><div class="field"><label>Largo de la cola</label><input id="p-tail-length" type="range" min="16" max="90" value="${item.tailLength ?? 34}"></div>` : ''}` : ''}<label class="check-field"><input id="p-autogrow" type="checkbox" ${item.autoGrow === false ? '' : 'checked'}> Ajustar alto al texto</label>` : '';
@@ -898,12 +937,26 @@
     blurInput?.addEventListener('keydown', () => { if (!blurSnapshotTaken) { snapshot(); blurSnapshotTaken = true; } });
     blurInput?.addEventListener('input', event => { item.blur = Number(event.target.value); $('#blur-value').textContent = `${item.blur}px`; const image = activeCanvas()?.querySelector(`[data-id="${item.id}"] img`); if (image) image.style.filter = item.blur ? `blur(${item.blur}px)` : ''; autosave(); });
     blurInput?.addEventListener('change', () => { blurSnapshotTaken = false; renderLayers(); });
+    $('#sample-background')?.addEventListener('click', event => {
+      if (backgroundPickerItemId === item.id) {
+        clearBackgroundPicker(); event.currentTarget.setAttribute('aria-pressed', 'false');
+        event.currentTarget.textContent = item.backgroundSample ? `Cambiar color · ${sampleHex}` : '1 · Elegir color en el dibujo';
+        const status = $('#bg-remove-status'); if (status) { status.hidden = false; status.textContent = 'Selección de color cancelada.'; }
+        return;
+      }
+      clearBackgroundPicker(); backgroundPickerItemId = item.id;
+      activeCanvas()?.querySelector(`[data-id="${item.id}"]`)?.classList.add('sampling-background');
+      $('#stage-wrap')?.classList.add('sampling-background-active');
+      event.currentTarget.setAttribute('aria-pressed', 'true'); event.currentTarget.textContent = 'Cancelar selección';
+      const status = $('#bg-remove-status'); if (status) { status.hidden = false; status.textContent = 'Toca una zona opaca del fondo en el dibujo. Después pulsa “2 · Quitar fondo”.'; }
+      toast('Toca el fondo del dibujo para seleccionar su color.');
+    });
     $('#remove-background')?.addEventListener('click', async event => {
       const button=event.currentTarget;button.disabled=true;button.textContent='Recortando…';
-      try { const removed=await removeFlatBackground(item.src,Number($('#p-bg-tolerance').value)); if(!removed.removed)throw new Error('No encontré una zona de fondo uniforme conectada al borde. Prueba otra imagen o un valor de tolerancia distinto.'); snapshot();item.originalSrc ||= item.src;item.src=removed.src;item.name ||= 'Dibujo con fondo recortado';commit();toast(`Fondo plano recortado localmente (${Math.round(removed.removed/removed.total*100)}% de píxeles).`); }
+      try { const removed=await removeFlatBackground(item.src,Number($('#p-bg-tolerance').value),item.backgroundSample); if(!removed.removed)throw new Error('No pude retirar suficiente fondo conectado al borde. Elige el color directamente sobre el fondo y vuelve a intentarlo.'); snapshot();item.originalSrc ||= item.src;item.src=removed.src;item.name ||= 'Dibujo con fondo recortado';commit();toast(`Fondo plano recortado localmente (${Math.round(removed.removed/removed.total*100)}% de píxeles).`); }
       catch(error){button.disabled=false;button.textContent='Recortar fondo';toast(error instanceof Error?error.message:'No se pudo recortar el fondo.');}
     });
-    $('#restore-background')?.addEventListener('click',()=>{snapshot();item.src=item.originalSrc;delete item.originalSrc;commit();toast('Imagen original restaurada.');});
+    $('#restore-background')?.addEventListener('click',()=>{snapshot();item.src=item.originalSrc;delete item.originalSrc;delete item.backgroundSample;commit();toast('Imagen original restaurada.');});
     for (const [axis, property] of [['x','flipX'],['y','flipY']]) $(`#flip-${axis}`)?.addEventListener('click', () => { snapshot(); item[property] = !item[property]; commit(); });
     $('#p-variant')?.addEventListener('change', event => { snapshot(); item.variantIndex = Number(event.target.value); item.src = item.variants[item.variantIndex].src; commit(); });
     $('#replace-character')?.addEventListener('click', () => openCharacterPicker(item.id));
@@ -1447,21 +1500,50 @@
   function slugify(value) { return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function download(blob, filename) { const url = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 2000); }
   function loadImage(src) { return new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = reject; image.src = src; }); }
-  async function removeFlatBackground(src,tolerance) {
-    const image=await loadImage(src);const ratio=Math.min(1,2200/Math.max(image.naturalWidth,image.naturalHeight));const width=Math.max(1,Math.round(image.naturalWidth*ratio)),height=Math.max(1,Math.round(image.naturalHeight*ratio));
-    const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0,width,height);const output=ctx.getImageData(0,0,width,height),pixels=output.data;
-    const points=[[0,0],[width-1,0],[0,height-1],[width-1,height-1],[Math.floor(width/2),0],[Math.floor(width/2),height-1],[0,Math.floor(height/2)],[width-1,Math.floor(height/2)]];
-    const samples=points.map(([x,y])=>{const i=(y*width+x)*4;return [pixels[i],pixels[i+1],pixels[i+2]];});
-    const distance=(i,color)=>Math.hypot(pixels[i]-color[0],pixels[i+1]-color[1],pixels[i+2]-color[2]);
-    const clusters=samples.map(color=>samples.filter(other=>Math.hypot(color[0]-other[0],color[1]-other[1],color[2]-other[2])<=tolerance*1.4).length);const base=samples[clusters.indexOf(Math.max(...clusters))];
-    const softLimit=tolerance+18,total=width*height,seen=new Uint8Array(total),queue=new Int32Array(total);let head=0,tail=0;
-    const seed=index=>{if(index<0||index>=total||seen[index])return;const i=index*4;if(pixels[i+3]&&distance(i,base)<=softLimit){seen[index]=1;queue[tail++]=index;}};
-    for(let x=0;x<width;x++){seed(x);seed((height-1)*width+x);}for(let y=1;y<height-1;y++){seed(y*width);seed(y*width+width-1);}
-    let removed=0;
-    while(head<tail){const index=queue[head++],i=index*4,d=distance(i,base);if(d<=tolerance){output.data[i+3]=0;removed++;}else output.data[i+3]=Math.round(output.data[i+3]*(d-tolerance)/18);
-      const x=index%width;if(x)seed(index-1);if(x<width-1)seed(index+1);if(index>=width)seed(index-width);if(index<total-width)seed(index+width);
+  async function removeFlatBackground(src, tolerance, sampledColor = null) {
+    const image = await loadImage(src), width = image.naturalWidth, height = image.naturalHeight, total = width * height;
+    if (!width || !height || total > 8_000_000) throw new Error('La imagen supera 8 megapíxeles y puede agotar la memoria del iPad o del navegador. Redúcela y vuelve a importarla.');
+    const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) throw new Error('Este navegador no pudo abrir el procesador de imágenes.');
+    ctx.drawImage(image, 0, 0, width, height);
+    const output = ctx.getImageData(0, 0, width, height), pixels = output.data;
+    const stride = Math.max(1, Math.floor(Math.max(width, height) / 64)), points = [];
+    for (let x = 0; x < width; x += stride) points.push([x, 0], [x, height - 1]);
+    for (let y = 0; y < height; y += stride) points.push([0, y], [width - 1, y]);
+    if (points.every(([x, y]) => pixels[(y * width + x) * 4 + 3] === 0)) {
+      let hasVisiblePixels = false;
+      for (let i = 3; i < pixels.length; i += 4) if (pixels[i]) { hasVisiblePixels = true; break; }
+      return { removed: 0, total, alreadyTransparent: hasVisiblePixels, emptyImage: !hasVisiblePixels };
     }
-    if(removed<Math.max(16,total*.002))return{removed:0,total};ctx.putImageData(output,0,0);return{src:canvas.toDataURL('image/png'),removed,total};
+    const samples = points.map(([x, y]) => { const i = (y * width + x) * 4; return { alpha: pixels[i + 3], color: [pixels[i], pixels[i + 1], pixels[i + 2]] }; }).filter(sample => sample.alpha > 128).map(sample => sample.color);
+    if (!samples.length && !sampledColor) throw new Error('No encontré color sólido en el borde. Elige el color directamente sobre el dibujo.');
+    const distanceBetween = (a, b) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]), Math.abs(a[2] - b[2]));
+    const clusters = samples.map(color => samples.filter(other => distanceBetween(color, other) <= tolerance * 1.4).length);
+    const base = sampledColor || samples[clusters.indexOf(Math.max(...clusters))];
+    const limit = Math.min(180, tolerance + 36), seen = new Uint8Array(total), queue = new Int32Array(total);
+    let head = 0, tail = 0, removed = 0;
+    const pixelDistance = i => Math.max(Math.abs(pixels[i] - base[0]), Math.abs(pixels[i + 1] - base[1]), Math.abs(pixels[i + 2] - base[2]));
+    const enqueue = index => {
+      if (index < 0 || index >= total || seen[index]) return;
+      const i = index * 4;
+      if (!pixels[i + 3] || pixelDistance(i) > limit) return;
+      seen[index] = 1; queue[tail++] = index;
+    };
+    for (let x = 0; x < width; x++) { enqueue(x); enqueue((height - 1) * width + x); }
+    for (let y = 1; y < height - 1; y++) { enqueue(y * width); enqueue(y * width + width - 1); }
+    while (head < tail) {
+      const index = queue[head++], i = index * 4, distance = pixelDistance(i);
+      if (distance <= tolerance) { pixels[i + 3] = 0; removed++; }
+      else pixels[i + 3] = Math.round(pixels[i + 3] * Math.max(0, Math.min(1, (distance - tolerance) / (limit - tolerance))));
+      const x = index % width;
+      if (x) enqueue(index - 1); if (x < width - 1) enqueue(index + 1);
+      if (index >= width) enqueue(index - width); if (index < total - width) enqueue(index + width);
+      if (head % 131072 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+    }
+    if (removed < Math.max(4, total * .0002)) return { removed: 0, total };
+    ctx.putImageData(output, 0, 0);
+    return { src: canvas.toDataURL('image/png'), removed, total, background: base };
   }
   async function importProjectFile(file) {
     if (!file) return;
@@ -1518,6 +1600,7 @@
     $('#undo').innerHTML = svgIcon('undo'); $('#redo').innerHTML = svgIcon('redo');
     labeledIcon('#upload-asset','plus',''); labeledIcon('#close-library','close',''); labeledIcon('#close-inspector','close',''); labeledIcon('#focus-mode','focus','Lienzo amplio');
     labeledIcon('#add-panel','plus','Viñeta'); labeledIcon('#add-bubble','bubble','Añadir globo');
+    $('#toggle-order-strip').innerHTML = `${svgIcon('down')}<span>Ocultar viñetas</span>`;
     labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías');
     $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
     $('#new-project').onclick = newProject;
@@ -1532,6 +1615,12 @@
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;
     $('#add-cta-panel').onclick = addClosingPanel;
+    $('#toggle-order-strip').onclick = event => {
+      const strip = event.currentTarget.closest('.story-strip');
+      const collapsed = strip.classList.toggle('collapsed');
+      event.currentTarget.setAttribute('aria-expanded', String(!collapsed));
+      event.currentTarget.innerHTML = `${svgIcon(collapsed ? 'up' : 'down')}<span>${collapsed ? 'Mostrar viñetas' : 'Ocultar viñetas'}</span>`;
+    };
     $('#add-text').innerHTML = `${svgIcon('text')}<span>Texto</span>`; $('#add-text').onclick = () => addTextBlock();
     $('#add-bubble').onclick = () => addBubble($('#bubble-kind').value);
     $('#export-preset').onchange = event => changeFormat(event.target.value);
