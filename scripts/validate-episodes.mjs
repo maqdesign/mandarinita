@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const path = join(root, 'episodes.json');
 const characterPath = join(root, 'characters.json');
-const objectPath = join(root, 'content', 'episode-objects.json');
+const objectPath = join(root, 'episode-objects.json');
 const errors = [];
 const allowedStatuses = new Set(['draft', 'review', 'published', 'hidden']);
 const allowedTypes = new Set(['comic', 'illustration', 'reel', 'merchandise', 'other']);

@@ -84,7 +84,7 @@ syncSearchLanguage();
 Promise.all([
   window.mandarinitaEpisodesCatalogPromise,
   fetch('characters.json').then(response=>{if(!response.ok)throw new Error('Characters unavailable');return response.json();}),
-  fetch('content/episode-objects.json').then(response=>{if(!response.ok)throw new Error('Objects unavailable');return response.json();})
+  fetch('episode-objects.json').then(response=>{if(!response.ok)throw new Error('Objects unavailable');return response.json();})
 ]).then(([catalog,characterCatalog,objectCatalog])=>{
   searchCatalog=catalog.episodes||[];
   searchCharacters=characterCatalog.characters||[];
