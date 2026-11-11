@@ -91,7 +91,7 @@
         const depthProgress = Math.min(1, Math.abs(y) / Math.max(radiusY, 1));
         const isBackHalf = y < 0;
         const back = isBackHalf ? depthProgress : 0;
-        const scale = isBackHalf ? 1 - depthProgress * 0.32 : 1 + depthProgress * 0.32;
+        const scale = isBackHalf ? 1 - depthProgress * 0.42 : 1 + depthProgress * 0.42;
         const orbitSpread = isBackHalf ? 1 - depthProgress * 0.28 : 1 + depthProgress * 0.28;
         const halfWidth = cardWidth * scale / 2;
         const halfHeight = cardHeight * scale / 2;

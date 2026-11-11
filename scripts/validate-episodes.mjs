@@ -5,19 +5,29 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const path = join(root, 'episodes.json');
 const characterPath = join(root, 'characters.json');
+const objectPath = join(root, 'content', 'episode-objects.json');
 const errors = [];
 const allowedStatuses = new Set(['draft', 'review', 'published', 'hidden']);
 const allowedTypes = new Set(['comic', 'illustration', 'reel', 'merchandise', 'other']);
 const text = v => typeof v === 'string' && v.trim().length > 0;
 const content = JSON.parse(readFileSync(path, 'utf8'));
 const characterCatalog = JSON.parse(readFileSync(characterPath, 'utf8'));
+const objectCatalog = JSON.parse(readFileSync(objectPath, 'utf8'));
 const characterIds = new Set();
+const objectIds = new Set();
 if (characterCatalog.schemaVersion !== 1 || !Array.isArray(characterCatalog.characters)) errors.push('Invalid characters.json registry');
 for (const [index, character] of (characterCatalog.characters || []).entries()) {
   if (!text(character.id) || !/^[a-z0-9][a-z0-9-]*$/.test(character.id)) errors.push(`characters[${index}]: invalid ID`);
   if (characterIds.has(character.id)) errors.push(`characters[${index}]: duplicate ID`);
   if (!text(character.name)) errors.push(`characters[${index}]: name required`);
   characterIds.add(character.id);
+}
+if (objectCatalog.schemaVersion !== 1 || !Array.isArray(objectCatalog.objects)) errors.push('Invalid content/episode-objects.json registry');
+for (const [index, object] of (objectCatalog.objects || []).entries()) {
+  if (!text(object.id) || !/^[a-z0-9][a-z0-9-]*$/.test(object.id)) errors.push(`objects[${index}]: invalid ID`);
+  if (objectIds.has(object.id)) errors.push(`objects[${index}]: duplicate ID`);
+  if (!text(object.name?.es) || !text(object.name?.en)) errors.push(`objects[${index}]: Spanish and English names required`);
+  objectIds.add(object.id);
 }
 if (content.schemaVersion !== 1) errors.push('Unsupported schemaVersion');
 if (!Array.isArray(content.episodes)) errors.push('episodes must be an array');
@@ -32,6 +42,8 @@ for (const [index, ep] of (content.episodes || []).entries()) {
   if (!allowedStatuses.has(ep.status)) errors.push(`${tag}: invalid status`);
   if (!allowedTypes.has(ep.type)) errors.push(`${tag}: invalid type`);
   if (ep.status === 'published' && ep.type === 'comic' && ep.complete !== true) errors.push(`${tag}: published comic must be explicitly complete`);
+  if (ep.status === 'published' && ep.type === 'comic' && !Array.isArray(ep.characters)) errors.push(`${tag}: published comic must have a characters array (empty when no cast member is confirmed)`);
+  if (ep.status === 'published' && ep.type === 'comic' && !Array.isArray(ep.objects)) errors.push(`${tag}: published comic must have an objects array (empty when no prominent prop is confirmed)`);
   if (ep.complete !== undefined && typeof ep.complete !== 'boolean') errors.push(`${tag}: complete must be a boolean`);
   if (ep.characters !== undefined) {
     if (!Array.isArray(ep.characters)) errors.push(`${tag}: characters must be an array of character IDs`);
@@ -41,6 +53,17 @@ for (const [index, ep] of (content.episodes || []).entries()) {
         if (!characterIds.has(characterId)) errors.push(`${tag}: unknown character ID ${characterId}`);
         if (episodeCharacterIds.has(characterId)) errors.push(`${tag}: duplicate character ID ${characterId}`);
         episodeCharacterIds.add(characterId);
+      }
+    }
+  }
+  if (ep.objects !== undefined) {
+    if (!Array.isArray(ep.objects)) errors.push(`${tag}: objects must be an array of object IDs`);
+    else {
+      const episodeObjectIds = new Set();
+      for (const objectId of ep.objects) {
+        if (!objectIds.has(objectId)) errors.push(`${tag}: unknown object ID ${objectId}`);
+        if (episodeObjectIds.has(objectId)) errors.push(`${tag}: duplicate object ID ${objectId}`);
+        episodeObjectIds.add(objectId);
       }
     }
   }

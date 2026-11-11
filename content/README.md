@@ -12,9 +12,11 @@ Las páginas muestran las fuentes originales sin marca para que la lectura y los
 
 ## Apariciones de personajes
 
-`characters.json` define los IDs estables que usan las tarjetas y el catálogo. En cada episodio, `characters` puede contener los IDs de los personajes que se ven en sus viñetas. Añade un ID solo cuando la aparición esté confirmada visualmente; no infieras una aparición a partir del título o de la descripción. Las tarjetas cuentan y eligen al azar solo episodios publicados, completos y etiquetados. Los episodios en revisión pueden llevar etiquetas editoriales, pero nunca aparecen en el lector público.
+`characters.json` define los IDs estables que usan las tarjetas y el catálogo. En cada episodio publicado, `characters` enumera solo las apariciones confirmadas visualmente; `objects` contiene IDs de objetos destacados que se ven en sus viñetas. Si no se confirma un personaje o no hay un objeto destacado, se deja el arreglo vacío. No infieras etiquetas a partir del título, diálogos ni descripciones.
 
-Cuando se incorpore un episodio, conserva sus etiquetas durante el trabajo editorial y añade las apariciones que se hayan comprobado antes de publicarlo. `node scripts/validate-episodes.mjs` verifica que cada ID exista en `characters.json` y que no haya IDs repetidos.
+`content/episode-objects.json` es el vocabulario bilingüe de objetos y sinónimos que usa la búsqueda. La búsqueda pública consulta título, número, personajes y objetos; no indexa el texto escrito dentro de las viñetas. Al publicar un episodio nuevo, revisa sus apariciones y objetos visibles y conserva estas etiquetas en el catálogo.
+
+Cuando se incorpore un episodio, conserva sus etiquetas durante el trabajo editorial y añade las apariciones que se hayan comprobado antes de publicarlo. `node scripts/validate-episodes.mjs` verifica que cada ID exista en su registro y que no haya IDs repetidos.
 
 ## Verificar
 

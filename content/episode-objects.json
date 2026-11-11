@@ -1,0 +1,1024 @@
+{
+  "schemaVersion": 1,
+  "objects": [
+    {
+      "id": "computer",
+      "name": {
+        "es": "computadora",
+        "en": "computer"
+      },
+      "aliases": {
+        "es": [
+          "ordenador",
+          "pc",
+          "laptop"
+        ],
+        "en": [
+          "laptop",
+          "pc",
+          "computer"
+        ]
+      }
+    },
+    {
+      "id": "monitor",
+      "name": {
+        "es": "monitor",
+        "en": "monitor"
+      },
+      "aliases": {
+        "es": [
+          "pantalla"
+        ],
+        "en": [
+          "screen",
+          "display"
+        ]
+      }
+    },
+    {
+      "id": "keyboard",
+      "name": {
+        "es": "teclado",
+        "en": "keyboard"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "mouse",
+      "name": {
+        "es": "ratón",
+        "en": "mouse"
+      },
+      "aliases": {
+        "es": [
+          "mouse"
+        ],
+        "en": []
+      }
+    },
+    {
+      "id": "phone",
+      "name": {
+        "es": "celular",
+        "en": "phone"
+      },
+      "aliases": {
+        "es": [
+          "teléfono",
+          "móvil",
+          "smartphone"
+        ],
+        "en": [
+          "cell phone",
+          "mobile",
+          "smartphone"
+        ]
+      }
+    },
+    {
+      "id": "television",
+      "name": {
+        "es": "televisor",
+        "en": "television"
+      },
+      "aliases": {
+        "es": [
+          "televisión",
+          "tv"
+        ],
+        "en": [
+          "TV"
+        ]
+      }
+    },
+    {
+      "id": "remote-control",
+      "name": {
+        "es": "control remoto",
+        "en": "remote control"
+      },
+      "aliases": {
+        "es": [
+          "control"
+        ],
+        "en": [
+          "remote"
+        ]
+      }
+    },
+    {
+      "id": "sofa",
+      "name": {
+        "es": "sofá",
+        "en": "sofa"
+      },
+      "aliases": {
+        "es": [
+          "mueble",
+          "sillón"
+        ],
+        "en": [
+          "couch"
+        ]
+      }
+    },
+    {
+      "id": "chair",
+      "name": {
+        "es": "silla",
+        "en": "chair"
+      },
+      "aliases": {
+        "es": [
+          "asiento"
+        ],
+        "en": [
+          "seat"
+        ]
+      }
+    },
+    {
+      "id": "desk",
+      "name": {
+        "es": "escritorio",
+        "en": "desk"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "table",
+      "name": {
+        "es": "mesa",
+        "en": "table"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "bed",
+      "name": {
+        "es": "cama",
+        "en": "bed"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "pillow",
+      "name": {
+        "es": "almohada",
+        "en": "pillow"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "clock",
+      "name": {
+        "es": "reloj",
+        "en": "clock"
+      },
+      "aliases": {
+        "es": [
+          "hora"
+        ],
+        "en": [
+          "time"
+        ]
+      }
+    },
+    {
+      "id": "calendar",
+      "name": {
+        "es": "calendario",
+        "en": "calendar"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "cup",
+      "name": {
+        "es": "taza",
+        "en": "cup"
+      },
+      "aliases": {
+        "es": [
+          "mug"
+        ],
+        "en": [
+          "mug"
+        ]
+      }
+    },
+    {
+      "id": "glass",
+      "name": {
+        "es": "vaso",
+        "en": "glass"
+      },
+      "aliases": {
+        "es": [
+          "copa"
+        ],
+        "en": [
+          "drinking glass"
+        ]
+      }
+    },
+    {
+      "id": "coffee",
+      "name": {
+        "es": "café",
+        "en": "coffee"
+      },
+      "aliases": {
+        "es": [
+          "café"
+        ],
+        "en": [
+          "coffee"
+        ]
+      }
+    },
+    {
+      "id": "blender",
+      "name": {
+        "es": "licuadora",
+        "en": "blender"
+      },
+      "aliases": {
+        "es": [
+          "vaso de licuadora"
+        ],
+        "en": [
+          "blender jar"
+        ]
+      }
+    },
+    {
+      "id": "food",
+      "name": {
+        "es": "comida",
+        "en": "food"
+      },
+      "aliases": {
+        "es": [
+          "alimentos"
+        ],
+        "en": [
+          "meal",
+          "food"
+        ]
+      }
+    },
+    {
+      "id": "sandwich",
+      "name": {
+        "es": "sándwich",
+        "en": "sandwich"
+      },
+      "aliases": {
+        "es": [
+          "emparedado"
+        ],
+        "en": [
+          "sandwich"
+        ]
+      }
+    },
+    {
+      "id": "pizza",
+      "name": {
+        "es": "pizza",
+        "en": "pizza"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "plate",
+      "name": {
+        "es": "plato",
+        "en": "plate"
+      },
+      "aliases": {
+        "es": [
+          "vajilla"
+        ],
+        "en": [
+          "dish"
+        ]
+      }
+    },
+    {
+      "id": "fork",
+      "name": {
+        "es": "tenedor",
+        "en": "fork"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "pan",
+      "name": {
+        "es": "sartén",
+        "en": "frying pan"
+      },
+      "aliases": {
+        "es": [
+          "caldero"
+        ],
+        "en": [
+          "pan"
+        ]
+      }
+    },
+    {
+      "id": "pot",
+      "name": {
+        "es": "olla",
+        "en": "pot"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "stove",
+      "name": {
+        "es": "estufa",
+        "en": "stove"
+      },
+      "aliases": {
+        "es": [
+          "hornilla"
+        ],
+        "en": [
+          "cooker"
+        ]
+      }
+    },
+    {
+      "id": "washing-machine",
+      "name": {
+        "es": "lavadora",
+        "en": "washing machine"
+      },
+      "aliases": {
+        "es": [],
+        "en": [
+          "washer"
+        ]
+      }
+    },
+    {
+      "id": "clothes",
+      "name": {
+        "es": "ropa",
+        "en": "clothes"
+      },
+      "aliases": {
+        "es": [
+          "vestimenta"
+        ],
+        "en": [
+          "clothing"
+        ]
+      }
+    },
+    {
+      "id": "clothesline",
+      "name": {
+        "es": "tendedero",
+        "en": "clothesline"
+      },
+      "aliases": {
+        "es": [
+          "tendal"
+        ],
+        "en": [
+          "washing line"
+        ]
+      }
+    },
+    {
+      "id": "wardrobe",
+      "name": {
+        "es": "armario",
+        "en": "wardrobe"
+      },
+      "aliases": {
+        "es": [
+          "clóset",
+          "closet",
+          "ropero"
+        ],
+        "en": [
+          "closet"
+        ]
+      }
+    },
+    {
+      "id": "shopping-cart",
+      "name": {
+        "es": "carrito de compra",
+        "en": "shopping cart"
+      },
+      "aliases": {
+        "es": [
+          "carrito",
+          "carrito del supermercado"
+        ],
+        "en": []
+      }
+    },
+    {
+      "id": "shopping-bag",
+      "name": {
+        "es": "bolsa de compra",
+        "en": "shopping bag"
+      },
+      "aliases": {
+        "es": [
+          "bolsa"
+        ],
+        "en": [
+          "bag"
+        ]
+      }
+    },
+    {
+      "id": "mirror",
+      "name": {
+        "es": "espejo",
+        "en": "mirror"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "shoes",
+      "name": {
+        "es": "zapatos",
+        "en": "shoes"
+      },
+      "aliases": {
+        "es": [
+          "calzado"
+        ],
+        "en": [
+          "footwear"
+        ]
+      }
+    },
+    {
+      "id": "iron",
+      "name": {
+        "es": "plancha",
+        "en": "iron"
+      },
+      "aliases": {
+        "es": [
+          "plancha de ropa"
+        ],
+        "en": [
+          "clothes iron"
+        ]
+      }
+    },
+    {
+      "id": "toilet",
+      "name": {
+        "es": "inodoro",
+        "en": "toilet"
+      },
+      "aliases": {
+        "es": [
+          "baño",
+          "sanitario",
+          "váter"
+        ],
+        "en": [
+          "bathroom"
+        ]
+      }
+    },
+    {
+      "id": "toilet-paper",
+      "name": {
+        "es": "papel higiénico",
+        "en": "toilet paper"
+      },
+      "aliases": {
+        "es": [
+          "papel de baño"
+        ],
+        "en": [
+          "bath tissue"
+        ]
+      }
+    },
+    {
+      "id": "fan",
+      "name": {
+        "es": "abanico",
+        "en": "fan"
+      },
+      "aliases": {
+        "es": [
+          "ventilador"
+        ],
+        "en": [
+          "electric fan"
+        ]
+      }
+    },
+    {
+      "id": "shower",
+      "name": {
+        "es": "ducha",
+        "en": "shower"
+      },
+      "aliases": {
+        "es": [
+          "regadera"
+        ],
+        "en": [
+          "showerhead"
+        ]
+      }
+    },
+    {
+      "id": "water-jug",
+      "name": {
+        "es": "jarra de agua",
+        "en": "water jug"
+      },
+      "aliases": {
+        "es": [
+          "botellón",
+          "garrafón"
+        ],
+        "en": [
+          "water pitcher"
+        ]
+      }
+    },
+    {
+      "id": "car",
+      "name": {
+        "es": "carro",
+        "en": "car"
+      },
+      "aliases": {
+        "es": [
+          "auto",
+          "coche"
+        ],
+        "en": [
+          "automobile"
+        ]
+      }
+    },
+    {
+      "id": "motorcycle",
+      "name": {
+        "es": "motocicleta",
+        "en": "motorcycle"
+      },
+      "aliases": {
+        "es": [
+          "motor",
+          "motoconcho"
+        ],
+        "en": [
+          "motorbike",
+          "moped"
+        ]
+      }
+    },
+    {
+      "id": "helmet",
+      "name": {
+        "es": "casco",
+        "en": "helmet"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "bus",
+      "name": {
+        "es": "autobús",
+        "en": "bus"
+      },
+      "aliases": {
+        "es": [
+          "guagua",
+          "microbús"
+        ],
+        "en": [
+          "coach"
+        ]
+      }
+    },
+    {
+      "id": "train",
+      "name": {
+        "es": "tren",
+        "en": "train"
+      },
+      "aliases": {
+        "es": [
+          "metro"
+        ],
+        "en": [
+          "subway"
+        ]
+      }
+    },
+    {
+      "id": "mask",
+      "name": {
+        "es": "mascarilla",
+        "en": "mask"
+      },
+      "aliases": {
+        "es": [
+          "cubrebocas"
+        ],
+        "en": [
+          "face mask"
+        ]
+      }
+    },
+    {
+      "id": "hand-sanitizer",
+      "name": {
+        "es": "gel antibacterial",
+        "en": "hand sanitizer"
+      },
+      "aliases": {
+        "es": [
+          "desinfectante"
+        ],
+        "en": [
+          "sanitizer"
+        ]
+      }
+    },
+    {
+      "id": "paper",
+      "name": {
+        "es": "papel",
+        "en": "paper"
+      },
+      "aliases": {
+        "es": [
+          "hoja"
+        ],
+        "en": [
+          "sheet"
+        ]
+      }
+    },
+    {
+      "id": "pen",
+      "name": {
+        "es": "lapicero",
+        "en": "pen"
+      },
+      "aliases": {
+        "es": [
+          "bolígrafo",
+          "pluma"
+        ],
+        "en": [
+          "ballpoint"
+        ]
+      }
+    },
+    {
+      "id": "pencil",
+      "name": {
+        "es": "lápiz",
+        "en": "pencil"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "book",
+      "name": {
+        "es": "libro",
+        "en": "book"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "ladder",
+      "name": {
+        "es": "escalera",
+        "en": "ladder"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "broom",
+      "name": {
+        "es": "escoba",
+        "en": "broom"
+      },
+      "aliases": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
+      "id": "hair-dryer",
+      "name": {
+        "es": "secador de pelo",
+        "en": "hair dryer"
+      },
+      "aliases": {
+        "es": [
+          "secador"
+        ],
+        "en": [
+          "blow dryer"
+        ]
+      }
+    },
+    {
+      "id": "hair-trimmer",
+      "name": {
+        "es": "máquina de afeitar",
+        "en": "hair trimmer"
+      },
+      "aliases": {
+        "es": [
+          "rasuradora",
+          "recortadora"
+        ],
+        "en": [
+          "trimmer",
+          "shaver"
+        ]
+      }
+    },
+    {
+      "id": "sign",
+      "name": {
+        "es": "letrero",
+        "en": "sign"
+      },
+      "aliases": {
+        "es": [
+          "señal",
+          "aviso"
+        ],
+        "en": [
+          "notice"
+        ]
+      }
+    },
+    {
+      "id": "ticket",
+      "name": {
+        "es": "ticket",
+        "en": "ticket"
+      },
+      "aliases": {
+        "es": [
+          "turno",
+          "ficha",
+          "número de turno"
+        ],
+        "en": [
+          "number ticket",
+          "queue ticket"
+        ]
+      }
+    },
+    {
+      "id": "money",
+      "name": {
+        "es": "dinero",
+        "en": "money"
+      },
+      "aliases": {
+        "es": [
+          "efectivo",
+          "billetes"
+        ],
+        "en": [
+          "cash",
+          "bills"
+        ]
+      }
+    },
+    {
+      "id": "leash",
+      "name": {
+        "es": "correa",
+        "en": "leash"
+      },
+      "aliases": {
+        "es": [
+          "correa para mascota"
+        ],
+        "en": [
+          "lead"
+        ]
+      }
+    },
+    {
+      "id": "bowl",
+      "name": {
+        "es": "tazón",
+        "en": "bowl"
+      },
+      "aliases": {
+        "es": [
+          "plato para mascota"
+        ],
+        "en": [
+          "pet bowl"
+        ]
+      }
+    },
+    {
+      "id": "virus",
+      "name": {
+        "es": "virus",
+        "en": "virus"
+      },
+      "aliases": {
+        "es": [
+          "germen"
+        ],
+        "en": [
+          "germ"
+        ]
+      }
+    },
+    {
+      "id": "bomb",
+      "name": {
+        "es": "bomba",
+        "en": "bomb"
+      },
+      "aliases": {
+        "es": [
+          "bomba de tiempo"
+        ],
+        "en": [
+          "time bomb"
+        ]
+      }
+    },
+    {
+      "id": "asteroid",
+      "name": {
+        "es": "asteroide",
+        "en": "asteroid"
+      },
+      "aliases": {
+        "es": [
+          "meteorito"
+        ],
+        "en": [
+          "meteor"
+        ]
+      }
+    },
+    {
+      "id": "groceries",
+      "name": {
+        "es": "compras",
+        "en": "groceries"
+      },
+      "aliases": {
+        "es": [
+          "víveres",
+          "comestibles"
+        ],
+        "en": [
+          "groceries",
+          "shopping"
+        ]
+      }
+    },
+    {
+      "id": "hairbrush",
+      "name": {
+        "es": "cepillo de pelo",
+        "en": "hairbrush"
+      },
+      "aliases": {
+        "es": [
+          "peine"
+        ],
+        "en": [
+          "comb"
+        ]
+      }
+    },
+    {
+      "id": "soap",
+      "name": {
+        "es": "jabón",
+        "en": "soap"
+      },
+      "aliases": {
+        "es": [
+          "jabón líquido"
+        ],
+        "en": [
+          "liquid soap"
+        ]
+      }
+    },
+    {
+      "id": "refrigerator",
+      "name": {
+        "es": "nevera",
+        "en": "refrigerator"
+      },
+      "aliases": {
+        "es": [
+          "refrigerador",
+          "refri"
+        ],
+        "en": [
+          "fridge"
+        ]
+      }
+    },
+    {
+      "id": "speaker",
+      "name": {
+        "es": "bocina",
+        "en": "speaker"
+      },
+      "aliases": {
+        "es": [
+          "altavoz"
+        ],
+        "en": [
+          "loudspeaker"
+        ]
+      }
+    },
+    {
+      "id": "bag",
+      "name": {
+        "es": "bolso",
+        "en": "bag"
+      },
+      "aliases": {
+        "es": [
+          "cartera"
+        ],
+        "en": [
+          "purse",
+          "handbag"
+        ]
+      }
+    }
+  ]
+}

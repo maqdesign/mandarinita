@@ -135,7 +135,8 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-002-ansiosa",
@@ -208,7 +209,8 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-044-el-teletrabajo",
@@ -280,6 +282,12 @@
       "publishedAt": "2020-09-12",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "computer",
+        "desk",
+        "chair",
+        "monitor"
       ]
     },
     {
@@ -353,6 +361,12 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "sofa",
+        "sandwich",
+        "plate",
+        "fork"
       ]
     },
     {
@@ -426,6 +440,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "sofa",
+        "television",
+        "remote-control"
       ]
     },
     {
@@ -501,7 +520,8 @@
       "editorialNote": "Las cuatro viñetas corresponden al episodio 85. “El sobre que se va” y “El clip misterioso” son partes de una misma historieta.",
       "characters": [
         "mandy-mandarinita"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-103-ups-le-dimos-un-botoncito-nuevo-y-miren-esto",
@@ -636,6 +656,10 @@
         "mandy-mandarinita",
         "mando-mandarinita",
         "greg-el-zanahorio"
+      ],
+      "objects": [
+        "phone",
+        "computer"
       ]
     },
     {
@@ -706,7 +730,15 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2023-11-27"
+      "publishedAt": "2023-11-27",
+      "characters": [
+        "greg-el-zanahorio"
+      ],
+      "objects": [
+        "car",
+        "sign",
+        "paper"
+      ]
     },
     {
       "id": "ep-098-el-tiempo-vuela-ya-tenemos-4-anos-compartiendo-mandarini",
@@ -781,6 +813,10 @@
         "mandy-mandarinita",
         "mando-mandarinita",
         "greg-el-zanahorio"
+      ],
+      "objects": [
+        "calendar",
+        "paper"
       ]
     },
     {
@@ -854,6 +890,11 @@
       "publishedAt": "2023-11-11",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "computer",
+        "desk",
+        "chair"
       ]
     },
     {
@@ -927,6 +968,9 @@
       "publishedAt": "2024-01-04",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "car"
       ]
     },
     {
@@ -1000,6 +1044,10 @@
       "publishedAt": "2024-04-29",
       "characters": [
         "limon-agrio"
+      ],
+      "objects": [
+        "motorcycle",
+        "helmet"
       ]
     },
     {
@@ -1034,7 +1082,11 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2024-08-15"
+      "publishedAt": "2024-08-15",
+      "characters": [
+        "mandy-mandarinita"
+      ],
+      "objects": []
     },
     {
       "id": "ep-096-por-que-me-espias",
@@ -1107,6 +1159,10 @@
       "publishedAt": "2023-09-12",
       "characters": [
         "mandy-mandarinita"
+      ],
+      "objects": [
+        "computer",
+        "monitor"
       ]
     },
     {
@@ -1180,6 +1236,11 @@
       "publishedAt": "2023-08-23",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "computer",
+        "desk",
+        "chair"
       ]
     },
     {
@@ -1254,7 +1315,8 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-093-el-vaso-de-la-licuadora",
@@ -1324,7 +1386,15 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2023-04-28"
+      "publishedAt": "2023-04-28",
+      "characters": [
+        "mando-mandarinita"
+      ],
+      "objects": [
+        "blender",
+        "glass",
+        "water-jug"
+      ]
     },
     {
       "id": "ep-092-cada-vez-menos",
@@ -1394,7 +1464,14 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2023-02-18"
+      "publishedAt": "2023-02-18",
+      "characters": [
+        "mando-mandarinita",
+        "greg-el-zanahorio"
+      ],
+      "objects": [
+        "pizza"
+      ]
     },
     {
       "id": "ep-091-una-nave-es-enviada-a-impactar-un-asteroide-de-verdad-ve",
@@ -1468,6 +1545,9 @@
       "characters": [
         "mando-mandarinita",
         "greg-el-zanahorio"
+      ],
+      "objects": [
+        "asteroid"
       ]
     },
     {
@@ -1505,7 +1585,8 @@
       "publishedAt": "2022-09-22",
       "characters": [
         "mando-mandarinita"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-089-persiguiendo-tus-suenos-o-ellos-a-ti",
@@ -1683,6 +1764,11 @@
       "publishedAt": "2022-06-17",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "computer",
+        "keyboard",
+        "mouse"
       ]
     },
     {
@@ -1756,7 +1842,8 @@
       "publishedAt": "2022-06-13",
       "characters": [
         "mando-mandarinita"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-086-melon-musk",
@@ -1829,6 +1916,9 @@
       "publishedAt": "2022-04-28",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "phone"
       ]
     },
     {
@@ -1899,7 +1989,14 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2022-03-20"
+      "publishedAt": "2022-03-20",
+      "characters": [
+        "mando-mandarinita"
+      ],
+      "objects": [
+        "blender",
+        "glass"
+      ]
     },
     {
       "id": "ep-083-cuando-uno-cree-que-va-de-robo",
@@ -1973,6 +2070,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "paper",
+        "sign"
       ]
     },
     {
@@ -2047,7 +2148,8 @@
       "characters": [
         "mando-mandarinita",
         "greg-el-zanahorio"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-081-el-conteo-eterno",
@@ -2120,6 +2222,10 @@
       "publishedAt": "2022-01-17",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "computer",
+        "paper"
       ]
     },
     {
@@ -2193,6 +2299,9 @@
       "publishedAt": "2021-12-09",
       "characters": [
         "aguacatelo"
+      ],
+      "objects": [
+        "money"
       ]
     },
     {
@@ -2267,7 +2376,8 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-078-esta-en-su-adn",
@@ -2337,7 +2447,14 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2021-12-02"
+      "publishedAt": "2021-12-02",
+      "characters": [
+        "mandy-mandarinita",
+        "mando-mandarinita"
+      ],
+      "objects": [
+        "cup"
+      ]
     },
     {
       "id": "ep-077-no-arrojar-papeles",
@@ -2410,6 +2527,10 @@
       "publishedAt": "2021-10-24",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "toilet",
+        "toilet-paper"
       ]
     },
     {
@@ -2693,6 +2814,10 @@
       "publishedAt": "2021-07-11",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "stove",
+        "pot"
       ]
     },
     {
@@ -2739,7 +2864,16 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2021-06-06"
+      "publishedAt": "2021-06-06",
+      "characters": [
+        "mandy-mandarinita",
+        "mando-mandarinita"
+      ],
+      "objects": [
+        "bed",
+        "pillow",
+        "clock"
+      ]
     },
     {
       "id": "ep-071-chuaaaaaaa",
@@ -2812,6 +2946,10 @@
       "publishedAt": "2021-05-30",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "soap",
+        "glass"
       ]
     },
     {
@@ -2885,6 +3023,10 @@
       "publishedAt": "2021-05-09",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "soap",
+        "glass"
       ]
     },
     {
@@ -2922,6 +3064,9 @@
       "publishedAt": "2021-04-30",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "monitor"
       ]
     },
     {
@@ -2959,7 +3104,8 @@
       "publishedAt": "2021-04-16",
       "characters": [
         "mando-mandarinita"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-067-el-mejor-momento-para-hablar",
@@ -2993,7 +3139,14 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2021-04-11"
+      "publishedAt": "2021-04-11",
+      "characters": [
+        "mandy-mandarinita",
+        "mando-mandarinita"
+      ],
+      "objects": [
+        "toilet"
+      ]
     },
     {
       "id": "ep-066-vacaciones-silenciosas",
@@ -3035,6 +3188,9 @@
         "limon-agrio",
         "aguacatelo",
         "sandy-la-sandia"
+      ],
+      "objects": [
+        "phone"
       ]
     },
     {
@@ -3072,6 +3228,10 @@
       "publishedAt": "2021-02-14",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "paper",
+        "sign"
       ]
     },
     {
@@ -3106,7 +3266,14 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2021-02-05"
+      "publishedAt": "2021-02-05",
+      "characters": [
+        "mandy-mandarinita",
+        "mando-mandarinita"
+      ],
+      "objects": [
+        "bomb"
+      ]
     },
     {
       "id": "ep-063-llegara-la-pizza",
@@ -3143,6 +3310,10 @@
       "publishedAt": "2021-01-31",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "pizza",
+        "phone"
       ]
     },
     {
@@ -3177,7 +3348,16 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2021-01-24"
+      "publishedAt": "2021-01-24",
+      "characters": [
+        "mandy-mandarinita",
+        "mando-mandarinita"
+      ],
+      "objects": [
+        "computer",
+        "monitor",
+        "mouse"
+      ]
     },
     {
       "id": "ep-061-llego-el-delivery",
@@ -3250,6 +3430,10 @@
       "publishedAt": "2021-01-17",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "plate",
+        "food"
       ]
     },
     {
@@ -3324,6 +3508,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "plate",
+        "food",
+        "cup"
       ]
     },
     {
@@ -3399,6 +3588,10 @@
         "mandy-mandarinita",
         "mando-mandarinita",
         "morita"
+      ],
+      "objects": [
+        "table",
+        "chair"
       ]
     },
     {
@@ -3473,6 +3666,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "phone"
       ]
     },
     {
@@ -3547,6 +3743,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "calendar",
+        "sofa",
+        "desk"
       ]
     },
     {
@@ -3620,6 +3821,11 @@
       "publishedAt": "2020-12-19",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "cup",
+        "plate",
+        "food"
       ]
     },
     {
@@ -3694,6 +3900,12 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "table",
+        "cup",
+        "plate",
+        "food"
       ]
     },
     {
@@ -3768,6 +3980,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "pen",
+        "paper",
+        "soap"
       ]
     },
     {
@@ -3842,6 +4059,13 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "wardrobe",
+        "clothes",
+        "mirror",
+        "shoes",
+        "bed"
       ]
     },
     {
@@ -3916,6 +4140,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "sofa"
       ]
     },
     {
@@ -3990,6 +4217,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "sofa"
       ]
     },
     {
@@ -4063,6 +4293,13 @@
       "publishedAt": "2020-10-10",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "stove",
+        "pan",
+        "blender",
+        "plate",
+        "food"
       ]
     },
     {
@@ -4137,6 +4374,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "ladder"
       ]
     },
     {
@@ -4211,6 +4451,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "phone"
       ]
     },
     {
@@ -4285,6 +4528,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "broom",
+        "water-jug"
       ]
     },
     {
@@ -4358,6 +4605,10 @@
       "publishedAt": "2020-09-05",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "glass",
+        "table"
       ]
     },
     {
@@ -4432,6 +4683,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "glass"
       ]
     },
     {
@@ -4506,6 +4760,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "ticket",
+        "mask",
+        "hand-sanitizer"
       ]
     },
     {
@@ -4580,6 +4839,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "leash",
+        "bowl"
       ]
     },
     {
@@ -4654,6 +4917,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "toilet",
+        "chair"
       ]
     },
     {
@@ -4728,6 +4995,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "bag"
       ]
     },
     {
@@ -4802,6 +5072,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "shopping-cart"
       ]
     },
     {
@@ -4876,6 +5149,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "shopping-bag",
+        "shoes"
       ]
     },
     {
@@ -4950,6 +5227,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "computer",
+        "desk",
+        "chair"
       ]
     },
     {
@@ -5024,6 +5306,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "refrigerator",
+        "sofa"
       ]
     },
     {
@@ -5098,6 +5384,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "clothes",
+        "wardrobe",
+        "iron"
       ]
     },
     {
@@ -5172,6 +5463,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "speaker",
+        "phone"
       ]
     },
     {
@@ -5246,6 +5541,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "fan"
       ]
     },
     {
@@ -5316,7 +5614,16 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2020-06-06"
+      "publishedAt": "2020-06-06",
+      "characters": [
+        "mandy-mandarinita",
+        "mando-mandarinita"
+      ],
+      "objects": [
+        "washing-machine",
+        "clothes",
+        "clothesline"
+      ]
     },
     {
       "id": "ep-027-de-donde-salio",
@@ -5390,6 +5697,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "car",
+        "motorcycle"
       ]
     },
     {
@@ -5460,7 +5771,15 @@
         }
       ],
       "editorialNote": "Revisión visual completada el 2026-11-04; se verificó la secuencia de lectura y se conservaron las viñetas completas.",
-      "publishedAt": "2020-05-30"
+      "publishedAt": "2020-05-30",
+      "characters": [
+        "mandy-mandarinita",
+        "mando-mandarinita"
+      ],
+      "objects": [
+        "coffee",
+        "cup"
+      ]
     },
     {
       "id": "ep-028-trukea",
@@ -5535,6 +5854,11 @@
         "mandy-mandarinita",
         "mando-mandarinita",
         "greg-el-zanahorio"
+      ],
+      "objects": [
+        "sofa",
+        "chair",
+        "table"
       ]
     },
     {
@@ -5609,6 +5933,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "sofa",
+        "television",
+        "remote-control"
       ]
     },
     {
@@ -5684,6 +6013,10 @@
         "mandy-mandarinita",
         "mando-mandarinita",
         "los-cherrys"
+      ],
+      "objects": [
+        "shopping-cart",
+        "groceries"
       ]
     },
     {
@@ -5758,6 +6091,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "mirror",
+        "clothes",
+        "shoes"
       ]
     },
     {
@@ -5832,6 +6170,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "clothes",
+        "wardrobe"
       ]
     },
     {
@@ -6047,6 +6389,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "bed",
+        "pillow"
       ]
     },
     {
@@ -6121,6 +6467,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "water-jug",
+        "glass",
+        "phone"
       ]
     },
     {
@@ -6195,6 +6546,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "hair-trimmer",
+        "soap"
       ]
     },
     {
@@ -6269,6 +6624,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "television",
+        "sofa"
       ]
     },
     {
@@ -6343,6 +6702,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "mask",
+        "virus"
       ]
     },
     {
@@ -6415,6 +6778,11 @@
       "editorialNote": "Published pages 1–4 in reading order. The fifth source image is a rough storyboard of another scene and remains outside the public episode sequence.",
       "characters": [
         "sra-pera"
+      ],
+      "objects": [
+        "chair",
+        "mirror",
+        "hair-dryer"
       ]
     },
     {
@@ -6489,6 +6857,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "shower"
       ]
     },
     {
@@ -6566,6 +6937,10 @@
         "greg-el-zanahorio",
         "aguacatelo",
         "sandy-la-sandia"
+      ],
+      "objects": [
+        "bus",
+        "bag"
       ]
     },
     {
@@ -6639,6 +7014,12 @@
       "publishedAt": "2020-02-08",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "bed",
+        "desk",
+        "computer",
+        "clock"
       ]
     },
     {
@@ -6713,6 +7094,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "calendar",
+        "clock"
       ]
     },
     {
@@ -6787,6 +7172,9 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "virus"
       ]
     },
     {
@@ -6861,6 +7249,10 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "paper",
+        "book"
       ]
     },
     {
@@ -6935,6 +7327,12 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "food",
+        "pizza",
+        "plate",
+        "table"
       ]
     },
     {
@@ -7022,7 +7420,8 @@
         "mandy-mandarinita",
         "mando-mandarinita",
         "limon-agrio"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-005-cinco-minutos-mas",
@@ -7096,6 +7495,11 @@
       "characters": [
         "mandy-mandarinita",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "bed",
+        "phone",
+        "clock"
       ]
     },
     {
@@ -7169,6 +7573,11 @@
       "publishedAt": "2019-12-28",
       "characters": [
         "mando-mandarinita"
+      ],
+      "objects": [
+        "computer",
+        "desk",
+        "table"
       ]
     },
     {
@@ -7246,7 +7655,8 @@
         "greg-el-zanahorio",
         "aguacatelo",
         "don-pepino"
-      ]
+      ],
+      "objects": []
     },
     {
       "id": "ep-004-el-metro",
@@ -7284,6 +7694,9 @@
       "characters": [
         "champi-non",
         "mando-mandarinita"
+      ],
+      "objects": [
+        "train"
       ]
     },
     {
@@ -7326,7 +7739,8 @@
         "aguacatelo",
         "don-manzanillo",
         "don-guineo"
-      ]
+      ],
+      "objects": []
     }
   ]
 }
