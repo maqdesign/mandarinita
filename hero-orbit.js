@@ -28,7 +28,8 @@
       const image = document.createElement('img');
       image.src = thumbnail(panel.sourceSrc || panel.src);
       image.alt = '';
-      image.loading = 'lazy';
+      image.loading = 'eager';
+      image.fetchPriority = 'low';
       image.decoding = 'async';
       image.width = 320;
       image.height = 320;
