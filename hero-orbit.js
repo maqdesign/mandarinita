@@ -69,9 +69,12 @@
       const bounds = orbit.getBoundingClientRect();
       const radiusX = bounds.width * 0.46;
       const radiusY = bounds.height * 0.34;
+      const canvasBounds = orbit.closest('.hero')?.getBoundingClientRect() || bounds;
       const circumference = Math.PI * (3 * (radiusX + radiusY)
         - Math.sqrt((3 * radiusX + radiusY) * (radiusX + 3 * radiusY)));
-      const cardWidth = parseFloat(getComputedStyle(cards[0]?.anchor || orbit).width) || 58;
+      const cardStyle = getComputedStyle(cards[0]?.anchor || orbit);
+      const cardWidth = parseFloat(cardStyle.width) || 58;
+      const cardHeight = parseFloat(cardStyle.height) || 52;
       const visibleCount = Math.max(6, Math.min(12, Math.floor(circumference / (cardWidth * 1.35))));
       cards.forEach(({ anchor, index }) => {
         const isVisible = index < visibleCount;
@@ -88,10 +91,19 @@
         const depthProgress = Math.min(1, Math.abs(y) / Math.max(radiusY, 1));
         const isBackHalf = y < 0;
         const back = isBackHalf ? depthProgress : 0;
-        const scale = isBackHalf ? 1 - depthProgress * 0.18 : 1 + depthProgress * 0.14;
-        const orbitSpread = isBackHalf ? 1 - depthProgress * 0.05 : 1 + depthProgress * 0.04;
-        const positionX = x * orbitSpread;
-        const positionY = y * orbitSpread;
+        const scale = isBackHalf ? 1 - depthProgress * 0.32 : 1 + depthProgress * 0.32;
+        const orbitSpread = isBackHalf ? 1 - depthProgress * 0.28 : 1 + depthProgress * 0.28;
+        const halfWidth = cardWidth * scale / 2;
+        const halfHeight = cardHeight * scale / 2;
+        const centerX = bounds.left + bounds.width / 2;
+        const centerY = bounds.top + bounds.height / 2;
+        const minX = canvasBounds.left + halfWidth + 6 - centerX;
+        const maxX = canvasBounds.right - halfWidth - 6 - centerX;
+        const minY = canvasBounds.top + halfHeight + 6 - centerY;
+        const maxY = canvasBounds.bottom - halfHeight - 6 - centerY;
+        const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+        const positionX = clamp(x * orbitSpread, minX, maxX);
+        const positionY = clamp(y * orbitSpread, minY, maxY);
         const targetLayer = isBackHalf ? backLayer : frontLayer;
         if (anchor.parentElement !== targetLayer) targetLayer.append(anchor);
         // Inside each half, let the lowest card paint last. This keeps card
@@ -100,7 +112,7 @@
         anchor.style.left = '50%';
         anchor.style.top = '50%';
         anchor.style.transform = `translate(-50%,-50%) translate(${positionX}px,${positionY}px) scale(${scale})`;
-        anchor.style.filter = `blur(${(back * 1.15).toFixed(2)}px)`;
+        anchor.style.filter = `blur(${(back * 1.5).toFixed(2)}px)`;
         anchor.style.opacity = String((1 - back * 0.16).toFixed(2));
       });
     };
