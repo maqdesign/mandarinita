@@ -198,8 +198,12 @@
   function setSyncFailure(error) {
     if(error?.status===401)cloudAuthExpired=true;
     const message=error?.status===401?'La sesión venció. Vuelve a conectar GitHub para sincronizar.'
+      :error?.status===403?'Cloudflare rechazó la solicitud (403). Abre el taller desde mandarinita.art y vuelve a intentar.'
       :error?.status===413?'El archivo supera el límite de 25 MB; descarga el .mandarinita como respaldo.'
-      :'No se pudo sincronizar. El borrador sigue guardado en este dispositivo.';
+      :error?.status===428?'Esta versión del taller está desactualizada (428). Recarga la página para actualizarla; tu borrador local sigue guardado.'
+      :error?.status>=500?`Cloudflare no pudo guardar el borrador (error ${error.status}). Sigue guardado en este dispositivo.`
+      :Number.isInteger(error?.status)?`No se pudo sincronizar (error ${error.status}). El borrador sigue guardado en este dispositivo.`
+      :'No se pudo conectar con la nube. El borrador sigue guardado en este dispositivo.';
     setCloudStatus(message,'error');
     if(state)$('#save-state').textContent='Guardado local · sincronización pendiente';
     toast(message);
