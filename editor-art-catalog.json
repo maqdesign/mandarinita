@@ -8424,7 +8424,15 @@
       "visualNote": "Composición minimalista con personaje, sobre y paisaje sencillo.",
       "contactSheet": "docs/art-review/contact-sheets/sheet-16.webp",
       "contactSheetTile": 5,
-      "visualTagsStatus": "provisional-description"
+      "visualTagsStatus": "provisional-description",
+      "reviewBackgrounds": [
+        {
+          "source": "assets/backgrounds/review/sky-clouds-episode-85-1.png",
+          "recipe": "docs/art-review/cutouts/build-episode-85-sky-background.py",
+          "status": "review",
+          "note": "Clean crop of the sky and cloud region, with no character pixels."
+        }
+      ]
     },
     {
       "source": "assets/episodes/ep-085-lo-que-siempre-te-pasa/85.2.png",
@@ -8466,7 +8474,16 @@
       "visualNote": "Composición minimalista con personaje, sobre y paisaje sencillo.",
       "contactSheet": "docs/art-review/contact-sheets/sheet-16.webp",
       "contactSheetTile": 7,
-      "visualTagsStatus": "provisional-description"
+      "visualTagsStatus": "provisional-description",
+      "reviewAssets": [
+        {
+          "kind": "object-cutout",
+          "source": "assets/objects/review/paperclip-episode-85-3-review.png",
+          "recipe": "docs/art-review/cutouts/build-paperclip-85-3-review.py",
+          "status": "review",
+          "note": "Grayscale paperclip personification; its identity/category is not decided."
+        }
+      ]
     },
     {
       "source": "assets/episodes/ep-085-lo-que-siempre-te-pasa/85.4.png",
@@ -8679,6 +8696,15 @@
           "pose": "standing, arms near sides",
           "expression": "eyebrows raised, eyes open; mouth obscured by moustache",
           "componentStatus": "reference-only; caption, watermark, frame and ground mark are integrated"
+        }
+      ],
+      "reviewCutouts": [
+        {
+          "characterId": "mando",
+          "source": "assets/characters/review/mando-episode-87-1-review.png",
+          "recipe": "docs/art-review/cutouts/build-mando-87-1-review.py",
+          "status": "review",
+          "note": "Source pixels; the caption is excluded, while the original yellow ground oval remains."
         }
       ]
     },

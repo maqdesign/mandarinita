@@ -32,12 +32,20 @@ Se añadieron cuatro recortes de estudio tomados de los paneles publicados `59.1
 
 Los cuatro archivos aparecen en Componentes → Personajes como **recortes en revisión** para poder examinarlos dentro del editor; siguen deshabilitados para insertar. No son variaciones aprobadas ni se han sumado al catálogo de componentes publicables. Los cinco recortes piloto anteriores también se muestran allí con el mismo estado. La pestaña **Stickers** separa los stickers existentes de los personajes: los packs transparentes 02, 03, 04, 06 y 07 son insertables; los packs opacos 01 y 05 aparecen como referencias no insertables y conservan sus fondos originales.
 
+## Inventario de los episodios 85 y 87
+
+`mando-episode-87-1-review.png` es un recorte de la pose de Mando del episodio 87.1. Conserva los píxeles de esa etapa anterior del dibujo y el óvalo amarillo del suelo; se excluyó el texto manuscrito. Sigue pendiente de revisión, y no es una guía de proporciones para rig. El proceso está en [`build-mando-87-1-review.py`](build-mando-87-1-review.py).
+
+`paperclip-episode-85-3-review.png` aísla las líneas grises del clip personificado del episodio 85.3. No se le inventó un nombre ni se decidió si debe tratarse como personaje u objeto. El recorte se basa en luminancia para conservar el trazo gris; necesita revisión de bordes antes de poder insertarse. Ver [`build-paperclip-85-3-review.py`](build-paperclip-85-3-review.py).
+
+`sky-clouds-episode-85-1.png` conserva una región despejada del cielo pintado y las nubes de 85.1, sin personajes. Es una muestra panorámica de fondo, no una escena reconstruida. Su extracción reproducible está en [`build-episode-85-sky-background.py`](build-episode-85-sky-background.py); queda en revisión antes de insertarse.
+
 ## Sofá azul · episodio 9.2
 
 Las propuestas `sofa-azul-episodio-51-1-borrador*.png` son estudios fallidos, no recortes literales ni componentes utilizables. Mauricio indicó que no se parecen al mueble de referencia. La última versión deja contornos de personajes en la textura y la silueta no respeta la fuente. Permanecen fuera de la biblioteca y están marcadas como rechazadas en el catálogo. No regenerar ni presentar como propuestas vigentes. Hace falta una fuente con más del mueble visible o un dibujo de Mauricio.
 
 La primera alternativa, `sofa-azul-episodio-09-2-borrador.png`, se conserva como versión anterior; tiene una forma más recta y una paleta menos saturada, y queda supersedida por la propuesta del episodio 51.
 
-Los nueve recortes de personaje se muestran en el editor únicamente para revisión; ninguno se añadió al manifiesto de componentes aprobados. Los del episodio 14 incluyen retoques localizados en las puntas inferiores; los del episodio 1 conservan sombras; Morita 59.1 tiene algo de sombra de contacto y 59.2 conserva el efecto turquesa. El estudio del sofá está rechazado y no es reutilizable. La hoja de contacto se regenera con [`build-review-contact-sheet.sh`](build-review-contact-sheet.sh).
+Los diez recortes de personaje se muestran en el editor únicamente para revisión; ninguno se añadió al manifiesto de componentes aprobados. Los del episodio 14 incluyen retoques localizados en las puntas inferiores; los del episodio 1 conservan sombras; Morita 59.1 tiene algo de sombra de contacto y 59.2 conserva el efecto turquesa; Mando 87.1 conserva el óvalo amarillo del suelo. El estudio del sofá está rechazado y no es reutilizable. La hoja de contacto se regenera con [`build-review-contact-sheet.sh`](build-review-contact-sheet.sh).
 
 El original del episodio sigue intacto y la ficha de su aparición en el catálogo conserva su ruta de origen.

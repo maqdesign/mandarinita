@@ -34,6 +34,7 @@
     { name: 'Objeto · clip', aliases: ['clip', 'paperclip'], src: 'assets/art-paperclip-2022.webp', category: 'object', approvedCutout: false, note: 'Ilustración completa, no es un recorte independiente.' }
   ];
   const backgrounds = [
+    { name: 'Cielo y nubes · episodio 85.1', aliases: ['cielo', 'nubes', 'fondo celeste', 'episodio 85'], src: 'assets/backgrounds/review/sky-clouds-episode-85-1.png', source: 'assets/episodes/ep-085-lo-que-siempre-te-pasa/85.1.png', category: 'background', approvedCutout: false, reviewOnly: true, reviewKind: 'background-extract', note: 'Muestra recortada de una zona despejada del fondo original; mantener su proporción panorámica.' },
     { name: 'Sillón azul · episodio 9.1', aliases: ['mueble azul', 'sillon', 'sillón', 'sala', 'episodio 9'], src: 'assets/episodes/ep-009-la-cena/09.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, televisor, mesa, sombras y fondo siguen unidos.' },
     { name: 'Sofá azul · episodio 9.2', aliases: ['mueble azul', 'sofa', 'sofá', 'sala', 'episodio 9'], src: 'assets/episodes/ep-009-la-cena/09.2.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globos, sofá y sombras siguen unidos.' },
     { name: 'Escena frente al televisor · episodio 19', aliases: ['televisor', 'tv', 'episodio 19'], src: 'assets/episodes/ep-019-noche-de-peliculas/19.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globo, televisor y forma azul en primer plano siguen unidos.' },
@@ -48,6 +49,7 @@
     { name: 'Trabajo remoto · episodio 44', aliases: ['trabajo', 'laptop', 'computadora', 'escritorio', 'episodio 44'], src: 'assets/episodes/ep-044-el-teletrabajo/44.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; laptop, escritorio, silla, personaje y objetos siguen unidos.' }
   ];
   const reviewCharacterCutouts = [
+    { name: 'Mando · expresión de calor · episodio 87.1', aliases: ['mando', 'mandarino', 'episodio 87', 'calor'], src: 'assets/characters/review/mando-episode-87-1-review.png', source: 'assets/episodes/ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap/87.1.png', note: 'Pose completa recortada de una etapa anterior del dibujo. Conserva el óvalo amarillo de suelo del panel; revisar si debe permanecer.' },
     { name: 'Mando · expresión del episodio 1.1', aliases: ['mando', 'mandarino', 'mandarín', 'sonriente', 'episodio 1'], src: 'docs/art-review/cutouts/mando-episodio-01-1-borrador.png', source: 'assets/episodes/ep-001-la-mosca/01.1.png', note: 'Recorte piloto con sombra en los pies; revisar el borde antes de aprobar.' },
     { name: 'Mandy · gesto del episodio 1.1', aliases: ['mandy', 'mandarinita', 'episodio 1'], src: 'docs/art-review/cutouts/mandy-episodio-01-1-borrador.png', source: 'assets/episodes/ep-001-la-mosca/01.1.png', note: 'Recorte piloto con sombra en los pies; revisar la pose y el borde antes de aprobar.' },
     { name: 'Mando · sorprendido · episodio 1.3', aliases: ['mando', 'mandarino', 'sorprendido', 'episodio 1'], src: 'docs/art-review/cutouts/mando-episodio-01-3-borrador.png', source: 'assets/episodes/ep-001-la-mosca/01.3.png', note: 'Recorte piloto con sombra; confirmar el contorno antes de aprobar.' },
@@ -62,6 +64,9 @@
     { name: 'Sticker existente · pack 01', aliases: ['sticker 1', 'pack 1'], src: 'assets/stickers/sticker-pack-01.webp', source: 'assets/stickers/sticker-pack-01.webp', note: 'Asset cuadrado opaco del pack existente. Se conserva como referencia; no se le quitó el fondo ni se asignó a un personaje.', reviewKind: 'existing-sticker' },
     { name: 'Sticker existente · pack 05', aliases: ['sticker 5', 'pack 5', 'logo'], src: 'assets/stickers/sticker-pack-05.webp', source: 'assets/stickers/sticker-pack-05.webp', note: 'Asset cuadrado opaco del pack existente. Contiene el logotipo sobre un círculo amarillo; se conserva como referencia, no como recorte de personaje.', reviewKind: 'existing-sticker' }
   ].map(resource => ({ ...resource, category: 'sticker', approvedCutout: false, reviewOnly: true }));
+  const reviewObjectCutouts = [
+    { name: 'Clip de papel · episodio 85.3', aliases: ['clip', 'paperclip', 'sujetapapeles', 'episodio 85'], src: 'assets/objects/review/paperclip-episode-85-3-review.png', source: 'assets/episodes/ep-085-lo-que-siempre-te-pasa/85.3.png', note: 'Recorte en líneas grises de un clip personificado con brazos y piernas. No se le asignó nombre ni se decidió si debe catalogarse como objeto o personaje.', reviewKind: 'object-cutout' }
+  ].map(resource => ({ ...resource, category: 'object', approvedCutout: false, reviewOnly: true }));
   const backgroundColors = [
     { name: 'Blanco limpio', color: '#FFFFFF', source: 'Base' },
     { name: 'Crema Mandarinita', color: '#FFF8EC', source: 'Marca' },
@@ -78,7 +83,7 @@
     { name: 'Azul cielo', color: '#87DEFA', source: 'Episodio 52 · 52.1' },
     { name: 'Azul claro', color: '#93CCFF', source: 'Episodio 70 · 70.1' }
   ];
-  const resources = [...people, ...stickers, ...objects, ...backgrounds, ...reviewCharacterCutouts, ...stickerReviewAssets];
+  const resources = [...people, ...stickers, ...objects, ...backgrounds, ...reviewCharacterCutouts, ...reviewObjectCutouts, ...stickerReviewAssets];
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
   let state = null;
@@ -1285,16 +1290,18 @@
   function openCutoutReview(resource) {
     const dialog = $('#reference-preview-dialog');
     const existingSticker = resource.reviewKind === 'existing-sticker';
+    const objectCutout = resource.reviewKind === 'object-cutout';
+    const backgroundExtract = resource.reviewKind === 'background-extract';
     $('#reference-preview-title').textContent = resource.name;
-    $('#reference-preview-subtitle').textContent = existingSticker ? 'Sticker existente · referencia no insertable' : 'Borrador de recorte · recurso pendiente de aprobación';
-    $('#reference-preview-pose-label').textContent = existingSticker ? 'Tipo de recurso' : 'Estado del recorte';
+    $('#reference-preview-subtitle').textContent = existingSticker ? 'Sticker existente · referencia no insertable' : backgroundExtract ? 'Fondo extraído · pendiente de revisión' : objectCutout ? 'Recorte de objeto · pendiente de revisión' : 'Borrador de recorte · recurso pendiente de aprobación';
+    $('#reference-preview-pose-label').textContent = existingSticker ? 'Tipo de recurso' : backgroundExtract ? 'Fuente del fondo' : objectCutout ? 'Tipo de objeto' : 'Estado del recorte';
     $('#reference-preview-expression-label').textContent = 'Nota de revisión';
-    $('#reference-preview-pose').textContent = existingSticker ? 'Imagen del pack existente; no se cambió ni se separó del fondo.' : 'Los píxeles proceden de la pose visible en el episodio enlazado.';
+    $('#reference-preview-pose').textContent = existingSticker ? 'Imagen del pack existente; no se cambió ni se separó del fondo.' : backgroundExtract ? 'Recorte de una región del panel sin personajes.' : objectCutout ? 'Los píxeles proceden de la forma visible en el episodio enlazado.' : 'Los píxeles proceden de la pose visible en el episodio enlazado.';
     $('#reference-preview-expression').textContent = resource.note;
     $('#reference-preview-image').src = resource.src;
-    $('#reference-preview-image').alt = existingSticker ? `Referencia del ${resource.name}` : `Borrador transparente de ${resource.name}`;
+    $('#reference-preview-image').alt = existingSticker || backgroundExtract ? `Referencia del ${resource.name}` : `Borrador recortado de ${resource.name}`;
     $('#reference-preview-source').href = resource.source;
-    $('#reference-preview-note').textContent = existingSticker ? 'La imagen original se mantiene intacta. No se puede insertar hasta confirmar su uso y, si corresponde, preparar un PNG transparente.' : 'Este recurso aparece para revisión en la biblioteca, pero todavía no se puede insertar en el lienzo. Al aprobarlo, se podrá activar como componente.';
+    $('#reference-preview-note').textContent = existingSticker ? 'La imagen original se mantiene intacta. No se puede insertar hasta confirmar su uso y, si corresponde, preparar un PNG transparente.' : backgroundExtract ? 'El recorte conserva la proporción de la región de origen y no contiene personajes. Sigue pendiente de revisión antes de insertarse.' : 'Este recurso aparece para revisión en la biblioteca, pero todavía no se puede insertar en el lienzo. Al aprobarlo, se podrá activar como componente.';
     dialog.showModal();
   }
   function renderBackgroundColors(grid, query = '') {
