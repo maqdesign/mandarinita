@@ -26,12 +26,18 @@ Los dos recortes usan el panel original `assets/episodes/ep-014-un-dia-malo/14.1
 
 `greg-episodio-14-1-borrador.png` conserva la zanahoria, las gafas turquesa, la hoja, sus extremidades y el elemento azul que lleva al costado. Se excluyó la forma blanca contigua que pertenece a otra figura. Las puntas de los pies se retocaron a partir de las formas visibles en el original para separar la sombra. El proceso está en [`build-greg-review-cutout.sh`](build-greg-review-cutout.sh).
 
+## Morita · episodio 59
+
+Se añadieron dos recortes de estudio tomados de los paneles publicados `59.1` y `59.2`, conservando los píxeles de las poses originales. `morita-episode-59-1-review.png` muestra la pose de pie, pero conserva restos de sombra y requiere revisar el borde de las patas. `morita-episode-59-2-review.png` conserva la lengua y el efecto turquesa que aparece junto al personaje; Mauricio debe decidir si ese efecto debe permanecer unido al componente. Los procedimientos reproducibles son [`build-morita-59-1-review.py`](build-morita-59-1-review.py) y [`build-morita-59-2-review.py`](build-morita-59-2-review.py).
+
+Los dos archivos aparecen en Componentes → Personajes como **recortes en revisión** para poder examinarlos dentro del editor; siguen deshabilitados para insertar. No son variaciones aprobadas ni se han sumado al catálogo de componentes publicables. Los cinco recortes piloto anteriores también se muestran allí con el mismo estado de revisión.
+
 ## Sofá azul · episodio 9.2
 
 Las propuestas `sofa-azul-episodio-51-1-borrador*.png` son estudios fallidos, no recortes literales ni componentes utilizables. Mauricio indicó que no se parecen al mueble de referencia. La última versión deja contornos de personajes en la textura y la silueta no respeta la fuente. Permanecen fuera de la biblioteca y están marcadas como rechazadas en el catálogo. No regenerar ni presentar como propuestas vigentes. Hace falta una fuente con más del mueble visible o un dibujo de Mauricio.
 
 La primera alternativa, `sofa-azul-episodio-09-2-borrador.png`, se conserva como versión anterior; tiene una forma más recta y una paleta menos saturada, y queda supersedida por la propuesta del episodio 51.
 
-Los recortes de personaje se mantienen a resolución fuente y se revisaron visualmente sobre fondos claros y oscuros. Los dos del episodio 14 reconstruyen solo puntas inferiores visibles del trazo; los tres del episodio 1 conservan la sombra. El estudio del sofá está rechazado y no es reutilizable. Los demás recortes piloto siguen en revisión y no están añadidos al manifiesto de componentes aprobados del editor. La hoja de personajes se regenera con [`build-review-contact-sheet.sh`](build-review-contact-sheet.sh).
+Los siete recortes de personaje se muestran en el editor únicamente para revisión; ninguno se añadió al manifiesto de componentes aprobados. Los recortes del episodio 14 incluyen retoques localizados en las puntas inferiores; los del episodio 1 conservan sombras; Morita 59.1 tiene restos de escena y 59.2 conserva el efecto turquesa. El estudio del sofá está rechazado y no es reutilizable. La hoja de contacto se regenera con [`build-review-contact-sheet.sh`](build-review-contact-sheet.sh).
 
 El original del episodio sigue intacto y la ficha de su aparición en el catálogo conserva su ruta de origen.

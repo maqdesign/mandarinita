@@ -47,6 +47,15 @@
     { name: 'Escritorio y silla giratoria · episodio 35', aliases: ['escritorio', 'silla', 'oficina', 'cucaracha', 'episodio 35'], src: 'assets/episodes/ep-035-la-cucaracha/35.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; escritorio, silla, personajes y matamoscas siguen unidos.' },
     { name: 'Trabajo remoto · episodio 44', aliases: ['trabajo', 'laptop', 'computadora', 'escritorio', 'episodio 44'], src: 'assets/episodes/ep-044-el-teletrabajo/44.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; laptop, escritorio, silla, personaje y objetos siguen unidos.' }
   ];
+  const reviewCharacterCutouts = [
+    { name: 'Mando · expresión del episodio 1.1', aliases: ['mando', 'mandarino', 'mandarín', 'sonriente', 'episodio 1'], src: 'docs/art-review/cutouts/mando-episodio-01-1-borrador.png', source: 'assets/episodes/ep-001-la-mosca/01.1.png', note: 'Recorte piloto con sombra en los pies; revisar el borde antes de aprobar.' },
+    { name: 'Mandy · gesto del episodio 1.1', aliases: ['mandy', 'mandarinita', 'episodio 1'], src: 'docs/art-review/cutouts/mandy-episodio-01-1-borrador.png', source: 'assets/episodes/ep-001-la-mosca/01.1.png', note: 'Recorte piloto con sombra en los pies; revisar la pose y el borde antes de aprobar.' },
+    { name: 'Mando · sorprendido · episodio 1.3', aliases: ['mando', 'mandarino', 'sorprendido', 'episodio 1'], src: 'docs/art-review/cutouts/mando-episodio-01-3-borrador.png', source: 'assets/episodes/ep-001-la-mosca/01.3.png', note: 'Recorte piloto con sombra; confirmar el contorno antes de aprobar.' },
+    { name: 'Mando · episodio 14.1', aliases: ['mando', 'mandarino', 'episodio 14'], src: 'docs/art-review/cutouts/mando-episodio-14-1-borrador.png', source: 'assets/episodes/ep-014-un-dia-malo/14.1.png', note: 'Borrador de recorte con retoque de las puntas de los pies; requiere revisión.' },
+    { name: 'Greg · episodio 14.1', aliases: ['greg', 'zanahorio', 'episodio 14'], src: 'docs/art-review/cutouts/greg-episodio-14-1-borrador.png', source: 'assets/episodes/ep-014-un-dia-malo/14.1.png', note: 'Borrador de recorte con retoque de las puntas de los pies; requiere revisión.' },
+    { name: 'Morita · pose de pie · episodio 59.1', aliases: ['morita', 'episodio 59', 'pose de pie'], src: 'assets/characters/review/morita-episode-59-1-review.png', source: 'assets/episodes/ep-059-no-juegues-asi/59.1.png', note: 'Borrador basado en los píxeles originales. Queda algo de sombra de la escena; revisar contorno y patas.' },
+    { name: 'Morita · lengua afuera · episodio 59.2', aliases: ['morita', 'episodio 59', 'lengua', 'sorprendida'], src: 'assets/characters/review/morita-episode-59-2-review.png', source: 'assets/episodes/ep-059-no-juegues-asi/59.2.png', note: 'Borrador basado en los píxeles originales. Conserva el efecto turquesa visible en esta pose; confirmar si debe formar parte del componente.' }
+  ].map(resource => ({ ...resource, category: 'character', approvedCutout: false, reviewOnly: true }));
   const backgroundColors = [
     { name: 'Blanco limpio', color: '#FFFFFF', source: 'Base' },
     { name: 'Crema Mandarinita', color: '#FFF8EC', source: 'Marca' },
@@ -63,7 +72,7 @@
     { name: 'Azul cielo', color: '#87DEFA', source: 'Episodio 52 · 52.1' },
     { name: 'Azul claro', color: '#93CCFF', source: 'Episodio 70 · 70.1' }
   ];
-  const resources = [...people, ...stickers, ...objects, ...backgrounds];
+  const resources = [...people, ...stickers, ...objects, ...backgrounds, ...reviewCharacterCutouts];
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
   let state = null;
@@ -80,6 +89,7 @@
   let erasing = null;
   let pendingDeleteId = null;
   let panelDrag = null;
+  let layerDragId = null;
   let installPromptEvent = null;
   let suppressAssetClickUntil = 0;
   let pinchZoom = null;
@@ -87,6 +97,8 @@
   let cloudUser = null;
   let cloudConfigured = false;
   let cloudReady = false;
+  let cloudSyncInProgress = false;
+  let cloudRefreshTimer = null;
   let cloudAuthExpired = false;
   const cloudTimers = new Map();
   const cloudBases = new Map();
@@ -118,11 +130,46 @@
     pencil: '<path d="m15 5 4 4M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20z"/>',
     layersPlus: '<path d="m12 2 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5M19 3v6M16 6h6"/>',
     text: '<path d="M4 6V4h16v2M12 4v16M8 20h8"/>',
-    close: '<path d="m6 6 12 12M18 6 6 18"/>'
+    close: '<path d="m6 6 12 12M18 6 6 18"/>',
+    arrowLeft: '<path d="m15 18-6-6 6-6M9 12h12"/>',
+    flipH: '<path d="M8 3 3 12l5 9V3Zm8 0 5 9-5 9V3ZM12 3v18"/>',
+    flipV: '<path d="M3 8 12 3l9 5H3Zm0 8 9 5 9-5H3Zm9-4v8"/>',
+    eyedropper: '<path d="m2 22 1-1h3l9-9m-6-6 8 8m-4-10 3-3 6 6-3 3M5 19l-2 2"/>',
+    edit: '<path d="m18 2 4 4L8 20l-5 1 1-5L18 2zM15 5l4 4"/>',
+    maximize: '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>',
+    panelPlus: '<rect x="3" y="4" width="13" height="16" rx="1"/><path d="M19 8v8m-4-4h8"/>',
+    send: '<path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"/>',
+    logIn: '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4m-5-4 5-5-5-5m5 5H3"/>',
+    logOut: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14 5-5-5-5m5 5H9"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2m10-10h-2M4 12H2m17.07 7.07-1.42-1.42M6.35 6.35 4.93 4.93m14.14 0-1.42 1.42M6.35 17.65l-1.42 1.42"/>',
+    moon: '<path d="M20.985 12.486A9 9 0 1 1 11.514 3.015a7 7 0 0 0 9.471 9.471Z"/>',
+    monitor: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/>',
+    save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+    fileDown: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6m-8 3v7m0 0 3-3m-3 3-3-3"/>',
+    upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5-5 5 5m-5-5v12"/>',
+    download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/>',
+    cloud: '<path d="M20 16.2A4.5 4.5 0 0 0 18 7.5a6 6 0 0 0-11.6 1.8A4 4 0 0 0 7 17h3m2-4v9m-3-3 3 3 3-3"/>',
+    cloudDownload: '<path d="M20 16.2A4.5 4.5 0 0 0 18 7.5a6 6 0 0 0-11.6 1.8A4 4 0 0 0 7 17h3m2-4v9m-3-3 3 3 3-3"/>',
+    cloudUpload: '<path d="M20 16.2A4.5 4.5 0 0 0 18 7.5a6 6 0 0 0-11.6 1.8A4 4 0 0 0 7 17h3m2 5v-9m-3 3 3-3 3 3"/>',
+    refresh: '<path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/>',
+    replace: '<path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4m14-1v2a3 3 0 0 1-3 3H3"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m16 0v-2a4 4 0 0 0-3-3.87M14 3.13a4 4 0 0 1 0 7.75"/><circle cx="10" cy="7" r="4"/>',
+    box: '<path d="m21 8-9 5-9-5m9 13V13m8-5v10l-8 4-8-4V8l8-5z"/>',
+    book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>',
+    panelLeft: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/>',
+    sliders: '<path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M2 14h4m4-6h4m4 8h4"/>',
+    frame: '<path d="M3 7V5a2 2 0 0 1 2-2h2m10 0h2a2 2 0 0 1 2 2v2m0 10v2a2 2 0 0 1-2 2h-2m-10 0H5a2 2 0 0 1-2-2v-2"/>',
+    type: '<path d="M4 6V4h16v2M12 4v16m-4 0h8"/>',
+    message: '<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/>',
+    megaphone: '<path d="m3 11 18-5v12L3 13v-2zm0 2 2 7h4l-2-6m10-6v12"/>',
+    columns: '<rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/>',
+    cloudSun: '<path d="M12 2v2m-7.1.9 1.4 1.4M2 12h2m15 0h3M5 19h12a4 4 0 0 0 0-8h-.5A6.5 6.5 0 0 0 5 13.5 3.5 3.5 0 0 0 5 19Z"/>'
   };
   const svgIcon = (name, cls = 'ui-icon') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICON[name] || ICON.image}</svg>`;
 
+  const PROJECT_ID_PATTERN = /^[a-zA-Z0-9_-]{1,100}$/;
   function id() { return crypto.randomUUID?.() || Math.random().toString(36).slice(2, 12); }
+  function validProjectId(value) { return typeof value === 'string' && PROJECT_ID_PATTERN.test(value); }
   function makeProject(title = 'Episodio nuevo', contentType = 'episode') {
     return { schemaVersion: 1, projectId: id(), title, contentType, status: 'draft', format: 'web', exportStyle: 'classic', pageHeight: 400, active: 0, selected: null, zoom: 1, grid: true, panels: [{ id: id(), items: [] }, { id: id(), items: [] }], createdAt: Date.now(), updatedAt: Date.now() };
   }
@@ -141,7 +188,7 @@
   }
   function normalizeProject(project) {
     const normalized = { ...makeProject(project.title || 'Episodio importado'), ...project };
-    normalized.projectId ||= id();
+    if (!validProjectId(normalized.projectId)) normalized.projectId = id();
     normalized.contentType ||= 'episode';
     normalized.format = FORMAT[normalized.format] ? normalized.format : 'web';
     normalized.exportStyle = ['classic','cream','footer'].includes(normalized.exportStyle) ? normalized.exportStyle : 'classic';
@@ -153,6 +200,7 @@
     return normalized;
   }
   function saveProject(project = state) {
+    if (!validProjectId(project.projectId)) project.projectId = id();
     project.updatedAt = Math.max(Date.now(), Number(project.updatedAt)||0);
     const projectKey = PROJECT_KEY(project.projectId);
     const previousIndex = localStorage.getItem(PROJECTS_KEY);
@@ -171,13 +219,16 @@
     const button = $('#github-sync');
     if (!button) return;
     const signedIn = Boolean(cloudUser);
-    button.textContent = signedIn ? (cloudAuthExpired ? 'Reconectar GitHub' : `Salir · ${cloudUser.login}`) : cloudConfigured ? 'Conectar GitHub' : 'Nube pendiente';
+    const buttonLabel = signedIn ? (cloudAuthExpired ? 'Reconectar GitHub' : `Salir · ${cloudUser.login}`) : cloudConfigured ? 'Conectar GitHub' : 'Nube pendiente';
+    const buttonIcon = signedIn ? (cloudAuthExpired ? 'refresh' : 'logOut') : cloudConfigured ? 'logIn' : 'cloud';
+    button.classList.add('has-icon');
+    button.innerHTML = `${svgIcon(buttonIcon)}<span class="button-label">${escapeHTML(buttonLabel)}</span>`;
     button.classList.toggle('connected', signedIn);
     button.title = signedIn ? (cloudAuthExpired ? 'Volver a iniciar sesión con GitHub' : `Cerrar sesión de GitHub · ${cloudUser.login}`) : message || 'Conectar la cuenta privada de GitHub';
     button.setAttribute('aria-label', button.title);
     const text = message || (signedIn ? 'Sincronización al día' : 'Los borradores se guardan en este dispositivo.');
     ['#cloud-status','#editor-cloud-status'].forEach(selector => { const region=$(selector); if(region){region.textContent=text;region.dataset.state=syncState;} });
-    ['#retry-cloud','#editor-retry-cloud'].forEach(selector => { const retry=$(selector); if(retry){retry.hidden=!(signedIn&&(syncState==='error'||cloudConflicts.size));retry.textContent=cloudConflicts.size?'Resolver conflicto':'Reintentar sincronización';} });
+    ['#retry-cloud','#editor-retry-cloud'].forEach(selector => { const retry=$(selector); if(retry){retry.hidden=!(signedIn&&(syncState==='error'||cloudConflicts.size));const label=cloudConflicts.size?'Resolver conflicto':'Reintentar sincronización';retry.classList.add('has-icon');retry.innerHTML=`${svgIcon(cloudConflicts.size?'users':'refresh')}<span class="button-label">${label}</span>`;retry.title=label;retry.setAttribute('aria-label',label);} });
     const footnote = $('#home-footnote');
     if (footnote) footnote.textContent = signedIn
       ? 'Tus borradores se guardan en este dispositivo y se sincronizan con tu almacenamiento privado de GitHub.'
@@ -193,6 +244,27 @@
   function loadCloudBases() {
     try { for (const [key,value] of Object.entries(JSON.parse(localStorage.getItem('mandarinita-editor-sync-bases-v1')||'{}'))) cloudBases.set(key,value); }
     catch { /* A bad local sync index must not prevent local drafts from opening. */ }
+  }
+  function migrateInvalidLocalProjectIds() {
+    const records = listProjects(); let changed = false; const usedIds = new Set(records.filter(record=>validProjectId(record.id)).map(record=>record.id));
+    const next = records.map(record => {
+      try {
+        const oldId = record.id; const raw = localStorage.getItem(PROJECT_KEY(oldId)); if (!raw) { if(validProjectId(oldId))usedIds.add(oldId); return record; }
+        let project = JSON.parse(raw);
+        if(validProjectId(oldId)&&project.projectId===oldId){usedIds.add(oldId);return record;}
+        project = normalizeProject(project);
+        if(usedIds.has(project.projectId))project.projectId=id();
+        localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
+        if(oldId!==project.projectId)localStorage.removeItem(PROJECT_KEY(oldId));
+        cloudBases.delete(oldId); usedIds.add(project.projectId); changed = true;
+        return { ...record, id: project.projectId, title: project.title || record.title, updatedAt: project.updatedAt || record.updatedAt };
+      } catch { return record; }
+    });
+    if (!changed) return false;
+    next.sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(next));
+    try { localStorage.setItem('mandarinita-editor-sync-bases-v1', JSON.stringify(Object.fromEntries(cloudBases))); } catch {}
+    return true;
   }
   function saveCloudBase(projectId, etag, localUpdatedAt) {
     if (!etag) return;
@@ -220,7 +292,8 @@
       :error?.status===413?'El archivo supera el límite de 25 MB; descarga el .mandarinita como respaldo.'
       :error?.status===428?'Esta versión del taller está desactualizada (428). Recarga la página para actualizarla; tu borrador local sigue guardado.'
       :error?.status>=500?`Cloudflare no pudo guardar el borrador (error ${error.status}). Sigue guardado en este dispositivo.`
-      :error?.status===400?`La nube rechazó el borrador: ${error.message||'la solicitud no es válida'}. El borrador local sigue guardado.`
+      :error?.code==='invalid_project_id'?'Este borrador tenía un identificador antiguo que la nube no acepta. Se conservó localmente; recarga el taller para migrarlo y vuelve a sincronizar.'
+      :error?.status===400?`La nube rechazó el borrador: ${(error.message||'la solicitud no es válida').replace(/[.!?]+$/,'')}. El borrador local sigue guardado.`
       :Number.isInteger(error?.status)?`No se pudo sincronizar (error ${error.status}). ${error.message&&error.message!==`Sincronización: ${error.status}`?`${error.message} `:''}El borrador sigue guardado en este dispositivo.`
       :'No se pudo conectar con la nube. El borrador sigue guardado en este dispositivo.';
     setCloudStatus(message,'error');
@@ -266,7 +339,8 @@
     saveCloudBase(project.projectId,etag,project.updatedAt);
   }
   async function syncCloudProjects() {
-    if (!cloudUser || cloudReady) return;
+    if (!cloudUser || cloudReady || cloudSyncInProgress) return;
+    cloudSyncInProgress = true;
     setCloudStatus('Sincronizando borradores…','busy');
     try {
       const { projects: remoteProjects } = await cloudFetch('/api/projects');
@@ -282,7 +356,7 @@
           else markCloudConflict(remote.id);
         }else if(base.etag!==remote.etag){
           if(Number(local.updatedAt)>Number(base.localUpdatedAt))markCloudConflict(remote.id);
-          else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);}
+          else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);if(state?.projectId===remote.id){state=normalizeProject(latest.project);render();}}
         }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
           cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
           try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
@@ -299,7 +373,7 @@
       renderProjectList();
     } catch (error) {
       cloudReady=false;setSyncFailure(error);
-    }
+    } finally { cloudSyncInProgress = false; }
   }
   function openCloudConflictDialog() {
     if(!cloudConflicts.size)return;
@@ -338,8 +412,18 @@
     }
   }
   async function retryCloudSync() {
+    if (cloudSyncInProgress) return;
     if(cloudConflicts.size){openCloudConflictDialog();return;}
     cloudReady=false;setCloudStatus('Revisando cambios…','busy');await syncCloudProjects();
+  }
+  function scheduleCloudRefresh() {
+    if (!cloudUser || document.hidden) return;
+    clearTimeout(cloudRefreshTimer);
+    cloudRefreshTimer = setTimeout(() => {
+      if (!cloudUser || document.hidden || cloudSyncInProgress) return;
+      if (cloudTimers.size) { scheduleCloudRefresh(); return; }
+      retryCloudSync();
+    }, 1400);
   }
   async function clearEditorOfflineCache() {
     const worker=navigator.serviceWorker?.controller;
@@ -371,6 +455,9 @@
       window.location.assign('/api/auth/github');
     };
     $('#retry-cloud').onclick=retryCloudSync;$('#editor-retry-cloud').onclick=retryCloudSync;
+    window.addEventListener('focus',scheduleCloudRefresh);
+    window.addEventListener('online',scheduleCloudRefresh);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)scheduleCloudRefresh();});
     $('#conflict-download-local').onclick=()=>resolveCloudConflict('download');
     $('#conflict-use-cloud').onclick=()=>resolveCloudConflict('cloud');
     $('#conflict-overwrite-cloud').onclick=()=>resolveCloudConflict('overwrite');
@@ -518,7 +605,7 @@
       main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${reviewState ? 'ready' : ''}">${reviewState ? 'En revisión' : 'Borrador'}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
       const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${record.title}`); open.append(preview,main); open.onclick = () => openProject(record.id);
       const menu = document.createElement('details'); menu.className = 'project-card-menu';
-      menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">Duplicar archivo</button><button type="button" data-action="delete" class="danger">Borrar archivo</button></div>`;
+      menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
       menu.addEventListener('click', event => event.stopPropagation());
       menu.querySelector('[data-action="duplicate"]').onclick = () => { menu.open = false; duplicateProject(record.id); };
       menu.querySelector('[data-action="delete"]').onclick = () => { menu.open = false; requestDeleteProject(record.id); };
@@ -695,7 +782,8 @@
     if (['image','drawing'].includes(item.type)) { actions.push(['flip-x', 'Voltear horizontalmente']); actions.push(['flip-y', 'Voltear verticalmente']); }
     if (isOffstage(item)) actions.push(['recover', 'Recuperar al lienzo']);
     actions.push(['duplicate', 'Duplicar elemento'], ['delete', 'Borrar elemento']);
-    menu.innerHTML = actions.map(([action,label]) => `<button type="button" role="menuitem" data-context-action="${action}"${action === 'delete' ? ' class="danger"' : ''}>${label}</button>`).join('');
+    const actionIcons={replace:'replace','flip-x':'flipH','flip-y':'flipV',recover:'focus',duplicate:'copy',delete:'trash'};
+    menu.innerHTML = actions.map(([action,label]) => `<button type="button" role="menuitem" data-context-action="${action}" class="has-icon${action === 'delete' ? ' danger' : ''}">${svgIcon(actionIcons[action]||'image')}<span>${label}</span></button>`).join('');
     menu.hidden = false;
     const width = menu.offsetWidth; const height = menu.offsetHeight;
     menu.style.left = `${Math.max(8,Math.min(x,window.innerWidth-width-8))}px`;
@@ -938,7 +1026,7 @@
     if (!item) { box.innerHTML = `<div class="empty-state">${svgIcon('image')}<b>Selecciona un elemento</b><p>Su contorno y tirador naranja aparecerán en el lienzo.</p></div>`; return; }
     if (item.locked) { box.innerHTML = `<div class="empty-state">${svgIcon('lock')}<b>${escapeHTML(item.name)} está protegido</b><p>Desbloquéalo desde la pestaña Capas para volver a editarlo.</p></div>`; return; }
     const characterResource = item.type === 'image' && (item.category === 'character' || resources.some(resource => resource.name === item.resourceId && resource.category === 'character'));
-    const replaceControl = characterResource ? '<button id="replace-character" class="button replace-character">Sustituir personaje</button>' : '';
+    const replaceControl = characterResource ? `<button id="replace-character" class="button replace-character has-icon">${svgIcon('replace')}<span class="button-label">Sustituir personaje</span></button>` : '';
     const sampleHex = item.backgroundSample ? `#${item.backgroundSample.map(value => value.toString(16).padStart(2, '0')).join('')}`.toUpperCase() : '';
     const imageControls = item.type === 'image' ? `<div class="field"><label for="p-blur">Desenfoque · <span id="blur-value">${item.blur || 0}px</span></label><input id="p-blur" type="range" min="0" max="36" step="0.5" value="${item.blur || 0}"><small>Se conserva en el proyecto y también aparece en la exportación.</small></div><div class="field bg-remove-tools"><label for="p-bg-tolerance">Quitar fondo blanco o plano</label><input id="p-bg-tolerance" aria-label="Tolerancia del recorte de fondo" type="range" min="8" max="100" step="2" value="36"><small>Elige el color directamente sobre el dibujo para quitar fondos blancos u otros tonos planos. Se conserva el original para poder restaurarlo.</small><button id="sample-background" type="button" class="button" aria-pressed="${backgroundPickerItemId === item.id}">${backgroundPickerItemId === item.id ? 'Cancelar selección' : sampleHex ? `Cambiar color · ${sampleHex}` : '1 · Elegir color en el dibujo'}</button><button id="remove-background" type="button" class="button">2 · Quitar fondo</button><p id="bg-remove-status" class="bg-remove-status" role="status" aria-live="polite" ${item.backgroundSample ? '' : 'hidden'}>${item.backgroundSample ? `Color ${sampleHex} seleccionado. Pulsa “2 · Quitar fondo”.` : ''}</p>${item.originalSrc ? '<button id="restore-background" type="button" class="button">Restaurar imagen original</button>' : ''}</div>` : '';
     const textControls = item.type === 'text' ? `<div class="field"><label>Contenido</label><textarea id="p-text" rows="4">${escapeHTML(item.text||'')}</textarea></div><div class="field"><label>Tamaño de letra</label><input id="p-text-font" type="range" min="10" max="72" value="${item.fontSize||28}"></div><div class="field"><label>Alineación</label><select id="p-text-align"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option></select></div><div class="field"><label>Color</label><input id="p-text-color" type="color" value="${item.color||'#292725'}"></div>` : '';
@@ -948,6 +1036,8 @@
     const recoverControl = isOffstage(item) ? '<button id="bring-in" class="button recovery">Recuperar dentro del lienzo</button>' : '';
     const flipControls = ['image','drawing'].includes(item.type) ? `<div class="field"><label>Voltear</label><div class="inspector-buttons flip-buttons"><button id="flip-x" aria-pressed="${!!item.flipX}">Horizontal</button><button id="flip-y" aria-pressed="${!!item.flipY}">Vertical</button></div></div>` : '';
     box.innerHTML = `<div class="field"><label>Nombre de capa</label><input id="p-name" value=""></div>${replaceControl}${variantControl}${imageControls}${bubbleControls}${textControls}${drawingControls}<div class="field-row"><div class="field"><label>X</label><input id="p-x" type="number" value="${Math.round(item.x)}"></div><div class="field"><label>Y</label><input id="p-y" type="number" value="${Math.round(item.y)}"></div></div><div class="field-row"><div class="field"><label>Ancho</label><input id="p-w" type="number" value="${Math.round(item.w)}"></div><div class="field"><label>Alto</label><input id="p-h" type="number" value="${Math.round(item.h)}"></div></div><div class="field"><label>Giro</label><input id="p-rot" type="range" min="-180" max="180" value="${item.rotation || 0}"></div>${flipControls}<div class="inspector-buttons"><button id="duplicate">Duplicar</button><button id="delete" class="danger">Borrar</button></div>${recoverControl}`;
+    [['#sample-background','eyedropper'],['#remove-background','image'],['#restore-background','undo'],['#bring-in','focus'],['#flip-x','flipH'],['#flip-y','flipV']].forEach(([selector,icon])=>{const button=box.querySelector(selector);if(!button)return;const label=button.textContent.trim();button.classList.add('has-icon');button.innerHTML=`${svgIcon(icon)}<span class="button-label">${escapeHTML(label)}</span>`;button.setAttribute('aria-label',label);});
+    const setInspectorButtonLabel=(button,label)=>{const text=button.querySelector('.button-label');if(text)text.textContent=label;else button.textContent=label;};
     $('#p-name').value = item.name;
     for (const name of ['kind', 'align']) { const input = $(`#p-${name}`); if (input) input.value = item[name] || (name === 'align' ? 'center' : 'dialogue'); }
     if ($('#p-action-style')) $('#p-action-style').value = item.actionStyle || 'raised';
@@ -963,20 +1053,20 @@
     $('#sample-background')?.addEventListener('click', event => {
       if (backgroundPickerItemId === item.id) {
         clearBackgroundPicker(); event.currentTarget.setAttribute('aria-pressed', 'false');
-        event.currentTarget.textContent = item.backgroundSample ? `Cambiar color · ${sampleHex}` : '1 · Elegir color en el dibujo';
+        setInspectorButtonLabel(event.currentTarget,item.backgroundSample ? `Cambiar color · ${sampleHex}` : '1 · Elegir color en el dibujo');
         const status = $('#bg-remove-status'); if (status) { status.hidden = false; status.textContent = 'Selección de color cancelada.'; }
         return;
       }
       clearBackgroundPicker(); backgroundPickerItemId = item.id;
       activeCanvas()?.querySelector(`[data-id="${item.id}"]`)?.classList.add('sampling-background');
       $('#stage-wrap')?.classList.add('sampling-background-active');
-      event.currentTarget.setAttribute('aria-pressed', 'true'); event.currentTarget.textContent = 'Cancelar selección';
+      event.currentTarget.setAttribute('aria-pressed', 'true'); setInspectorButtonLabel(event.currentTarget,'Cancelar selección');
       const status = $('#bg-remove-status'); if (status) { status.hidden = false; status.textContent = 'Toca una zona opaca del fondo en el dibujo. Después pulsa “2 · Quitar fondo”.'; }
       toast('Toca el fondo del dibujo para seleccionar su color.');
     });
     $('#remove-background')?.addEventListener('click', async event => {
       const button = event.currentTarget, status = $('#bg-remove-status');
-      button.disabled = true; button.textContent = 'Procesando imagen…';
+      button.disabled = true; setInspectorButtonLabel(button,'Procesando imagen…');
       if (status) { status.hidden = false; status.textContent = 'Recortando el fondo conectado al borde; puede tardar unos segundos.'; }
       try {
         const removed = await removeFlatBackground(item.src, Number($('#p-bg-tolerance').value), item.backgroundSample);
@@ -985,7 +1075,7 @@
         snapshot(); item.originalSrc ||= item.src; item.src = removed.src; item.name ||= 'Dibujo con fondo recortado'; commit();
         toast(`Fondo retirado (${Math.round(removed.removed / removed.total * 100)}% de píxeles). Puedes restaurar la imagen original.`);
       } catch (error) {
-        button.disabled = false; button.textContent = '2 · Quitar fondo';
+        button.disabled = false; setInspectorButtonLabel(button,'2 · Quitar fondo');
         const message = error instanceof Error ? error.message : 'No se pudo recortar el fondo.';
         if (status) { status.hidden = false; status.textContent = message; }
         toast(message);
@@ -1023,13 +1113,40 @@
     $('#layer-count-tab').textContent = String(items.length);
     items.forEach(item => {
       const row = document.createElement('div'); row.className = `layer-row${item.id === state.selected ? ' active' : ''}${isOffstage(item) ? ' layer-offstage' : ''}`;
-      row.innerHTML = `<span class="layer-icon">${svgIcon(item.type === 'bubble' ? 'bubble' : item.type === 'drawing' ? 'pen' : 'image')}</span><span class="layer-name">${escapeHTML(item.name)}</span><button class="layer-order" aria-label="Subir capa">${svgIcon('up')}</button><button class="layer-order down" aria-label="Bajar capa">${svgIcon('down')}</button><button class="lock" aria-label="${item.locked ? 'Desbloquear' : 'Bloquear'}">${svgIcon(item.locked ? 'lock' : 'unlock')}</button>`;
-      row.onclick = () => selectItem(item.id);
+      row.draggable = true;
+      row.innerHTML = `<button type="button" class="layer-grip" aria-label="Arrastrar capa ${escapeHTML(item.name)}" title="Arrastrar para reordenar">${svgIcon('grip')}</button><span class="layer-icon">${svgIcon(item.type === 'bubble' ? 'bubble' : item.type === 'drawing' ? 'pen' : 'image')}</span><span class="layer-name" title="Doble clic para renombrar">${escapeHTML(item.name)}</span><button type="button" class="layer-rename" aria-label="Renombrar capa ${escapeHTML(item.name)}" title="Renombrar">${svgIcon('edit')}</button><button type="button" class="layer-order" aria-label="Subir capa">${svgIcon('up')}</button><button type="button" class="layer-order down" aria-label="Bajar capa">${svgIcon('down')}</button><button type="button" class="lock" aria-label="${item.locked ? 'Desbloquear' : 'Bloquear'} capa ${escapeHTML(item.name)}">${svgIcon(item.locked ? 'lock' : 'unlock')}</button>`;
+      row.onclick = event => { if (!event.target.closest('button,input')) selectItem(item.id); };
+      row.ondblclick = event => { if (!event.target.closest('button,input')) startLayerRename(item,row); };
       row.querySelector('.lock').onclick = event => { event.stopPropagation(); snapshot(); item.locked = !item.locked; if(item.locked&&state.selected===item.id)state.selected=null; commit(); };
       row.querySelector('.layer-order').onclick = event => { event.stopPropagation(); reorderLayer(item.id, 1); };
       row.querySelector('.down').onclick = event => { event.stopPropagation(); reorderLayer(item.id, -1); };
+      row.querySelector('.layer-rename').onclick = event => { event.stopPropagation(); startLayerRename(item,row); };
+      const grip=row.querySelector('.layer-grip');
+      grip.addEventListener('pointerdown',event=>{if(event.button!==undefined&&event.button!==0)return;event.preventDefault();layerDragId=item.id;grip.setPointerCapture(event.pointerId);row.classList.add('layer-dragging');});
+      grip.addEventListener('pointermove',event=>{if(!layerDragId||layerDragId!==item.id)return;const target=document.elementFromPoint(event.clientX,event.clientY)?.closest('.layer-row');$$('.layer-drop-target').forEach(entry=>entry.classList.toggle('layer-drop-target',entry===target&&target!==row));});
+      const finishLayerPointer=event=>{if(layerDragId!==item.id)return;const source=layerDragId;layerDragId=null;row.classList.remove('layer-dragging');const target=document.elementFromPoint(event.clientX,event.clientY)?.closest('.layer-row');$$('.layer-drop-target').forEach(entry=>entry.classList.remove('layer-drop-target'));if(target&&target!==row)reorderLayerTo(source,target.dataset.layerId);};
+      grip.addEventListener('pointerup',finishLayerPointer);grip.addEventListener('pointercancel',()=>{layerDragId=null;row.classList.remove('layer-dragging');$$('.layer-drop-target').forEach(entry=>entry.classList.remove('layer-drop-target'));});
+      row.addEventListener('dragstart', event => { if (event.target.closest('button')) { event.preventDefault(); return; } layerDragId=item.id; row.classList.add('layer-dragging'); event.dataTransfer.effectAllowed='move'; event.dataTransfer.setData('text/plain',item.id); });
+      row.addEventListener('dragover', event => { if (!layerDragId || layerDragId === item.id) return; event.preventDefault(); event.dataTransfer.dropEffect='move'; row.classList.add('layer-drop-target'); });
+      row.addEventListener('dragleave', () => row.classList.remove('layer-drop-target'));
+      row.dataset.layerId=item.id;
+      row.addEventListener('drop', event => { event.preventDefault(); row.classList.remove('layer-drop-target'); const sourceId=event.dataTransfer.getData('text/plain')||layerDragId; if(sourceId)reorderLayerTo(sourceId,item.id); layerDragId=null; });
+      row.addEventListener('dragend', () => { layerDragId=null; row.classList.remove('layer-dragging'); $$('.layer-drop-target').forEach(target=>target.classList.remove('layer-drop-target')); });
       list.append(row);
     });
+  }
+  function startLayerRename(item,row) {
+    if (!row.isConnected || row.querySelector('.layer-name-input')) return;
+    const name = row.querySelector('.layer-name');
+    const input = document.createElement('input'); input.className='layer-name-input'; input.value=item.name||''; input.setAttribute('aria-label',`Nombre de capa ${item.name||''}`);
+    name.replaceWith(input); input.focus(); input.select(); let finished=false;
+    const finish = save => { if(finished)return; finished=true; const value=input.value.trim(); if(save&&value&&value!==(item.name||'')){snapshot();item.name=value;commit();} else if(input.isConnected){const label=document.createElement('span');label.className='layer-name';label.textContent=item.name||'Capa';input.replaceWith(label);} };
+    input.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();finish(true);}if(event.key==='Escape'){event.preventDefault();finish(false);}});
+    input.addEventListener('blur',()=>finish(true));
+  }
+  function reorderLayerTo(sourceId,targetId) {
+    const items=currentPanel().items;const visual=[...items].reverse();const from=visual.findIndex(item=>item.id===sourceId);const to=visual.findIndex(item=>item.id===targetId);if(from<0||to<0||from===to)return;
+    snapshot();const [moved]=visual.splice(from,1);visual.splice(to,0,moved);currentPanel().items=visual.reverse();commit();
   }
   function reorderLayer(itemId, delta) {
     const items = currentPanel().items; const from = items.findIndex(item => item.id === itemId); const to = Math.max(0, Math.min(items.length - 1, from + delta));
@@ -1039,7 +1156,7 @@
   function renderOffstage() {
     const entries = currentPanel().items.filter(isOffstage); const panel = $('#offstage-panel');
     panel.hidden = entries.length === 0; $('#offstage-count').textContent = String(entries.length); const list = $('#offstage-list'); list.innerHTML = '';
-    entries.forEach(item => { const button = document.createElement('button'); button.className = 'offstage-item'; button.textContent = `◉ ${item.name} · recuperar`; button.onclick = () => selectItem(item.id); list.append(button); });
+    entries.forEach(item => { const button = document.createElement('button'); button.className = 'offstage-item has-icon'; button.innerHTML = `${svgIcon('focus')}<span class="button-label">${escapeHTML(item.name)} · recuperar</span>`; button.onclick = () => selectItem(item.id); list.append(button); });
   }
   function recoverItem(itemId) {
     const item = currentPanel().items.find(entry => entry.id === itemId); if (!item) return;
@@ -1082,7 +1199,7 @@
       }
       if (referenceLoadFailed) {
         grid.innerHTML = '<div class="resource-note" role="status">No pude cargar el atlas. Comprueba la conexión y vuelve a intentarlo.<button type="button" class="reference-retry">Reintentar</button></div>';
-        grid.querySelector('.reference-retry').onclick = () => { referenceLoadFailed = false; renderResources(); };
+        const retry=grid.querySelector('.reference-retry');retry.classList.add('has-icon');retry.innerHTML=`${svgIcon('refresh')}<span>Reintentar</span>`;retry.onclick = () => { referenceLoadFailed = false; renderResources(); };
         return;
       }
       const characterSelect = $('#reference-character-select');
@@ -1112,9 +1229,12 @@
     candidates.forEach(resource => {
       const card = document.createElement('button'); card.className = `asset-card${resource.approvedCutout ? '' : ' reference-card'}`;
       const thumb = resource.variants?.[0]?.src || resource.src;
-      card.innerHTML = `<img src="${thumb}" alt="" loading="lazy"><span>${escapeHTML(resource.name)}</span><small>${resource.approvedCutout ? 'Componente aislado' : resource.category === 'background' ? 'Referencia · lámina completa' : resource.note}</small>`;
-      card.disabled = !resource.approvedCutout;
-      if (resource.approvedCutout) {
+      card.innerHTML = `<img src="${thumb}" alt="" loading="lazy"><span>${escapeHTML(resource.name)}</span><small>${resource.approvedCutout ? 'Componente aprobado' : resource.reviewOnly ? 'Recorte en revisión · no insertable' : resource.category === 'background' ? 'Referencia · lámina completa' : resource.note}</small>`;
+      card.disabled = !resource.approvedCutout && !resource.reviewOnly;
+      if (resource.reviewOnly) {
+        card.setAttribute('aria-label', `Revisar ${resource.name}. No se puede insertar todavía.`);
+        card.onclick = () => openCutoutReview(resource);
+      } else if (resource.approvedCutout) {
         // Use one pointer drag path on mouse, touch and Apple Pencil. Native HTML
         // drag/drop is inconsistent for cards inside a scrolling iPad drawer.
         card.draggable = false;
@@ -1155,6 +1275,20 @@
       }
       grid.append(card);
     });
+  }
+  function openCutoutReview(resource) {
+    const dialog = $('#reference-preview-dialog');
+    $('#reference-preview-title').textContent = resource.name;
+    $('#reference-preview-subtitle').textContent = 'Borrador de recorte · recurso pendiente de aprobación';
+    $('#reference-preview-pose-label').textContent = 'Estado del recorte';
+    $('#reference-preview-expression-label').textContent = 'Nota de revisión';
+    $('#reference-preview-pose').textContent = 'Los píxeles proceden de la pose visible en el episodio enlazado.';
+    $('#reference-preview-expression').textContent = resource.note;
+    $('#reference-preview-image').src = resource.src;
+    $('#reference-preview-image').alt = `Borrador transparente de ${resource.name}`;
+    $('#reference-preview-source').href = resource.source;
+    $('#reference-preview-note').textContent = 'Este recurso aparece para revisión en la biblioteca, pero todavía no se puede insertar en el lienzo. Al aprobarlo, se podrá activar como componente.';
+    dialog.showModal();
   }
   function renderBackgroundColors(grid, query = '') {
     const matches = backgroundColors.filter(entry => `${entry.name} ${entry.source} ${entry.color}`.toLocaleLowerCase('es').includes(query));
@@ -1664,16 +1798,25 @@
   function installEvents() {
     document.addEventListener('click', event => { if (!event.target.closest('#canvas-context-menu')) closeCanvasContextMenu(); });
     document.addEventListener('keydown', event => { if (event.key === 'Escape') closeCanvasContextMenu(); });
-    const labeledIcon = (selector, iconName, label) => { const button = $(selector); button.innerHTML = `${svgIcon(iconName)}<span>${label}</span>`; };
+    const labeledIcon = (selector, iconName, label) => { const button = $(selector); if(!button)return; button.classList.add('has-icon'); button.innerHTML = `${svgIcon(iconName)}<span class="button-label">${label}</span>`; if(label){button.title ||= label;button.setAttribute('aria-label',label);} };
     $('#undo').innerHTML = svgIcon('undo'); $('#redo').innerHTML = svgIcon('redo');
-    labeledIcon('#upload-asset','plus',''); labeledIcon('#close-library','close',''); labeledIcon('#close-inspector','close',''); labeledIcon('#focus-mode','focus','Lienzo amplio');
-    labeledIcon('#add-panel','plus','Viñeta'); labeledIcon('#add-bubble','bubble','Añadir globo');
+    labeledIcon('#back-home','arrowLeft','Mis borradores'); labeledIcon('#save-project','save','Guardar'); labeledIcon('#download-source','fileDown','Archivo editable'); labeledIcon('#export-project','download','Exportar revisión');
+    labeledIcon('#new-project','plus','Nuevo contenido'); labeledIcon('#import-project','upload','Importar archivo .mandarinita'); labeledIcon('#install-app','download','Instalar taller');
+    labeledIcon('#confirm-delete','trash','Borrar episodio'); labeledIcon('#delete-project-dialog [value="cancel"]','close','Cancelar');
+    labeledIcon('#conflict-download-local','fileDown','Descargar mi copia editable'); labeledIcon('#conflict-use-cloud','cloudDownload','Usar la nube y reemplazar mi copia local'); labeledIcon('#conflict-overwrite-cloud','cloudUpload','Reemplazar la nube con mi copia local'); labeledIcon('#conflict-later','close','Resolver más tarde');
+    labeledIcon('#upload-asset','upload',''); labeledIcon('#close-library','close',''); labeledIcon('#close-inspector','close',''); labeledIcon('#focus-mode','maximize','Lienzo amplio');
+    labeledIcon('#mobile-library','panelLeft','Componentes'); labeledIcon('#mobile-properties','sliders','Propiedades');
+    $('#tab-components').innerHTML=`${svgIcon('box')}<span>Componentes</span>`;
+    $('#tab-layers').innerHTML=`${svgIcon('layers')}<span>Capas</span> <span id="layer-count-tab">0</span>`;
+    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#add-bubble','bubble','Añadir globo');
+    const filterIcons={all:'grid',character:'users',object:'box',background:'image',reference:'book'};
+    $$('.filters [data-filter]').forEach(button=>{const label=button.textContent.trim();button.classList.add('has-icon');button.innerHTML=`${svgIcon(filterIcons[button.dataset.filter]||'grid')}<span class="button-label">${label}</span>`;button.setAttribute('aria-label',label);button.title=label;});
     const orderToggle = $('#toggle-order-strip');
     if (window.matchMedia('(max-width: 720px)').matches) {
       $('.story-strip').classList.add('collapsed'); orderToggle.setAttribute('aria-expanded', 'false');
       orderToggle.innerHTML = `${svgIcon('up')}<span>Mostrar viñetas</span>`;
     } else orderToggle.innerHTML = `${svgIcon('down')}<span>Ocultar viñetas</span>`;
-    labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías');
+    labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías'); labeledIcon('#add-cta-panel','message','Añadir cierre');
     $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
     $('#new-project').onclick = newProject;
     $$('.content-type-card').forEach(button=>button.onclick=()=>{$('#new-content-dialog').close();createContentDraft(button.dataset.contentType);});
@@ -1693,7 +1836,7 @@
       event.currentTarget.setAttribute('aria-expanded', String(!collapsed));
       event.currentTarget.innerHTML = `${svgIcon(collapsed ? 'up' : 'down')}<span>${collapsed ? 'Mostrar viñetas' : 'Ocultar viñetas'}</span>`;
     };
-    $('#add-text').innerHTML = `${svgIcon('text')}<span>Texto</span>`; $('#add-text').onclick = () => addTextBlock();
+    $('#add-text').onclick = () => addTextBlock();
     $('#add-bubble').onclick = () => addBubble($('#bubble-kind').value);
     $('#export-preset').onchange = event => changeFormat(event.target.value);
     $('#export-style').onchange = () => { state.exportStyle=$('#export-style').value; autosave(); toast('La plantilla de firma se aplicará a cada viñeta exportada.'); };
@@ -1773,10 +1916,9 @@
     $('#close-inspector').onclick = () => { $('#inspector-panel').classList.remove('open'); $('#mobile-properties').setAttribute('aria-expanded','false'); $('#mobile-properties').focus({preventScroll:true}); };
     $('#focus-mode').onclick = event => { const active = $('#app-shell').classList.toggle('focus-mode'); event.currentTarget.setAttribute('aria-pressed', String(active)); };
     $('#theme-toggle').onclick = () => {
-      const choices = ['system','light','dark']; const current = getThemeChoice(); const next = choices[(choices.indexOf(current) + 1) % choices.length];
+      const choices = ['system','dark','light']; const current = getThemeChoice(); const next = choices[(choices.indexOf(current) + 1) % choices.length];
       localStorage.setItem('mandarinita-editor-theme', next); applyTheme(next);
     };
-    $('#theme-toggle').querySelector('.ui-icon').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z"/></svg>';
     $('#confirm-delete').onclick = () => { if (pendingDeleteId) deleteProject(pendingDeleteId); pendingDeleteId = null; };
     $('#undo').onclick = () => { if (!undoStack.length) return; redoStack.push(JSON.stringify(state)); state = JSON.parse(undoStack.pop()); commit(); };
     $('#redo').onclick = () => { if (!redoStack.length) return; undoStack.push(JSON.stringify(state)); state = JSON.parse(redoStack.pop()); commit(); };
@@ -1847,12 +1989,15 @@
     document.documentElement.classList.toggle('theme-dark', dark);
     document.documentElement.dataset.themeChoice = choice;
     const label = choice === 'system' ? 'Sistema' : choice === 'dark' ? 'Oscuro' : 'Claro';
-    $('#theme-toggle').title = `Tema: ${label} · cambiar`;
-    $('#theme-toggle').setAttribute('aria-label', `Tema ${label}. Cambiar tema`);
+    const themeButton = $('#theme-toggle');
+    themeButton.innerHTML = svgIcon(choice === 'system' ? 'monitor' : choice === 'dark' ? 'moon' : 'sun');
+    themeButton.title = `Tema: ${label} · cambiar`;
+    themeButton.setAttribute('aria-label', `Tema ${label}. Cambiar tema`);
   }
   migrateLegacyProject();
   applyTheme();
   matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (getThemeChoice() === 'system') applyTheme('system'); });
-  installEvents(); setupResourceFilters(); installPalette(); renderProjectList(); setupCloudSync();
+  installEvents(); setupResourceFilters(); installPalette(); loadCloudBases(); const migratedIds=migrateInvalidLocalProjectIds(); renderProjectList(); setupCloudSync();
+  if(migratedIds)toast('Se corrigió el identificador de un borrador antiguo. Su contenido quedó guardado en este dispositivo.');
   if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('/editor-service-worker.js', { scope:'/' }).catch(() => {});
 })();

@@ -12,6 +12,8 @@ sources=(
   'mando-episodio-14-1-borrador.png|Mando · episodio 14.1'
   'mandy-episodio-01-1-borrador.png|Mandy · episodio 1.1'
   'greg-episodio-14-1-borrador.png|Greg · episodio 14.1'
+  '../../../assets/characters/review/morita-episode-59-1-review.png|Morita · episodio 59.1'
+  '../../../assets/characters/review/morita-episode-59-2-review.png|Morita · episodio 59.2'
 )
 
 tiles=()
@@ -25,5 +27,5 @@ for i in "${!sources[@]}"; do
   tiles+=("$tmpdir/$i.png")
 done
 
-magick montage "${tiles[@]}" -tile 3x2 -geometry 360x400+12+12 \
+magick montage "${tiles[@]}" -tile 3x3 -geometry 360x400+12+12 \
   -background '#ded8cd' -quality 88 "$out"

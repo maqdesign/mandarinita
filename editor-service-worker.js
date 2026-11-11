@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mandarinita-editor-v22';
+const CACHE_NAME = 'mandarinita-editor-v23';
 const APP_SHELL = [
   '/editor.css',
   '/editor.js',
@@ -21,7 +21,14 @@ const APP_SHELL = [
   '/assets/characters/don-pepino-transparent.webp',
   '/assets/characters/manzanillo-transparent.webp',
   '/assets/characters/sandy-transparent.webp',
-  '/assets/characters/superfreso-transparent.webp'
+  '/assets/characters/superfreso-transparent.webp',
+  '/assets/characters/review/morita-episode-59-1-review.png',
+  '/assets/characters/review/morita-episode-59-2-review.png',
+  '/docs/art-review/cutouts/mando-episodio-01-1-borrador.png',
+  '/docs/art-review/cutouts/mandy-episodio-01-1-borrador.png',
+  '/docs/art-review/cutouts/mando-episodio-01-3-borrador.png',
+  '/docs/art-review/cutouts/mando-episodio-14-1-borrador.png',
+  '/docs/art-review/cutouts/greg-episodio-14-1-borrador.png'
 ];
 
 self.addEventListener('install', event => {
@@ -46,7 +53,7 @@ self.addEventListener('fetch', event => {
 
   if (request.mode === 'navigate') return;
 
-  const isEditorFile = /^\/(editor\.(?:css|js|webmanifest)|editor-art-catalog\.json|assets\/)/.test(url.pathname);
+  const isEditorFile = /^\/(editor\.(?:css|js|webmanifest)|editor-art-catalog\.json|assets\/|docs\/art-review\/cutouts\/.*\.png$)/.test(url.pathname);
   if (!isEditorFile) return;
   // respondWith must be called synchronously during fetch dispatch. Check the
   // client inside that promise so this root-scoped worker leaves the public
