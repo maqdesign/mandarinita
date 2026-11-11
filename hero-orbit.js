@@ -91,6 +91,9 @@
         const scale = isBackHalf ? 0.86 + (1 - depthProgress) * 0.12 : 0.98 + depthProgress * 0.12;
         const targetLayer = isBackHalf ? backLayer : frontLayer;
         if (anchor.parentElement !== targetLayer) targetLayer.append(anchor);
+        // Inside each half, let the lowest card paint last. This keeps card
+        // overlaps consistent with the orbit's near/far depth at every frame.
+        anchor.style.zIndex = String(Math.max(0, Math.round((y + radiusY) * 100)));
         anchor.style.left = '50%';
         anchor.style.top = '50%';
         anchor.style.transform = `translate(-50%,-50%) translate(${x}px,${y}px) scale(${scale})`;
