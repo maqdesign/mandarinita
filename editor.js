@@ -440,6 +440,8 @@
   function applyPanelBackground(color, name = color) {
     if (!state || !currentPanel()) return;
     snapshot(); currentPanel().backgroundColor = color; commit();
+    $$('.background-color-card').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.color === color)));
+    const picker = $('.background-custom-color input[type="color"]'); if (picker) picker.value = color;
     toast(`Fondo de la viñeta ${state.active + 1}: ${name}.`);
   }
   function isOffstage(item) { return item.x < 0 || item.y < 0 || item.x + item.w > LOGICAL_WIDTH || item.y + item.h > state.pageHeight; }
@@ -1165,6 +1167,7 @@
       const options = document.createElement('div'); options.className = 'background-color-options';
       matches.forEach(entry => {
         const button = document.createElement('button'); button.type = 'button'; button.className = 'background-color-card';
+        button.dataset.color = entry.color;
         button.setAttribute('aria-label', `Aplicar ${entry.name}, ${entry.color}, a la viñeta ${state.active + 1}`);
         button.setAttribute('aria-pressed', String((currentPanel().backgroundColor || '#FFFFFF').toUpperCase() === entry.color));
         const swatch = document.createElement('span'); swatch.className = 'background-color-swatch'; swatch.style.backgroundColor = entry.color; swatch.setAttribute('aria-hidden', 'true');
