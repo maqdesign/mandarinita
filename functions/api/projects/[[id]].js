@@ -26,7 +26,7 @@ export async function onRequestGet(context) {
   if (auth.response) return auth.response;
   const id = context.params.id;
   if (id) {
-    if (!validId(id)) return json({ error: 'Identificador no válido.' }, 400);
+    if (!validId(id)) return json({ error: 'Identificador no válido.', code: 'invalid_project_id' }, 400);
     const object = await context.env.MANDARINITA_PROJECTS.get(projectKey(id));
     if (!object) return json({ error: 'No se encontró el proyecto.' }, 404);
     return new Response(object.body, { headers: { 'Content-Type': 'application/vnd.mandarinita+json', 'Cache-Control': 'no-store', ETag: object.httpEtag } });
@@ -58,15 +58,15 @@ export async function onRequestPut(context) {
   if (auth.response) return auth.response;
   const { request, env } = context;
   const id = context.params.id;
-  if (!validId(id)) return json({ error: 'Identificador no válido.' }, 400);
+  if (!validId(id)) return json({ error: 'Identificador no válido.', code: 'invalid_project_id' }, 400);
   const contentLength = Number(request.headers.get('Content-Length') || 0);
   if (contentLength > MAX_BYTES) return json({ error: 'El proyecto supera el límite de 25 MB.' }, 413);
   const bytes = await request.arrayBuffer();
   if (bytes.byteLength > MAX_BYTES) return json({ error: 'El proyecto supera el límite de 25 MB.' }, 413);
   let project;
   try { project = JSON.parse(new TextDecoder().decode(bytes)); }
-  catch { return json({ error: 'El archivo del proyecto no contiene JSON válido.' }, 400); }
-  if (!project || project.projectId !== id || !Array.isArray(project.panels)) return json({ error: 'El proyecto no coincide con el identificador solicitado.' }, 400);
+  catch { return json({ error: 'El archivo del proyecto no contiene JSON válido.', code: 'invalid_project_json' }, 400); }
+  if (!project || project.projectId !== id || !Array.isArray(project.panels)) return json({ error: 'El proyecto no coincide con el identificador solicitado.', code: 'project_id_mismatch' }, 400);
   const updatedAt = Number(project.updatedAt) || Date.now();
   const ifMatch = request.headers.get('If-Match');
   const ifNoneMatch = request.headers.get('If-None-Match');
@@ -86,7 +86,7 @@ export async function onRequestDelete(context) {
   const auth = await authorize(context, true);
   if (auth.response) return auth.response;
   const id = context.params.id;
-  if (!validId(id)) return json({ error: 'Identificador no válido.' }, 400);
+  if (!validId(id)) return json({ error: 'Identificador no válido.', code: 'invalid_project_id' }, 400);
   await context.env.MANDARINITA_PROJECTS.delete(projectKey(id));
   return json({ ok: true, id });
 }

@@ -185,8 +185,9 @@
   }
   async function readRemoteProject(projectId) {
     const response=await fetch(`/api/projects/${encodeURIComponent(projectId)}`,{credentials:'same-origin',cache:'no-store'});
-    if (!response.ok) { const error=new Error('No se pudo descargar la versión de la nube.');error.status=response.status;throw error; }
-    return {project:await response.json(),etag:response.headers.get('ETag')};
+    let project;try{project=await response.json();}catch{project=null;}
+    if (!response.ok) { const error=new Error(project?.error||`No se pudo descargar la versión de la nube (error ${response.status}).`);error.status=response.status;error.code=project?.code||'';throw error; }
+    return {project,etag:response.headers.get('ETag')};
   }
   async function pushCloudProject(project) {
     const base=cloudBases.get(project.projectId);
@@ -202,7 +203,8 @@
       :error?.status===413?'El archivo supera el límite de 25 MB; descarga el .mandarinita como respaldo.'
       :error?.status===428?'Esta versión del taller está desactualizada (428). Recarga la página para actualizarla; tu borrador local sigue guardado.'
       :error?.status>=500?`Cloudflare no pudo guardar el borrador (error ${error.status}). Sigue guardado en este dispositivo.`
-      :Number.isInteger(error?.status)?`No se pudo sincronizar (error ${error.status}). El borrador sigue guardado en este dispositivo.`
+      :error?.status===400?`La nube rechazó el borrador: ${error.message||'la solicitud no es válida'}. El borrador local sigue guardado.`
+      :Number.isInteger(error?.status)?`No se pudo sincronizar (error ${error.status}). ${error.message&&error.message!==`Sincronización: ${error.status}`?`${error.message} `:''}El borrador sigue guardado en este dispositivo.`
       :'No se pudo conectar con la nube. El borrador sigue guardado en este dispositivo.';
     setCloudStatus(message,'error');
     if(state)$('#save-state').textContent='Guardado local · sincronización pendiente';
