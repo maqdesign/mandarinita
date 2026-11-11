@@ -1,6 +1,5 @@
-const CACHE_NAME = 'mandarinita-editor-v18';
+const CACHE_NAME = 'mandarinita-editor-v20';
 const APP_SHELL = [
-  '/editor.html',
   '/editor.css',
   '/editor.js',
   '/editor-art-catalog.json',
@@ -20,21 +19,18 @@ self.addEventListener('activate', event => {
   event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('mandarinita-editor-') && key !== CACHE_NAME).map(key => caches.delete(key)))).then(() => self.clients.claim()));
 });
 
+self.addEventListener('message', event => {
+  if (event.data?.type !== 'CLEAR_EDITOR_CACHE') return;
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('mandarinita-editor-')).map(key => caches.delete(key)))).then(() => event.ports[0]?.postMessage({ ok:true })));
+});
+
 self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  if (request.mode === 'navigate') {
-    if (url.pathname === '/editor' || url.pathname === '/editor/') {
-      event.respondWith(fetch(request).then(response => {
-        if (!response.ok || response.redirected || new URL(response.url).origin !== self.location.origin) return response;
-        const copy = response.clone(); caches.open(CACHE_NAME).then(cache => cache.put('/editor', copy)); return response;
-      }).catch(async () => await caches.match('/editor') || await caches.match('/editor.html')));
-    }
-    return;
-  }
+  if (request.mode === 'navigate') return;
 
   const isEditorFile = /^\/(editor\.(?:css|js|webmanifest)|editor-art-catalog\.json|assets\/)/.test(url.pathname);
   if (!isEditorFile) return;

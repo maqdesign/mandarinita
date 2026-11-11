@@ -54,10 +54,18 @@ export function clearSessionCookie() {
   return `${COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`;
 }
 
+export function allowedEmails(env) {
+  return String(env.MANDARINITA_SYNC_EMAIL || '').split(/[\s,;]+/).map(email => email.trim().toLowerCase()).filter(Boolean);
+}
+
+export function isAllowedEmail(env, email) {
+  return allowedEmails(env).includes(String(email || '').trim().toLowerCase());
+}
+
 export function json(data, status = 200, headers = {}) {
   return Response.json(data, { status, headers: { 'Cache-Control': 'no-store', ...headers } });
 }
 
 export function isConfigured(env) {
-  return Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET && env.SESSION_SECRET && env.MANDARINITA_SYNC_EMAIL && env.MANDARINITA_PROJECTS);
+  return Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET && env.SESSION_SECRET && allowedEmails(env).length && env.MANDARINITA_PROJECTS);
 }

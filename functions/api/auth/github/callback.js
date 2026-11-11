@@ -1,4 +1,4 @@
-import { isConfigured, json, makeSessionCookie } from '../../../_lib/session.js';
+import { allowedEmails, isConfigured, json, makeSessionCookie } from '../../../_lib/session.js';
 
 function cookie(request, name) {
   return (request.headers.get('Cookie') || '').split(';').map(part => part.trim()).find(part => part.startsWith(`${name}=`))?.slice(name.length + 1) || '';
@@ -34,15 +34,15 @@ export async function onRequestGet({ request, env }) {
   ]);
   if (!userResponse.ok || !emailsResponse.ok) return json({ error: 'No se pudo verificar la cuenta de GitHub.' }, 502);
   const [user, emails] = await Promise.all([userResponse.json(), emailsResponse.json()]);
-  const allowedEmail = env.MANDARINITA_SYNC_EMAIL.trim().toLowerCase();
-  const verified = emails.some(entry => entry.verified && entry.email.toLowerCase() === allowedEmail);
+  const permittedEmails = allowedEmails(env);
+  const verified = emails.find(entry => entry.verified && permittedEmails.includes(entry.email.trim().toLowerCase()));
   if (!verified) return new Response(null, { status: 303, headers: {
     Location: new URL('/github-auth-error.html?reason=not-authorized', request.url).toString(),
     'Set-Cookie': 'mandarinita_oauth_state=; Path=/api/auth/github/callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax',
     'Cache-Control': 'no-store'
   } });
 
-  const sessionCookie = await makeSessionCookie({ login: user.login, email: allowedEmail }, env.SESSION_SECRET);
+  const sessionCookie = await makeSessionCookie({ login: user.login, email: verified.email.trim().toLowerCase() }, env.SESSION_SECRET);
   const response = new Response(null, { status: 303, headers: {
     Location: new URL('/editor.html?github=connected', request.url).toString(),
     'Cache-Control': 'no-store'

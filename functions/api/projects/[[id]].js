@@ -1,4 +1,4 @@
-import { isConfigured, json, readSession } from '../../_lib/session.js';
+import { isAllowedEmail, isConfigured, json, readSession } from '../../_lib/session.js';
 
 const PREFIX = 'users/mauricio/projects/';
 const MAX_BYTES = 25 * 1024 * 1024;
@@ -16,7 +16,7 @@ async function authorize(context, write = false) {
   const { request, env } = context;
   if (!isConfigured(env)) return { response: json({ error: 'La sincronización no está configurada.' }, 503) };
   const session = await readSession(request, env.SESSION_SECRET);
-  if (!session || session.email !== env.MANDARINITA_SYNC_EMAIL.trim().toLowerCase()) return { response: json({ error: 'Inicia sesión con tu cuenta de GitHub.' }, 401) };
+  if (!isAllowedEmail(env,session?.email)) return { response: json({ error: 'Inicia sesión con una cuenta autorizada de GitHub.' }, 401) };
   if (write && request.headers.get('Origin') !== new URL(request.url).origin) return { response: json({ error: 'Origen no permitido.' }, 403) };
   return { session };
 }

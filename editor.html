@@ -54,27 +54,37 @@
     </header>
     <main class="app-shell" id="app-shell">
       <aside class="library" id="library-panel">
-        <div class="side-head"><div><span class="eyebrow">BIBLIOTECA DE RECURSOS</span><h1 id="library-title">Componentes</h1></div><div class="library-actions"><button id="upload-asset" class="round" title="Importar dibujo" aria-label="Importar dibujo"></button><button id="close-library" class="round library-close" type="button" aria-label="Cerrar componentes" title="Cerrar"></button></div><input id="asset-file" type="file" accept="image/*" hidden></div>
-        <label class="search"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg><input id="asset-search" type="search" placeholder="Personaje, alias u objeto" aria-label="Buscar recursos"></label>
-        <nav class="filters" aria-label="Filtrar recursos">
-          <button class="active" data-filter="all">Todo</button><button data-filter="character">Personajes</button><button data-filter="object">Objetos</button><button data-filter="background">Fondos</button><button data-filter="reference">Referencias</button>
-        </nav>
-        <label id="reference-character-filter" class="reference-character-filter" hidden><span>Personaje</span><select id="reference-character-select" aria-label="Filtrar referencias por personaje"><option value="">Todos los personajes</option></select></label>
-        <div id="asset-grid" class="asset-grid"></div>
-        <div id="background-note" class="library-note" hidden>Los episodios guardados contienen imágenes aplanadas. Para crear fondos limpios reutilizables hacen falta archivos por capas o una etapa de extracción y revisión.</div>
-        <div id="component-note" class="library-note">Los recortes con fondo se muestran como referencia; solo los componentes aislados se colocan directamente.</div>
-        <div id="reference-note" class="library-note" hidden>El atlas incluye paneles completos y recursos originales de la página de personajes. Las imágenes permanecen íntegras y no se insertan como componentes.</div>
+        <div class="side-head"><div><span class="eyebrow">TALLER MANDARINITA</span><h1 id="library-title">Componentes</h1></div><div class="library-actions"><button id="upload-asset" class="round" title="Importar dibujo" aria-label="Importar dibujo"></button><button id="close-library" class="round library-close" type="button" aria-label="Cerrar panel" title="Cerrar"></button></div><input id="asset-file" type="file" accept="image/*" hidden></div>
+        <div class="left-tabs" role="tablist" aria-label="Panel de trabajo">
+          <button id="tab-components" type="button" role="tab" aria-selected="true" aria-controls="components-panel">Componentes</button>
+          <button id="tab-layers" type="button" role="tab" aria-selected="false" aria-controls="layers-panel">Capas <span id="layer-count-tab">0</span></button>
+        </div>
+        <section id="components-panel" class="left-tab-panel" role="tabpanel" aria-labelledby="tab-components">
+          <label class="search"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg><input id="asset-search" type="search" placeholder="Personaje, alias u objeto" aria-label="Buscar recursos"></label>
+          <nav class="filters" aria-label="Filtrar recursos">
+            <button class="active" data-filter="all">Todo</button><button data-filter="character">Personajes</button><button data-filter="object">Objetos</button><button data-filter="background">Fondos</button><button data-filter="reference">Referencias</button>
+          </nav>
+          <label id="reference-character-filter" class="reference-character-filter" hidden><span>Personaje</span><select id="reference-character-select" aria-label="Filtrar referencias por personaje"><option value="">Todos los personajes</option></select></label>
+          <div id="asset-grid" class="asset-grid"></div>
+          <div id="background-note" class="library-note" hidden>Los episodios guardados contienen imágenes aplanadas. Para crear fondos limpios reutilizables hacen falta archivos por capas o una etapa de extracción y revisión.</div>
+          <div id="component-note" class="library-note">Los recortes con fondo se muestran como referencia; solo los componentes aislados se colocan directamente.</div>
+          <div id="reference-note" class="library-note" hidden>El atlas incluye paneles completos y recursos originales de la página de personajes. Las imágenes permanecen íntegras y no se insertan como componentes.</div>
+        </section>
+        <section id="layers-panel" class="left-tab-panel layers-tab-panel" role="tabpanel" aria-labelledby="tab-layers" hidden>
+          <div id="offstage-panel" class="offstage-panel" hidden><div class="layer-title"><span class="eyebrow">FUERA DEL LIENZO</span><span id="offstage-count">0</span></div><div id="offstage-list"></div></div>
+          <div class="layers"><div class="layer-title"><span class="eyebrow">VIÑETA ACTIVA</span><span id="layer-count">0 capas</span></div><p class="layers-hint">Selecciona una capa para editarla. Bloquea las que quieras proteger.</p><div id="layer-list"></div></div>
+        </section>
       </aside>
       <section class="workspace">
         <div class="workspace-bar">
           <div class="breadcrumbs"><span>EPISODIO</span><span class="breadcrumb-separator" aria-hidden="true"></span><span id="current-panel-label">VIÑETA 1</span></div>
           <div class="tools">
-            <button id="toggle-library" title="Mostrar/ocultar biblioteca">Biblioteca</button><button id="toggle-layers" title="Mostrar/ocultar inspector">Capas</button><button id="focus-mode" title="Ampliar el lienzo" aria-pressed="false">Lienzo amplio</button>
+            <button class="mobile-drawer" id="mobile-library" type="button" aria-controls="library-panel" aria-expanded="false">Paneles</button><button class="mobile-drawer" id="mobile-properties" type="button" aria-controls="inspector-panel" aria-expanded="false">Editar selección</button>
+            <button id="focus-mode" title="Ampliar el lienzo" aria-pressed="false">Lienzo amplio</button>
             <button id="add-panel">Viñeta</button><button id="add-text">Texto</button><select id="bubble-kind" aria-label="Tipo de texto"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto · POW</option></select><button id="add-bubble">Añadir globo</button>
             <button id="toggle-draw" aria-pressed="false">Dibujar</button>
             <span class="divider"></span><button id="toggle-grid" aria-pressed="true">Guías</button><button id="zoom-out" aria-label="Alejar"></button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Acercar"></button><button id="fit">Ajustar</button>
             <select id="export-preset" aria-label="Formato del lienzo"><option value="web">Web · 3:2</option><option value="square">Instagram · 1:1</option><option value="portrait">Instagram · 4:5</option></select><select id="export-style" aria-label="Plantilla de exportación"><option value="classic">Firma · marco clásico</option><option value="cream">Firma · marco crema</option><option value="footer">Firma · pie limpio</option></select>
-            <button class="mobile-drawer" id="mobile-library" type="button" aria-controls="library-panel" aria-expanded="false">Recursos</button><button class="mobile-drawer" id="mobile-properties" type="button">Propiedades</button>
           </div>
         </div>
         <div id="draw-toolbar" class="draw-toolbar" hidden>
@@ -86,10 +96,8 @@
         <div class="story-strip"><div class="strip-title"><div><span class="eyebrow">ORDEN DE LECTURA</span><strong>Arrastra las viñetas para ordenarlas</strong></div><button id="add-cta-panel" type="button" title="Añade una viñeta editable de agradecimiento y redes">Añadir cierre</button></div><div id="panel-list" class="panel-list"></div></div>
       </section>
       <aside class="inspector" id="inspector-panel">
-        <div class="side-head"><div><span class="eyebrow">EDICIÓN</span><h2>Propiedades y capas</h2></div></div>
+        <div class="side-head"><div><span class="eyebrow">EDICIÓN</span><h2>Propiedades</h2></div><button id="close-inspector" class="round inspector-close" type="button" aria-label="Cerrar propiedades" title="Cerrar">×</button></div>
         <div id="inspector-content" class="inspector-content"><div class="empty-state"><b>Selecciona un elemento</b><p>El contorno naranja confirma qué elemento está seleccionado.</p></div></div>
-        <div id="offstage-panel" class="offstage-panel" hidden><div class="layer-title"><span class="eyebrow">FUERA DEL LIENZO</span><span id="offstage-count">0</span></div><div id="offstage-list"></div></div>
-        <div class="layers"><div class="layer-title"><span class="eyebrow">CAPAS</span><span id="layer-count">0 elementos</span></div><div id="layer-list"></div></div>
       </aside>
     </main>
   </section>

@@ -324,13 +324,31 @@
     if(cloudConflicts.size){openCloudConflictDialog();return;}
     cloudReady=false;setCloudStatus('Revisando cambios…','busy');await syncCloudProjects();
   }
+  async function clearEditorOfflineCache() {
+    const worker=navigator.serviceWorker?.controller;
+    if(!worker||!window.MessageChannel)return;
+    await new Promise(resolve=>{
+      const channel=new MessageChannel(); const timeout=setTimeout(resolve,900);
+      channel.port1.onmessage=()=>{clearTimeout(timeout);resolve();};
+      worker.postMessage({type:'CLEAR_EDITOR_CACHE'},[channel.port2]);
+    });
+  }
   async function setupCloudSync() {
     const button = $('#github-sync');
     button.onclick = async () => {
       if (cloudAuthExpired) { window.location.assign('/api/auth/github'); return; }
       if (cloudUser) {
-        try { await cloudFetch('/api/auth/logout', { method: 'POST' }); } catch { /* The server may already have ended the session. */ }
-        cloudUser = null; cloudReady = false; cloudAuthExpired=false; setCloudStatus('Sesión cerrada. Los borradores locales permanecen en este dispositivo.','signed-out'); toast('Sesión de GitHub cerrada.'); return;
+        try {
+          await cloudFetch('/api/auth/logout', { method: 'POST' });
+          await clearEditorOfflineCache();
+          document.documentElement.classList.add('session-ended');
+          window.location.replace('/');
+        } catch {
+          // A direct same-origin request clears the HttpOnly cookie if the POST failed.
+          document.documentElement.classList.add('session-ended');
+          window.location.replace('/api/auth/logout');
+        }
+        return;
       }
       if (!cloudConfigured) { toast('La sincronización requiere configurar OAuth de GitHub y almacenamiento R2 en Cloudflare.'); return; }
       window.location.assign('/api/auth/github');
@@ -612,7 +630,7 @@
     state.selected = itemId;
     $$('.placed').forEach(element => {
       const active = element.dataset.id === itemId;
-      element.classList.toggle('selected', active);
+      element.classList.toggle('selected', active && !currentPanel().items.find(item => item.id === itemId)?.locked);
       const handle = element.querySelector('.resize-handle');
       if (handle) handle.hidden = !active || Boolean(currentPanel().items.find(item => item.id === itemId)?.locked);
     });
@@ -629,7 +647,7 @@
     if (characterResource) actions.push(['replace', 'Sustituir personaje']);
     if (['image','drawing'].includes(item.type)) { actions.push(['flip-x', 'Voltear horizontalmente']); actions.push(['flip-y', 'Voltear verticalmente']); }
     if (isOffstage(item)) actions.push(['recover', 'Recuperar al lienzo']);
-    actions.push(['duplicate', 'Duplicar elemento'], ['lock', item.locked ? 'Desbloquear' : 'Bloquear elemento'], ['delete', 'Borrar elemento']);
+    actions.push(['duplicate', 'Duplicar elemento'], ['delete', 'Borrar elemento']);
     menu.innerHTML = actions.map(([action,label]) => `<button type="button" role="menuitem" data-context-action="${action}"${action === 'delete' ? ' class="danger"' : ''}>${label}</button>`).join('');
     menu.hidden = false;
     const width = menu.offsetWidth; const height = menu.offsetHeight;
@@ -641,7 +659,6 @@
       if (action === 'replace') { openCharacterPicker(item.id); return; }
       if (action === 'recover') { recoverItem(item.id); return; }
       if (action === 'duplicate') { snapshot(); const copy = { ...item, id: id(), x: item.x + 24, y: item.y + 24, name: `${item.name} · copia` }; currentPanel().items.push(copy); selectItem(copy.id); commit(); return; }
-      if (action === 'lock') { snapshot(); item.locked = !item.locked; commit(); return; }
       if (action === 'flip-x' || action === 'flip-y') { snapshot(); item[action === 'flip-x' ? 'flipX' : 'flipY'] = !item[action === 'flip-x' ? 'flipX' : 'flipY']; commit(); return; }
       if (action === 'delete') { snapshot(); currentPanel().items = currentPanel().items.filter(entry => entry.id !== item.id); state.selected = null; commit(); }
     });
@@ -724,7 +741,7 @@
   }
   function renderItem(item, index, panelIndex, boardCanvas) {
     const element = document.createElement('div');
-    element.className = `placed${state.selected === item.id ? ' selected' : ''}${item.type === 'bubble' ? ` bubble bubble-${item.kind}${item.tail ? ' has-tail' : ''}` : ''}${item.type === 'drawing' ? ' drawing' : ''}${isFullyOffstage(item) ? ' offstage' : ''}`;
+    element.className = `placed${state.selected === item.id && !item.locked ? ' selected' : ''}${item.locked ? ' locked' : ''}${item.type === 'bubble' ? ` bubble bubble-${item.kind}${item.tail ? ' has-tail' : ''}` : ''}${item.type === 'drawing' ? ' drawing' : ''}${isFullyOffstage(item) ? ' offstage' : ''}`;
     element.dataset.id = item.id;
     element.style.cssText = `left:${item.x}px;top:${item.y}px;width:${item.w}px;height:${item.h}px;transform:rotate(${item.rotation || 0}deg) scale(${item.flipX ? -1 : 1},${item.flipY ? -1 : 1});--tail-x:${item.tailX ?? 28}%;z-index:${index + 1};`;
     if (item.type === 'image') {
@@ -746,13 +763,13 @@
       element.append(svg);
     } else if (item.type === 'text') {
       element.classList.add('text-layer');
-      const textarea=document.createElement('textarea');textarea.setAttribute('aria-label',`Texto: ${item.name}`);textarea.value=item.text||'';textarea.style.fontSize=`${item.fontSize||28}px`;textarea.style.fontWeight=String(item.fontWeight||600);textarea.style.textAlign=item.align||'center';textarea.style.color=item.color||'#292725';
+      const textarea=document.createElement('textarea');textarea.setAttribute('aria-label',`Texto: ${item.name}`);textarea.value=item.text||'';textarea.readOnly=Boolean(item.locked);textarea.tabIndex=item.locked?-1:0;textarea.style.fontSize=`${item.fontSize||28}px`;textarea.style.fontWeight=String(item.fontWeight||600);textarea.style.textAlign=item.align||'center';textarea.style.color=item.color||'#292725';
       textarea.onfocus=()=>{if(!item._typingSnapshot){snapshot();item._typingSnapshot=true;}};textarea.onblur=()=>{delete item._typingSnapshot;autosave();};
       textarea.oninput=()=>{item.text=textarea.value;textarea.style.height='auto';item.h=Math.max(56,Math.min(state.pageHeight-item.y,textarea.scrollHeight+12));element.style.height=`${item.h}px`;autosave();};element.append(textarea);
     } else {
       applyBubbleShape(item,element);
       updateBubbleAccessories(item, element);
-      const textarea = document.createElement('textarea'); textarea.setAttribute('aria-label', `Texto: ${item.name}`); textarea.value = item.text || '';
+      const textarea = document.createElement('textarea'); textarea.setAttribute('aria-label', `Texto: ${item.name}`); textarea.value = item.text || ''; textarea.readOnly=Boolean(item.locked); textarea.tabIndex=item.locked?-1:0;
       styleBubbleText(item, textarea);
       textarea.onfocus = () => { if (!item._typingSnapshot) { snapshot(); item._typingSnapshot = true; } };
       textarea.onblur = () => { delete item._typingSnapshot; autosave(); };
@@ -767,9 +784,9 @@
     const handle = document.createElement('button'); handle.className = 'resize-handle'; handle.type = 'button'; handle.setAttribute('aria-label', `Cambiar tamaño de ${item.name}`); handle.hidden = item.id !== state.selected || item.locked; element.append(handle);
     attachResize(handle, element, item, boardCanvas, panelIndex);
     let longPressTimer = null; let longPressOrigin = null;
-    element.addEventListener('contextmenu', event => { event.preventDefault(); event.stopPropagation(); openCanvasContextMenu(item,panelIndex,event.clientX,event.clientY); });
+    element.addEventListener('contextmenu', event => { event.preventDefault(); event.stopPropagation(); if (!item.locked) openCanvasContextMenu(item,panelIndex,event.clientX,event.clientY); });
     element.addEventListener('pointerdown', event => {
-      if (event.pointerType !== 'touch' || event.target.closest('.resize-handle') || event.target.tagName === 'TEXTAREA') return;
+      if (event.pointerType !== 'touch' || item.locked || event.target.closest('.resize-handle') || event.target.tagName === 'TEXTAREA') return;
       longPressOrigin = { x:event.clientX, y:event.clientY };
       longPressTimer = setTimeout(() => { longPressTimer = null; openCanvasContextMenu(item,panelIndex,event.clientX,event.clientY); }, 550);
     }, { capture:true });
@@ -789,10 +806,50 @@
         item.x = start.ix + dx; item.y = start.iy + dy;
         element.style.left = `${item.x}px`; element.style.top = `${item.y}px`;
         element.classList.toggle('offstage', isFullyOffstage(item));
+        $$('.transfer-target').forEach(target => target.classList.remove('transfer-target'));
+        const candidate = $$('.artboard-canvas').find(canvas => {
+          if(canvas===boardCanvas)return false; const rect=canvas.getBoundingClientRect();
+          return rect.width>0&&rect.height>0&&moveEvent.clientX>=rect.left&&moveEvent.clientX<=rect.right&&moveEvent.clientY>=rect.top&&moveEvent.clientY<=rect.bottom;
+        }) || $$('.panel-card').find(card => {
+          const rect=card.getBoundingClientRect();
+          return Number(card.dataset.panelIndex)!==panelIndex&&moveEvent.clientX>=rect.left&&moveEvent.clientX<=rect.right&&moveEvent.clientY>=rect.top&&moveEvent.clientY<=rect.bottom;
+        });
+        if (candidate && Number(candidate.dataset.panelIndex) !== panelIndex) candidate.classList.add('transfer-target');
       };
-      element.onpointerup = () => { if (element.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId); element.onpointermove = null; element.onpointerup = null; if (start.moved) { autosave(); renderOffstage(); renderLayers(); } };
+      element.onpointerup = upEvent => {
+        if (element.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId);
+        element.onpointermove = null; element.onpointerup = null;
+        $$('.transfer-target').forEach(target => target.classList.remove('transfer-target'));
+        if (!start.moved) return;
+        const targetCanvas = $$('.artboard-canvas').find(canvas => {
+          if(canvas===boardCanvas)return false; const rect=canvas.getBoundingClientRect();
+          return rect.width>0&&rect.height>0&&upEvent.clientX>=rect.left&&upEvent.clientX<=rect.right&&upEvent.clientY>=rect.top&&upEvent.clientY<=rect.bottom;
+        });
+        const targetCard = targetCanvas ? null : $$('.panel-card').find(card => {
+          const rect=card.getBoundingClientRect();
+          return Number(card.dataset.panelIndex)!==panelIndex&&upEvent.clientX>=rect.left&&upEvent.clientX<=rect.right&&upEvent.clientY>=rect.top&&upEvent.clientY<=rect.bottom;
+        });
+        const targetIndex = targetCanvas ? Number(targetCanvas.dataset.panelIndex) : targetCard ? Number(targetCard.dataset.panelIndex) : panelIndex;
+        if ((targetCanvas||targetCard) && Number.isInteger(targetIndex) && targetIndex !== panelIndex && state.panels[targetIndex]) {
+          const source = state.panels[panelIndex]; const target = state.panels[targetIndex];
+          const sourceIndex = source.items.findIndex(entry => entry.id === item.id);
+          if (sourceIndex >= 0) {
+            source.items.splice(sourceIndex,1);
+            if(targetCanvas){
+              const rect = targetCanvas.getBoundingClientRect(); const scale = canvasScale(targetCanvas);
+              item.x = Math.max(0,Math.min(LOGICAL_WIDTH-item.w,(upEvent.clientX-rect.left)/scale-item.w/2));
+              item.y = Math.max(0,Math.min(state.pageHeight-item.h,(upEvent.clientY-rect.top)/scale-item.h/2));
+            }else{
+              item.x=Math.max(0,(LOGICAL_WIDTH-item.w)/2);item.y=Math.max(0,(state.pageHeight-item.h)/2);
+            }
+            target.items.push(item); state.active=targetIndex; state.selected=item.id;
+            commit(); return;
+          }
+        }
+        autosave(); renderOffstage(); renderLayers();
+      };
     };
-    element.onclick = event => { event.stopPropagation(); if (state.active !== panelIndex) setActivePanel(panelIndex, true); selectItem(item.id); };
+    element.onclick = event => { event.stopPropagation(); if (item.locked) return; if (state.active !== panelIndex) setActivePanel(panelIndex, true); selectItem(item.id); };
     if ($('#toggle-draw').getAttribute('aria-pressed') === 'true') element.style.pointerEvents = 'none';
     boardCanvas.append(element);
   }
@@ -818,6 +875,7 @@
   function renderInspector() {
     const item = currentItem(); const box = $('#inspector-content');
     if (!item) { box.innerHTML = `<div class="empty-state">${svgIcon('image')}<b>Selecciona un elemento</b><p>Su contorno y tirador naranja aparecerán en el lienzo.</p></div>`; return; }
+    if (item.locked) { box.innerHTML = `<div class="empty-state">${svgIcon('lock')}<b>${escapeHTML(item.name)} está protegido</b><p>Desbloquéalo desde la pestaña Capas para volver a editarlo.</p></div>`; return; }
     const characterResource = item.type === 'image' && (item.category === 'character' || resources.some(resource => resource.name === item.resourceId && resource.category === 'character'));
     const replaceControl = characterResource ? '<button id="replace-character" class="button replace-character">Sustituir personaje</button>' : '';
     const imageControls = item.type === 'image' ? `<div class="field"><label for="p-blur">Desenfoque · <span id="blur-value">${item.blur || 0}px</span></label><input id="p-blur" type="range" min="0" max="36" step="0.5" value="${item.blur || 0}"><small>Se conserva en el proyecto y también aparece en la exportación.</small></div><div class="field bg-remove-tools"><label>Quitar un fondo plano</label><input id="p-bg-tolerance" aria-label="Tolerancia del recorte de fondo" type="range" min="8" max="90" step="2" value="36"><small>Procesa el dibujo en este dispositivo. Da mejor resultado con fondos uniformes; no usa IA ni una API.</small><button id="remove-background" type="button" class="button">Recortar fondo</button>${item.originalSrc ? '<button id="restore-background" type="button" class="button">Restaurar imagen original</button>' : ''}</div>` : '';
@@ -827,7 +885,7 @@
     const drawingControls = item.type === 'drawing' ? `<div class="field"><label>Relleno del contorno cerrado</label><label class="check-field"><input id="p-fill" type="checkbox" ${item.fillEnabled ? 'checked' : ''}> Aplicar relleno</label><input id="p-fill-color" type="color" value="${item.fillColor || '#F87209'}"></div><div class="field"><label>Color del trazo</label><input id="p-color" type="color" value="${item.color || '#282522'}"></div><div class="field"><label>Grosor</label><input id="p-stroke-width" type="range" min="1" max="40" value="${item.strokeWidth || 5}"></div>` : '';
     const recoverControl = isOffstage(item) ? '<button id="bring-in" class="button recovery">Recuperar dentro del lienzo</button>' : '';
     const flipControls = ['image','drawing'].includes(item.type) ? `<div class="field"><label>Voltear</label><div class="inspector-buttons flip-buttons"><button id="flip-x" aria-pressed="${!!item.flipX}">Horizontal</button><button id="flip-y" aria-pressed="${!!item.flipY}">Vertical</button></div></div>` : '';
-    box.innerHTML = `<div class="field"><label>Nombre de capa</label><input id="p-name" value=""></div>${replaceControl}${variantControl}${imageControls}${bubbleControls}${textControls}${drawingControls}<div class="field-row"><div class="field"><label>X</label><input id="p-x" type="number" value="${Math.round(item.x)}"></div><div class="field"><label>Y</label><input id="p-y" type="number" value="${Math.round(item.y)}"></div></div><div class="field-row"><div class="field"><label>Ancho</label><input id="p-w" type="number" value="${Math.round(item.w)}"></div><div class="field"><label>Alto</label><input id="p-h" type="number" value="${Math.round(item.h)}"></div></div><div class="field"><label>Giro</label><input id="p-rot" type="range" min="-180" max="180" value="${item.rotation || 0}"></div>${flipControls}<div class="inspector-buttons"><button id="duplicate">Duplicar</button><button id="lock">${item.locked ? 'Desbloquear' : 'Bloquear'}</button><button id="delete" class="danger">Borrar</button></div>${recoverControl}`;
+    box.innerHTML = `<div class="field"><label>Nombre de capa</label><input id="p-name" value=""></div>${replaceControl}${variantControl}${imageControls}${bubbleControls}${textControls}${drawingControls}<div class="field-row"><div class="field"><label>X</label><input id="p-x" type="number" value="${Math.round(item.x)}"></div><div class="field"><label>Y</label><input id="p-y" type="number" value="${Math.round(item.y)}"></div></div><div class="field-row"><div class="field"><label>Ancho</label><input id="p-w" type="number" value="${Math.round(item.w)}"></div><div class="field"><label>Alto</label><input id="p-h" type="number" value="${Math.round(item.h)}"></div></div><div class="field"><label>Giro</label><input id="p-rot" type="range" min="-180" max="180" value="${item.rotation || 0}"></div>${flipControls}<div class="inspector-buttons"><button id="duplicate">Duplicar</button><button id="delete" class="danger">Borrar</button></div>${recoverControl}`;
     $('#p-name').value = item.name;
     for (const name of ['kind', 'align']) { const input = $(`#p-${name}`); if (input) input.value = item[name] || (name === 'align' ? 'center' : 'dialogue'); }
     if ($('#p-action-style')) $('#p-action-style').value = item.actionStyle || 'raised';
@@ -867,7 +925,6 @@
     $('#p-fill')?.addEventListener('change', event => { snapshot(); item.fillEnabled = event.target.checked; commit(); });
     $('#p-fill-color')?.addEventListener('input', event => { item.fillColor = event.target.value; activeCanvas()?.querySelectorAll(`[data-id="${item.id}"] path`).forEach(path => { if (path.getAttribute('d').trim().endsWith('Z')) path.setAttribute('fill',item.fillColor); }); autosave(); });
     $('#duplicate').onclick = () => { snapshot(); const copy = { ...item, id: id(), x: item.x + 24, y: item.y + 24, name: `${item.name} · copia` }; currentPanel().items.push(copy); selectItem(copy.id); commit(); };
-    $('#lock').onclick = () => { snapshot(); item.locked = !item.locked; commit(); };
     $('#delete').onclick = () => { snapshot(); currentPanel().items = currentPanel().items.filter(entry => entry.id !== item.id); state.selected = null; commit(); };
     $('#bring-in')?.addEventListener('click', () => recoverItem(item.id));
   }
@@ -875,11 +932,12 @@
     const list = $('#layer-list'); list.innerHTML = '';
     const items = [...currentPanel().items].reverse();
     $('#layer-count').textContent = `${items.length} ${items.length === 1 ? 'capa' : 'capas'}`;
+    $('#layer-count-tab').textContent = String(items.length);
     items.forEach(item => {
       const row = document.createElement('div'); row.className = `layer-row${item.id === state.selected ? ' active' : ''}${isOffstage(item) ? ' layer-offstage' : ''}`;
       row.innerHTML = `<span class="layer-icon">${svgIcon(item.type === 'bubble' ? 'bubble' : item.type === 'drawing' ? 'pen' : 'image')}</span><span class="layer-name">${escapeHTML(item.name)}</span><button class="layer-order" aria-label="Subir capa">${svgIcon('up')}</button><button class="layer-order down" aria-label="Bajar capa">${svgIcon('down')}</button><button class="lock" aria-label="${item.locked ? 'Desbloquear' : 'Bloquear'}">${svgIcon(item.locked ? 'lock' : 'unlock')}</button>`;
       row.onclick = () => selectItem(item.id);
-      row.querySelector('.lock').onclick = event => { event.stopPropagation(); snapshot(); item.locked = !item.locked; commit(); };
+      row.querySelector('.lock').onclick = event => { event.stopPropagation(); snapshot(); item.locked = !item.locked; if(item.locked&&state.selected===item.id)state.selected=null; commit(); };
       row.querySelector('.layer-order').onclick = event => { event.stopPropagation(); reorderLayer(item.id, 1); };
       row.querySelector('.down').onclick = event => { event.stopPropagation(); reorderLayer(item.id, -1); };
       list.append(row);
@@ -1458,8 +1516,7 @@
     document.addEventListener('keydown', event => { if (event.key === 'Escape') closeCanvasContextMenu(); });
     const labeledIcon = (selector, iconName, label) => { const button = $(selector); button.innerHTML = `${svgIcon(iconName)}<span>${label}</span>`; };
     $('#undo').innerHTML = svgIcon('undo'); $('#redo').innerHTML = svgIcon('redo');
-    labeledIcon('#upload-asset','plus',''); labeledIcon('#close-library','close',''); labeledIcon('#toggle-library','image','Biblioteca');
-    labeledIcon('#toggle-layers','layers','Capas'); labeledIcon('#focus-mode','focus','Lienzo amplio');
+    labeledIcon('#upload-asset','plus',''); labeledIcon('#close-library','close',''); labeledIcon('#close-inspector','close',''); labeledIcon('#focus-mode','focus','Lienzo amplio');
     labeledIcon('#add-panel','plus','Viñeta'); labeledIcon('#add-bubble','bubble','Añadir globo');
     labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías');
     $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
@@ -1515,11 +1572,22 @@
       if (Math.abs(next-state.zoom) > .008) { pinchZoom.x=(a.clientX+b.clientX)/2; pinchZoom.y=(a.clientY+b.clientY)/2; setZoom(next,pinchZoom.x,pinchZoom.y); }
     }, { passive:false });
     viewport.addEventListener('touchend', event => { if (event.touches.length < 2) pinchZoom=null; });
-    $('#toggle-library').onclick = () => $('#app-shell').classList.toggle('library-collapsed');
-    $('#toggle-layers').onclick = event => {
-      if (matchMedia('(max-width:1100px)').matches) { const open=$('#inspector-panel').classList.toggle('open'); event.currentTarget.setAttribute('aria-pressed',String(open)); }
-      else { const collapsed=$('#app-shell').classList.toggle('inspector-collapsed'); event.currentTarget.setAttribute('aria-pressed',String(!collapsed)); }
+    const setLeftTab = tab => {
+      const components = tab === 'components';
+      $('#tab-components').setAttribute('aria-selected',String(components));
+      $('#tab-layers').setAttribute('aria-selected',String(!components));
+      $('#components-panel').hidden = !components;
+      $('#layers-panel').hidden = components;
+      if (!$('#reference-note').hidden) $('#library-title').textContent = components ? 'Referencias' : 'Capas';
+      else $('#library-title').textContent = components ? 'Componentes' : 'Capas';
     };
+    $('#tab-components').onclick = () => setLeftTab('components');
+    $('#tab-layers').onclick = () => setLeftTab('layers');
+    [$('#tab-components'),$('#tab-layers')].forEach((tab,index,tabs) => tab.onkeydown = event => {
+      if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+      event.preventDefault(); const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : (index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+      tabs[next].focus(); tabs[next].click();
+    });
     const setLibraryOpen = open => {
       $('#library-panel').classList.toggle('open', open);
       $('#mobile-library').setAttribute('aria-expanded', String(open));
@@ -1533,11 +1601,15 @@
       if (event.matches || !$('#library-panel').classList.contains('open')) return;
       $('#library-panel').classList.remove('open','dragging-from-library');
       $('#mobile-library').setAttribute('aria-expanded','false');
-      $('#toggle-library').focus({ preventScroll:true });
+      $('#tab-components').focus({ preventScroll:true });
     };
     if (mobileLibraryBreakpoint.addEventListener) mobileLibraryBreakpoint.addEventListener('change', resetLibraryDrawerOnResize);
     else mobileLibraryBreakpoint.addListener(resetLibraryDrawerOnResize);
-    $('#mobile-properties').onclick = () => $('#inspector-panel').classList.toggle('open');
+    $('#mobile-properties').onclick = event => {
+      const open=$('#inspector-panel').classList.toggle('open'); event.currentTarget.setAttribute('aria-expanded',String(open));
+      if(open)$('#close-inspector').focus({preventScroll:true});
+    };
+    $('#close-inspector').onclick = () => { $('#inspector-panel').classList.remove('open'); $('#mobile-properties').setAttribute('aria-expanded','false'); $('#mobile-properties').focus({preventScroll:true}); };
     $('#focus-mode').onclick = event => { const active = $('#app-shell').classList.toggle('focus-mode'); event.currentTarget.setAttribute('aria-pressed', String(active)); };
     $('#theme-toggle').onclick = () => {
       const choices = ['system','light','dark']; const current = getThemeChoice(); const next = choices[(choices.indexOf(current) + 1) % choices.length];
@@ -1582,7 +1654,10 @@
       if (event.key === 'Escape') {
         if ($('#library-panel').classList.contains('open')) setLibraryOpen(false);
         else $('#library-panel').classList.remove('dragging-from-library');
-        $('#inspector-panel').classList.remove('open');
+        if ($('#inspector-panel').classList.contains('open')) {
+          $('#inspector-panel').classList.remove('open'); $('#mobile-properties').setAttribute('aria-expanded','false');
+          if(matchMedia('(max-width:1000px)').matches)$('#mobile-properties').focus({preventScroll:true});
+        }
       }
     });
   }
