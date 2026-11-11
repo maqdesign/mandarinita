@@ -74,14 +74,18 @@
         const orbitY = Math.sin(theta) * radiusY;
         const x = orbitX * Math.cos(tilt) - orbitY * Math.sin(tilt);
         const y = orbitX * Math.sin(tilt) + orbitY * Math.cos(tilt);
-        const z = Math.sin(theta) * zRadius;
-        const back = Math.max(0, -z / zRadius);
+        // The visible upper half is always the far side; the lower half always
+        // comes toward the reader and sits above the character artwork.
+        const depthProgress = Math.min(1, Math.abs(y) / Math.max(radiusY, 1));
+        const isBackHalf = y < 0;
+        const z = (isBackHalf ? -1 : 1) * depthProgress * zRadius;
+        const back = isBackHalf ? depthProgress : 0;
         anchor.style.left = '50%';
         anchor.style.top = '50%';
         anchor.style.transform = `translate(-50%,-50%) translate3d(${x}px,${y}px,${z}px)`;
         anchor.style.filter = `blur(${(back * 1.15).toFixed(2)}px)`;
         anchor.style.opacity = String((1 - back * 0.2).toFixed(2));
-        anchor.style.zIndex = z > 0 ? '2' : '0';
+        anchor.style.zIndex = isBackHalf ? '0' : '2';
       });
     };
     const tick = time => {
