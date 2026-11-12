@@ -6,6 +6,11 @@
   const inboxStatus = document.querySelector('#inquiry-load-status');
   const inboxCount = document.querySelector('#inquiry-count');
   const refreshInbox = document.querySelector('#refresh-inquiries');
+  const refreshAnalytics = document.querySelector('#refresh-analytics');
+  const analyticsStatus = document.querySelector('#analytics-status');
+  const analyticsVisits = document.querySelector('#analytics-visits');
+  const analyticsRequests = document.querySelector('#analytics-requests');
+  const analyticsDays = document.querySelector('#analytics-days');
   const escape = value => String(value || '').replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]);
   async function loadInquiries() {
     refreshInbox.disabled = true;
@@ -46,7 +51,46 @@
       inboxCount.textContent = 'Sin conexión';
     } finally { refreshInbox.disabled = false; }
   }
+  async function loadAnalytics() {
+    refreshAnalytics.disabled = true;
+    analyticsStatus.textContent = 'Consultando las visitas de los últimos siete días…';
+    try {
+      const response = await fetch('/api/admin/analytics', { credentials: 'same-origin', cache: 'no-store' });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudieron consultar las visitas.');
+      analyticsVisits.textContent = new Intl.NumberFormat('es-DO').format(result.visits || 0);
+      analyticsRequests.textContent = new Intl.NumberFormat('es-DO').format(result.requests || 0);
+      const max = Math.max(1, ...result.days.map(day => Number(day.visits) || 0));
+      analyticsDays.replaceChildren();
+      for (const day of result.days) {
+        const date = new Date(`${day.date}T12:00:00Z`);
+        const item = document.createElement('div');
+        item.className = 'analytics-day';
+        item.setAttribute('aria-label', `${date.toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'short' })}: ${day.visits} visitas`);
+        const track = document.createElement('span');
+        track.className = 'analytics-day-track';
+        const bar = document.createElement('span');
+        bar.className = 'analytics-day-bar';
+        bar.style.height = `${Math.max(4, Math.round((Number(day.visits) / max) * 100))}%`;
+        bar.title = `${new Intl.NumberFormat('es-DO').format(day.visits)} visitas`;
+        track.append(bar);
+        const label = document.createElement('span');
+        label.textContent = date.toLocaleDateString('es-DO', { weekday: 'short' }).replace('.', '');
+        const value = document.createElement('strong');
+        value.textContent = new Intl.NumberFormat('es-DO').format(day.visits || 0);
+        item.append(track, label, value);
+        analyticsDays.append(item);
+      }
+      analyticsStatus.textContent = `Datos del ${new Date(`${result.period.start}T12:00:00Z`).toLocaleDateString('es-DO')} al ${new Date(`${result.period.end}T12:00:00Z`).toLocaleDateString('es-DO')}.`;
+    } catch (error) {
+      analyticsStatus.textContent = error.message;
+      analyticsVisits.textContent = '—';
+      analyticsRequests.textContent = '—';
+      analyticsDays.replaceChildren();
+    } finally { refreshAnalytics.disabled = false; }
+  }
   refreshInbox.addEventListener('click', loadInquiries);
+  refreshAnalytics.addEventListener('click', loadAnalytics);
   fetch('/api/auth/session', { credentials: 'same-origin', cache: 'no-store' })
     .then(response => response.json())
     .then(session => {
@@ -56,6 +100,7 @@
       privateContent.hidden = false;
       user.textContent = `Sesión: ${session.user.login}`;
       loadInquiries();
+      loadAnalytics();
     })
     .catch(() => { user.textContent = 'No se pudo verificar el acceso'; });
   logout.addEventListener('click', async () => {
