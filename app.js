@@ -140,6 +140,7 @@ function setLanguage(next, updateUrl = false) {
   });
   syncAccessibleLanguage();
   try { localStorage.setItem('mandarinita-language', next); } catch (_) { /* Continue without persistence. */ }
+  window.dispatchEvent(new Event('mandarinita-language-change'));
 }
 function syncInternalLanguageLinks() {
   document.querySelectorAll('a[href]').forEach(link => {
@@ -237,16 +238,25 @@ async function loadApprovedEpisodes() {
       })
       .map(({id,key})=>({id,key}));
     if (grid.id === 'home-featured-grid') {
+      let lastHomeSelection = '';
+      let homeLanguageListeners = [];
+      const renderHomeFeatured = () => {
+      for (const [toggle,handler] of homeLanguageListeners) toggle?.removeEventListener('click',handler);
+      homeLanguageListeners = [];
       grid.replaceChildren();
       const pool = [...approved];
       for (let i=pool.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
-      const chosen = pool.slice(0,3);
+      let chosen = pool.slice(0,3);
+      let signature = chosen.map(item=>item.entry.id).sort().join('|');
+      if(pool.length>3&&signature===lastHomeSelection){chosen=pool.slice(3,6);signature=chosen.map(item=>item.entry.id).sort().join('|');}
+      lastHomeSelection=signature;
       for (const {entry,ordered,key} of chosen) {
         const article=document.createElement('article');article.className='work-card catalog-card';
         const button=document.createElement('button');button.className='work-image';button.type='button';button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${catalogTitle(entry,'en')}`);
         const cover=document.createElement('img');const fullResolutionSrc=ordered[0].sourceSrc||ordered[0].src;cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';window.mandarinitaSetEpisodeThumbnail(cover,fullResolutionSrc,'(min-width:1200px) 32vw, (min-width:641px) 40vw, 80vw');button.append(cover);button.addEventListener('click',()=>openReader(key));
         const copy=document.createElement('div');copy.className='work-copy';
         const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
+        const favorite=window.createMandarinitaFavoriteButton?.(entry.id);if(favorite)meta.append(favorite);
         const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
         if(ordered[0].watermarkedSrc)meta.append(markedDownloadLink(ordered[0].watermarkedSrc,`episodio-${entry.episodeNumber}-portada.webp`,language==='es'?'Descargar imagen con firma':'Download credited image'));
         const heading=document.createElement('h3');heading.textContent=catalogTitle(entry);heading.title=heading.textContent;
@@ -254,8 +264,14 @@ async function loadApprovedEpisodes() {
         if (entry.publishedAt) { const date=document.createElement('time');date.className='episode-date';date.dateTime=entry.publishedAt;date.textContent=formatCatalogDate(entry.publishedAt);copy.append(meta,heading,summary,date); } else copy.append(meta,heading,summary);
         const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';action.addEventListener('click',()=>openReader(key));
         copy.append(action);article.append(button,copy);grid.append(article);
-        document.querySelector('.language-toggle')?.addEventListener('click',()=>{if(entry.publishedAt){const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);}share.setAttribute('aria-label',language==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');const download=copy.querySelector('.episode-download');if(download){download.setAttribute('aria-label',language==='en'?'Download credited image':'Descargar imagen con firma');download.title=download.getAttribute('aria-label');}});
+        const languageToggle=document.querySelector('.language-toggle');
+        const syncCardLanguage=()=>{meta.firstChild.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${catalogTitle(entry,'en')}`);cover.alt=ordered[0].alt[language]||ordered[0].alt.es;heading.textContent=catalogTitle(entry);heading.title=heading.textContent;summary.textContent=language==='es'?`${ordered.length} viñetas en orden de lectura.`:`${ordered.length} panels in reading order.`;action.textContent=language==='es'?'Leer episodio':'Read episode';if(entry.publishedAt){const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);}share.setAttribute('aria-label',language==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');const download=copy.querySelector('.episode-download');if(download){download.setAttribute('aria-label',language==='en'?'Download credited image':'Descargar imagen con firma');download.title=download.getAttribute('aria-label');}};
+        languageToggle?.addEventListener('click',syncCardLanguage);homeLanguageListeners.push([languageToggle,syncCardLanguage]);
       }
+      };
+      window.mandarinitaShuffleHomeEpisodes = renderHomeFeatured;
+      document.querySelector('#home-reroll')?.addEventListener('click', renderHomeFeatured);
+      renderHomeFeatured();
     }
     const requestedEpisode = new URLSearchParams(window.location.search).get('episode');
     if (requestedEpisode) {

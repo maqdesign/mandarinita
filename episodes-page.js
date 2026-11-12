@@ -2,12 +2,16 @@ const grid = document.querySelector('#episode-grid');
 const sortSelect = document.querySelector('#episode-sort');
 const loadMoreButton = document.querySelector('#load-more-episodes');
 const status = document.querySelector('#episode-status');
+const shuffleButton = document.querySelector('#shuffle-episodes');
+const shuffleDialog = document.querySelector('#archive-random-confirm');
+const favoritesFilter = document.querySelector('#favorites-filter');
 const PAGE_SIZE = 12;
 let episodes = [];
 let allEpisodes = [];
 let shown = 0;
 let currentEpisodeId = null;
 let selectedCharacter = null;
+let showFavoritesOnly = false;
 const pageLanguage=()=>document.documentElement.dataset.lang==='en'?'en':'es';
 function episodeTitle(entry,lang=pageLanguage()){
   const translated=entry.title?.[lang];
@@ -57,6 +61,7 @@ function approvedEpisodes(catalog) {
 
 function renderBatch() {
   const lang=pageLanguage();
+  if(!episodes.length){status.textContent=showFavoritesOnly?(lang==='en'?'You have no saved favorites on this device yet.':'Todavía no tienes favoritos guardados en este dispositivo.'):(lang==='en'?'There are no episodes to show.':'No hay episodios para mostrar.');loadMoreButton.hidden=true;const total=document.querySelector('#episode-total');if(total)total.textContent=lang==='en'?'0 episodes':'0 episodios';return;}
   const batch = episodes.slice(shown, shown + PAGE_SIZE);
   for (const entry of batch) {
     const article=document.createElement('article');article.className='work-card catalog-card';article.id=`episode-${entry.episodeNumber}`;
@@ -64,7 +69,7 @@ function renderBatch() {
     const link=document.createElement('button');link.className='work-image is-loading';link.type='button';link.setAttribute('aria-label',lang==='en'?`Read episode ${entry.episodeNumber}: ${title}`:`Leer episodio ${entry.episodeNumber}: ${title}`);link.setAttribute('aria-busy','true');link.addEventListener('click',()=>openEpisodeFromArchive(entry.id));
     const cover=document.createElement('img');const original=entry.panels[0].sourceSrc||entry.panels[0].src;cover.dataset.original=entry.panels[0].src;cover.alt=entry.panels[0].alt[lang]||entry.panels[0].alt.es;cover.loading=shown===0?'eager':'lazy';cover.decoding='async';cover.width=480;cover.height=480;if(shown===0)cover.fetchPriority='high';window.mandarinitaSetEpisodeThumbnail(cover,original,'(min-width:3400px) 8.3vw, (min-width:2560px) 12vw, (min-width:1900px) 14vw, (min-width:1440px) 16vw, (min-width:1200px) 21vw, (min-width:981px) 30vw, (min-width:641px) 40vw, 80vw',()=>{link.classList.remove('is-loading');link.setAttribute('aria-busy','false')});cover.addEventListener('load',()=>{link.classList.remove('is-loading');link.setAttribute('aria-busy','false')},{once:true});link.append(cover);
     const copy=document.createElement('div');copy.className='work-copy';const meta=document.createElement('p');meta.className='work-meta';const metaLabel=document.createElement('span');metaLabel.dataset.es=`Episodio ${entry.episodeNumber}`;metaLabel.dataset.en=`Episode ${entry.episodeNumber}`;metaLabel.textContent=metaLabel.dataset[lang];meta.append(metaLabel);
-    const share=document.createElement('button');share.className='episode-share';share.type='button';share.setAttribute('aria-label',lang==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
+    const share=document.createElement('button');share.className='episode-share';share.type='button';share.setAttribute('aria-label',lang==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);const favorite=window.createMandarinitaFavoriteButton?.(entry.id);if(favorite)meta.append(favorite);
     if(entry.panels[0].watermarkedSrc){const download=document.createElement('a');download.className='episode-download';download.href=entry.panels[0].watermarkedSrc;download.download=`episodio-${entry.episodeNumber}-portada.webp`;download.setAttribute('aria-label',lang==='en'?'Download credited cover':'Descargar portada con firma');download.title=download.getAttribute('aria-label');download.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>';meta.append(download);}
     const heading=document.createElement('h2');heading.textContent=title;heading.title=title;heading.dataset.es=entry.title.es;heading.dataset.en=episodeTitle(entry,'en');const summary=document.createElement('p');summary.dataset.es=`${entry.panels.length} viñetas`;summary.dataset.en=`${entry.panels.length} panels`;summary.textContent=summary.dataset[lang];
     const instagramUrl=entry.source?.instagramPermalink;
@@ -88,8 +93,17 @@ function shuffle(items){const shuffled=[...items];for(let i=shuffled.length-1;i>
 function applySort(){
   if(sortSelect.value==='random')episodes=shuffle(allEpisodes);
   else episodes=[...allEpisodes].sort((a,b)=>compareEpisodes(a,b,sortSelect.value==='oldest'?1:-1));
+  if(showFavoritesOnly)episodes=episodes.filter(entry=>window.isMandarinitaFavorite?.(entry.id));
   resetList();
   try{const url=new URL(location.href);url.searchParams.set('sort',sortSelect.value);history.replaceState(history.state,'',url.pathname+url.search+url.hash);}catch(_){}
+}
+function syncFavoritesFilter(){
+  if(!favoritesFilter)return;
+  const ids=window.getMandarinitaFavorites?.()||[];
+  favoritesFilter.setAttribute('aria-pressed',String(showFavoritesOnly));
+  const label=favoritesFilter.querySelector('span');
+  if(label){const en=pageLanguage()==='en';label.textContent=showFavoritesOnly?(en?'Show all episodes':'Ver todos los episodios'):(en?'Show my favorites':'Ver mis favoritos');}
+  const total=favoritesFilter.querySelector('.favorite-total');if(total)total.textContent=ids.length?` · ${ids.length}`:'';
 }
 function resetList() { grid.replaceChildren();shown=0;renderBatch(); }
 function openEpisodeFromArchive(id){currentEpisodeId=id;try{const url=new URL(location.href);url.searchParams.set('episode',id);history.replaceState(history.state,'',url.pathname+url.search+url.hash);}catch(_){}let attempts=0;const open=()=>{if(window.openMandarinitaEpisode?.(id))return true;if(++attempts<20){setTimeout(open,50);return true;}status.textContent=pageLanguage()==='en'?'This episode could not be opened. Please try again.':'No se pudo abrir este episodio. Inténtalo de nuevo.';return false;};return open();}
@@ -113,6 +127,11 @@ window.randomMandarinitaEpisode=()=>{
   return openEpisodeFromArchive(list[Math.floor(Math.random()*list.length)].id);
 };
 sortSelect.addEventListener('change',applySort);
+shuffleButton?.addEventListener('click',()=>shuffleDialog?.showModal());
+shuffleDialog?.querySelector('.archive-random-cancel')?.addEventListener('click',()=>shuffleDialog.close());
+shuffleDialog?.querySelector('.archive-random-accept')?.addEventListener('click',()=>{shuffleDialog.close();sortSelect.value='random';applySort();});
+favoritesFilter?.addEventListener('click',()=>{showFavoritesOnly=!showFavoritesOnly;syncFavoritesFilter();applySort();});
+window.addEventListener('mandarinita-favorites-change',()=>{syncFavoritesFilter();if(showFavoritesOnly)applySort();});
 loadMoreButton.addEventListener('click',renderBatch);
 document.querySelector('.language-toggle')?.addEventListener('click',()=>{
   const lang=pageLanguage();
@@ -136,6 +155,7 @@ Promise.all([window.mandarinitaEpisodesCatalogPromise,fetch('characters.json',{c
   if(['newest','oldest','random'].includes(params.get('sort')))sortSelect.value=params.get('sort');
   if(sortSelect.value==='random')episodes=shuffle(allEpisodes);else episodes=[...allEpisodes].sort((a,b)=>compareEpisodes(a,b,sortSelect.value==='oldest'?1:-1));
   resetList();
+  syncFavoritesFilter();
   syncArchiveLanguage();
   const requested=params.get('episode');if(requested)setTimeout(()=>openEpisodeFromArchive(requested),100);
 }).catch(()=>{status.textContent=pageLanguage()==='en'?'The archive could not load. Please refresh the page.':'No pudimos cargar el archivo. Intenta actualizar la página.';loadMoreButton.hidden=true;});

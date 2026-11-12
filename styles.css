@@ -676,3 +676,21 @@
 .global-search-result{display:grid;grid-template-columns:minmax(58px,auto) minmax(0,1fr);grid-template-rows:auto auto;align-items:baseline}
 .global-search-result strong{min-width:0;overflow-wrap:anywhere}
 .global-search-result-details{grid-column:2;color:var(--muted);font-size:.7rem;line-height:1.4;overflow-wrap:anywhere}
+
+/* Preview: episode discovery and device-local favorites */
+.archive-title-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.archive-title-row h2{margin:0}
+.home-reroll{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);font-size:.77rem;font-weight:700;cursor:pointer}
+.home-reroll svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6}
+.home-reroll:hover,.archive-action-stack .button:hover{border-color:var(--orange);color:var(--orange)}
+.episode-favorite{width:32px;height:32px;flex:0 0 32px;display:inline-grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--green);cursor:pointer}
+.episode-favorite svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+.episode-favorite.is-favorite{background:#fff5df;color:#e36b00;border-color:#efbd84}
+.episode-favorite.is-favorite svg{fill:#ffbe42}
+.archive-action-stack{display:grid;gap:8px;margin-top:14px}
+.archive-action-stack .button{min-height:42px;justify-content:flex-start;padding:0 12px;font-size:.78rem;text-align:left}
+.favorite-total{color:var(--green);font-weight:700}
+.favorites-local-dialog .random-confirm-accept{min-width:120px}
+@media(max-width:640px){.archive-title-row{align-items:flex-start}.home-reroll{min-height:38px}.archive-action-stack{grid-template-columns:1fr 1fr;width:100%}.archive-action-stack .button{justify-content:center;padding-inline:8px;font-size:.72rem}}
+.archive-action-stack .button{width:100%;margin-top:0;border:1px solid var(--line);background:var(--paper)}
+@media(max-width:640px){.archive-action-stack{grid-template-columns:1fr}.archive-action-stack .button{justify-content:flex-start;padding-inline:14px}}

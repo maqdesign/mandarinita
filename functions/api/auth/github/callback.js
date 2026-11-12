@@ -43,11 +43,14 @@ export async function onRequestGet({ request, env }) {
   } });
 
   const sessionCookie = await makeSessionCookie({ login: user.login, email: allowedEmail }, env.SESSION_SECRET);
+  const area = cookie(request, 'mandarinita_oauth_area') === 'admin' ? 'admin' : 'editor';
+  const destination = area === 'admin' ? '/admin.html' : '/editor.html?github=connected';
   const response = new Response(null, { status: 303, headers: {
-    Location: new URL('/editor.html?github=connected', request.url).toString(),
+    Location: new URL(destination, request.url).toString(),
     'Cache-Control': 'no-store'
   } });
   response.headers.append('Set-Cookie', sessionCookie);
   response.headers.append('Set-Cookie', 'mandarinita_oauth_state=; Path=/api/auth/github/callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax');
+  response.headers.append('Set-Cookie', 'mandarinita_oauth_area=; Path=/api/auth/github/callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax');
   return response;
 }

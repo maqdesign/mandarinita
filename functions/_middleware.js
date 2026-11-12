@@ -2,8 +2,8 @@ import { isConfigured, readSession } from './_lib/session.js';
 
 const PRIVATE_EDITOR_PATHS = new Set([
   '/editor', '/editor/', '/editor.html', '/editor.css', '/editor.js',
-  '/editor.webmanifest', '/editor-service-worker.js',
-  '/editor-art-catalog.json'
+  '/editor.webmanifest', '/editor-service-worker.js', '/editor-art-catalog.json',
+  '/admin', '/admin/', '/admin.html', '/admin.css', '/admin.js'
 ]);
 
 function unavailablePage() {
@@ -20,5 +20,6 @@ export async function onRequest({ request, env, next }) {
   const session = await readSession(request, env.SESSION_SECRET);
   const allowedEmail = env.MANDARINITA_SYNC_EMAIL.trim().toLowerCase();
   if (session?.email === allowedEmail) return next();
-  return new Response(null, { status: 302, headers: { Location: '/api/auth/github', 'Cache-Control': 'no-store' } });
+  const target = url.pathname.startsWith('/admin') ? '?area=admin' : '';
+  return new Response(null, { status: 302, headers: { Location: `/api/auth/github${target}`, 'Cache-Control': 'no-store' } });
 }
