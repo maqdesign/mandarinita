@@ -694,3 +694,32 @@
 @media(max-width:640px){.archive-title-row{align-items:flex-start}.home-reroll{min-height:38px}.archive-action-stack{grid-template-columns:1fr 1fr;width:100%}.archive-action-stack .button{justify-content:center;padding-inline:8px;font-size:.72rem}}
 .archive-action-stack .button{width:100%;margin-top:0;border:1px solid var(--line);background:var(--paper)}
 @media(max-width:640px){.archive-action-stack{grid-template-columns:1fr}.archive-action-stack .button{justify-content:flex-start;padding-inline:14px}}
+
+/* Commission inquiries: a clear, quiet route from the portfolio to contact */
+.footer-commission{max-width:560px;margin:0 auto 25px;padding:18px 22px;border:1px solid rgba(255,255,255,.2);border-radius:18px;background:rgba(255,255,255,.055)}
+.footer-commission p{margin:0 0 5px;color:#f4ede8;font:600 1.05rem Fredoka,sans-serif}
+.footer-commission a{color:#ffc15a;font-weight:700;font-size:.83rem}
+.footer-commission a:hover{text-decoration:underline}
+.services-page{min-height:70vh;background:var(--canvas);padding:clamp(46px,8vw,100px) 24px 90px}
+.services-intro{max-width:900px;margin:0 auto 58px}
+.services-intro h1{max-width:850px;margin:0 0 20px;font:600 clamp(2.7rem,7vw,5.7rem)/.98 Fredoka,sans-serif;letter-spacing:-.035em}
+.services-lede{max-width:760px;margin:0 0 20px;color:var(--muted);font-size:clamp(1rem,1.5vw,1.18rem);line-height:1.8}
+.services-byline{font-size:.88rem;color:var(--ink)}
+.services-byline a{color:#bd4f00;font-weight:700}
+.inquiry-section{max-width:900px;margin:auto;display:grid;grid-template-columns:minmax(230px,.72fr) minmax(0,1fr);gap:clamp(28px,6vw,80px);align-items:start;padding:clamp(24px,5vw,48px);border:1px solid var(--line);border-radius:28px;background:var(--paper);box-shadow:0 16px 45px rgba(87,48,14,.06)}
+.inquiry-heading h2{margin:0 0 12px;font:600 clamp(1.8rem,3vw,2.5rem)/1.08 Fredoka,sans-serif}
+.inquiry-heading>p:last-child{color:var(--muted);font-size:.9rem;line-height:1.7}
+.inquiry-form{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.inquiry-form>label:not(.inquiry-consent):not(.inquiry-trap){display:grid;gap:7px;color:var(--ink);font-size:.78rem;font-weight:700}
+.inquiry-form>label:nth-of-type(4){grid-column:1/-1}
+.inquiry-form input:not([type=checkbox]),.inquiry-form textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:12px 13px;font:400 .9rem/1.5 'Work Sans',sans-serif}
+.inquiry-form textarea{resize:vertical;min-height:140px}
+.inquiry-form input:focus,.inquiry-form textarea:focus{outline:3px solid rgba(248,114,9,.2);border-color:var(--orange)}
+.inquiry-consent{grid-column:1/-1;display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start;color:var(--muted);font-size:.75rem;line-height:1.5}
+.inquiry-consent input{width:18px;height:18px;margin:1px 0;accent-color:var(--orange)}
+.inquiry-trap{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.inquiry-submit{min-height:48px;justify-content:space-between;border:0}
+.inquiry-submit:disabled{opacity:.6;cursor:wait}
+.inquiry-status{align-self:center;margin:0;color:var(--green);font-size:.82rem;font-weight:700}
+.inquiry-privacy{grid-column:1/-1;margin:0;color:var(--muted);font-size:.7rem;line-height:1.55}
+@media(max-width:760px){.services-page{padding:48px 20px 64px}.services-intro{margin-bottom:35px}.inquiry-section{grid-template-columns:1fr;padding:22px;gap:22px}.inquiry-form{grid-template-columns:1fr}.inquiry-form>label:nth-of-type(4),.inquiry-consent,.inquiry-privacy{grid-column:auto}.footer-commission{padding:16px}}

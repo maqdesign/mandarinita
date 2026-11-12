@@ -129,7 +129,8 @@ function setLanguage(next, updateUrl = false) {
     home: ['Mandarinita® — Historietas y arte', 'Mandarinita® — Comics and art'],
     episodes: ['Todos los episodios — Mandarinita®', 'All episodes — Mandarinita®'],
     characters: ['Personajes originales — Mandarinita®', 'Original characters — Mandarinita®'],
-    sketches: ['Bocetos — Mandarinita®', 'Sketches — Mandarinita®']
+    sketches: ['Bocetos — Mandarinita®', 'Sketches — Mandarinita®'],
+    services: ['Diseño web para tu proyecto — Mandarinita', 'Web design for your project — Mandarinita']
   };
   document.title = pageTitles[page][next === 'es' ? 0 : 1];
   const description = document.querySelector('meta[name=description]');
@@ -148,7 +149,7 @@ function syncInternalLanguageLinks() {
     try {
       const url = new URL(link.href, window.location.href);
       if (url.origin !== window.location.origin) return;
-      if (!['/', '/index.html', '/personajes', '/personajes.html', '/episodios', '/episodios.html', '/bocetos', '/bocetos.html'].includes(url.pathname)) return;
+      if (!['/', '/index.html', '/personajes', '/personajes.html', '/episodios', '/episodios.html', '/bocetos', '/bocetos.html', '/servicios', '/servicios.html'].includes(url.pathname)) return;
       url.searchParams.set('lang', language);
       link.href = url.pathname + url.search + url.hash;
     } catch (_) { /* Leave invalid or nonstandard links untouched. */ }
