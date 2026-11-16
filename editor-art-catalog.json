@@ -7337,6 +7337,15 @@
           "expression": "eyes narrowed and a sweat mark visible; moustache and leaf clearly identify Mando",
           "componentStatus": "reference-only; toilet, loose paper, sweat mark, text and page frame remain attached"
         }
+      ],
+      "reviewAssets": [
+        {
+          "kind": "object-cutout",
+          "source": "assets/objects/review/toilet-episode-77-3-review.png",
+          "recipe": "docs/art-review/cutouts/build-toilet-77-3-review.py",
+          "status": "review",
+          "note": "Toilet and attached paper holder, isolated from the cyan scene field; a little gray contact shadow remains."
+        }
       ]
     },
     {

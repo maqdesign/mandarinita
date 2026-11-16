@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mandarinita-editor-v26';
+const CACHE_NAME = 'mandarinita-editor-v27';
 const APP_SHELL = [
   '/editor.css',
   '/editor.js',
@@ -30,6 +30,7 @@ const APP_SHELL = [
   '/assets/characters/review/mando-episode-87-2-review.png',
   '/assets/objects/review/paperclip-episode-85-3-review.png',
   '/assets/objects/review/envelope-episode-85-1-review.png',
+  '/assets/objects/review/toilet-episode-77-3-review.png',
   '/assets/backgrounds/review/sky-clouds-episode-85-1.png',
   '/assets/stickers/sticker-pack-01.webp',
   '/assets/stickers/sticker-pack-02.webp',
