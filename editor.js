@@ -20,7 +20,14 @@
     { name: 'Limón Agrio', aliases: ['limón', 'limon agrio'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/limon-agrio-transparent.webp' }] },
     { name: 'Aguacatelo', aliases: ['aguacate'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/aguacatelo-transparent.png' }] },
     { name: 'Morita', aliases: ['mora'], variants: [{ name: 'Silueta monocroma', src: 'assets/characters/morita.png' }] },
-    { name: 'Sra. Pera', aliases: ['pera', 'señora pera'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/sra-pera-transparent.webp' }] }
+    { name: 'Sra. Pera', aliases: ['pera', 'señora pera'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/sra-pera-transparent.webp' }] },
+    { name: 'Champi Ñón', aliases: ['champi', 'champiñón', 'champi ñon', 'hongo'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/champi-transparent.webp' }] },
+    { name: 'Los Cherrys', aliases: ['cherry', 'cherrys', 'cereza', 'cerezas'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/cherrys-transparent.webp' }] },
+    { name: 'Don Guineo', aliases: ['guineo', 'banana', 'banano'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/don-guineo-transparent.webp' }] },
+    { name: 'Don Pepino', aliases: ['pepino'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/don-pepino-transparent.webp' }] },
+    { name: 'Don Manzanillo', aliases: ['manzanillo', 'manzana'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/manzanillo-transparent.webp' }] },
+    { name: 'Sandy la Sandía', aliases: ['sandy', 'sandía', 'sandia'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/sandy-transparent.webp' }] },
+    { name: 'Superfreso', aliases: ['superfreso', 'freso', 'fresa'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/superfreso-transparent.webp' }] }
   ].map(x => ({ ...x, category: 'character', approvedCutout: true }));
   const stickers = [
     { name: 'Sticker frutal · 02', aliases: ['sticker 2', 'pack 2'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-02.webp' }], category: 'sticker', approvedCutout: true },
@@ -30,23 +37,12 @@
     { name: 'Sticker frutal · 07', aliases: ['sticker 7', 'pack 7'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-07.webp' }], category: 'sticker', approvedCutout: true }
   ];
   const objects = [
-    { name: 'Objeto · sobre', aliases: ['sobre', 'carta'], src: 'assets/art-envelope-2022.webp', category: 'object', approvedCutout: false, note: 'Ilustración completa, no es un recorte independiente.' },
-    { name: 'Objeto · clip', aliases: ['clip', 'paperclip'], src: 'assets/art-paperclip-2022.webp', category: 'object', approvedCutout: false, note: 'Ilustración completa, no es un recorte independiente.' }
+    { name: 'Sobre personificado · episodio 85.1', aliases: ['sobre', 'carta', 'episodio 85'], src: 'assets/objects/review/envelope-episode-85-1-review.png', category: 'object', approvedCutout: true },
+    { name: 'Clip de papel · episodio 85.3', aliases: ['clip', 'paperclip', 'sujetapapeles', 'episodio 85'], src: 'assets/objects/review/paperclip-episode-85-3-review.png', category: 'object', approvedCutout: true },
+    { name: 'Inodoro y portarrollos · episodio 77.3', aliases: ['inodoro', 'baño', 'toilet', 'rollo de papel', 'episodio 77'], src: 'assets/objects/review/toilet-episode-77-3-review.png', category: 'object', approvedCutout: true }
   ];
   const backgrounds = [
-    { name: 'Cielo y nubes · episodio 85.1', aliases: ['cielo', 'nubes', 'fondo celeste', 'episodio 85'], src: 'assets/backgrounds/review/sky-clouds-episode-85-1.png', source: 'assets/episodes/ep-085-lo-que-siempre-te-pasa/85.1.png', category: 'background', approvedCutout: false, reviewOnly: true, reviewKind: 'background-extract', note: 'Muestra recortada de una zona despejada del fondo original; mantener su proporción panorámica.' },
-    { name: 'Sillón azul · episodio 9.1', aliases: ['mueble azul', 'sillon', 'sillón', 'sala', 'episodio 9'], src: 'assets/episodes/ep-009-la-cena/09.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, televisor, mesa, sombras y fondo siguen unidos.' },
-    { name: 'Sofá azul · episodio 9.2', aliases: ['mueble azul', 'sofa', 'sofá', 'sala', 'episodio 9'], src: 'assets/episodes/ep-009-la-cena/09.2.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globos, sofá y sombras siguen unidos.' },
-    { name: 'Escena frente al televisor · episodio 19', aliases: ['televisor', 'tv', 'episodio 19'], src: 'assets/episodes/ep-019-noche-de-peliculas/19.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globo, televisor y forma azul en primer plano siguen unidos.' },
-    { name: 'Sofá azul · episodio 51', aliases: ['mueble azul', 'sofa', 'sofá', 'episodio 51'], src: 'assets/episodes/ep-051-tienes-hambre/51.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; personajes, globos, sofá y sombras siguen unidos.' },
-    { name: 'Olla y fondo azul · episodio 52', aliases: ['olla', 'fondo azul', 'episodio 52'], src: 'assets/episodes/ep-052-fruitflix/52.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; olla, personajes, globos, fondo azul y marca siguen unidos.' },
-    { name: 'Fila de supermercado · episodio 37', aliases: ['supermercado', 'carrito', 'fila', 'compra', 'episodio 37'], src: 'assets/episodes/ep-037-distanciamiento-social/37.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; fila, carrito, personajes y separador están aplanados en la misma lámina.' },
-    { name: 'Cocina y fregadero · episodio 22', aliases: ['cocina', 'fregadero', 'gabinete', 'platos', 'episodio 22'], src: 'assets/episodes/ep-022-el-fregao/22.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; gabinete, fregadero, platos, personajes y bocetos siguen unidos.' },
-    { name: 'Calle con autobús y lluvia · episodio 14', aliases: ['calle', 'autobús', 'bus', 'lluvia', 'episodio 14'], src: 'assets/episodes/ep-014-un-dia-malo/14.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; calle, lluvia, personajes y autobús siguen unidos.' },
-    { name: 'Tienda y muebles · episodio 28', aliases: ['tienda', 'fachada', 'sofá amarillo', 'cajas', 'episodio 28'], src: 'assets/episodes/ep-028-trukea/28.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; fachada, interiores, personajes, sofá y cajas siguen unidos.' },
-    { name: 'Dormitorio y cama · episodio 5', aliases: ['dormitorio', 'cama', 'sueño', 'descanso', 'episodio 5'], src: 'assets/episodes/ep-005-cinco-minutos-mas/05.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; cama, personaje y detalles del fondo siguen unidos.' },
-    { name: 'Escritorio y silla giratoria · episodio 35', aliases: ['escritorio', 'silla', 'oficina', 'cucaracha', 'episodio 35'], src: 'assets/episodes/ep-035-la-cucaracha/35.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; escritorio, silla, personajes y matamoscas siguen unidos.' },
-    { name: 'Trabajo remoto · episodio 44', aliases: ['trabajo', 'laptop', 'computadora', 'escritorio', 'episodio 44'], src: 'assets/episodes/ep-044-el-teletrabajo/44.1.png', category: 'background', approvedCutout: false, note: 'Referencia de escena completa; laptop, escritorio, silla, personaje y objetos siguen unidos.' }
+    { name: 'Cielo y nubes · episodio 85.1', aliases: ['cielo', 'nubes', 'fondo celeste', 'episodio 85'], src: 'assets/backgrounds/review/sky-clouds-episode-85-1.png', category: 'background', approvedCutout: true }
   ];
   const reviewCharacterCutouts = [
     { name: 'Mando · expresión de calor · episodio 87.1', aliases: ['mando', 'mandarino', 'episodio 87', 'calor'], src: 'assets/characters/review/mando-episode-87-1-review.png', source: 'assets/episodes/ep-087-eso-es-mental-decian-nada-facil-la-temperatura-en-la-cap/87.1.png', note: 'Pose completa recortada de una etapa anterior del dibujo. Conserva el óvalo amarillo de suelo del panel; revisar si debe permanecer.' },
@@ -85,7 +81,7 @@
     { name: 'Azul cielo', color: '#87DEFA', source: 'Episodio 52 · 52.1' },
     { name: 'Azul claro', color: '#93CCFF', source: 'Episodio 70 · 70.1' }
   ];
-  const resources = [...people, ...stickers, ...objects, ...backgrounds, ...reviewCharacterCutouts, ...reviewObjectCutouts, ...stickerReviewAssets];
+  const resources = [...people, ...stickers, ...objects, ...backgrounds].filter(resource => resource.approvedCutout);
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
   let state = null;

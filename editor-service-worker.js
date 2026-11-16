@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mandarinita-editor-v27';
+const CACHE_NAME = 'mandarinita-editor-v28';
 const APP_SHELL = [
   '/editor.css',
   '/editor.js',
@@ -22,12 +22,6 @@ const APP_SHELL = [
   '/assets/characters/manzanillo-transparent.webp',
   '/assets/characters/sandy-transparent.webp',
   '/assets/characters/superfreso-transparent.webp',
-  '/assets/characters/review/morita-episode-59-1-review.png',
-  '/assets/characters/review/morita-episode-59-2-review.png',
-  '/assets/characters/review/morita-episode-59-3-review.png',
-  '/assets/characters/review/morita-episode-59-4-review.png',
-  '/assets/characters/review/mando-episode-87-1-review.png',
-  '/assets/characters/review/mando-episode-87-2-review.png',
   '/assets/objects/review/paperclip-episode-85-3-review.png',
   '/assets/objects/review/envelope-episode-85-1-review.png',
   '/assets/objects/review/toilet-episode-77-3-review.png',
@@ -38,12 +32,7 @@ const APP_SHELL = [
   '/assets/stickers/sticker-pack-04.webp',
   '/assets/stickers/sticker-pack-05.webp',
   '/assets/stickers/sticker-pack-06.webp',
-  '/assets/stickers/sticker-pack-07.webp',
-  '/docs/art-review/cutouts/mando-episodio-01-1-borrador.png',
-  '/docs/art-review/cutouts/mandy-episodio-01-1-borrador.png',
-  '/docs/art-review/cutouts/mando-episodio-01-3-borrador.png',
-  '/docs/art-review/cutouts/mando-episodio-14-1-borrador.png',
-  '/docs/art-review/cutouts/greg-episodio-14-1-borrador.png'
+  '/assets/stickers/sticker-pack-07.webp'
 ];
 
 self.addEventListener('install', event => {

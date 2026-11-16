@@ -7338,13 +7338,14 @@
           "componentStatus": "reference-only; toilet, loose paper, sweat mark, text and page frame remain attached"
         }
       ],
-      "reviewAssets": [
+      "editorReusableAssets": [
         {
           "kind": "object-cutout",
           "source": "assets/objects/review/toilet-episode-77-3-review.png",
           "recipe": "docs/art-review/cutouts/build-toilet-77-3-review.py",
-          "status": "review",
-          "note": "Toilet and attached paper holder, isolated from the cyan scene field; a little gray contact shadow remains."
+          "status": "insertable",
+          "note": "Reusable object cutout made from published source pixels; faint contact shadow retained.",
+          "editorCutoutApproved": true
         }
       ]
     },
@@ -8434,21 +8435,23 @@
       "contactSheet": "docs/art-review/contact-sheets/sheet-16.webp",
       "contactSheetTile": 5,
       "visualTagsStatus": "provisional-description",
-      "reviewBackgrounds": [
-        {
-          "source": "assets/backgrounds/review/sky-clouds-episode-85-1.png",
-          "recipe": "docs/art-review/cutouts/build-episode-85-sky-background.py",
-          "status": "review",
-          "note": "Clean crop of the sky and cloud region, with no character pixels."
-        }
-      ],
-      "reviewAssets": [
+      "editorReusableAssets": [
         {
           "kind": "object-cutout",
           "source": "assets/objects/review/envelope-episode-85-1-review.png",
           "recipe": "docs/art-review/cutouts/build-envelope-85-1-review.py",
-          "status": "review",
-          "note": "Personified envelope with face and limbs; library category remains undecided."
+          "status": "insertable",
+          "note": "Personified envelope cutout from published source pixels; usable as an object component.",
+          "editorCutoutApproved": true
+        }
+      ],
+      "editorReusableBackgrounds": [
+        {
+          "source": "assets/backgrounds/review/sky-clouds-episode-85-1.png",
+          "recipe": "docs/art-review/cutouts/build-episode-85-sky-background.py",
+          "status": "insertable",
+          "note": "Clean sky and cloud crop from the published episode; reusable as a background component.",
+          "editorCutoutApproved": true
         }
       ]
     },
@@ -8493,13 +8496,14 @@
       "contactSheet": "docs/art-review/contact-sheets/sheet-16.webp",
       "contactSheetTile": 7,
       "visualTagsStatus": "provisional-description",
-      "reviewAssets": [
+      "editorReusableAssets": [
         {
           "kind": "object-cutout",
           "source": "assets/objects/review/paperclip-episode-85-3-review.png",
           "recipe": "docs/art-review/cutouts/build-paperclip-85-3-review.py",
-          "status": "review",
-          "note": "Grayscale paperclip personification; its identity/category is not decided."
+          "status": "insertable",
+          "note": "Paperclip cutout from published source pixels; grayscale line art preserved.",
+          "editorCutoutApproved": true
         }
       ]
     },

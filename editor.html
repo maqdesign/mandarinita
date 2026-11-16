@@ -62,13 +62,13 @@
         <section id="components-panel" class="left-tab-panel" role="tabpanel" aria-labelledby="tab-components">
           <label class="search"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg><input id="asset-search" type="search" placeholder="Personaje, alias u objeto" aria-label="Buscar recursos"></label>
           <nav class="filters" aria-label="Filtrar recursos">
-            <button class="active" data-filter="all">Todo</button><button data-filter="character">Personajes</button><button data-filter="object">Objetos</button><button data-filter="background">Fondos</button><button data-filter="sticker">Stickers</button><button data-filter="reference">Referencias</button>
+            <button class="active" data-filter="all">Todo</button><button data-filter="character">Personajes</button><button data-filter="object">Objetos</button><button data-filter="background">Fondos</button><button data-filter="sticker">Stickers</button>
           </nav>
           <label id="reference-character-filter" class="reference-character-filter" hidden><span>Personaje</span><select id="reference-character-select" aria-label="Filtrar referencias por personaje"><option value="">Todos los personajes</option></select></label>
           <div id="asset-grid" class="asset-grid"></div>
-          <div id="background-note" class="library-note" hidden>Las muestras de color se aplican a la viñeta activa. Las escenas de episodios que aparecen más abajo siguen siendo referencias completas, no fondos recortados.</div>
-          <div id="component-note" class="library-note">Los recortes con fondo se muestran como referencia; solo los componentes aislados se colocan directamente.</div>
-          <div id="reference-note" class="library-note" hidden>El atlas incluye paneles completos y recursos originales de la página de personajes. Las imágenes permanecen íntegras y no se insertan como componentes.</div>
+          <div id="background-note" class="library-note" hidden>Elige un fondo transparente o un color para aplicarlo a la viñeta activa.</div>
+          <div id="component-note" class="library-note">Los componentes que aparecen aquí se pueden colocar directamente en el lienzo.</div>
+          <div id="reference-note" class="library-note" hidden></div>
         </section>
         <section id="layers-panel" class="left-tab-panel layers-tab-panel" role="tabpanel" aria-labelledby="tab-layers" hidden>
           <div id="offstage-panel" class="offstage-panel" hidden><div class="layer-title"><span class="eyebrow">FUERA DEL LIENZO</span><span id="offstage-count">0</span></div><div id="offstage-list"></div></div>
