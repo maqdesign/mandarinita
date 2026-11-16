@@ -16,7 +16,10 @@
     { name: 'Mandy Mandarinita', aliases: ['mandy', 'mandarinita'], variants: [
       { name: 'Pose completa aislada', src: 'assets/characters/mandy-transparent.webp' }
     ] },
-    { name: 'Greg el Zanahorio', aliases: ['greg', 'zanahorio', 'zanahoria'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/greg-transparent.webp' }] },
+    { name: 'Greg el Zanahorio', aliases: ['greg', 'zanahorio', 'zanahoria'], variants: [
+      { name: 'Pose del catálogo', src: 'assets/characters/greg-transparent.webp' },
+      { name: 'De pie · episodio 14.1', src: 'assets/characters/greg-episodio-14-1.png' }
+    ] },
     { name: 'Limón Agrio', aliases: ['limón', 'limon agrio'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/limon-agrio-transparent.webp' }] },
     { name: 'Aguacatelo', aliases: ['aguacate'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/aguacatelo-transparent.png' }] },
     { name: 'Morita', aliases: ['mora'], variants: [

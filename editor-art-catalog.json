@@ -1393,7 +1393,7 @@
           "evidence": "Carrot body, leafy top and turquoise glasses match Greg character portrait.",
           "pose": "standing at right, holding a phone",
           "expression": "neutral behind turquoise glasses",
-          "componentStatus": "reference-only; flattened background, text and scene effects remain attached"
+          "componentStatus": "insertable character variant available in the editor; published source panel unchanged"
         }
       ],
       "reviewCutouts": [
@@ -1402,12 +1402,18 @@
           "source": "docs/art-review/cutouts/mando-episodio-14-1-borrador.png",
           "recipe": "docs/art-review/cutouts/build-mando-review-cutout.sh",
           "status": "review"
-        },
+        }
+      ],
+      "editorReusableAssets": [
         {
+          "kind": "character-pose",
           "characterId": "greg",
-          "source": "docs/art-review/cutouts/greg-episodio-14-1-borrador.png",
+          "source": "assets/characters/greg-episodio-14-1.png",
+          "sourcePanel": "assets/episodes/ep-014-un-dia-malo/14.1.png",
           "recipe": "docs/art-review/cutouts/build-greg-review-cutout.sh",
-          "status": "review"
+          "status": "insertable",
+          "editorCutoutApproved": true,
+          "note": "Pose de pie aislada de la lámina publicada; conserva los píxeles originales y el objeto azul que lleva Greg."
         }
       ]
     },
@@ -10875,7 +10881,15 @@
       "candidateSourceCertainty": "medium",
       "candidateSourceEvidence": "Carrot form, leafy top and turquoise glasses match the character. These are candidate reference panels, not proof that the transparent crop came from one of them.",
       "stylePeriod": null,
-      "styleReference": true
+      "styleReference": true,
+      "editorVariants": [
+        {
+          "source": "assets/characters/greg-episodio-14-1.png",
+          "sourcePanel": "assets/episodes/ep-014-un-dia-malo/14.1.png",
+          "status": "insertable",
+          "editorCutoutApproved": true
+        }
+      ]
     },
     {
       "source": "assets/characters/limon-agrio-transparent.webp",

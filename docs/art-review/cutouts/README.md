@@ -2,7 +2,7 @@
 
 Este archivo conserva procesos y recortes de estudio. Algunos recursos concretos ya están disponibles en la biblioteca del editor; su ficha de episodio indica cuáles son insertables. Este estado de uso interno no publica ni modifica los episodios.
 
-Hay cinco recursos en revisión: Mando y Mandy en el episodio 1.1, otra pose de Mando en el 1.3, y Mando y Greg en el episodio 14.1. La [hoja de contacto](review-contact-sheet.webp) los compara juntos sobre un fondo claro. Se eligieron escenas donde los contornos son reconocibles y no se tuvo que inventar anatomía oculta.
+Siguen en revisión cuatro recortes: Mando y Mandy en el episodio 1.1, otra pose de Mando en el 1.3 y Mando en el 14.1. La [hoja de contacto](review-contact-sheet.webp) conserva el inventario original sobre un fondo claro. Se eligieron escenas donde los contornos son reconocibles y no se tuvo que inventar anatomía oculta.
 
 ## Mando · episodio 1.1
 
@@ -24,7 +24,7 @@ Los dos recortes usan el panel original `assets/episodes/ep-014-un-dia-malo/14.1
 
 ## Greg
 
-`greg-episodio-14-1-borrador.png` conserva la zanahoria, las gafas turquesa, la hoja, sus extremidades y el elemento azul que lleva al costado. Se excluyó la forma blanca contigua que pertenece a otra figura. Las puntas de los pies se retocaron a partir de las formas visibles en el original para separar la sombra. El proceso está en [`build-greg-review-cutout.sh`](build-greg-review-cutout.sh).
+`greg-episodio-14-1-borrador.png` conserva la zanahoria, las gafas turquesa, la hoja, sus extremidades y el elemento azul que lleva al costado. Se excluyó la forma blanca contigua que pertenece a otra figura. Las puntas de los pies se retocaron a partir de las formas visibles en el original para separar la sombra. Ya se puede elegir como variante de Greg en el editor. El proceso está en [`build-greg-review-cutout.sh`](build-greg-review-cutout.sh).
 
 ## Morita · episodio 59
 
@@ -46,7 +46,7 @@ Las propuestas `sofa-azul-episodio-51-1-borrador*.png` son estudios fallidos, no
 
 La primera alternativa, `sofa-azul-episodio-09-2-borrador.png`, se conserva como versión anterior; tiene una forma más recta y una paleta menos saturada, y queda supersedida por la propuesta del episodio 51.
 
-Los demás recortes de personaje de revisión y el estudio rechazado del sofá no aparecen como tarjetas insertables. Los del episodio 14 incluyen retoques localizados en las puntas inferiores; los del episodio 1 conservan sombras; Morita 59.1 tiene algo de sombra de contacto y 59.2 conserva el efecto turquesa; Mando 87.1 y 87.2 conservan sus marcas amarillas de suelo. No se presentan como componentes utilizables. La hoja de contacto se regenera con [`build-review-contact-sheet.sh`](build-review-contact-sheet.sh).
+Los demás recortes de personaje de revisión y el estudio rechazado del sofá no aparecen como tarjetas insertables. Mando 14.1 conserva retoques localizados en las puntas inferiores; los del episodio 1 conservan sombras; Morita 59.1 tiene algo de sombra de contacto y 59.2 conserva el efecto turquesa; Mando 87.1 y 87.2 conservan sus marcas amarillas de suelo. No se presentan como componentes utilizables. La hoja de contacto se regenera con [`build-review-contact-sheet.sh`](build-review-contact-sheet.sh).
 
 El estado **insertable** solo indica que el recorte puede usarse dentro de un borrador del editor. No publica el episodio, no cambia su estado en el catálogo editorial y no convierte una imagen fuente en una nueva ilustración canónica.
 
