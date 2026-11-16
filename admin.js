@@ -11,6 +11,15 @@
   const analyticsVisits = document.querySelector('#analytics-visits');
   const analyticsRequests = document.querySelector('#analytics-requests');
   const analyticsDays = document.querySelector('#analytics-days');
+  const siteContentForm = document.querySelector('#site-content-form');
+  const siteContentStatus = document.querySelector('#site-content-status');
+  const siteContentFields = [
+    ['hero.eyebrow', 'hero_eyebrow_es', 'hero_eyebrow_en'],
+    ['hero.title.first', 'hero_title_first_es', 'hero_title_first_en'],
+    ['hero.title.second', 'hero_title_second_es', 'hero_title_second_en'],
+    ['hero.description', 'hero_description_es', 'hero_description_en'],
+    ['hero.cta', 'hero_cta_es', 'hero_cta_en']
+  ];
   const escape = value => String(value || '').replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]);
   async function loadInquiries() {
     refreshInbox.disabled = true;
@@ -89,6 +98,39 @@
       analyticsDays.replaceChildren();
     } finally { refreshAnalytics.disabled = false; }
   }
+  async function loadSiteContent() {
+    siteContentStatus.textContent = 'Cargando los textos guardados…';
+    try {
+      const response = await fetch('/api/admin/site-content', { credentials: 'same-origin', cache: 'no-store' });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudieron cargar los textos.');
+      for (const [key, esName, enName] of siteContentFields) {
+        const value = result.content?.[key];
+        if (value) {
+          siteContentForm.elements[esName].value = value.es;
+          siteContentForm.elements[enName].value = value.en;
+        }
+      }
+      siteContentStatus.textContent = result.updatedAt ? `Última publicación: ${new Date(result.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}.` : 'Aún no hay cambios guardados. Se muestran los textos originales.';
+    } catch (error) { siteContentStatus.textContent = error.message; }
+  }
+  siteContentForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const submit = siteContentForm.querySelector('[type="submit"]');
+    submit.disabled = true;
+    siteContentStatus.textContent = 'Guardando y publicando en Preview…';
+    const content = Object.fromEntries(siteContentFields.map(([key, esName, enName]) => [key, {
+      es: siteContentForm.elements[esName].value.trim(),
+      en: siteContentForm.elements[enName].value.trim()
+    }]));
+    try {
+      const response = await fetch('/api/admin/site-content', { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudieron publicar los textos.');
+      siteContentStatus.textContent = 'Listo: los textos ya están publicados en Preview. Recarga la portada para verlos.';
+    } catch (error) { siteContentStatus.textContent = error.message; }
+    finally { submit.disabled = false; }
+  });
   refreshInbox.addEventListener('click', loadInquiries);
   refreshAnalytics.addEventListener('click', loadAnalytics);
   fetch('/api/auth/session', { credentials: 'same-origin', cache: 'no-store' })
@@ -99,6 +141,7 @@
       document.body.classList.remove('admin-locked');
       privateContent.hidden = false;
       user.textContent = `Sesión: ${session.user.login}`;
+      loadSiteContent();
       loadInquiries();
       loadAnalytics();
     })
