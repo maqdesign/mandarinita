@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8ec">
+  <meta name="description" content="Arte conmemorativo por los siete años de Mandarinita.">
+  <title>Mandarinita® — 7 años</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css?v=20261111-hero-orbit-8">
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--ink, #30221b); color: var(--ink, #30221b); font-family: "Work Sans", sans-serif; }
+    .anniversary-stage { min-height: 100svh; display: grid; place-items: center; padding: 24px; }
+    .anniversary-poster {
+      container-type: inline-size;
+      width: min(100%, 1080px);
+      aspect-ratio: 3 / 4;
+      padding: 5.1cqw 6.2cqw 4.2cqw;
+      background: var(--canvas, #fff8ec);
+      display: grid;
+      grid-template-rows: 11% 15% 7% minmax(0, 1fr) 8% 7%;
+      gap: 1.65cqw;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+    .anniversary-poster::before, .anniversary-poster::after {
+      content: ""; position: absolute; z-index: -1; border-radius: 50%;
+      width: 3.1cqw; aspect-ratio: 1; opacity: .92;
+    }
+    .anniversary-poster::before { background: var(--yellow, #fac421); top: 24%; left: 2.5%; }
+    .anniversary-poster::after { background: var(--purple, #68387d); right: 2.8%; bottom: 20%; }
+    .anniversary-logo { display: grid; place-items: center; }
+    .anniversary-logo img { width: min(38cqw, 405px); height: 100%; object-fit: contain; }
+    .anniversary-heading { display: grid; align-content: center; text-align: center; }
+    .anniversary-heading h1 {
+      color: var(--orange, #f87209);
+      font: 700 12.2cqw/.93 "Fredoka", sans-serif;
+      letter-spacing: -.045em;
+      margin: 0;
+    }
+    .anniversary-heading p {
+      margin: 1.1cqw 0 0;
+      font-size: 3.4cqw;
+      line-height: 1.2;
+      font-weight: 600;
+      color: var(--green, #607d38);
+    }
+    .anniversary-intro {
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; color: var(--muted, #675b52);
+      font-size: 2.55cqw; font-weight: 500; margin: 0;
+    }
+    .episode-grid { min-height: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 2.1cqw; }
+    .episode-card {
+      min-width: 0; min-height: 0; display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      overflow: hidden; border-radius: 2.3cqw;
+      background: var(--paper, #fff); border: 1px solid var(--line, #eadccb);
+      box-shadow: 0 1.2cqw 2.8cqw rgba(48,34,27,.08);
+      color: inherit; text-decoration: none;
+    }
+    .episode-card:nth-child(1) .episode-art { background: #f9df87; }
+    .episode-card:nth-child(2) .episode-art { background: #dde8cb; }
+    .episode-card:nth-child(3) .episode-art { background: #e7d9ed; }
+    .episode-card:nth-child(4) .episode-art { background: #f0d8d1; }
+    .episode-art { min-height: 0; padding: 1.5cqw; display: grid; place-items: center; }
+    .episode-art img { width: 100%; height: 100%; object-fit: contain; }
+    .episode-title { padding: 1.4cqw 1.8cqw 1.6cqw; text-align: center; }
+    .episode-number { margin: 0 0 .45cqw; color: var(--green, #607d38); font-size: 1.65cqw; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .episode-name { margin: 0; font: 600 2.55cqw/1.1 "Fredoka", sans-serif; }
+    .anniversary-thanks {
+      display: grid; align-content: center; text-align: center;
+      background: var(--orange, #f87209); color: white; border-radius: 999px;
+      font: 600 4.2cqw/1.05 "Fredoka", sans-serif; padding: 0 2cqw;
+    }
+    .anniversary-footer { display: grid; align-content: center; justify-items: center; text-align: center; gap: .8cqw; }
+    .anniversary-question { margin: 0; font-size: 2.65cqw; font-weight: 600; }
+    .anniversary-date { margin: 0; color: var(--muted, #675b52); font-size: 1.8cqw; font-weight: 600; letter-spacing: .04em; }
+    @media (max-width: 520px) {
+      .anniversary-stage { padding: 0; }
+      .anniversary-poster { width: 100vw; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .episode-card { transition: transform .18s ease, box-shadow .18s ease; }
+      .episode-card:hover { transform: translateY(-2px); box-shadow: 0 1.6cqw 3.2cqw rgba(48,34,27,.12); }
+    }
+  </style>
+</head>
+<body>
+  <main class="anniversary-stage">
+    <article class="anniversary-poster" aria-label="Publicación de Instagram por los siete años de Mandarinita">
+      <div class="anniversary-logo">
+        <img src="/assets/mandarinita-logo.svg" alt="Mandarinita®" width="405" height="151">
+      </div>
+      <header class="anniversary-heading">
+        <h1>¡7 años!</h1>
+        <p>de historias, risas y mucha pulpa</p>
+      </header>
+      <p class="anniversary-intro">Siete años contando la vida cotidiana con sabor dominicano.</p>
+      <section class="episode-grid" aria-label="Episodios destacados del archivo">
+        <a class="episode-card" href="/episodios.html#episode-1" aria-label="Ver episodio 1: La mosca">
+          <div class="episode-art"><img src="/assets/watermarked/episodes/ep-001-la-mosca/01.1.webp" alt="Viñeta original del episodio La mosca" loading="eager"></div>
+          <div class="episode-title"><p class="episode-number">Episodio 1</p><h2 class="episode-name">La mosca</h2></div>
+        </a>
+        <a class="episode-card" href="/episodios.html#episode-51" aria-label="Ver episodio 51: ¿Tienes hambre?">
+          <div class="episode-art"><img src="/assets/watermarked/episodes/ep-051-tienes-hambre/51.1.webp" alt="Viñeta original del episodio ¿Tienes hambre?" loading="eager"></div>
+          <div class="episode-title"><p class="episode-number">Episodio 51</p><h2 class="episode-name">¿Tienes hambre?</h2></div>
+        </a>
+        <a class="episode-card" href="/episodios.html#episode-52" aria-label="Ver episodio 52: Fruitflix">
+          <div class="episode-art"><img src="/assets/watermarked/episodes/ep-052-fruitflix/52.1.webp" alt="Viñeta original del episodio Fruitflix" loading="eager"></div>
+          <div class="episode-title"><p class="episode-number">Episodio 52</p><h2 class="episode-name">Fruitflix</h2></div>
+        </a>
+        <a class="episode-card" href="/episodios.html#episode-72" aria-label="Ver episodio 72: Acurrucados">
+          <div class="episode-art"><img src="/assets/watermarked/episodes/ep-072-acurrucados/72.1.webp" alt="Viñeta original del episodio Acurrucados" loading="eager"></div>
+          <div class="episode-title"><p class="episode-number">Episodio 72</p><h2 class="episode-name">Acurrucados</h2></div>
+        </a>
+      </section>
+      <div class="anniversary-thanks">¡Gracias por acompañarnos!</div>
+      <footer class="anniversary-footer">
+        <p class="anniversary-question">¿Qué episodio recuerdas más?</p>
+        <p class="anniversary-date">Mandarinita® · 16 de noviembre de 2026</p>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>
