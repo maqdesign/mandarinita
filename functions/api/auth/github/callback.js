@@ -18,14 +18,46 @@ export async function onRequestGet({ request, env }) {
   const code = url.searchParams.get('code');
   if (!code) return json({ error: 'GitHub no devolvió un código de autorización.' }, 400);
   const callback = new URL('/api/auth/github/callback', request.url).toString();
-  const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
-    method: 'POST',
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code, redirect_uri: callback })
-  });
-  if (!tokenResponse.ok) return json({ error: 'GitHub no pudo completar la autorización.' }, 502);
-  const token = await tokenResponse.json();
-  if (!token.access_token) return json({ error: 'GitHub rechazó la autorización.' }, 401);
+  let tokenResponse;
+  try {
+    tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code, redirect_uri: callback })
+    });
+  } catch (error) {
+    console.error('GitHub OAuth token exchange request failed', { name: error?.name || 'Error' });
+    return json({ error: 'No pudimos conectar con GitHub para completar el acceso. Vuelve a intentarlo.' }, 502);
+  }
+
+  const token = await tokenResponse.json().catch(() => ({}));
+  if (!tokenResponse.ok) {
+    console.error('GitHub OAuth token exchange returned an HTTP error', {
+      status: tokenResponse.status,
+      error: typeof token.error === 'string' ? token.error : 'unknown',
+      requestId: tokenResponse.headers.get('x-github-request-id') || undefined
+    });
+    if (token.error === 'incorrect_client_credentials') {
+      return json({ error: 'GitHub no aceptó las credenciales de Preview. Confirma que el Client ID y el secreto pertenezcan a la misma OAuth App.' }, 502);
+    }
+    if (token.error === 'bad_verification_code') {
+      return json({ error: 'El código de autorización venció o ya se usó. Inicia sesión de nuevo desde el panel.' }, 400);
+    }
+    return json({ error: `GitHub respondió con un error HTTP ${tokenResponse.status} al completar el acceso. Inicia sesión otra vez; si se repite, revisaremos la configuración de Preview.` }, 502);
+  }
+  if (!token.access_token) {
+    console.error('GitHub OAuth token exchange did not return an access token', {
+      error: typeof token.error === 'string' ? token.error : 'unknown',
+      requestId: tokenResponse.headers.get('x-github-request-id') || undefined
+    });
+    if (token.error === 'incorrect_client_credentials') {
+      return json({ error: 'GitHub no aceptó las credenciales de Preview. Confirma que el Client ID y el secreto pertenezcan a la misma OAuth App.' }, 502);
+    }
+    if (token.error === 'bad_verification_code') {
+      return json({ error: 'El código de autorización venció o ya se usó. Inicia sesión de nuevo desde el panel.' }, 400);
+    }
+    return json({ error: 'GitHub no devolvió un token de acceso. Inicia sesión de nuevo desde el panel.' }, 502);
+  }
 
   const headers = { Authorization: `Bearer ${token.access_token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'Mandarinita-Editor' };
   const [userResponse, emailsResponse] = await Promise.all([
