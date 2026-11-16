@@ -8432,6 +8432,15 @@
           "status": "review",
           "note": "Clean crop of the sky and cloud region, with no character pixels."
         }
+      ],
+      "reviewAssets": [
+        {
+          "kind": "object-cutout",
+          "source": "assets/objects/review/envelope-episode-85-1-review.png",
+          "recipe": "docs/art-review/cutouts/build-envelope-85-1-review.py",
+          "status": "review",
+          "note": "Personified envelope with face and limbs; library category remains undecided."
+        }
       ]
     },
     {
@@ -8737,6 +8746,15 @@
           "pose": "body flattened horizontally in a highly stylized pose",
           "expression": "eyes narrowed; moustache covers the mouth",
           "componentStatus": "reference-only; strongly stylized body shape, not a rig proportion guide; caption and ground mark are integrated"
+        }
+      ],
+      "reviewCutouts": [
+        {
+          "characterId": "mando",
+          "source": "assets/characters/review/mando-episode-87-2-review.png",
+          "recipe": "docs/art-review/cutouts/build-mando-87-2-review.py",
+          "status": "review",
+          "note": "Source pixels; caption pointer is excluded and original yellow ground mark remains."
         }
       ]
     },

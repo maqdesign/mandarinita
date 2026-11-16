@@ -17,6 +17,7 @@ sources=(
   '../../../assets/characters/review/morita-episode-59-3-review.png|Morita · episodio 59.3'
   '../../../assets/characters/review/morita-episode-59-4-review.png|Morita · episodio 59.4'
   '../../../assets/characters/review/mando-episode-87-1-review.png|Mando · episodio 87.1'
+  '../../../assets/characters/review/mando-episode-87-2-review.png|Mando · episodio 87.2'
 )
 
 tiles=()

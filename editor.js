@@ -65,7 +65,8 @@
     { name: 'Sticker existente · pack 05', aliases: ['sticker 5', 'pack 5', 'logo'], src: 'assets/stickers/sticker-pack-05.webp', source: 'assets/stickers/sticker-pack-05.webp', note: 'Asset cuadrado opaco del pack existente. Contiene el logotipo sobre un círculo amarillo; se conserva como referencia, no como recorte de personaje.', reviewKind: 'existing-sticker' }
   ].map(resource => ({ ...resource, category: 'sticker', approvedCutout: false, reviewOnly: true }));
   const reviewObjectCutouts = [
-    { name: 'Clip de papel · episodio 85.3', aliases: ['clip', 'paperclip', 'sujetapapeles', 'episodio 85'], src: 'assets/objects/review/paperclip-episode-85-3-review.png', source: 'assets/episodes/ep-085-lo-que-siempre-te-pasa/85.3.png', note: 'Recorte en líneas grises de un clip personificado con brazos y piernas. No se le asignó nombre ni se decidió si debe catalogarse como objeto o personaje.', reviewKind: 'object-cutout' }
+    { name: 'Clip de papel · episodio 85.3', aliases: ['clip', 'paperclip', 'sujetapapeles', 'episodio 85'], src: 'assets/objects/review/paperclip-episode-85-3-review.png', source: 'assets/episodes/ep-085-lo-que-siempre-te-pasa/85.3.png', note: 'Recorte en líneas grises de un clip personificado con brazos y piernas. No se le asignó nombre ni se decidió si debe catalogarse como objeto o personaje.', reviewKind: 'object-cutout' },
+    { name: 'Sobre personificado · episodio 85.1', aliases: ['sobre', 'carta', 'episodio 85'], src: 'assets/objects/review/envelope-episode-85-1-review.png', source: 'assets/episodes/ep-085-lo-que-siempre-te-pasa/85.1.png', note: 'Recorte de la figura de sobre con cara y extremidades. Sigue en revisión para confirmar si la biblioteca debe clasificarlo como objeto o personaje.', reviewKind: 'object-cutout' }
   ].map(resource => ({ ...resource, category: 'object', approvedCutout: false, reviewOnly: true }));
   const backgroundColors = [
     { name: 'Blanco limpio', color: '#FFFFFF', source: 'Base' },
