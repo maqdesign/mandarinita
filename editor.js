@@ -19,7 +19,11 @@
     { name: 'Greg el Zanahorio', aliases: ['greg', 'zanahorio', 'zanahoria'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/greg-transparent.webp' }] },
     { name: 'Limón Agrio', aliases: ['limón', 'limon agrio'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/limon-agrio-transparent.webp' }] },
     { name: 'Aguacatelo', aliases: ['aguacate'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/aguacatelo-transparent.png' }] },
-    { name: 'Morita', aliases: ['mora'], variants: [{ name: 'Silueta monocroma', src: 'assets/characters/morita.png' }] },
+    { name: 'Morita', aliases: ['mora'], variants: [
+      { name: 'Pose del catálogo', src: 'assets/characters/morita.png' },
+      { name: 'Corriendo · episodio 59.3', src: 'assets/characters/morita-carrera-episodio-59-3.png' },
+      { name: 'Corriendo · episodio 59.4', src: 'assets/characters/morita-carrera-episodio-59-4.png' }
+    ] },
     { name: 'Sra. Pera', aliases: ['pera', 'señora pera'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/sra-pera-transparent.webp' }] },
     { name: 'Champi Ñón', aliases: ['champi', 'champiñón', 'champi ñon', 'hongo'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/champi-transparent.webp' }] },
     { name: 'Los Cherrys', aliases: ['cherry', 'cherrys', 'cereza', 'cerezas'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/cherrys-transparent.webp' }] },
@@ -1232,7 +1236,7 @@
     const isBackground = resourceFilter === 'background'; $('#background-note').hidden = !isBackground;
     if (isBackground) renderBackgroundColors(grid, query);
     if (resourceFilter === 'object' && !candidates.length) {
-      grid.innerHTML = '<div class="resource-note">Todavía no hay objetos sueltos con transparencia. Los objetos importantes se ven dentro de las láminas; se podrán registrar como componentes cuando tengamos su dibujo aislado.</div>'; return;
+      grid.innerHTML = '<div class="resource-note">No encontré objetos con ese nombre. Prueba con sobre, clip o inodoro.</div>'; return;
     }
     if (!candidates.length) { if (isBackground) return; grid.innerHTML = '<div class="resource-note">No encontré recursos con ese nombre.</div>'; return; }
     candidates.forEach(resource => {

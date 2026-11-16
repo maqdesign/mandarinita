@@ -6162,13 +6162,16 @@
           "componentStatus": "reference-only; flattened background, text and scene effects remain attached"
         }
       ],
-      "reviewCutouts": [
+      "editorReusableAssets": [
         {
+          "kind": "character-pose",
           "characterId": "morita",
-          "source": "assets/characters/review/morita-episode-59-3-review.png",
+          "source": "assets/characters/morita-carrera-episodio-59-3.png",
+          "sourcePanel": "assets/episodes/ep-059-no-juegues-asi/59.3.png",
           "recipe": "docs/art-review/cutouts/build-morita-59-3-review.py",
-          "status": "review",
-          "note": "Original pixels; the detached dust effect is excluded from the character cutout."
+          "status": "insertable",
+          "editorCutoutApproved": true,
+          "note": "Pose de carrera recortada de la viñeta publicada; se conservan los píxeles originales y se excluyen las marcas de polvo separadas."
         }
       ]
     },
@@ -6204,13 +6207,16 @@
           "componentStatus": "reference-only; flattened background, text and scene effects remain attached"
         }
       ],
-      "reviewCutouts": [
+      "editorReusableAssets": [
         {
+          "kind": "character-pose",
           "characterId": "morita",
-          "source": "assets/characters/review/morita-episode-59-4-review.png",
+          "source": "assets/characters/morita-carrera-episodio-59-4.png",
+          "sourcePanel": "assets/episodes/ep-059-no-juegues-asi/59.4.png",
           "recipe": "docs/art-review/cutouts/build-morita-59-4-review.py",
-          "status": "review",
-          "note": "Original pixels; the detached dust marks are excluded from the character cutout."
+          "status": "insertable",
+          "editorCutoutApproved": true,
+          "note": "Pose de carrera recortada de la viñeta publicada; se conservan los píxeles originales y se excluyen las marcas de polvo separadas."
         }
       ]
     },
@@ -11013,7 +11019,21 @@
       "candidateSourceCertainty": "medium",
       "candidateSourceEvidence": "Panels address the visible black, large-eyed and tongue-out figure as Morita; exact source of the transparent portrait is not established.",
       "stylePeriod": null,
-      "styleReference": true
+      "styleReference": true,
+      "editorVariants": [
+        {
+          "source": "assets/characters/morita-carrera-episodio-59-3.png",
+          "sourcePanel": "assets/episodes/ep-059-no-juegues-asi/59.3.png",
+          "status": "insertable",
+          "editorCutoutApproved": true
+        },
+        {
+          "source": "assets/characters/morita-carrera-episodio-59-4.png",
+          "sourcePanel": "assets/episodes/ep-059-no-juegues-asi/59.4.png",
+          "status": "insertable",
+          "editorCutoutApproved": true
+        }
+      ]
     },
     {
       "source": "assets/characters/pepino.png",

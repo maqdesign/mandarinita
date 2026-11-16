@@ -1,6 +1,6 @@
-# Recortes piloto en revisión
+# Recortes de revisión y extracción
 
-**Estado: borrador; no es un componente aprobado ni está integrado a la biblioteca del editor.**
+Este archivo conserva procesos y recortes de estudio. Algunos recursos concretos ya están disponibles en la biblioteca del editor; su ficha de episodio indica cuáles son insertables. Este estado de uso interno no publica ni modifica los episodios.
 
 Hay cinco recursos en revisión: Mando y Mandy en el episodio 1.1, otra pose de Mando en el 1.3, y Mando y Greg en el episodio 14.1. La [hoja de contacto](review-contact-sheet.webp) los compara juntos sobre un fondo claro. Se eligieron escenas donde los contornos son reconocibles y no se tuvo que inventar anatomía oculta.
 
@@ -28,7 +28,7 @@ Los dos recortes usan el panel original `assets/episodes/ep-014-un-dia-malo/14.1
 
 ## Morita · episodio 59
 
-Se añadieron cuatro recortes de estudio tomados de los paneles publicados `59.1` a `59.4`, conservando píxeles de las poses originales. `59.1` muestra la pose de pie con algo de sombra en los pies. `59.2` conserva la lengua y el efecto turquesa junto a Morita; Mauricio decidirá si se mantienen unidos. `59.3` y `59.4` muestran dos poses horizontales; se excluyeron los detalles de polvo separados del personaje. Los cuatro siguen pendientes de revisión y aprobación. Los procedimientos reproducibles son [`build-morita-59-1-review.py`](build-morita-59-1-review.py), [`build-morita-59-2-review.py`](build-morita-59-2-review.py), [`build-morita-59-3-review.py`](build-morita-59-3-review.py) y [`build-morita-59-4-review.py`](build-morita-59-4-review.py).
+Se añadieron cuatro recortes tomados de los paneles publicados `59.1` a `59.4`, conservando píxeles de las poses originales. `59.1` muestra la pose de pie con algo de sombra en los pies. `59.2` conserva la lengua y el efecto turquesa junto a Morita. Las poses de carrera de `59.3` y `59.4` ya están disponibles como variantes seleccionables de Morita en el editor; se excluyeron detalles de polvo separados del personaje. Los dos primeros recortes siguen fuera de la biblioteca porque conservan detalles de escena. Los procedimientos reproducibles son [`build-morita-59-1-review.py`](build-morita-59-1-review.py), [`build-morita-59-2-review.py`](build-morita-59-2-review.py), [`build-morita-59-3-review.py`](build-morita-59-3-review.py) y [`build-morita-59-4-review.py`](build-morita-59-4-review.py).
 
 Estos recortes de personajes y los stickers opacos 01 y 05 se conservan en este archivo de revisión, fuera de la biblioteca de componentes insertables. Los packs transparentes 02, 03, 04, 06 y 07 sí se pueden colocar desde la pestaña **Stickers**. La biblioteca del editor solo muestra recursos que se pueden insertar directamente.
 
@@ -46,7 +46,7 @@ Las propuestas `sofa-azul-episodio-51-1-borrador*.png` son estudios fallidos, no
 
 La primera alternativa, `sofa-azul-episodio-09-2-borrador.png`, se conserva como versión anterior; tiene una forma más recta y una paleta menos saturada, y queda supersedida por la propuesta del episodio 51.
 
-Los recortes de personaje de revisión y el estudio rechazado del sofá no aparecen como tarjetas insertables. Los del episodio 14 incluyen retoques localizados en las puntas inferiores; los del episodio 1 conservan sombras; Morita 59.1 tiene algo de sombra de contacto y 59.2 conserva el efecto turquesa; Mando 87.1 y 87.2 conservan sus marcas amarillas de suelo. No se presentan como componentes utilizables. La hoja de contacto se regenera con [`build-review-contact-sheet.sh`](build-review-contact-sheet.sh).
+Los demás recortes de personaje de revisión y el estudio rechazado del sofá no aparecen como tarjetas insertables. Los del episodio 14 incluyen retoques localizados en las puntas inferiores; los del episodio 1 conservan sombras; Morita 59.1 tiene algo de sombra de contacto y 59.2 conserva el efecto turquesa; Mando 87.1 y 87.2 conservan sus marcas amarillas de suelo. No se presentan como componentes utilizables. La hoja de contacto se regenera con [`build-review-contact-sheet.sh`](build-review-contact-sheet.sh).
 
 El estado **insertable** solo indica que el recorte puede usarse dentro de un borrador del editor. No publica el episodio, no cambia su estado en el catálogo editorial y no convierte una imagen fuente en una nueva ilustración canónica.
 
