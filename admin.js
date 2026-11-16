@@ -20,6 +20,9 @@
     ['hero.description', 'hero_description_es', 'hero_description_en'],
     ['hero.cta', 'hero_cta_es', 'hero_cta_en']
   ];
+  const adminViews = [...document.querySelectorAll('[data-admin-view]')];
+  const sectionLinks = [...document.querySelectorAll('.admin-sidebar nav a, .admin-quick-link')];
+  let currentView = '';
   const escape = value => String(value || '').replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]);
   async function loadInquiries() {
     refreshInbox.disabled = true;
@@ -131,6 +134,36 @@
     } catch (error) { siteContentStatus.textContent = error.message; }
     finally { submit.disabled = false; }
   });
+  function showAdminView(id, { updateHistory = true, focusHeading = false } = {}) {
+    const view = adminViews.find(item => item.id === id) || adminViews[0];
+    if (!view || (currentView === view.id && !focusHeading)) return;
+    currentView = view.id;
+    for (const item of adminViews) item.hidden = item !== view;
+    for (const link of document.querySelectorAll('.admin-sidebar nav a')) {
+      const active = link.hash === `#${view.id}`;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    }
+    if (updateHistory && location.hash !== `#${view.id}`) history.pushState(null, '', `#${view.id}`);
+    if (focusHeading) {
+      const heading = view.querySelector('h1, h2');
+      heading?.setAttribute('tabindex', '-1');
+      heading?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    }
+    if (view.id === 'sitio') loadSiteContent();
+    if (view.id === 'buzon') loadInquiries();
+    if (view.id === 'rendimiento') loadAnalytics();
+  }
+  for (const link of sectionLinks) link.addEventListener('click', event => {
+    const id = link.hash.slice(1);
+    if (!adminViews.some(view => view.id === id)) return;
+    event.preventDefault();
+    showAdminView(id, { focusHeading: true });
+  });
+  window.addEventListener('popstate', () => showAdminView(location.hash.slice(1), { updateHistory: false }));
+  window.addEventListener('hashchange', () => showAdminView(location.hash.slice(1), { updateHistory: false }));
   refreshInbox.addEventListener('click', loadInquiries);
   refreshAnalytics.addEventListener('click', loadAnalytics);
   fetch('/api/auth/session', { credentials: 'same-origin', cache: 'no-store' })
@@ -141,9 +174,7 @@
       document.body.classList.remove('admin-locked');
       privateContent.hidden = false;
       user.textContent = `Sesión: ${session.user.login}`;
-      loadSiteContent();
-      loadInquiries();
-      loadAnalytics();
+      showAdminView(location.hash.slice(1) || 'resumen', { updateHistory: false });
     })
     .catch(() => { user.textContent = 'No se pudo verificar el acceso'; });
   logout.addEventListener('click', async () => {
@@ -152,7 +183,4 @@
     document.body.classList.add('admin-locked');
     location.assign('/');
   });
-  document.querySelectorAll('.admin-sidebar nav a').forEach(link => link.addEventListener('click', () => {
-    document.querySelectorAll('.admin-sidebar nav a').forEach(item => item.classList.toggle('active', item === link));
-  }));
 })();
