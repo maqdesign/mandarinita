@@ -26,7 +26,7 @@
         radial-gradient(circle at 4% 83%, rgba(96,125,56,.16) 0 .95cqw, transparent 1.05cqw),
         var(--canvas, #fff8ec);
       display: grid;
-      grid-template-rows: 7% 15% 4% minmax(0, 1fr) 6% 6%;
+      grid-template-rows: 7% 15% 4% minmax(0, 1fr) 6% 10%;
       gap: .8cqw;
       overflow: hidden;
       position: relative;
@@ -104,7 +104,8 @@
     .episode-number {
       display: inline-block; margin: 0 0 .6cqw; padding: .45cqw 1.1cqw;
       border-radius: 999px; background: rgba(255,255,255,.13); color: var(--yellow, #fac421);
-      font-size: 1.45cqw; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      font-size: 1.25cqw; font-weight: 700; letter-spacing: .035em; text-transform: uppercase;
+      white-space: nowrap;
     }
     .episode-name { margin: 0; color: #fff; font: 600 2.65cqw/1.05 "Fredoka", sans-serif; text-shadow: 0 1px 2px rgba(0,0,0,.28); }
     .anniversary-thanks {
@@ -118,7 +119,9 @@
     }
     .anniversary-heading .anniversary-date { margin: .65cqw 0 0; color: var(--muted, #675b52); font: 700 1.65cqw/1.1 "Work Sans", sans-serif; letter-spacing: .025em; }
     .anniversary-footer { display: grid; align-content: center; justify-items: center; text-align: center; gap: .8cqw; }
-    .anniversary-question { margin: 0; color: var(--green, #607d38); font: 600 3.65cqw/1.05 "Fredoka", sans-serif; }
+    .anniversary-question { margin: 0; color: var(--green, #607d38); font: 600 3.35cqw/1.05 "Fredoka", sans-serif; }
+    .anniversary-site-cta { margin: 0; color: var(--ink, #30221b); font: 600 1.8cqw/1.2 "Work Sans", sans-serif; }
+    .anniversary-site-cta a { color: var(--orange, #f87209); font-weight: 700; text-decoration-thickness: .12em; text-underline-offset: .16em; }
     .anniversary-date { margin: 0; color: var(--muted, #675b52); font-size: 2.15cqw; font-weight: 700; letter-spacing: .04em; }
     @media (max-width: 520px) {
       .anniversary-stage { padding: 0; }
@@ -146,25 +149,25 @@
       <section class="episode-grid" aria-label="Selección aleatoria de episodios del archivo" aria-live="polite">
         <a class="episode-card" href="/episodios.html#episode-1" aria-label="Ver episodio 1: La mosca">
           <div class="episode-art"><img src="/assets/watermarked/episodes/ep-001-la-mosca/01.1.webp" alt="Viñeta original del episodio La mosca" loading="eager"></div>
-          <div class="episode-title"><p class="episode-number">Episodio 1</p><h2 class="episode-name">La mosca</h2></div>
+          <div class="episode-title"><p class="episode-number">Episodio 1 · 16 nov. 2019</p><h2 class="episode-name">La mosca</h2></div>
         </a>
         <a class="episode-card" href="/episodios.html#episode-51" aria-label="Ver episodio 51: ¿Tienes hambre?">
           <div class="episode-art"><img src="/assets/watermarked/episodes/ep-051-tienes-hambre/51.1.webp" alt="Viñeta original del episodio ¿Tienes hambre?" loading="eager"></div>
-          <div class="episode-title"><p class="episode-number">Episodio 51</p><h2 class="episode-name">¿Tienes hambre?</h2></div>
+          <div class="episode-title"><p class="episode-number">Episodio 51 · 31 oct. 2020</p><h2 class="episode-name">¿Tienes hambre?</h2></div>
         </a>
         <a class="episode-card" href="/episodios.html#episode-52" aria-label="Ver episodio 52: Fruitflix">
           <div class="episode-art"><img src="/assets/watermarked/episodes/ep-052-fruitflix/52.1.webp" alt="Viñeta original del episodio Fruitflix" loading="eager"></div>
-          <div class="episode-title"><p class="episode-number">Episodio 52</p><h2 class="episode-name">Fruitflix</h2></div>
+          <div class="episode-title"><p class="episode-number">Episodio 52 · 7 nov. 2020</p><h2 class="episode-name">Fruitflix</h2></div>
         </a>
         <a class="episode-card" href="/episodios.html#episode-72" aria-label="Ver episodio 72: Acurrucados">
           <div class="episode-art"><img src="/assets/watermarked/episodes/ep-072-acurrucados/72.1.webp" alt="Viñeta original del episodio Acurrucados" loading="eager"></div>
-          <div class="episode-title"><p class="episode-number">Episodio 72</p><h2 class="episode-name">Acurrucados</h2></div>
+          <div class="episode-title"><p class="episode-number">Episodio 72 · 6 jun. 2021</p><h2 class="episode-name">Acurrucados</h2></div>
         </a>
       </section>
       <div class="anniversary-thanks">¡Gracias por acompañarnos!</div>
       <footer class="anniversary-footer">
         <p class="anniversary-question">¿Qué episodio recuerdas más?</p>
-        
+        <p class="anniversary-site-cta">Visita <a href="https://mandarinita.art/episodios?lang=es">Mandarinita.art</a> (enlace en la bio): busca y guarda tus episodios favoritos.</p>
       </footer>
     </article>
   </main>
@@ -183,7 +186,7 @@
         .then(catalog => {
           const entries = shuffle((catalog.episodes || []).filter(entry =>
             entry.status === "published" && entry.type === "comic" && entry.complete === true &&
-            Number.isInteger(entry.episodeNumber) && entry.panels?.length
+            Number.isInteger(entry.episodeNumber) && entry.publishedAt && entry.panels?.length
           )).slice(0, 4);
           if (entries.length < 4) return;
           grid.replaceChildren(...entries.map(entry => {
@@ -204,7 +207,9 @@
             title.className = "episode-title";
             const number = document.createElement("p");
             number.className = "episode-number";
-            number.textContent = `Episodio ${entry.episodeNumber}`;
+            const published = new Date(`${entry.publishedAt}T00:00:00Z`);
+            const publishedLabel = new Intl.DateTimeFormat("es-DO", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(published);
+            number.textContent = `Episodio ${entry.episodeNumber} · ${publishedLabel}`;
             const name = document.createElement("h2");
             name.className = "episode-name";
             name.textContent = entry.title?.es || `Episodio ${entry.episodeNumber}`;
