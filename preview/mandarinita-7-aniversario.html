@@ -52,6 +52,24 @@
     .confetti:nth-child(16) { right: 7%; bottom: 5%; background: var(--green, #607d38); width: 1.05cqw; height: 1.05cqw; border-radius: 25%; transform: rotate(45deg); }
     .confetti:nth-child(17) { left: 2%; top: 9%; background: var(--purple, #68387d); width: 1.25cqw; height: .7cqw; border-radius: 999px; transform: rotate(-30deg); }
     .confetti:nth-child(18) { right: 12%; top: 49%; background: var(--orange, #f87209); width: .7cqw; height: .7cqw; }
+    .confetti:nth-child(19) { left: 1.2%; top: 24%; background: var(--purple, #68387d); width: .7cqw; height: 1.35cqw; border-radius: 999px; transform: rotate(24deg); }
+    .confetti:nth-child(20) { right: 1.4%; top: 31%; background: var(--orange, #f87209); width: .7cqw; height: 1.25cqw; border-radius: 999px; transform: rotate(-26deg); }
+    .confetti:nth-child(21) { left: 2.4%; top: 54%; background: var(--yellow, #fac421); width: 1.3cqw; height: .7cqw; border-radius: 999px; transform: rotate(22deg); }
+    .confetti:nth-child(22) { right: 2.1%; top: 47%; background: var(--green, #607d38); width: 1.35cqw; height: .7cqw; border-radius: 999px; transform: rotate(-24deg); }
+    .confetti:nth-child(23) { left: 1.8%; top: 75%; background: var(--orange, #f87209); width: .75cqw; height: .75cqw; border-radius: 20%; transform: rotate(45deg); }
+    .confetti:nth-child(24) { right: 1.8%; top: 88%; background: var(--purple, #68387d); width: .75cqw; height: .75cqw; border-radius: 20%; transform: rotate(45deg); }
+    .confetti:nth-child(25) { left: 12%; top: 3%; background: var(--orange, #f87209); width: .65cqw; height: 1.15cqw; border-radius: 999px; transform: rotate(-35deg); }
+    .confetti:nth-child(26) { right: 18%; top: 4%; background: var(--yellow, #fac421); width: .7cqw; height: .7cqw; }
+    .confetti:nth-child(27) { left: 8.5%; top: 13%; background: var(--yellow, #fac421); width: .65cqw; height: .65cqw; border-radius: 20%; transform: rotate(45deg); }
+    .confetti:nth-child(28) { right: 9%; top: 24%; background: var(--purple, #68387d); width: .85cqw; height: .6cqw; border-radius: 999px; transform: rotate(35deg); }
+    .confetti:nth-child(29) { left: 1.7%; top: 91%; background: var(--green, #607d38); width: 1.2cqw; height: .7cqw; border-radius: 999px; transform: rotate(-30deg); }
+    .confetti:nth-child(30) { right: 7%; top: 94%; background: var(--yellow, #fac421); width: .8cqw; height: .8cqw; border-radius: 22%; transform: rotate(45deg); }
+    .confetti:nth-child(31) { left: 5%; top: 36%; background: var(--orange, #f87209); width: .65cqw; height: .65cqw; }
+    .confetti:nth-child(32) { right: 5%; top: 61%; background: var(--yellow, #fac421); width: .65cqw; height: .65cqw; }
+    .confetti:nth-child(33) { left: 14%; top: 96%; background: var(--purple, #68387d); width: 1.35cqw; height: .7cqw; border-radius: 999px; transform: rotate(28deg); }
+    .confetti:nth-child(34) { right: 15%; top: 97%; background: var(--orange, #f87209); width: .65cqw; height: 1.1cqw; border-radius: 999px; transform: rotate(-18deg); }
+    .confetti:nth-child(35) { left: 3.1%; top: 18%; background: var(--green, #607d38); width: .7cqw; height: .7cqw; border-radius: 20%; transform: rotate(45deg); }
+    .confetti:nth-child(36) { right: 3.5%; top: 79%; background: var(--orange, #f87209); width: 1.3cqw; height: .7cqw; border-radius: 999px; transform: rotate(32deg); }
     .anniversary-logo { display: grid; place-items: center; }
     .anniversary-logo img { width: min(30cqw, 405px); height: 100%; object-fit: contain; }
     .anniversary-heading { display: grid; align-content: center; justify-items: center; text-align: center; }
@@ -84,7 +102,7 @@
     }
     .episode-card {
       min-width: 0; min-height: 0; display: grid;
-      grid-template-rows: minmax(0, 1fr) auto;
+      grid-template-rows: minmax(0, 1fr) minmax(6.4cqw, auto);
       overflow: hidden; border-radius: 2.6cqw;
       background: var(--paper, #fff); border: .42cqw solid white;
       box-shadow: 0 1.4cqw 2.8cqw rgba(48,34,27,.12);
@@ -107,7 +125,12 @@
       font-size: 1.25cqw; font-weight: 700; letter-spacing: .035em; text-transform: uppercase;
       white-space: nowrap;
     }
-    .episode-name { margin: 0; color: #fff; font: 600 2.65cqw/1.05 "Fredoka", sans-serif; text-shadow: 0 1px 2px rgba(0,0,0,.28); }
+    .episode-name {
+      margin: 0; color: #fff; font: 600 2.65cqw/1.05 "Fredoka", sans-serif;
+      text-shadow: 0 1px 2px rgba(0,0,0,.28);
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+      overflow: hidden; text-overflow: ellipsis;
+    }
     .anniversary-thanks {
       justify-self: center; align-self: center; display: grid; place-items: center;
       width: 92%; height: 84%; text-align: center;
@@ -136,7 +159,7 @@
 <body>
   <main class="anniversary-stage">
     <article class="anniversary-poster" aria-label="Publicación de Instagram por los siete años de Mandarinita">
-      <div class="party-confetti" aria-hidden="true"><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i></div>
+      <div class="party-confetti" aria-hidden="true"><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i><i class="confetti"></i></div>
       <div class="anniversary-logo">
         <img src="/assets/mandarinita-logo.svg" alt="Mandarinita®" width="405" height="151">
       </div>
