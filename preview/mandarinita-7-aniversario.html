@@ -26,8 +26,8 @@
         radial-gradient(circle at 4% 83%, rgba(96,125,56,.16) 0 .95cqw, transparent 1.05cqw),
         var(--canvas, #fff8ec);
       display: grid;
-      grid-template-rows: 9% 17% 6% minmax(0, 1fr) 7% 8%;
-      gap: 1.25cqw;
+      grid-template-rows: 7% 16% 5% minmax(0, 1fr) 7% 7%;
+      gap: 1cqw;
       overflow: hidden;
       position: relative;
       isolation: isolate;
@@ -58,7 +58,7 @@
     .anniversary-heading h1 {
       display: flex; align-items: baseline; justify-content: center; gap: .5cqw;
       color: var(--ink, #30221b);
-      font: 700 10.8cqw/.98 "Fredoka", sans-serif;
+      font: 700 12.8cqw/.92 "Fredoka", sans-serif;
       letter-spacing: -.045em;
       margin: 0;
     }
@@ -66,13 +66,13 @@
     .anniversary-heading p {
       margin: 1.1cqw 0 0;
       color: var(--green, #607d38);
-      font: 600 3.25cqw/1.15 "Fredoka", sans-serif;
+      font: 600 3.9cqw/1.08 "Fredoka", sans-serif;
     }
     .anniversary-intro {
       align-self: center; justify-self: center; text-align: center;
       margin: 0; padding: 1.15cqw 3.2cqw;
       border-radius: 999px; background: var(--green, #607d38); color: white;
-      font: 600 2.55cqw/1.1 "Fredoka", sans-serif;
+      font: 600 3.15cqw/1.08 "Fredoka", sans-serif;
       box-shadow: 0 .55cqw 0 rgba(48,34,27,.08);
       transform: rotate(-1deg);
     }
@@ -117,8 +117,8 @@
       transform: rotate(1deg);
     }
     .anniversary-footer { display: grid; align-content: center; justify-items: center; text-align: center; gap: .8cqw; }
-    .anniversary-question { margin: 0; color: var(--green, #607d38); font: 600 2.9cqw/1.1 "Fredoka", sans-serif; }
-    .anniversary-date { margin: 0; color: var(--muted, #675b52); font-size: 1.65cqw; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+    .anniversary-question { margin: 0; color: var(--green, #607d38); font: 600 3.65cqw/1.05 "Fredoka", sans-serif; }
+    .anniversary-date { margin: 0; color: var(--muted, #675b52); font-size: 2.15cqw; font-weight: 700; letter-spacing: .04em; }
     @media (max-width: 520px) {
       .anniversary-stage { padding: 0; }
       .anniversary-poster { width: 100vw; }
@@ -138,7 +138,7 @@
       </div>
       <header class="anniversary-heading">
         <h1><span class="anniversary-seven">7</span><span>años!</span></h1>
-        <p>de historias, risas y mucha pulpa</p>
+        <p>de historias, risas y mucha pulpa</p>\n        <p class="anniversary-date">16 de noviembre de 2019 · 16 de noviembre de 2026</p>
       </header>
       <p class="anniversary-intro">¡Y todavía hay gajos pa’ rato!</p>
       <section class="episode-grid" aria-label="Selección aleatoria de episodios del archivo" aria-live="polite">
@@ -162,7 +162,7 @@
       <div class="anniversary-thanks">¡Gracias por acompañarnos!</div>
       <footer class="anniversary-footer">
         <p class="anniversary-question">¿Qué episodio recuerdas más?</p>
-        <p class="anniversary-date">Mandarinita® · 16 de noviembre de 2026</p>
+        
       </footer>
     </article>
   </main>
