@@ -26,8 +26,8 @@
         radial-gradient(circle at 4% 83%, rgba(96,125,56,.16) 0 .95cqw, transparent 1.05cqw),
         var(--canvas, #fff8ec);
       display: grid;
-      grid-template-rows: 10% 18% 7% minmax(0, 1fr) 8% 9%;
-      gap: 1.45cqw;
+      grid-template-rows: 9% 17% 6% minmax(0, 1fr) 7% 8%;
+      gap: 1.25cqw;
       overflow: hidden;
       position: relative;
       isolation: isolate;
@@ -141,7 +141,7 @@
         <p>de historias, risas y mucha pulpa</p>
       </header>
       <p class="anniversary-intro">¡Y todavía hay gajos pa’ rato!</p>
-      <section class="episode-grid" aria-label="Episodios destacados del archivo">
+      <section class="episode-grid" aria-label="Selección aleatoria de episodios del archivo" aria-live="polite">
         <a class="episode-card" href="/episodios.html#episode-1" aria-label="Ver episodio 1: La mosca">
           <div class="episode-art"><img src="/assets/watermarked/episodes/ep-001-la-mosca/01.1.webp" alt="Viñeta original del episodio La mosca" loading="eager"></div>
           <div class="episode-title"><p class="episode-number">Episodio 1</p><h2 class="episode-name">La mosca</h2></div>
@@ -166,5 +166,53 @@
       </footer>
     </article>
   </main>
+  <script>
+    (() => {
+      const grid = document.querySelector(".episode-grid");
+      const shuffle = items => {
+        for (let i = items.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [items[i], items[j]] = [items[j], items[i]];
+        }
+        return items;
+      };
+      fetch("/episodes.json", { cache: "no-cache" })
+        .then(response => { if (!response.ok) throw new Error("No se pudo leer el archivo"); return response.json(); })
+        .then(catalog => {
+          const entries = shuffle((catalog.episodes || []).filter(entry =>
+            entry.status === "published" && entry.type === "comic" && entry.complete === true &&
+            Number.isInteger(entry.episodeNumber) && entry.panels?.length
+          )).slice(0, 4);
+          if (entries.length < 4) return;
+          grid.replaceChildren(...entries.map(entry => {
+            const panel = [...entry.panels].sort((a, b) => a.order - b.order)[0];
+            const card = document.createElement("a");
+            card.className = "episode-card";
+            card.href = `/episodios.html#episode-${entry.episodeNumber}`;
+            card.setAttribute("aria-label", `Ver episodio ${entry.episodeNumber}: ${entry.title?.es || ""}`);
+            const art = document.createElement("div");
+            art.className = "episode-art";
+            const image = document.createElement("img");
+            image.src = "/" + (panel.watermarkedThumbnailSrc || panel.watermarkedSrc || panel.src).replace(/^\//, "");
+            image.alt = panel.alt?.es || `Viñeta original del episodio ${entry.title?.es || entry.episodeNumber}`;
+            image.loading = "eager";
+            image.decoding = "async";
+            art.append(image);
+            const title = document.createElement("div");
+            title.className = "episode-title";
+            const number = document.createElement("p");
+            number.className = "episode-number";
+            number.textContent = `Episodio ${entry.episodeNumber}`;
+            const name = document.createElement("h2");
+            name.className = "episode-name";
+            name.textContent = entry.title?.es || `Episodio ${entry.episodeNumber}`;
+            title.append(number, name);
+            card.append(art, title);
+            return card;
+          }));
+        })
+        .catch(() => {});
+    })();
+  </script>
 </body>
 </html>
