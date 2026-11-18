@@ -16,6 +16,16 @@
   const heroImageFile = document.querySelector('#hero-image-file');
   const heroImagePreview = document.querySelector('#hero-image-preview');
   const heroImageStatus = document.querySelector('#hero-image-status');
+  const bannerList = document.querySelector('#hero-banner-list');
+  const bannerManagerStatus = document.querySelector('#banner-manager-status');
+  const createBannerButton = document.querySelector('#create-banner');
+  const deleteBannerButton = document.querySelector('#delete-banner');
+  const deleteBannerDialog = document.querySelector('#delete-banner-dialog');
+  const confirmDeleteBanner = document.querySelector('#confirm-delete-banner');
+  let bannerItems = [];
+  let selectedBannerId = '';
+  let bannersLoaded = false;
+  let bannerDirty = false;
   siteContentForm.elements.hero_effect_es.addEventListener('change', () => {
     siteContentForm.elements.hero_effect_en.value = siteContentForm.elements.hero_effect_es.value;
   });
@@ -110,24 +120,211 @@
       analyticsDays.replaceChildren();
     } finally { refreshAnalytics.disabled = false; }
   }
-  async function loadSiteContent() {
-    siteContentStatus.textContent = 'Cargando los textos guardados…';
-    try {
-      const response = await fetch('/api/admin/site-content', { credentials: 'same-origin', cache: 'no-store' });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'No se pudieron cargar los textos.');
-      for (const [key, esName, enName] of siteContentFields) {
-        const value = result.content?.[key];
-        if (value) {
-          siteContentForm.elements[esName].value = value.es;
-          siteContentForm.elements[enName].value = value.en;
+  const setBannerStatus = message => { bannerManagerStatus.textContent = message; };
+  const selectedBanner = () => bannerItems.find(item => item.id === selectedBannerId);
+  function captureBannerForm() {
+    const banner = selectedBanner();
+    if (!banner) return;
+    let changed = false;
+    for (const [key, esName, enName] of siteContentFields) {
+      const es = siteContentForm.elements[esName].value;
+      const en = key === 'hero.effect' ? es : siteContentForm.elements[enName].value;
+      if (banner.fields[key].es !== es || banner.fields[key].en !== en) changed = true;
+      banner.fields[key] = {
+        es,
+        en
+      };
+    }
+    banner.fields['hero.effect'].en = banner.fields['hero.effect'].es;
+    if (changed) {
+      bannerDirty = true;
+      deleteBannerButton.disabled = true;
+      setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
+    }
+  }
+  function fillBannerForm() {
+    const banner = selectedBanner();
+    if (!banner) {
+      siteContentForm.hidden = true;
+      return;
+    }
+    for (const [key, esName, enName] of siteContentFields) {
+      const value = banner.fields[key];
+      siteContentForm.elements[esName].value = value.es;
+      siteContentForm.elements[enName].value = value.en;
+    }
+    siteContentForm.elements.banner_id.value = banner.id;
+    siteContentForm.elements.hero_effect_en.value = banner.fields['hero.effect'].es;
+    heroImagePreview.src = new URL(banner.fields['hero.image'].es, location.href).href;
+    heroImageStatus.textContent = 'Imagen de este banner';
+    document.querySelector('#site-content-editor-title').textContent = `Editar banner ${bannerItems.indexOf(banner) + 1}`;
+    siteContentForm.hidden = false;
+    deleteBannerButton.disabled = bannerDirty || bannerItems.length <= 1;
+    deleteBannerButton.title = bannerItems.length <= 1 ? 'Debe quedar al menos un banner en la portada.' : '';
+    heroImageFile.value = '';
+  }
+  function createIcon(pathData) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '1.8');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathData);
+    svg.append(path);
+    return svg;
+  }
+  function renderBannerList(focusAction = null) {
+    bannerList.replaceChildren();
+    bannerItems.forEach((banner, index) => {
+      const row = document.createElement('div');
+      row.className = `hero-banner-row${banner.id === selectedBannerId ? ' is-selected' : ''}`;
+      row.setAttribute('role', 'listitem');
+      const choose = document.createElement('button');
+      choose.type = 'button';
+      choose.className = 'hero-banner-select';
+      choose.setAttribute('aria-current', banner.id === selectedBannerId ? 'true' : 'false');
+      const image = document.createElement('img');
+      image.src = new URL(banner.fields['hero.image'].es, location.href).href;
+      image.alt = '';
+      image.loading = 'lazy';
+      const copy = document.createElement('span');
+      copy.className = 'hero-banner-copy';
+      const title = document.createElement('strong');
+      title.textContent = `${banner.fields['hero.title.first'].es} ${banner.fields['hero.title.second'].es}`.trim();
+      const detail = document.createElement('small');
+      detail.textContent = banner.fields['hero.effect'].es === 'orbit' ? 'Órbita de episodios' : 'Imagen fija';
+      copy.append(title, detail);
+      const indexLabel = document.createElement('span');
+      indexLabel.className = 'hero-banner-index';
+      indexLabel.textContent = String(index + 1).padStart(2, '0');
+      choose.append(image, copy, indexLabel);
+      choose.addEventListener('click', () => {
+        captureBannerForm();
+        selectedBannerId = banner.id;
+        fillBannerForm();
+        renderBannerList();
+      });
+      const enabledLabel = document.createElement('label');
+      enabledLabel.className = 'hero-banner-enabled';
+      const enabled = document.createElement('input');
+      enabled.type = 'checkbox';
+      enabled.checked = banner.enabled;
+      enabled.setAttribute('aria-label', `Mostrar banner ${index + 1} en el sitio`);
+      enabled.addEventListener('change', () => {
+        if (!enabled.checked && bannerItems.filter(item => item.enabled).length <= 1) {
+          enabled.checked = true;
+          setBannerStatus('Deja al menos un banner activo en la portada.');
+          return;
         }
+        banner.enabled = enabled.checked;
+        bannerDirty = true;
+        deleteBannerButton.disabled = true;
+        setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
+      });
+      enabledLabel.append(enabled, document.createTextNode('Activo'));
+      const moveGroup = document.createElement('div');
+      moveGroup.className = 'hero-banner-order';
+      for (const [direction, path, label] of [['up', 'm18 15-6-6-6 6', 'Subir'], ['down', 'm6 9 6 6 6-6', 'Bajar']]) {
+        const move = document.createElement('button');
+        move.type = 'button';
+        move.className = 'admin-refresh hero-banner-move';
+        move.dataset.action = direction;
+        move.dataset.bannerId = banner.id;
+        move.disabled = direction === 'up' ? index === 0 : index === bannerItems.length - 1;
+        move.setAttribute('aria-label', `${label} banner ${index + 1}`);
+        move.append(createIcon(path));
+        move.addEventListener('click', () => {
+          const offset = direction === 'up' ? -1 : 1;
+          [bannerItems[index], bannerItems[index + offset]] = [bannerItems[index + offset], bannerItems[index]];
+          bannerDirty = true;
+          deleteBannerButton.disabled = true;
+          setBannerStatus('Orden pendiente. Guarda los cambios para publicarlos en Preview.');
+          renderBannerList(direction);
+        });
+        moveGroup.append(move);
       }
-      heroImagePreview.src = new URL(siteContentForm.elements.hero_image_es.value, location.href).href;
-      siteContentForm.elements.hero_effect_en.value = siteContentForm.elements.hero_effect_es.value;
-      heroImageStatus.textContent = 'Imagen actual';
-      siteContentStatus.textContent = result.updatedAt ? `Última publicación: ${new Date(result.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}.` : 'Aún no hay cambios guardados. Se muestran los textos originales.';
-    } catch (error) { siteContentStatus.textContent = error.message; }
+      row.append(choose, enabledLabel, moveGroup);
+      bannerList.append(row);
+    });
+    createBannerButton.disabled = !bannersLoaded || bannerItems.length >= 8;
+    if (focusAction) {
+      const button = [...bannerList.querySelectorAll('[data-action]')].find(item => item.dataset.action === focusAction);
+      button?.focus();
+    }
+  }
+  async function loadBanners() {
+    if (bannersLoaded) return;
+    setBannerStatus('Cargando banners…');
+    try {
+      const response = await fetch('/api/admin/banners', { credentials: 'same-origin', cache: 'no-store' });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudieron cargar los banners.');
+      bannerItems = result.banners || [];
+      selectedBannerId = bannerItems.find(item => item.enabled)?.id || bannerItems[0]?.id || '';
+      bannersLoaded = true;
+      bannerDirty = false;
+      renderBannerList();
+      fillBannerForm();
+      setBannerStatus(bannerItems.length ? `${bannerItems.length} ${bannerItems.length === 1 ? 'banner' : 'banners'} en la portada.` : 'Aún no hay banners.');
+      siteContentStatus.textContent = 'Edita este banner; los cambios se guardan directamente en Preview.';
+    } catch (error) { setBannerStatus(error.message); }
+  }
+  async function createBanner() {
+    createBannerButton.disabled = true;
+    try {
+      const response = await fetch('/api/admin/banners', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudo crear el banner.');
+      bannerItems.push(result.banner);
+      selectedBannerId = result.banner.id;
+      bannerDirty = true;
+      renderBannerList();
+      fillBannerForm();
+      setBannerStatus('Banner nuevo, todavía en borrador. Cámbialo y guarda para publicarlo.');
+      siteContentForm.elements.hero_title_first_es.focus();
+    } catch (error) { setBannerStatus(error.message); }
+    finally { createBannerButton.disabled = bannerItems.length >= 8; }
+  }
+  async function saveBanners() {
+    captureBannerForm();
+    const submit = siteContentForm.querySelector('[type="submit"]');
+    submit.disabled = true;
+    siteContentStatus.textContent = 'Guardando banners en Preview…';
+    try {
+      const response = await fetch('/api/admin/banners', { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ banners: bannerItems }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudieron publicar los banners.');
+      bannerItems = result.banners;
+      bannerDirty = false;
+      renderBannerList();
+      fillBannerForm();
+      setBannerStatus('Cambios publicados en Preview.');
+      siteContentStatus.textContent = 'Listo: los banners ya aparecen en Preview. Recarga la portada para verlos.';
+    } catch (error) {
+      siteContentStatus.textContent = error.message;
+      setBannerStatus(error.message);
+    } finally { submit.disabled = false; deleteBannerButton.disabled = bannerDirty || bannerItems.length <= 1; }
+  }
+  async function deleteBanner() {
+    confirmDeleteBanner.disabled = true;
+    try {
+      const response = await fetch('/api/admin/banners', { method: 'DELETE', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: selectedBannerId }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudo quitar el banner.');
+      bannerItems = result.banners;
+      selectedBannerId = bannerItems.find(item => item.enabled)?.id || bannerItems[0]?.id || '';
+      bannerDirty = false;
+      renderBannerList();
+      fillBannerForm();
+      setBannerStatus('Banner quitado del carrusel de Preview.');
+      deleteBannerDialog.close();
+    } catch (error) { setBannerStatus(error.message); }
+    finally { confirmDeleteBanner.disabled = false; }
   }
   heroImageFile.addEventListener('change', async () => {
     const file = heroImageFile.files?.[0];
@@ -146,6 +343,7 @@
       siteContentForm.elements.hero_image_en.value = result.path;
       heroImagePreview.src = result.path;
       heroImageStatus.textContent = 'Subida. Guarda para aplicar este cambio al sitio.';
+      captureBannerForm();
     } catch (error) {
       heroImageStatus.textContent = error.message;
     } finally {
@@ -157,20 +355,21 @@
     event.preventDefault();
     const submit = siteContentForm.querySelector('[type="submit"]');
     submit.disabled = true;
-    siteContentStatus.textContent = 'Guardando y publicando en Preview…';
-    const content = Object.fromEntries(siteContentFields.map(([key, esName, enName]) => [key, {
-      es: siteContentForm.elements[esName].value.trim(),
-      en: siteContentForm.elements[enName].value.trim()
-    }]));
-    content['hero.effect'].en = content['hero.effect'].es;
-    try {
-      const response = await fetch('/api/admin/site-content', { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }) });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'No se pudieron publicar los textos.');
-      siteContentStatus.textContent = 'Listo: los textos ya están publicados en Preview. Recarga la portada para verlos.';
-    } catch (error) { siteContentStatus.textContent = error.message; }
-    finally { submit.disabled = false; }
+    await saveBanners();
   });
+  siteContentForm.addEventListener('input', event => { if (event.target !== heroImageFile) captureBannerForm(); });
+  siteContentForm.addEventListener('change', event => {
+    if (event.target === siteContentForm.elements.hero_effect_es) siteContentForm.elements.hero_effect_en.value = event.target.value;
+    if (event.target !== heroImageFile) captureBannerForm();
+  });
+  createBannerButton.addEventListener('click', createBanner);
+  deleteBannerButton.addEventListener('click', () => {
+    if (bannerDirty) { setBannerStatus('Guarda los cambios pendientes antes de quitar un banner.'); return; }
+    if (bannerItems.length <= 1) { setBannerStatus('Debe quedar al menos un banner en la portada.'); return; }
+    deleteBannerDialog.showModal();
+  });
+  document.querySelector('#cancel-delete-banner').addEventListener('click', () => deleteBannerDialog.close());
+  confirmDeleteBanner.addEventListener('click', deleteBanner);
   function showAdminView(id, { updateHistory = true, focusHeading = false } = {}) {
     const view = adminViews.find(item => item.id === id) || adminViews[0];
     if (!view || (currentView === view.id && !focusHeading)) return;
@@ -189,7 +388,7 @@
       heading?.focus({ preventScroll: true });
       window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     }
-    if (view.id === 'sitio') loadSiteContent();
+    if (view.id === 'sitio') loadBanners();
     if (view.id === 'buzon') loadInquiries();
     if (view.id === 'rendimiento') loadAnalytics();
   }

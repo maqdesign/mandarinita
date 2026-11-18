@@ -722,3 +722,16 @@
 .inquiry-status{align-self:center;margin:0;color:var(--green);font-size:.82rem;font-weight:700}
 .inquiry-privacy{grid-column:1/-1;margin:0;color:var(--muted);font-size:.7rem;line-height:1.55}
 @media(max-width:760px){.services-page{padding:48px 20px 64px}.services-intro{margin-bottom:35px}.inquiry-section{grid-template-columns:1fr;padding:22px;gap:22px}.inquiry-form{grid-template-columns:1fr}.inquiry-form>label:nth-of-type(4),.inquiry-consent,.inquiry-privacy{grid-column:auto}}
+
+/* Homepage banners: accessible manual controls with optional reduced-motion autoplay. */
+.hero-carousel-controls{display:flex;align-items:center;gap:9px;margin-top:22px;color:var(--ink)}
+.hero-carousel-controls[hidden],.hero-carousel-toggle [hidden]{display:none!important}
+.hero-carousel-arrow,.hero-carousel-toggle{display:grid;place-items:center;flex:none;width:38px;height:38px;padding:8px;border:1px solid rgba(48,34,27,.28);border-radius:50%;background:rgba(255,255,255,.2);color:var(--ink);cursor:pointer}
+.hero-carousel-arrow:hover,.hero-carousel-toggle:hover{background:rgba(255,255,255,.48)}
+.hero-carousel-arrow .ui-icon,.hero-carousel-toggle .ui-icon{width:18px;height:18px;stroke:currentColor}
+.hero-carousel-status{min-width:86px;color:rgba(48,34,27,.78);font-size:.68rem;font-weight:700;letter-spacing:.04em;text-align:center}
+.hero-carousel-dots{display:flex;align-items:center;gap:7px;margin:0 4px}
+.hero-carousel-dot{width:9px;height:9px;padding:0;border:0;border-radius:50%;background:rgba(48,34,27,.35);cursor:pointer}
+.hero-carousel-dot[aria-current=true]{width:23px;border-radius:999px;background:var(--ink)}
+.hero-carousel-arrow:disabled,.hero-carousel-toggle:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:680px){.hero-carousel-controls{gap:7px;margin-top:17px}.hero-carousel-arrow,.hero-carousel-toggle{width:34px;height:34px;padding:7px}.hero-carousel-status{min-width:72px;font-size:.62rem}.hero-carousel-dots{gap:6px;margin-inline:2px}.hero-carousel-dot{width:7px;height:7px}.hero-carousel-dot[aria-current=true]{width:18px}}

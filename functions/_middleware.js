@@ -11,30 +11,37 @@ async function updateHomeShareImage(request, env, next) {
   const response = await next();
   if (!env.MANDARINITA_INBOX) return response;
   try {
-    const result = await env.MANDARINITA_INBOX.prepare(
-      "SELECT content_key, es FROM site_content WHERE content_key IN ('hero.image', 'hero.image.alt', 'hero.effect')"
-    ).all();
-    const content = Object.fromEntries((result.results || []).map(row => [row.content_key, row.es]));
-    const imagePath = content['hero.image'];
+    const hero = await env.MANDARINITA_INBOX.prepare(
+      'SELECT image_path, alt_es, effect FROM hero_banners WHERE enabled = 1 ORDER BY position, created_at LIMIT 1'
+    ).first();
+    if (!hero) return response;
+    const imagePath = hero.image_path;
     const imageUrl = imagePath && HERO_IMAGE_PATH.test(imagePath) && !imagePath.split('/').includes('..')
       ? new URL(imagePath.startsWith('/') ? imagePath : `/${imagePath}`, request.url).href
       : null;
-    const effect = content['hero.effect'] === 'still' ? 'still' : 'orbit';
-    if (!imageUrl && !content['hero.image.alt'] && !content['hero.effect']) return response;
+    const effect = hero.effect === 'still' ? 'still' : 'orbit';
+    if (!imageUrl && !hero.alt_es && !hero.effect) return response;
     const rewriter = new HTMLRewriter();
     if (imageUrl) {
       rewriter
         .on('meta[property="og:image"]', { element: element => element.setAttribute('content', imageUrl) })
         .on('meta[property="og:image:secure_url"]', { element: element => element.setAttribute('content', imageUrl) })
+        .on('meta[property="og:image:width"]', { element: element => element.remove() })
+        .on('meta[property="og:image:height"]', { element: element => element.remove() })
         .on('meta[name="twitter:image"]', { element: element => element.setAttribute('content', imageUrl) });
     }
-    if (imageUrl || content['hero.image.alt']) {
+    if (hero.alt_es) {
+      rewriter
+        .on('meta[property="og:image:alt"]', { element: element => element.setAttribute('content', hero.alt_es) })
+        .on('meta[name="twitter:image:alt"]', { element: element => element.setAttribute('content', hero.alt_es) });
+    }
+    if (imageUrl || hero.alt_es) {
       rewriter.on('img.hero-family-image', { element: element => {
         if (imageUrl) element.setAttribute('src', imageUrl);
-        if (content['hero.image.alt']) element.setAttribute('alt', content['hero.image.alt']);
+        if (hero.alt_es) element.setAttribute('alt', hero.alt_es);
       } });
     }
-    if (content['hero.effect']) {
+    if (hero.effect) {
       rewriter.on('div.hero-episode-orbit', { element: element => {
         element.setAttribute('data-effect', effect);
         if (effect === 'still') element.setAttribute('hidden', '');
