@@ -40,6 +40,10 @@ Estos recortes de personajes y los stickers opacos 01 y 05 se conservan en este 
 
 `sky-clouds-episode-85-1.png` conserva una región despejada del cielo pintado y las nubes de 85.1, sin personajes. Es un recorte panorámico reutilizable que ya se puede insertar como fondo; no es una escena reconstruida. Su extracción reproducible está en [`build-episode-85-sky-background.py`](build-episode-85-sky-background.py).
 
+## Variantes de personaje · episodio 82
+
+`greg-episodio-82-1.png` y `mando-episodio-82-3.png` son poses de cuerpo completo recortadas de los paneles publicados 82.1 y 82.3. Ya se pueden elegir desde las propiedades de Greg y Mando. Se quitaron el campo blanco conectado y los globos cercanos; se conservan las sombras suaves de los pies y el trazo original. El recorte reproducible está en [`build-episode-82-character-poses.py`](build-episode-82-character-poses.py).
+
 ## Sofá azul · episodio 9.2
 
 Las propuestas `sofa-azul-episodio-51-1-borrador*.png` son estudios fallidos, no recortes literales ni componentes utilizables. Mauricio indicó que no se parecen al mueble de referencia. La última versión deja contornos de personajes en la textura y la silueta no respeta la fuente. Permanecen fuera de la biblioteca y están marcadas como rechazadas en el catálogo. No regenerar ni presentar como propuestas vigentes. Hace falta una fuente con más del mueble visible o un dibujo de Mauricio.

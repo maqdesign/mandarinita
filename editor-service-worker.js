@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mandarinita-editor-v30';
+const CACHE_NAME = 'mandarinita-editor-v31';
 const APP_SHELL = [
   '/editor.css',
   '/editor.js',
@@ -9,9 +9,11 @@ const APP_SHELL = [
   '/assets/mandarinita-pwa-512.png',
   '/assets/mandarinita-pwa-180.png',
   '/assets/characters/mando-transparent.webp',
+  '/assets/characters/mando-episodio-82-3.png',
   '/assets/characters/mandy-transparent.webp',
   '/assets/characters/greg-transparent.webp',
   '/assets/characters/greg-episodio-14-1.png',
+  '/assets/characters/greg-episodio-82-1.png',
   '/assets/characters/limon-agrio-transparent.webp',
   '/assets/characters/aguacatelo-transparent.png',
   '/assets/characters/morita.png',

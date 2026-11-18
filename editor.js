@@ -11,14 +11,16 @@
   const PALETTE = ['#282522', '#F87209', '#607D3B', '#A8522B', '#FFFFFF', '#F7C843', '#6CA8A4'];
   const people = [
     { name: 'Mando Mandarinita', aliases: ['mando', 'mandarino', 'señor mandarino', 'sr. mandarino'], variants: [
-      { name: 'Pose completa · episodio 46.3', src: 'assets/characters/mando-transparent.webp' }
+      { name: 'Pose completa · episodio 46.3', src: 'assets/characters/mando-transparent.webp' },
+      { name: 'Ojos entrecerrados · episodio 82.3', src: 'assets/characters/mando-episodio-82-3.png' }
     ] },
     { name: 'Mandy Mandarinita', aliases: ['mandy', 'mandarinita'], variants: [
       { name: 'Pose completa aislada', src: 'assets/characters/mandy-transparent.webp' }
     ] },
     { name: 'Greg el Zanahorio', aliases: ['greg', 'zanahorio', 'zanahoria'], variants: [
       { name: 'Pose del catálogo', src: 'assets/characters/greg-transparent.webp' },
-      { name: 'De pie · episodio 14.1', src: 'assets/characters/greg-episodio-14-1.png' }
+      { name: 'De pie · episodio 14.1', src: 'assets/characters/greg-episodio-14-1.png' },
+      { name: 'Gesto de hablar · episodio 82.1', src: 'assets/characters/greg-episodio-82-1.png' }
     ] },
     { name: 'Limón Agrio', aliases: ['limón', 'limon agrio'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/limon-agrio-transparent.webp' }] },
     { name: 'Aguacatelo', aliases: ['aguacate'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/aguacatelo-transparent.png' }] },

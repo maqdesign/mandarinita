@@ -8023,7 +8023,7 @@
           "evidence": "Carrot form, leafy top and turquoise glasses match Greg el Zanahorio reference.",
           "pose": "standing beside Mando",
           "expression": "smiling, speaking",
-          "componentStatus": "reference-only; flattened background, text and scene effects remain attached"
+          "componentStatus": "insertable pose available in the editor; published episode remains unchanged"
         },
         {
           "characterId": "mando",
@@ -8032,6 +8032,18 @@
           "pose": "standing beside Greg, one arm raised",
           "expression": "eyes gently closed; moustache clearly visible",
           "componentStatus": "reference-only; 2019 episode panel; Greg, dialogue and setting remain attached"
+        }
+      ],
+      "editorReusableAssets": [
+        {
+          "kind": "character-pose",
+          "characterId": "greg",
+          "source": "assets/characters/greg-episodio-82-1.png",
+          "sourcePanel": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.1.png",
+          "recipe": "docs/art-review/cutouts/build-episode-82-character-poses.py",
+          "status": "insertable",
+          "editorCutoutApproved": true,
+          "note": "Greg gesticulando, recortado de la viñeta publicada; conserva las líneas, texturas y sombra originales."
         }
       ]
     },
@@ -8096,6 +8108,26 @@
           "pose": "standing with Mando",
           "expression": "eyes wide, mouth open",
           "componentStatus": "reference-only; flattened background, text and scene effects remain attached"
+        },
+        {
+          "characterId": "mando",
+          "certainty": "high",
+          "evidence": "Leaf and broad dark moustache match the verified Mando reference.",
+          "pose": "standing, arms at sides",
+          "expression": "half-lidded eyes; moustache and leaf visible",
+          "componentStatus": "insertable pose available in the editor; published episode remains unchanged"
+        }
+      ],
+      "editorReusableAssets": [
+        {
+          "kind": "character-pose",
+          "characterId": "mando",
+          "source": "assets/characters/mando-episodio-82-3.png",
+          "sourcePanel": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.3.png",
+          "recipe": "docs/art-review/cutouts/build-episode-82-character-poses.py",
+          "status": "insertable",
+          "editorCutoutApproved": true,
+          "note": "Mando de pie con ojos entrecerrados, recortado de la viñeta publicada; conserva las líneas, texturas y sombra originales."
         }
       ]
     },
@@ -10888,6 +10920,12 @@
           "sourcePanel": "assets/episodes/ep-014-un-dia-malo/14.1.png",
           "status": "insertable",
           "editorCutoutApproved": true
+        },
+        {
+          "source": "assets/characters/greg-episodio-82-1.png",
+          "sourcePanel": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.1.png",
+          "status": "insertable",
+          "editorCutoutApproved": true
         }
       ]
     },
@@ -10950,7 +10988,15 @@
       "sourceEvidence": "personajes.html alt explicitly says the cutout comes from episode 46; full-resolution visual comparison matches the character pose in panel 46.3.",
       "sourceReview": "matched-to-full-resolution-panel",
       "stylePeriod": null,
-      "styleReference": true
+      "styleReference": true,
+      "editorVariants": [
+        {
+          "source": "assets/characters/mando-episodio-82-3.png",
+          "sourcePanel": "assets/episodes/ep-082-yo-como-que-te-he-visto/82.3.png",
+          "status": "insertable",
+          "editorCutoutApproved": true
+        }
+      ]
     },
     {
       "source": "assets/characters/mandy-transparent.webp",
