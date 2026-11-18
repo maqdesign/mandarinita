@@ -117,6 +117,7 @@
   let cloudReady = false;
   let cloudSyncInProgress = false;
   let cloudRefreshTimer = null;
+  let cloudPollTimer = null;
   let cloudAuthExpired = false;
   const cloudTimers = new Map();
   const cloudBases = new Map();
@@ -188,6 +189,11 @@
   const PROJECT_ID_PATTERN = /^[a-zA-Z0-9_-]{1,100}$/;
   function id() { return crypto.randomUUID?.() || Math.random().toString(36).slice(2, 12); }
   function validProjectId(value) { return typeof value === 'string' && PROJECT_ID_PATTERN.test(value); }
+  function uniqueProjectId(used = new Set()) {
+    let candidate;
+    do { candidate = id(); } while (!validProjectId(candidate) || used.has(candidate) || localStorage.getItem(PROJECT_KEY(candidate))!==null);
+    return candidate;
+  }
   function makeProject(title = 'Episodio nuevo', contentType = 'episode') {
     return { schemaVersion: 1, projectId: id(), title, contentType, status: 'draft', format: 'web', exportStyle: 'classic', pageHeight: 400, active: 0, selected: null, zoom: 1, grid: true, panels: [{ id: id(), items: [] }, { id: id(), items: [] }], createdAt: Date.now(), updatedAt: Date.now() };
   }
@@ -253,7 +259,7 @@
       : 'Tus borradores se guardan en este navegador. El archivo .mandarinita sirve para moverlos a otro dispositivo.';
   }
   async function cloudFetch(path, options = {}) {
-    const response = await fetch(path, { ...options, credentials: 'same-origin', headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) } });
+    const response = await fetch(path, { cache:'no-store', ...options, credentials: 'same-origin', headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) } });
     let body = {};
     try { body = await response.json(); } catch { /* Surface status when a proxy returned a non-JSON response. */ }
     if (!response.ok) { const error=new Error(body.error || `Sincronización: ${response.status}`);error.status=response.status;error.code=body.code||'';throw error; }
@@ -264,23 +270,35 @@
     catch { /* A bad local sync index must not prevent local drafts from opening. */ }
   }
   function migrateInvalidLocalProjectIds() {
-    const records = listProjects(); let changed = false; const usedIds = new Set(records.filter(record=>validProjectId(record.id)).map(record=>record.id));
+    const records = listProjects(); if(!Array.isArray(records))return false;
+    let changed = false; const obsoleteKeys=[]; const usedIds = new Set(records.map(record=>record?.id).filter(validProjectId));
     const next = records.map(record => {
       try {
-        const oldId = record.id; const raw = localStorage.getItem(PROJECT_KEY(oldId)); if (!raw) { if(validProjectId(oldId))usedIds.add(oldId); return record; }
+        if(!record||typeof record!=='object')return record;
+        const oldId = record.id; const raw = localStorage.getItem(PROJECT_KEY(String(oldId??''))); if (!raw) return record;
         let project = JSON.parse(raw);
+        if(!project||typeof project!=='object'||Array.isArray(project))return record;
         if(validProjectId(oldId)&&project.projectId===oldId){usedIds.add(oldId);return record;}
-        project = normalizeProject(project);
-        if(usedIds.has(project.projectId))project.projectId=id();
-        localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
-        if(oldId!==project.projectId)localStorage.removeItem(PROJECT_KEY(oldId));
-        cloudBases.delete(oldId); usedIds.add(project.projectId); changed = true;
-        return { ...record, id: project.projectId, title: project.title || record.title, updatedAt: project.updatedAt || record.updatedAt };
+        let nextId;
+        if(validProjectId(oldId))nextId=oldId;
+        else if(validProjectId(project.projectId)&&!usedIds.has(project.projectId))nextId=project.projectId;
+        else nextId=uniqueProjectId(usedIds);
+        if(nextId!==oldId&&localStorage.getItem(PROJECT_KEY(nextId))!==null)nextId=uniqueProjectId(usedIds);
+        const idMismatch=project.projectId!==nextId;
+        project=normalizeProject({...project,projectId:nextId}); project.projectId=nextId;
+        if(idMismatch)project.updatedAt=Math.max(Date.now(),(Number(project.updatedAt)||0)+1);
+        localStorage.setItem(PROJECT_KEY(nextId),JSON.stringify(project));
+        if(oldId!==nextId)obsoleteKeys.push(PROJECT_KEY(String(oldId??'')));
+        if(oldId!==nextId)cloudBases.delete(oldId);
+        usedIds.add(nextId); changed = true;
+        return { ...record, id: nextId, title: project.title || record.title, updatedAt: project.updatedAt || record.updatedAt };
       } catch { return record; }
     });
     if (!changed) return false;
     next.sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));
-    localStorage.setItem(PROJECTS_KEY, JSON.stringify(next));
+    try { localStorage.setItem(PROJECTS_KEY, JSON.stringify(next)); }
+    catch { return false; }
+    obsoleteKeys.forEach(key=>localStorage.removeItem(key));
     try { localStorage.setItem('mandarinita-editor-sync-bases-v1', JSON.stringify(Object.fromEntries(cloudBases))); } catch {}
     return true;
   }
@@ -296,12 +314,53 @@
     if (!response.ok) { const error=new Error(project?.error||`No se pudo descargar la versión de la nube (error ${response.status}).`);error.status=response.status;error.code=project?.code||'';throw error; }
     return {project,etag:response.headers.get('ETag')};
   }
+  function repairCloudProjectId(project) {
+    const oldId=project.projectId;
+    const records=listProjects();
+    const used=new Set(records.map(record=>record?.id).filter(validProjectId));
+    const newId=uniqueProjectId(used);
+    const latest=state?.projectId===oldId?captureState():project;
+    const repaired=normalizeProject({...latest,projectId:newId,updatedAt:Date.now()});
+    repaired.projectId=newId;
+    localStorage.setItem(PROJECT_KEY(newId),JSON.stringify(repaired));
+
+    let oldRecordId=records.find(record=>record?.id===oldId)?.id;
+    if(!oldRecordId) {
+      oldRecordId=records.find(record=>{
+        try { return JSON.parse(localStorage.getItem(PROJECT_KEY(record.id))||'null')?.projectId===oldId; }
+        catch { return false; }
+      })?.id;
+    }
+    const existing=records.find(record=>record?.id===oldRecordId)||{};
+    const updatedRecord={id:newId,title:repaired.title||existing.title||'Contenido sin título',contentType:repaired.contentType||existing.contentType||'episode',status:repaired.status||existing.status||'draft',createdAt:repaired.createdAt||existing.createdAt||Date.now(),updatedAt:repaired.updatedAt};
+    const next=records.filter(record=>record?.id!==oldRecordId&&record?.id!==oldId);
+    next.push(updatedRecord); next.sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));
+    localStorage.setItem(PROJECTS_KEY,JSON.stringify(next));
+    if(oldRecordId&&oldRecordId!==newId)localStorage.removeItem(PROJECT_KEY(oldRecordId));
+    if(oldId&&oldId!==newId)localStorage.removeItem(PROJECT_KEY(oldId));
+    if(oldRecordId)cloudBases.delete(oldRecordId);
+    if(oldId)cloudBases.delete(oldId);
+    try { localStorage.setItem('mandarinita-editor-sync-bases-v1',JSON.stringify(Object.fromEntries(cloudBases))); } catch {}
+    if(state?.projectId===oldId){state.projectId=newId;state.updatedAt=repaired.updatedAt;}
+    Object.assign(project,repaired);
+    return repaired;
+  }
   async function pushCloudProject(project) {
-    const base=cloudBases.get(project.projectId);
-    const headers=base?.etag?{'If-Match':base.etag}:{'If-None-Match':'*'};
-    const result=await cloudFetch(`/api/projects/${encodeURIComponent(project.projectId)}`,{method:'PUT',body:JSON.stringify(project),headers});
-    saveCloudBase(project.projectId,result.etag||'',project.updatedAt);
-    return result;
+    let candidate=project;
+    let repaired=false;
+    while(true){
+      if(!validProjectId(candidate.projectId)){candidate=repairCloudProjectId(candidate);repaired=true;}
+      const base=cloudBases.get(candidate.projectId);
+      const headers=base?.etag?{'If-Match':base.etag}:{'If-None-Match':'*'};
+      try {
+        const result=await cloudFetch(`/api/projects/${encodeURIComponent(candidate.projectId)}`,{method:'PUT',body:JSON.stringify(candidate),headers});
+        saveCloudBase(candidate.projectId,result.etag||'',candidate.updatedAt);
+        return result;
+      } catch(error) {
+        if(error?.code==='invalid_project_id'&&!repaired){candidate=repairCloudProjectId(candidate);repaired=true;continue;}
+        throw error;
+      }
+    }
   }
   function setSyncFailure(error) {
     if(error?.status===401)cloudAuthExpired=true;
@@ -310,7 +369,7 @@
       :error?.status===413?'El archivo supera el límite de 25 MB; descarga el .mandarinita como respaldo.'
       :error?.status===428?'Esta versión del taller está desactualizada (428). Recarga la página para actualizarla; tu borrador local sigue guardado.'
       :error?.status>=500?`Cloudflare no pudo guardar el borrador (error ${error.status}). Sigue guardado en este dispositivo.`
-      :error?.code==='invalid_project_id'?'Este borrador tenía un identificador antiguo que la nube no acepta. Se conservó localmente; recarga el taller para migrarlo y vuelve a sincronizar.'
+      :error?.code==='invalid_project_id'?'La nube no aceptó el identificador de este borrador. Se conservó localmente; pulsa “Reintentar sincronización” para volver a intentarlo.'
       :error?.status===400?`La nube rechazó el borrador: ${(error.message||'la solicitud no es válida').replace(/[.!?]+$/,'')}. El borrador local sigue guardado.`
       :Number.isInteger(error?.status)?`No se pudo sincronizar (error ${error.status}). ${error.message&&error.message!==`Sincronización: ${error.status}`?`${error.message} `:''}El borrador sigue guardado en este dispositivo.`
       :'No se pudo conectar con la nube. El borrador sigue guardado en este dispositivo.';
@@ -332,10 +391,15 @@
     toast(message);
   }
   function scheduleCloudSave(project) {
-    if (!cloudUser || !cloudReady || !project?.projectId || cloudConflicts.has(project.projectId)) return;
-    clearTimeout(cloudTimers.get(project.projectId));
+    if (!cloudUser || !project?.projectId || cloudConflicts.has(project.projectId) || (!cloudReady&&!cloudSyncInProgress)) return;
+    const scheduledId=project.projectId;
+    clearTimeout(cloudTimers.get(scheduledId));
     const snapshot = JSON.stringify(project);
-    const timer = setTimeout(async () => {
+    let timer;
+    const sync = async () => {
+      if(!cloudUser||cloudConflicts.has(scheduledId)||cloudConflicts.has(project.projectId)){cloudTimers.delete(scheduledId);return;}
+      if(cloudSyncInProgress){timer=setTimeout(sync,750);cloudTimers.set(scheduledId,timer);return;}
+      if(!cloudReady){cloudTimers.delete(scheduledId);return;}
       try {
         await pushCloudProject(JSON.parse(snapshot));
         if (state?.projectId === project.projectId) $('#save-state').textContent = 'Sincronizado con GitHub';
@@ -343,9 +407,13 @@
       } catch (error) {
         if(error.status===412){markCloudConflict(project.projectId);return;}
         setSyncFailure(error);
-      } finally { cloudTimers.delete(project.projectId); }
-    }, 900);
-    cloudTimers.set(project.projectId, timer);
+      } finally {
+        if(cloudTimers.get(scheduledId)===timer)cloudTimers.delete(scheduledId);
+        if(project.projectId!==scheduledId&&cloudTimers.get(project.projectId)===timer)cloudTimers.delete(project.projectId);
+      }
+    };
+    timer = setTimeout(sync,900);
+    cloudTimers.set(scheduledId, timer);
   }
   function storeRemoteProject(project,etag) {
     validateEditableProject(project);
@@ -361,6 +429,7 @@
     cloudSyncInProgress = true;
     setCloudStatus('Sincronizando borradores…','busy');
     try {
+      migrateInvalidLocalProjectIds();
       const { projects: remoteProjects } = await cloudFetch('/api/projects');
       const localProjects = listProjects();
       const remoteById = new Map(remoteProjects.map(project => [project.id, project]));
@@ -443,6 +512,13 @@
       retryCloudSync();
     }, 1400);
   }
+  function startCloudPolling() {
+    if(cloudPollTimer)return;
+    cloudPollTimer=setInterval(()=>{
+      if(!cloudUser||cloudAuthExpired||document.hidden||!cloudReady||cloudSyncInProgress||cloudTimers.size||cloudConflicts.size)return;
+      retryCloudSync();
+    },30000);
+  }
   async function clearEditorOfflineCache() {
     const worker=navigator.serviceWorker?.controller;
     if(!worker||!window.MessageChannel)return;
@@ -487,7 +563,7 @@
       cloudConfigured = session.configured;
       cloudUser = session.user;
       cloudAuthExpired=false;
-      if (cloudUser) await syncCloudProjects();
+      if (cloudUser) { await syncCloudProjects(); startCloudPolling(); }
       else setCloudStatus(cloudConfigured ? 'Conecta GitHub para sincronizar tus borradores.' : 'Sincronización sin configurar.','signed-out');
     } catch (error) {
       cloudConfigured = false;
