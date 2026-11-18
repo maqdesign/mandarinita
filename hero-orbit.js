@@ -3,6 +3,8 @@
   const backLayer = orbit?.querySelector('.episode-orbit-back');
   const frontLayer = orbit?.querySelector('.episode-orbit-front');
   if (!orbit || !backLayer || !frontLayer || !window.mandarinitaEpisodesCatalogPromise) return;
+  let effectEnabled = orbit.dataset.effect !== 'still';
+  orbit.hidden = !effectEnabled;
 
   const language = () => document.documentElement.lang === 'en' ? 'en' : 'es';
   const thumbnail = src => src.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-320-$1.webp');
@@ -16,6 +18,8 @@
   };
 
   const render = episodes => {
+    effectEnabled = orbit.dataset.effect !== 'still';
+    orbit.hidden = !effectEnabled;
     backLayer.replaceChildren();
     frontLayer.replaceChildren();
     const cards = [];
@@ -125,7 +129,7 @@
     };
     const tick = time => {
       frame = 0;
-      if (!visible || paused || reduceMotion.matches || document.visibilityState !== 'visible') {
+      if (!effectEnabled || !visible || paused || reduceMotion.matches || document.visibilityState !== 'visible') {
         previousTime = 0;
         return;
       }
@@ -136,9 +140,15 @@
       // hidden. The orbit otherwise uses one requestAnimationFrame loop.
       frame = requestAnimationFrame(tick);
     };
-    const start = () => { if (!frame && visible && !paused && !reduceMotion.matches) frame = requestAnimationFrame(tick); };
+    const start = () => { if (!frame && effectEnabled && visible && !paused && !reduceMotion.matches) frame = requestAnimationFrame(tick); };
     const stop = () => { if (frame) cancelAnimationFrame(frame); frame = 0; previousTime = 0; };
     const updatePaused = () => { paused = hovering || focused; if (paused) stop(); else start(); };
+    window.addEventListener('mandarinita:hero-effect', event => {
+      effectEnabled = event.detail === 'orbit';
+      orbit.hidden = !effectEnabled;
+      if (effectEnabled) { layoutDirty = true; positionCards(); start(); }
+      else stop();
+    });
     cards.forEach(({ anchor }) => {
       anchor.addEventListener('pointerenter', () => { hovering = true; updatePaused(); });
       anchor.addEventListener('pointerleave', () => { hovering = false; updatePaused(); });

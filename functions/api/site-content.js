@@ -5,7 +5,10 @@ const PUBLIC_KEYS = new Set([
   'hero.title.first',
   'hero.title.second',
   'hero.description',
-  'hero.cta'
+  'hero.cta',
+  'hero.image',
+  'hero.effect',
+  'hero.image.alt'
 ]);
 
 export async function onRequestGet({ env }) {

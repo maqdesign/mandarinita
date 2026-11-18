@@ -13,12 +13,21 @@
   const analyticsDays = document.querySelector('#analytics-days');
   const siteContentForm = document.querySelector('#site-content-form');
   const siteContentStatus = document.querySelector('#site-content-status');
+  const heroImageFile = document.querySelector('#hero-image-file');
+  const heroImagePreview = document.querySelector('#hero-image-preview');
+  const heroImageStatus = document.querySelector('#hero-image-status');
+  siteContentForm.elements.hero_effect_es.addEventListener('change', () => {
+    siteContentForm.elements.hero_effect_en.value = siteContentForm.elements.hero_effect_es.value;
+  });
   const siteContentFields = [
     ['hero.eyebrow', 'hero_eyebrow_es', 'hero_eyebrow_en'],
     ['hero.title.first', 'hero_title_first_es', 'hero_title_first_en'],
     ['hero.title.second', 'hero_title_second_es', 'hero_title_second_en'],
     ['hero.description', 'hero_description_es', 'hero_description_en'],
-    ['hero.cta', 'hero_cta_es', 'hero_cta_en']
+    ['hero.cta', 'hero_cta_es', 'hero_cta_en'],
+    ['hero.image', 'hero_image_es', 'hero_image_en'],
+    ['hero.effect', 'hero_effect_es', 'hero_effect_en'],
+    ['hero.image.alt', 'hero_image_alt_es', 'hero_image_alt_en']
   ];
   const adminViews = [...document.querySelectorAll('[data-admin-view]')];
   const sectionLinks = [...document.querySelectorAll('.admin-sidebar nav a, .admin-quick-link')];
@@ -114,9 +123,36 @@
           siteContentForm.elements[enName].value = value.en;
         }
       }
+      heroImagePreview.src = new URL(siteContentForm.elements.hero_image_es.value, location.href).href;
+      siteContentForm.elements.hero_effect_en.value = siteContentForm.elements.hero_effect_es.value;
+      heroImageStatus.textContent = 'Imagen actual';
       siteContentStatus.textContent = result.updatedAt ? `Última publicación: ${new Date(result.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}.` : 'Aún no hay cambios guardados. Se muestran los textos originales.';
     } catch (error) { siteContentStatus.textContent = error.message; }
   }
+  heroImageFile.addEventListener('change', async () => {
+    const file = heroImageFile.files?.[0];
+    if (!file) return;
+    const submit = siteContentForm.querySelector('[type="submit"]');
+    heroImageFile.disabled = true;
+    submit.disabled = true;
+    heroImageStatus.textContent = 'Subiendo imagen a Preview…';
+    const form = new FormData();
+    form.append('image', file);
+    try {
+      const response = await fetch('/api/admin/site-content/image', { method: 'POST', credentials: 'same-origin', body: form });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudo subir la imagen.');
+      siteContentForm.elements.hero_image_es.value = result.path;
+      siteContentForm.elements.hero_image_en.value = result.path;
+      heroImagePreview.src = result.path;
+      heroImageStatus.textContent = 'Subida. Guarda para aplicar este cambio al sitio.';
+    } catch (error) {
+      heroImageStatus.textContent = error.message;
+    } finally {
+      heroImageFile.disabled = false;
+      submit.disabled = false;
+    }
+  });
   siteContentForm.addEventListener('submit', async event => {
     event.preventDefault();
     const submit = siteContentForm.querySelector('[type="submit"]');
@@ -126,6 +162,7 @@
       es: siteContentForm.elements[esName].value.trim(),
       en: siteContentForm.elements[enName].value.trim()
     }]));
+    content['hero.effect'].en = content['hero.effect'].es;
     try {
       const response = await fetch('/api/admin/site-content', { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }) });
       const result = await response.json();

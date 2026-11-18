@@ -5,8 +5,12 @@ const MAX_LENGTHS = {
   'hero.title.first': 80,
   'hero.title.second': 80,
   'hero.description': 420,
-  'hero.cta': 70
+  'hero.cta': 70,
+  'hero.image': 300,
+  'hero.effect': 20,
+  'hero.image.alt': 300
 };
+const IMAGE_PATH = /^(?:assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)|\/api\/site-content\/image\/site-content\/hero\/[0-9a-f-]{36}\.(?:png|webp|jpg))$/i;
 const CONTROL_CHARACTERS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/;
 
 async function authorize({ request, env }, write = false) {
@@ -29,12 +33,14 @@ export async function onRequestGet(context) {
     'SELECT content_key, es, en, updated_at FROM site_content ORDER BY content_key'
   ).all();
   const content = {};
+  let updatedAt = '';
   for (const row of result.results || []) {
     if (Object.hasOwn(MAX_LENGTHS, row.content_key)) {
       content[row.content_key] = { es: row.es, en: row.en, updatedAt: row.updated_at };
+      if (row.updated_at > updatedAt) updatedAt = row.updated_at;
     }
   }
-  return json({ content });
+  return json({ content, updatedAt: updatedAt || null });
 }
 
 export async function onRequestPut(context) {
@@ -61,6 +67,12 @@ export async function onRequestPut(context) {
     const en = value.en.trim();
     if (!es || !en || es.length > MAX_LENGTHS[key] || en.length > MAX_LENGTHS[key] || CONTROL_CHARACTERS.test(es) || CONTROL_CHARACTERS.test(en)) {
       return json({ error: `Revisa los textos de “${key}”: no pueden estar vacíos ni superar ${MAX_LENGTHS[key]} caracteres.` }, 400);
+    }
+    if (key === 'hero.image' && (es !== en || !IMAGE_PATH.test(es) || es.split('/').includes('..'))) {
+      return json({ error: 'Sube una imagen válida para la portada antes de guardar.' }, 400);
+    }
+    if (key === 'hero.effect' && (es !== en || !['orbit', 'still'].includes(es))) {
+      return json({ error: 'Elige uno de los movimientos disponibles para la portada.' }, 400);
     }
     normalized[key] = { es, en };
   }
