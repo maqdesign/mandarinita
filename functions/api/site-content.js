@@ -8,7 +8,11 @@ const FIELD_COLUMNS = [
   ['hero.cta', 'cta_es', 'cta_en'],
   ['hero.image', 'image_path', 'image_path'],
   ['hero.effect', 'effect', 'effect'],
-  ['hero.image.alt', 'alt_es', 'alt_en']
+  ['hero.image.alt', 'alt_es', 'alt_en'],
+  ['hero.mediaType', 'media_type', 'media_type'],
+  ['hero.episode', 'episode_id', 'episode_id'],
+  ['hero.startAt', 'starts_at', 'starts_at'],
+  ['hero.endAt', 'ends_at', 'ends_at']
 ];
 
 function toBanner(row) {

@@ -16,6 +16,12 @@
   const heroImageFile = document.querySelector('#hero-image-file');
   const heroImagePreview = document.querySelector('#hero-image-preview');
   const heroImageStatus = document.querySelector('#hero-image-status');
+  const heroMediaType = document.querySelector('#hero-media-type');
+  const heroEpisodeSelect = document.querySelector('#hero-episode-id');
+  const heroEpisodeWrap = document.querySelector('#hero-episode-select-wrap');
+  const heroEffectLabel = document.querySelector('#hero-effect-label');
+  const heroStartAt = document.querySelector('#hero-start-at');
+  const heroEndAt = document.querySelector('#hero-end-at');
   const bannerPreview = document.querySelector('#hero-banner-preview');
   const previewStage = document.querySelector('.hero-preview-stage');
   const previewLayoutButtons = [...document.querySelectorAll('[data-preview-layout]')];
@@ -28,12 +34,15 @@
   const confirmDeleteBanner = document.querySelector('#confirm-delete-banner');
   const heroPreviewToast = document.querySelector('#hero-preview-toast');
   let bannerItems = [];
+  let bannerBaseline = new Map();
   let selectedBannerId = '';
   let bannersLoaded = false;
   let bannerDirty = false;
   let heroPreviewToastTimer = 0;
   let previewEditField = null;
   let heroPreviewLayout = 'horizontal';
+  let approvedEpisodes = [];
+  let episodeCatalogLoaded = false;
   siteContentForm.elements.hero_effect_es.addEventListener('change', () => {
     siteContentForm.elements.hero_effect_en.value = siteContentForm.elements.hero_effect_es.value;
   });
@@ -45,7 +54,11 @@
     ['hero.cta', 'hero_cta_es', 'hero_cta_en'],
     ['hero.image', 'hero_image_es', 'hero_image_en'],
     ['hero.effect', 'hero_effect_es', 'hero_effect_en'],
-    ['hero.image.alt', 'hero_image_alt_es', 'hero_image_alt_en']
+    ['hero.image.alt', 'hero_image_alt_es', 'hero_image_alt_en'],
+    ['hero.mediaType', 'hero_media_type', 'hero_media_type'],
+    ['hero.episode', 'hero_episode_id', 'hero_episode_id'],
+    ['hero.startAt', 'hero_start_at', 'hero_start_at'],
+    ['hero.endAt', 'hero_end_at', 'hero_end_at']
   ];
   const adminViews = [...document.querySelectorAll('[data-admin-view]')];
   const sectionLinks = [...document.querySelectorAll('.admin-sidebar nav a, .admin-quick-link')];
@@ -131,13 +144,95 @@
   const setBannerStatus = message => { if (bannerManagerStatus) bannerManagerStatus.textContent = message; };
   const setSiteContentStatus = message => { if (siteContentStatus) siteContentStatus.textContent = message; };
   const selectedBanner = () => bannerItems.find(item => item.id === selectedBannerId);
+  const bannerSignature = banner => JSON.stringify({ position: banner.position, enabled: banner.enabled, ctaHref: banner.ctaHref, fields: banner.fields });
+  function hasPendingChangesExcept(id) {
+    return bannerItems.some(item => item.id !== id && bannerBaseline.get(item.id) !== bannerSignature(item));
+  }
+  function updateDeleteBannerState() {
+    const isNewDraft = Boolean(selectedBannerId) && !bannerBaseline.has(selectedBannerId);
+    const otherChanges = hasPendingChangesExcept(selectedBannerId);
+    const canDiscardDraft = isNewDraft && !otherChanges;
+    deleteBannerButton.disabled = bannerItems.length <= 1 || (bannerDirty && !canDiscardDraft);
+    deleteBannerButton.title = bannerItems.length <= 1
+      ? 'Debe quedar al menos un banner en la portada.'
+      : bannerDirty && !canDiscardDraft ? 'Guarda los otros cambios antes de quitar este banner.'
+        : canDiscardDraft ? 'Descartar este borrador sin publicarlo.' : '';
+  }
+  function fromLocalDateTime(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    return Number.isFinite(date.getTime()) ? date.toISOString() : '';
+  }
+  function toLocalDateTime(value) {
+    const date = new Date(value);
+    if (!value || !Number.isFinite(date.getTime())) return '';
+    const pad = number => String(number).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+  async function loadEpisodeCatalog() {
+    if (episodeCatalogLoaded) return;
+    episodeCatalogLoaded = true;
+    try {
+      const response = await fetch('/episodes.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('No se pudo cargar el catálogo de episodios.');
+      const catalog = await response.json();
+      approvedEpisodes = (catalog.episodes || []).filter(entry => entry.status === 'published'
+        && entry.type === 'comic' && entry.complete === true && Number.isInteger(entry.episodeNumber)
+        && typeof entry.id === 'string' && /^[a-z0-9-]{1,100}$/i.test(entry.id)
+        && entry.panels?.[0] && (entry.panels[0].watermarkedSrc || entry.panels[0].src)?.startsWith('assets/'));
+      heroEpisodeSelect.replaceChildren(new Option('Selecciona un episodio', ''));
+      for (const entry of approvedEpisodes) {
+        const title = typeof entry.title === 'string' ? entry.title : entry.title?.es || `Episodio ${entry.episodeNumber}`;
+        heroEpisodeSelect.add(new Option(`Ep. ${entry.episodeNumber} · ${title}`, entry.id));
+      }
+      if (!approvedEpisodes.length) heroEpisodeSelect.replaceChildren(new Option('No hay episodios publicados disponibles', ''));
+    } catch (error) {
+      heroEpisodeSelect.replaceChildren(new Option('No se pudo cargar el catálogo', ''));
+      setBannerStatus(error.message);
+    }
+  }
+  function updateBannerMediaUI() {
+    const isEpisode = heroMediaType.value === 'episode';
+    heroEpisodeWrap.hidden = !isEpisode;
+    heroEpisodeSelect.disabled = !isEpisode;
+    heroEpisodeSelect.required = isEpisode;
+    siteContentForm.querySelector('.site-content-upload-label').hidden = isEpisode;
+    heroImageFile.disabled = isEpisode;
+    heroEffectLabel.hidden = isEpisode;
+    siteContentForm.elements.hero_effect_es.disabled = isEpisode;
+    if (!isEpisode) return;
+    siteContentForm.elements.hero_effect_es.value = 'still';
+    siteContentForm.elements.hero_effect_en.value = 'still';
+    const episode = approvedEpisodes.find(item => item.id === heroEpisodeSelect.value);
+    if (!episode) {
+      heroImageStatus.textContent = 'Selecciona un episodio publicado para usar su primera viñeta.';
+      return;
+    }
+    const panel = episode.panels[0];
+    const imagePath = panel.watermarkedSrc || panel.src;
+    if (!/^assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)$/i.test(imagePath)) return;
+    heroImagePreview.src = new URL(imagePath, location.href).href;
+    heroImagePreview.alt = `Primera viñeta del episodio ${episode.episodeNumber}`;
+    heroImageStatus.textContent = `Primera viñeta · episodio ${episode.episodeNumber}`;
+    siteContentForm.elements.hero_image_es.value = imagePath;
+    siteContentForm.elements.hero_image_en.value = imagePath;
+    const title = typeof episode.title === 'string' ? episode.title : episode.title?.es || `Episodio ${episode.episodeNumber}`;
+    for (const [name, lang] of [['hero_image_alt_es', 'es'], ['hero_image_alt_en', 'en']]) {
+      const alt = panel.alt?.[lang] || panel.alt?.es || title;
+      siteContentForm.elements[name].value = `${lang === 'en' ? 'First panel of episode' : 'Primera viñeta del episodio'} ${episode.episodeNumber}: ${alt}`.slice(0, 300);
+    }
+  }
   function captureBannerForm() {
     const banner = selectedBanner();
     if (!banner) return;
     let changed = false;
     for (const [key, esName, enName] of siteContentFields) {
-      const es = siteContentForm.elements[esName].value;
-      const en = key === 'hero.effect' ? es : siteContentForm.elements[enName].value;
+      const inputValue = inputName => {
+        const value = siteContentForm.elements[inputName].value;
+        return inputName === 'hero_start_at' || inputName === 'hero_end_at' ? fromLocalDateTime(value) : value;
+      };
+      const es = inputValue(esName);
+      const en = key === 'hero.effect' || esName === enName ? es : inputValue(enName);
       if (banner.fields[key].es !== es || banner.fields[key].en !== en) changed = true;
       banner.fields[key] = {
         es,
@@ -147,7 +242,7 @@
     banner.fields['hero.effect'].en = banner.fields['hero.effect'].es;
     if (changed) {
       bannerDirty = true;
-      deleteBannerButton.disabled = true;
+      updateDeleteBannerState();
       setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
     }
     updateBannerPreview();
@@ -160,17 +255,19 @@
     }
     for (const [key, esName, enName] of siteContentFields) {
       const value = banner.fields[key];
-      siteContentForm.elements[esName].value = value.es;
-      siteContentForm.elements[enName].value = value.en;
+      const es = key === 'hero.startAt' || key === 'hero.endAt' ? toLocalDateTime(value.es) : value.es;
+      const en = key === 'hero.startAt' || key === 'hero.endAt' ? toLocalDateTime(value.en) : value.en;
+      siteContentForm.elements[esName].value = es;
+      siteContentForm.elements[enName].value = en;
     }
     siteContentForm.elements.banner_id.value = banner.id;
     siteContentForm.elements.hero_effect_en.value = banner.fields['hero.effect'].es;
     heroImagePreview.src = new URL(banner.fields['hero.image'].es, location.href).href;
     heroImageStatus.textContent = 'Imagen de este banner';
+    updateBannerMediaUI();
     document.querySelector('#site-content-editor-title').textContent = `Editar banner ${bannerItems.indexOf(banner) + 1}`;
     siteContentForm.hidden = false;
-    deleteBannerButton.disabled = bannerDirty || bannerItems.length <= 1;
-    deleteBannerButton.title = bannerItems.length <= 1 ? 'Debe quedar al menos un banner en la portada.' : '';
+    updateDeleteBannerState();
     duplicateBannerButton.disabled = bannerItems.length >= 8;
     duplicateBannerButton.title = bannerItems.length >= 8 ? 'El carrusel admite hasta ocho banners.' : '';
     heroImageFile.value = '';
@@ -230,7 +327,8 @@
     previewEditField = { element: group, timer: window.setTimeout(() => group.classList.remove('preview-edit-target'), 3000) };
     control.scrollIntoView({ behavior: 'smooth', block: 'center' });
     control.focus({ preventScroll: true });
-    setSiteContentStatus(`Banner ${bannerNumber} · ${group.querySelector('legend')?.textContent || 'el campo'} · ${language === 'en' ? 'English' : 'Español'}. Los cambios aparecen en la vista previa.`);
+    const languageLabel = field === 'hero.episode' ? '' : ` · ${language === 'en' ? 'English' : 'Español'}`;
+    setSiteContentStatus(`Banner ${bannerNumber} · ${group.querySelector('legend')?.textContent || 'el campo'}${languageLabel}. Los cambios aparecen en la vista previa.`);
   }
   window.addEventListener('message', event => {
     if (event.origin !== location.origin || event.source !== bannerPreview?.contentWindow) return;
@@ -285,7 +383,10 @@
       const title = document.createElement('strong');
       title.textContent = `${banner.fields['hero.title.first'].es} ${banner.fields['hero.title.second'].es}`.trim();
       const detail = document.createElement('small');
-      detail.textContent = banner.fields['hero.effect'].es === 'orbit' ? 'Órbita de episodios' : 'Imagen fija';
+      const featuredEpisode = approvedEpisodes.find(entry => entry.id === banner.fields['hero.episode']?.es);
+      detail.textContent = banner.fields['hero.mediaType']?.es === 'episode'
+        ? featuredEpisode ? `Episodio destacado · Ep. ${featuredEpisode.episodeNumber}` : 'Episodio destacado'
+        : banner.fields['hero.effect'].es === 'orbit' ? 'Órbita de episodios' : 'Imagen fija';
       copy.append(title, detail);
       const indexLabel = document.createElement('span');
       indexLabel.className = 'hero-banner-index';
@@ -312,10 +413,15 @@
         banner.enabled = enabled.checked;
         bannerDirty = true;
         updateBannerPreview();
-        deleteBannerButton.disabled = true;
+        updateDeleteBannerState();
         setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
       });
-      enabledLabel.append(enabled, document.createTextNode('Activo'));
+      const startsAt = Date.parse(banner.fields['hero.startAt']?.es || '');
+      const endsAt = Date.parse(banner.fields['hero.endAt']?.es || '');
+      const availability = !banner.enabled ? 'Inactivo'
+        : Number.isFinite(endsAt) && endsAt <= Date.now() ? 'Vencido'
+          : Number.isFinite(startsAt) && startsAt > Date.now() ? 'Programado' : 'Activo';
+      enabledLabel.append(enabled, document.createTextNode(availability));
       const moveGroup = document.createElement('div');
       moveGroup.className = 'hero-banner-order';
       for (const [direction, path, label] of [['up', 'm18 15-6-6-6 6', 'Subir'], ['down', 'm6 9 6 6 6-6', 'Bajar']]) {
@@ -331,7 +437,7 @@
           const offset = direction === 'up' ? -1 : 1;
           [bannerItems[index], bannerItems[index + offset]] = [bannerItems[index + offset], bannerItems[index]];
           bannerDirty = true;
-          deleteBannerButton.disabled = true;
+          updateDeleteBannerState();
           updateBannerPreview();
           setBannerStatus('Orden pendiente. Guarda los cambios para publicarlos en Preview.');
           renderBannerList(direction);
@@ -351,10 +457,12 @@
     if (bannersLoaded) return;
     setBannerStatus('Cargando banners…');
     try {
+      await loadEpisodeCatalog();
       const response = await fetch('/api/admin/banners', { credentials: 'same-origin', cache: 'no-store' });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'No se pudieron cargar los banners.');
       bannerItems = result.banners || [];
+      bannerBaseline = new Map(bannerItems.map(item => [item.id, bannerSignature(item)]));
       selectedBannerId = bannerItems.find(item => item.enabled)?.id || bannerItems[0]?.id || '';
       bannersLoaded = true;
       bannerDirty = false;
@@ -422,6 +530,7 @@
       if (!response.ok) throw new Error(result.error || 'No se pudieron publicar los banners.');
       bannerItems = result.banners;
       bannerDirty = false;
+      bannerBaseline = new Map(bannerItems.map(item => [item.id, bannerSignature(item)]));
       renderBannerList();
       fillBannerForm();
       setBannerStatus('Cambios publicados en Preview.');
@@ -429,20 +538,26 @@
     } catch (error) {
       setSiteContentStatus(error.message);
       setBannerStatus(error.message);
-    } finally { submit.disabled = false; deleteBannerButton.disabled = bannerDirty || bannerItems.length <= 1; }
+    } finally { submit.disabled = false; updateDeleteBannerState(); }
   }
   async function deleteBanner() {
+    const deletingDraft = !bannerBaseline.has(selectedBannerId);
+    if (hasPendingChangesExcept(selectedBannerId)) {
+      setBannerStatus('Guarda los cambios de los otros banners antes de descartar este borrador.');
+      return;
+    }
     confirmDeleteBanner.disabled = true;
     try {
       const response = await fetch('/api/admin/banners', { method: 'DELETE', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: selectedBannerId }) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'No se pudo quitar el banner.');
       bannerItems = result.banners;
+      bannerBaseline = new Map(bannerItems.map(item => [item.id, bannerSignature(item)]));
       selectedBannerId = bannerItems.find(item => item.enabled)?.id || bannerItems[0]?.id || '';
       bannerDirty = false;
       renderBannerList();
       fillBannerForm();
-      setBannerStatus('Banner quitado del carrusel de Preview.');
+      setBannerStatus(deletingDraft ? 'Borrador descartado sin publicarlo.' : 'Banner quitado del carrusel de Preview.');
       deleteBannerDialog.close();
     } catch (error) { setBannerStatus(error.message); }
     finally { confirmDeleteBanner.disabled = false; }
@@ -480,6 +595,7 @@
   });
   siteContentForm.addEventListener('input', event => { if (event.target !== heroImageFile) captureBannerForm(); });
   siteContentForm.addEventListener('change', event => {
+    if (event.target === heroMediaType || event.target === heroEpisodeSelect) updateBannerMediaUI();
     if (event.target === siteContentForm.elements.hero_effect_es) siteContentForm.elements.hero_effect_en.value = event.target.value;
     if (event.target !== heroImageFile) captureBannerForm();
   });
@@ -487,8 +603,15 @@
   createBannerButton.addEventListener('click', createBanner);
   duplicateBannerButton.addEventListener('click', duplicateBanner);
   deleteBannerButton.addEventListener('click', () => {
-    if (bannerDirty) { setBannerStatus('Guarda los cambios pendientes antes de quitar un banner.'); return; }
+    if (hasPendingChangesExcept(selectedBannerId)) { setBannerStatus('Guarda los cambios de los otros banners antes de quitar este banner.'); return; }
+    const isNewDraft = !bannerBaseline.has(selectedBannerId);
+    if (bannerDirty && !isNewDraft) { setBannerStatus('Guarda los cambios pendientes antes de quitar un banner.'); return; }
     if (bannerItems.length <= 1) { setBannerStatus('Debe quedar al menos un banner en la portada.'); return; }
+    document.querySelector('#delete-banner-title').textContent = isNewDraft ? '¿Descartar este borrador?' : '¿Quitar este banner?';
+    document.querySelector('#delete-banner-description').textContent = isNewDraft
+      ? 'Este banner todavía no se ha publicado. Se descartará sin cambiar los banners guardados.'
+      : 'Dejará de aparecer en el carrusel de Preview. La imagen subida se conserva en el almacén.';
+    document.querySelector('#confirm-delete-banner').textContent = isNewDraft ? 'Descartar borrador' : 'Quitar banner';
     deleteBannerDialog.showModal();
   });
   document.querySelector('#cancel-delete-banner').addEventListener('click', () => deleteBannerDialog.close());

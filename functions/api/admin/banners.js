@@ -8,7 +8,11 @@ const FIELD_COLUMNS = [
   ['hero.cta', 'cta_es', 'cta_en', 'text', 70],
   ['hero.image', 'image_path', 'image_path', 'image', 300],
   ['hero.effect', 'effect', 'effect', 'effect', 20],
-  ['hero.image.alt', 'alt_es', 'alt_en', 'text', 300]
+  ['hero.image.alt', 'alt_es', 'alt_en', 'text', 300],
+  ['hero.mediaType', 'media_type', 'media_type', 'media-type', 10],
+  ['hero.episode', 'episode_id', 'episode_id', 'episode', 100],
+  ['hero.startAt', 'starts_at', 'starts_at', 'schedule', 40],
+  ['hero.endAt', 'ends_at', 'ends_at', 'schedule', 40]
 ];
 const IMAGE_PATH = /^(?:assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)|\/api\/site-content\/image\/(?:site-content\/hero\/)?[0-9a-f-]{36}\.(?:png|webp|jpg))$/i;
 const CONTROL_CHARACTERS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/;
@@ -16,7 +20,7 @@ const COLUMNS = [
   'id', 'position', 'enabled', 'eyebrow_es', 'eyebrow_en',
   'title_first_es', 'title_first_en', 'title_second_es', 'title_second_en',
   'description_es', 'description_en', 'cta_es', 'cta_en', 'image_path',
-  'effect', 'alt_es', 'alt_en', 'cta_href', 'created_at', 'updated_at'
+  'effect', 'alt_es', 'alt_en', 'media_type', 'episode_id', 'starts_at', 'ends_at', 'cta_href', 'created_at', 'updated_at'
 ];
 
 async function authorize({ request, env }, write = false) {
@@ -52,14 +56,23 @@ function normalizeBanner(banner) {
     if (!value || typeof value.es !== 'string' || typeof value.en !== 'string') return { error: 'Completa los textos en español e inglés de cada banner.' };
     const es = value.es.trim();
     const en = value.en.trim();
-    if (!es || !en || es.length > maxLength || en.length > maxLength || CONTROL_CHARACTERS.test(es) || CONTROL_CHARACTERS.test(en)) {
+    const optionalSchedule = type === 'schedule';
+    if ((!optionalSchedule && (!es || !en)) || es.length > maxLength || en.length > maxLength || CONTROL_CHARACTERS.test(es) || CONTROL_CHARACTERS.test(en)) {
       return { error: `Revisa el contenido de “${key}”: no puede estar vacío ni superar ${maxLength} caracteres.` };
     }
+    if (es !== en) return { error: `El valor de “${key}” debe ser igual en ambos idiomas.` };
     if (type === 'image' && (es !== en || !IMAGE_PATH.test(es) || es.split('/').includes('..'))) return { error: 'Sube una imagen válida para este banner antes de guardar.' };
     if (type === 'effect' && (es !== en || !['orbit', 'still'].includes(es))) return { error: 'Elige un movimiento disponible para cada banner.' };
+    if (type === 'media-type' && !['image', 'episode'].includes(es)) return { error: 'Elige si el banner muestra una imagen o un episodio.' };
+    if (type === 'episode' && es && !/^[a-z0-9-]{1,100}$/i.test(es)) return { error: 'El episodio seleccionado no tiene un identificador válido.' };
+    if (type === 'schedule' && es && (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(es)
+      || !Number.isFinite(Date.parse(es)) || new Date(es).toISOString() !== es)) return { error: 'Revisa la fecha programada del banner.' };
     row[esColumn] = es;
     row[enColumn] = en;
   }
+  if (row.media_type === 'episode' && !row.episode_id) return { error: 'Selecciona el episodio que quieres destacar.' };
+  if (row.starts_at && row.ends_at && Date.parse(row.ends_at) <= Date.parse(row.starts_at)) return { error: 'La fecha de fin debe ser posterior a la fecha de inicio.' };
+  row.cta_href = row.media_type === 'episode' ? `/?episode=${encodeURIComponent(row.episode_id)}` : '#historietas';
   return { row };
 }
 
@@ -111,7 +124,6 @@ export async function onRequestPut(context) {
   const ids = rows.map(row => row.id);
   if (new Set(ids).size !== ids.length) return json({ error: 'Hay banners repetidos en la lista.' }, 400);
   if (!rows.some(row => row.enabled)) return json({ error: 'Deja al menos un banner publicado.' }, 400);
-
   const current = await auth.db.prepare('SELECT id FROM hero_banners').all();
   const currentIds = (current.results || []).map(row => row.id).sort();
   if (JSON.stringify([...ids].sort()) !== JSON.stringify(currentIds)) return json({ error: 'La lista cambió en otra pestaña. Recarga los banners e inténtalo de nuevo.' }, 409);
@@ -125,7 +137,7 @@ export async function onRequestPut(context) {
       .bind(...setColumns.map(column => row[column]), row.id);
   });
   await auth.db.batch(updates);
-  return json({ ok: true, updatedAt: now, banners: rows.map(row => fromRow({ ...row, cta_href: '#historietas' })) });
+  return json({ ok: true, updatedAt: now, banners: rows.map(row => fromRow({ ...row, cta_href: row.cta_href })) });
 }
 
 export async function onRequestDelete(context) {

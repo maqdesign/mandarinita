@@ -11,9 +11,10 @@ async function updateHomeShareImage(request, env, next) {
   const response = await next();
   if (!env.MANDARINITA_INBOX) return response;
   try {
+    const now = new Date().toISOString();
     const hero = await env.MANDARINITA_INBOX.prepare(
-      'SELECT image_path, alt_es, effect FROM hero_banners WHERE enabled = 1 ORDER BY position, created_at LIMIT 1'
-    ).first();
+      "SELECT image_path, alt_es, effect FROM hero_banners WHERE enabled = 1 AND (starts_at = '' OR starts_at <= ?) AND (ends_at = '' OR ends_at > ?) ORDER BY position, created_at LIMIT 1"
+    ).bind(now, now).first();
     if (!hero) return response;
     const imagePath = hero.image_path;
     const imageUrl = imagePath && HERO_IMAGE_PATH.test(imagePath) && !imagePath.split('/').includes('..')

@@ -19,7 +19,8 @@
     'hero.title.first': { es: 'primera línea del título', en: 'first title line' },
     'hero.title.second': { es: 'segunda línea del título', en: 'second title line' },
     'hero.description': { es: 'descripción', en: 'description' },
-    'hero.cta': { es: 'texto del botón', en: 'button text' }
+    'hero.cta': { es: 'texto del botón', en: 'button text' },
+    'hero.episode': { es: 'episodio destacado', en: 'featured episode' }
   };
   if (previewMode) {
     document.body.classList.add('hero-only-preview');
@@ -67,6 +68,10 @@
   let lastProgressAnnouncement = -1;
   let transitionSequence = 0;
   let hasDisplayedBanner = false;
+  let scheduledBanners = [];
+  let scheduledBannerSignature = '';
+  let scheduledBannerTimer = 0;
+  let hasAppliedSchedule = false;
   const BANNER_DURATION = 8000;
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -185,7 +190,7 @@
     const alt = fields['hero.image.alt']?.[lang];
     if (heroImage && typeof alt === 'string') heroImage.alt = alt;
     const cta = document.querySelector('.hero-copy .button-dark');
-    if (cta && /^#[A-Za-z0-9_-]+$/.test(banner.ctaHref || '')) cta.href = banner.ctaHref;
+    if (cta && (/^#[A-Za-z0-9_-]+$/.test(banner.ctaHref || '') || /^\/\?episode=[a-z0-9-]{1,100}$/i.test(banner.ctaHref || ''))) cta.href = banner.ctaHref;
     const effect = fields['hero.effect']?.es === 'still' ? 'still' : 'orbit';
     if (orbit) {
       orbit.dataset.effect = effect;
@@ -226,8 +231,9 @@
       dots.append(dot);
     });
   }
-  function initializeCarousel(items, initialIndex = 0) {
+  function initializeCarousel(items, initialIndex = 0, { animate = false } = {}) {
     banners = items;
+    document.body.classList.remove('hero-schedule-empty');
     document.body.classList.toggle('hero-preview-single', previewMode && banners.length < 2);
     current = Math.max(0, Math.min(initialIndex, banners.length - 1));
     if (!controls) { applyBanner(current); return; }
@@ -242,7 +248,40 @@
     else dots?.replaceChildren();
     autoPlay = !reduceMotion.matches;
     updateToggle();
-    applyBanner(current, { animate: false });
+    applyBanner(current, { animate });
+  }
+
+  function scheduleIsActive(banner, now) {
+    const start = Date.parse(banner.fields?.['hero.startAt']?.es || '');
+    const end = Date.parse(banner.fields?.['hero.endAt']?.es || '');
+    return (!Number.isFinite(start) || start <= now) && (!Number.isFinite(end) || end > now);
+  }
+  function applyScheduledBanners() {
+    if (previewMode || !scheduledBanners.length) return;
+    const now = Date.now();
+    const active = scheduledBanners.filter(banner => scheduleIsActive(banner, now));
+    const signature = active.map(banner => banner.id).join('|');
+    if (signature !== scheduledBannerSignature) {
+      const currentId = banners[current]?.id;
+      const currentIndex = active.findIndex(banner => banner.id === currentId);
+      scheduledBannerSignature = signature;
+      if (!active.length) {
+        document.body.classList.add('hero-schedule-empty');
+        stopProgress(false);
+        if (controls) controls.hidden = true;
+      } else {
+        initializeCarousel(active, currentIndex >= 0 ? currentIndex : 0, { animate: hasAppliedSchedule });
+      }
+      hasAppliedSchedule = true;
+    }
+    window.clearTimeout(scheduledBannerTimer);
+    const boundaries = scheduledBanners.flatMap(banner => [
+      Date.parse(banner.fields?.['hero.startAt']?.es || ''),
+      Date.parse(banner.fields?.['hero.endAt']?.es || '')
+    ]).filter(time => Number.isFinite(time) && time > now);
+    if (boundaries.length) {
+      scheduledBannerTimer = window.setTimeout(applyScheduledBanners, Math.max(50, Math.min(...boundaries) - now + 80));
+    }
   }
 
   previous?.addEventListener('click', () => applyBanner(current - 1));
@@ -253,7 +292,12 @@
     if (autoPlay) resumeProgress();
     else stopProgress(true);
   });
-  document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' ? resumeProgress() : stopProgress(true));
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      applyScheduledBanners();
+      resumeProgress();
+    } else stopProgress(true);
+  });
   reduceMotion.addEventListener?.('change', () => {
     if (reduceMotion.matches) { autoPlay = false; stopProgress(true); }
     updateToggle();
@@ -274,11 +318,12 @@
     document.addEventListener('click', event => {
       const target = event.target instanceof Element ? event.target : null;
       const linkTarget = target?.closest('a');
-      const editableText = target?.closest('[data-live-content]') || linkTarget?.querySelector('[data-live-content]');
+      const editableText = target?.closest('[data-live-content]') || (event.detail === 0 ? linkTarget?.querySelector('[data-live-content]') : null);
       const editableImage = target?.closest('.hero-family-image');
       const editable = editableText || editableImage;
       if (editable) {
-        const field = editableText?.dataset.liveContent || 'hero.image';
+        const imageEditField = banners[current]?.fields?.['hero.mediaType']?.es === 'episode' ? 'hero.episode' : 'hero.image';
+        const field = editableText?.dataset.liveContent || imageEditField;
         if (editLabels[field] || field === 'hero.image') {
           event.preventDefault();
           event.stopImmediatePropagation();
@@ -306,7 +351,10 @@
   fetch('/api/site-content', { cache: 'no-store' })
     .then(response => response.ok ? response.json() : null)
     .then(result => {
-      if (Array.isArray(result?.banners) && result.banners.length) initializeCarousel(result.banners);
+      if (Array.isArray(result?.banners) && result.banners.length) {
+        scheduledBanners = result.banners.filter(banner => banner?.fields);
+        applyScheduledBanners();
+      }
     })
     .catch(() => { /* Static homepage content remains as the fallback. */ });
 })();
