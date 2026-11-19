@@ -23,10 +23,12 @@
   const deleteBannerButton = document.querySelector('#delete-banner');
   const deleteBannerDialog = document.querySelector('#delete-banner-dialog');
   const confirmDeleteBanner = document.querySelector('#confirm-delete-banner');
+  const heroPreviewToast = document.querySelector('#hero-preview-toast');
   let bannerItems = [];
   let selectedBannerId = '';
   let bannersLoaded = false;
   let bannerDirty = false;
+  let heroPreviewToastTimer = 0;
   siteContentForm.elements.hero_effect_es.addEventListener('change', () => {
     siteContentForm.elements.hero_effect_en.value = siteContentForm.elements.hero_effect_es.value;
   });
@@ -169,8 +171,23 @@
   function updateBannerPreview() {
     const banner = selectedBanner();
     if (!bannerPreview?.contentWindow || !banner) return;
-    bannerPreview.contentWindow.postMessage({ type: 'mandarinita:preview-banner', banner }, location.origin);
+    const layout = window.matchMedia('(min-width: 1000px)').matches ? 'horizontal' : 'stacked';
+    bannerPreview.contentWindow.postMessage({ type: 'mandarinita:preview-banner', banner, layout }, location.origin);
   }
+  function showHeroPreviewToast(message) {
+    if (!heroPreviewToast) return;
+    window.clearTimeout(heroPreviewToastTimer);
+    heroPreviewToast.textContent = message;
+    heroPreviewToast.hidden = false;
+    heroPreviewToastTimer = window.setTimeout(() => { heroPreviewToast.hidden = true; }, 3800);
+  }
+  window.addEventListener('message', event => {
+    if (event.origin !== location.origin || event.source !== bannerPreview?.contentWindow) return;
+    if (event.data?.type === 'mandarinita:preview-action') {
+      const label = typeof event.data.label === 'string' ? event.data.label.trim().slice(0, 70) : '';
+      showHeroPreviewToast(`${label ? `“${label}”` : 'El botón'} responde. En la portada pública llevará a las historietas.`);
+    }
+  });
   function createIcon(pathData) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');

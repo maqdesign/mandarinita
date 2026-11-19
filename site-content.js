@@ -155,8 +155,22 @@
   window.addEventListener('message', event => {
     if (!previewMode || event.origin !== location.origin || event.source !== window.parent) return;
     if (event.data?.type !== 'mandarinita:preview-banner' || !event.data.banner?.fields) return;
+    document.body.classList.toggle('hero-preview-horizontal', event.data.layout === 'horizontal');
     initializeCarousel([event.data.banner]);
   });
+  if (previewMode) {
+    document.addEventListener('click', event => {
+      const link = event.target instanceof Element ? event.target.closest('a') : null;
+      if (!link) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      window.parent.postMessage({
+        type: 'mandarinita:preview-action',
+        label: (link.textContent || '').trim().slice(0, 100),
+        href: link.getAttribute('href') || ''
+      }, location.origin);
+    }, true);
+  }
 
   fetch('/api/site-content', { cache: 'no-store' })
     .then(response => response.ok ? response.json() : null)
