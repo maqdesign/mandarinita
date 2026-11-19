@@ -59,9 +59,9 @@ async function updateHomeShareImage(request, env, next) {
 function unavailablePage(env) {
   const missing = missingAuthSettings(env);
   const details = missing.length
-    ? `<p>En este entorno de Preview faltan estas variables: <code>${missing.join(', ')}</code>.</p><p>Configúralas en Cloudflare Pages → Configuración → Variables y secretos → Vista previa y vuelve a desplegar.</p>`
+    ? `<p>En este entorno faltan estas variables: <code>${missing.join(', ')}</code>.</p><p>Configúralas en Cloudflare Pages → Configuración → Variables y secretos → el entorno correspondiente y vuelve a desplegar.</p>`
     : '<p>Las variables de acceso están presentes, pero el entorno aún no puede validar la sesión. Abre la URL de este despliegue y vuelve a intentarlo.</p>';
-  return new Response(`<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Taller privado no configurado</title><style>body{margin:0;padding:32px;background:#f7f2e9;color:#30221b;font:16px/1.6 system-ui,sans-serif}main{max-width:680px;margin:10vh auto;padding:28px;border:1px solid #eadcc9;border-radius:20px;background:#fffefa}h1{font-size:1.7rem}code{padding:2px 6px;border-radius:5px;background:#f2e9dc;color:#823b08}</style><main><h1>Taller Mandarinita</h1><p>El acceso privado de este Preview no está listo.</p>${details}</main></html>`, {
+  return new Response(`<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Taller privado no configurado</title><style>body{margin:0;padding:32px;background:#f7f2e9;color:#30221b;font:16px/1.6 system-ui,sans-serif}main{max-width:680px;margin:10vh auto;padding:28px;border:1px solid #eadcc9;border-radius:20px;background:#fffefa}h1{font-size:1.7rem}code{padding:2px 6px;border-radius:5px;background:#f2e9dc;color:#823b08}</style><main><h1>Taller Mandarinita</h1><p>El acceso privado de esta administración no está listo.</p>${details}</main></html>`, {
     status: 503,
     headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' }
   });
@@ -75,7 +75,7 @@ export async function onRequest({ request, env, next }) {
     }
     return next();
   }
-  if (!isAuthConfigured(env)) return unavailablePage();
+  if (!isAuthConfigured(env)) return unavailablePage(env);
   const session = await readSession(request, env.SESSION_SECRET);
   if (isAllowedEmail(env, session?.email)) {
     const response = await next();
