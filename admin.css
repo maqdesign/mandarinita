@@ -16,3 +16,51 @@
 @media(min-width:1000px){.site-content-form{grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr);align-items:start}.site-content-editor-heading,.site-content-form-footer,.site-content-footnote{grid-column:1/-1}.site-content-fields{grid-template-columns:minmax(0,1fr)}.site-content-artwork{grid-template-columns:minmax(0,1fr)}.hero-admin-preview{grid-column:2;grid-row:2;position:sticky;top:16px}.hero-admin-preview iframe{height:clamp(540px,68vh,760px)}}
 .hero-preview-toast{position:fixed;right:24px;bottom:24px;z-index:1100;width:min(410px,calc(100vw - 32px));padding:15px 18px;border:1px solid #426326;border-radius:15px;background:#263c1d;color:#fff;font-size:.86rem;font-weight:600;line-height:1.45;box-shadow:0 14px 38px #24190f35}.hero-preview-toast[hidden]{display:none}
 @media(max-width:600px){.hero-preview-toast{right:16px;bottom:16px;width:calc(100vw - 32px)}}
+
+/* Keep section navigation available while working in long admin screens. */
+@media (min-width: 761px) {
+  .admin-sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+@media (max-width: 760px) {
+  .admin-sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    padding: 12px 14px 10px;
+    background: rgba(251, 248, 242, .97);
+    box-shadow: 0 8px 18px rgba(48, 34, 27, .07);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .admin-sidebar .admin-kicker { display: none; }
+  .admin-sidebar h1 {
+    margin: 0 0 8px;
+    font: 600 1rem/1.1 Fredoka, sans-serif;
+  }
+  .admin-sidebar nav {
+    margin: 0 -2px;
+    padding: 0 2px 2px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    scrollbar-color: #d9c9b5 transparent;
+  }
+  .admin-sidebar nav a {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    padding: 8px 11px;
+    font-size: .8rem;
+  }
+  .admin-main { scroll-margin-top: 112px; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .admin-sidebar { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
