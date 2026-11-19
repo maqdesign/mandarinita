@@ -52,7 +52,7 @@
     }
   }
   function progressTick(now) {
-    if (!autoPlay || banners.length < 2 || document.visibilityState !== 'visible') {
+    if (!autoPlay || (banners.length < 2 && !previewMode) || document.visibilityState !== 'visible') {
       stopProgress(true);
       return;
     }
@@ -69,7 +69,7 @@
     progressFrame = requestAnimationFrame(progressTick);
   }
   function resumeProgress() {
-    if (!autoPlay || banners.length < 2 || document.visibilityState !== 'visible' || progressFrame || progressStartedAt) return;
+    if (!autoPlay || (banners.length < 2 && !previewMode) || document.visibilityState !== 'visible' || progressFrame || progressStartedAt) return;
     progressStartedAt = performance.now();
     progressFrame = requestAnimationFrame(progressTick);
   }
@@ -189,19 +189,22 @@
       dots.append(dot);
     });
   }
-  function initializeCarousel(items) {
+  function initializeCarousel(items, initialIndex = 0) {
     banners = items;
-    current = 0;
-    if (!controls) { applyBanner(0); return; }
-    controls.hidden = banners.length < 2;
-    if (banners.length < 2) {
-      applyBanner(0);
+    current = Math.max(0, Math.min(initialIndex, banners.length - 1));
+    if (!controls) { applyBanner(current); return; }
+    const showControls = banners.length >= 2 || previewMode;
+    controls.hidden = !showControls;
+    if (!showControls) {
+      autoPlay = false;
+      applyBanner(current);
       return;
     }
-    buildDots();
-    autoPlay = !previewMode && !reduceMotion.matches;
+    if (banners.length >= 2) buildDots();
+    else dots?.replaceChildren();
+    autoPlay = !reduceMotion.matches;
     updateToggle();
-    applyBanner(0);
+    applyBanner(current, { animate: false });
   }
 
   previous?.addEventListener('click', () => applyBanner(current - 1));
@@ -222,9 +225,11 @@
   });
   window.addEventListener('message', event => {
     if (!previewMode || event.origin !== location.origin || event.source !== window.parent) return;
-    if (event.data?.type !== 'mandarinita:preview-banner' || !event.data.banner?.fields) return;
+    if (event.data?.type !== 'mandarinita:preview-banner') return;
+    const items = Array.isArray(event.data.banners) ? event.data.banners.filter(item => item?.fields) : (event.data.banner?.fields ? [event.data.banner] : []);
+    if (!items.length) return;
     document.body.classList.toggle('hero-preview-horizontal', event.data.layout === 'horizontal');
-    initializeCarousel([event.data.banner]);
+    initializeCarousel(items, Number.isInteger(event.data.selectedIndex) ? event.data.selectedIndex : 0);
   });
   if (previewMode) {
     document.addEventListener('click', event => {

@@ -796,3 +796,10 @@ body.hero-only-preview .hero-art.hero-art-family{width:min(100%,520px)}
 .site-footer .footer-admin-link svg{width:16px;height:16px}
 .site-footer .footer-admin-link:hover,.site-footer .footer-admin-link:focus-visible{color:var(--yellow);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);opacity:1}
 .site-footer .footer-admin-link:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+
+/* Keep carousel labels and controls at AA contrast over the orange hero. */
+.hero-carousel-status,.hero-carousel-timing{color:var(--text-on-orange)}
+.hero-carousel-arrow,.hero-carousel-toggle{border-color:rgba(48,34,27,.58)}
+.hero-carousel-dot{background:rgba(48,34,27,.68)}
+/* In an admin preview, even a single selected banner shows its real timer and progress. */
+body.hero-only-preview .hero-carousel-arrow,body.hero-only-preview .hero-carousel-dots{display:none}

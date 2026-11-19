@@ -17,6 +17,8 @@
   const heroImagePreview = document.querySelector('#hero-image-preview');
   const heroImageStatus = document.querySelector('#hero-image-status');
   const bannerPreview = document.querySelector('#hero-banner-preview');
+  const previewStage = document.querySelector('.hero-preview-stage');
+  const previewLayoutButtons = [...document.querySelectorAll('[data-preview-layout]')];
   const bannerList = document.querySelector('#hero-banner-list');
   const bannerManagerStatus = document.querySelector('#banner-manager-status');
   const createBannerButton = document.querySelector('#create-banner');
@@ -29,6 +31,7 @@
   let bannersLoaded = false;
   let bannerDirty = false;
   let heroPreviewToastTimer = 0;
+  let heroPreviewLayout = 'horizontal';
   siteContentForm.elements.hero_effect_es.addEventListener('change', () => {
     siteContentForm.elements.hero_effect_en.value = siteContentForm.elements.hero_effect_es.value;
   });
@@ -61,7 +64,7 @@
         const card = document.createElement('article');
         card.className = `inquiry-card inquiry-${item.status}`;
         const date = new Date(item.created_at).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' });
-        card.innerHTML = `<div class="inquiry-card-top"><div><p class="admin-kicker">${escape(date)}</p><h3>${escape(item.name)}</h3><p class="inquiry-email">${escape(item.email)}</p></div><label class="inquiry-status-label">Estado<select aria-label="Estado de la consulta"><option value="new">Nueva</option><option value="reviewing">Revisando</option><option value="replied">Respondida</option><option value="archived">Archivada</option></select></label></div>${item.project ? `<p class="inquiry-project">${escape(item.project)}</p>` : ''}<p class="inquiry-message">${escape(item.message).replace(/\n/g, '<br>')}</p><a class="inquiry-reply" href="mailto:${encodeURIComponent(item.email)}?subject=${encodeURIComponent('Sobre tu proyecto · Mandarinita')}">Responder <span aria-hidden="true">↗</span></a>`;
+        card.innerHTML = `<div class="inquiry-card-top"><div><p class="admin-kicker">${escape(date)}</p><h3>${escape(item.name)}</h3><p class="inquiry-email">${escape(item.email)}</p></div><label class="inquiry-status-label">Estado<select aria-label="Estado de la consulta"><option value="new">Nueva</option><option value="reviewing">Revisando</option><option value="replied">Respondida</option><option value="archived">Archivada</option></select></label></div>${item.project ? `<p class="inquiry-project">${escape(item.project)}</p>` : ''}<p class="inquiry-message">${escape(item.message).replace(/\n/g, '<br>')}</p><a class="inquiry-reply" href="mailto:${encodeURIComponent(item.email)}?subject=${encodeURIComponent('Sobre tu proyecto · Mandarinita')}">Responder <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></a>`;
         const select = card.querySelector('select');
         select.value = item.status;
         select.addEventListener('change', async () => {
@@ -171,8 +174,26 @@
   function updateBannerPreview() {
     const banner = selectedBanner();
     if (!bannerPreview?.contentWindow || !banner) return;
-    const layout = window.matchMedia('(min-width: 1000px)').matches ? 'horizontal' : 'stacked';
-    bannerPreview.contentWindow.postMessage({ type: 'mandarinita:preview-banner', banner, layout }, location.origin);
+    const previewBanners = bannerItems.filter(item => item.enabled || item.id === selectedBannerId);
+    const selectedIndex = Math.max(0, previewBanners.findIndex(item => item.id === selectedBannerId));
+    bannerPreview.contentWindow.postMessage({
+      type: 'mandarinita:preview-banner',
+      banners: previewBanners,
+      selectedIndex,
+      layout: heroPreviewLayout
+    }, location.origin);
+  }
+  function setHeroPreviewLayout(layout) {
+    heroPreviewLayout = layout === 'vertical' ? 'vertical' : 'horizontal';
+    if (previewStage) previewStage.dataset.layout = heroPreviewLayout;
+    document.querySelector('.hero-admin-preview')?.setAttribute('data-layout', heroPreviewLayout);
+    for (const button of previewLayoutButtons) {
+      button.setAttribute('aria-pressed', String(button.dataset.previewLayout === heroPreviewLayout));
+    }
+    updateBannerPreview();
+  }
+  for (const button of previewLayoutButtons) {
+    button.addEventListener('click', () => setHeroPreviewLayout(button.dataset.previewLayout));
   }
   function showHeroPreviewToast(message) {
     if (!heroPreviewToast) return;
@@ -248,6 +269,7 @@
         }
         banner.enabled = enabled.checked;
         bannerDirty = true;
+        updateBannerPreview();
         deleteBannerButton.disabled = true;
         setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
       });
@@ -268,6 +290,7 @@
           [bannerItems[index], bannerItems[index + offset]] = [bannerItems[index + offset], bannerItems[index]];
           bannerDirty = true;
           deleteBannerButton.disabled = true;
+          updateBannerPreview();
           setBannerStatus('Orden pendiente. Guarda los cambios para publicarlos en Preview.');
           renderBannerList(direction);
         });
