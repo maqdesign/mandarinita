@@ -1329,22 +1329,31 @@
         card.setAttribute('aria-label', `Revisar ${resource.name}. No se puede insertar todavía.`);
         card.onclick = () => openCutoutReview(resource);
       } else if (resource.approvedCutout) {
-        // Use one pointer drag path on mouse, touch and Apple Pencil. Native HTML
-        // drag/drop is inconsistent for cards inside a scrolling iPad drawer.
+        // Mouse and Apple Pencil can drag directly. On touch screens, keep the
+        // vertical gesture for scrolling and start a drag only after a long press.
         card.draggable = false;
         card.onclick = () => { if (Date.now() >= suppressAssetClickUntil) addResource(resource); };
         let pointerDrag = null;
+        const startResourceDrag = (event, drag) => {
+          if (!pointerDrag || pointerDrag.id !== drag.id || drag.started) return;
+          drag.started=true; suppressAssetClickUntil=Date.now()+1200;
+          try { card.setPointerCapture(drag.id); } catch {}
+          $('#library-panel').classList.add('dragging-from-library');
+          const ghost=document.createElement('div'); ghost.className='asset-drag-ghost'; ghost.innerHTML=`<img src="${thumb}" alt=""><span>${escapeHTML(resource.name)}</span>`; document.body.append(ghost); drag.ghost=ghost;
+          ghost.style.left=`${event.clientX+12}px`; ghost.style.top=`${event.clientY+12}px`;
+        };
         card.addEventListener('pointerdown', event => {
-          pointerDrag = { id:event.pointerId, x:event.clientX, y:event.clientY, started:false, ghost:null };
-          try { card.setPointerCapture(event.pointerId); } catch {}
+          const touch = event.pointerType === 'touch';
+          const drag = { id:event.pointerId, x:event.clientX, y:event.clientY, started:false, ghost:null, touch, holdTimer:null };
+          pointerDrag=drag;
+          if (touch) drag.holdTimer=setTimeout(() => startResourceDrag({clientX:drag.x,clientY:drag.y},drag), 450);
+          else { try { card.setPointerCapture(event.pointerId); } catch {} }
         });
         card.addEventListener('pointermove', event => {
           if (!pointerDrag || pointerDrag.id !== event.pointerId) return;
-          if (!pointerDrag.started && Math.hypot(event.clientX-pointerDrag.x,event.clientY-pointerDrag.y)>14) {
-            pointerDrag.started=true; suppressAssetClickUntil=Date.now()+1000;
-            $('#library-panel').classList.add('dragging-from-library');
-            const ghost=document.createElement('div'); ghost.className='asset-drag-ghost'; ghost.innerHTML=`<img src="${thumb}" alt=""><span>${escapeHTML(resource.name)}</span>`; document.body.append(ghost); pointerDrag.ghost=ghost;
-          }
+          const distance=Math.hypot(event.clientX-pointerDrag.x,event.clientY-pointerDrag.y);
+          if(pointerDrag.touch&&!pointerDrag.started&&distance>14){clearTimeout(pointerDrag.holdTimer);pointerDrag=null;return;}
+          if (!pointerDrag.started && distance>14) startResourceDrag(event,pointerDrag);
           if (pointerDrag.started) {
             event.preventDefault(); pointerDrag.ghost.style.left=`${event.clientX+12}px`; pointerDrag.ghost.style.top=`${event.clientY+12}px`;
             $$('.artboard-canvas.drop-target').forEach(canvas=>canvas.classList.remove('drop-target'));
@@ -1353,6 +1362,7 @@
         });
         const finishPointerDrag = event => {
           if (!pointerDrag || pointerDrag.id!==event.pointerId) return;
+          clearTimeout(pointerDrag.holdTimer);
           if (pointerDrag.started && event.type === 'pointerup') {
             event.preventDefault(); const target=document.elementFromPoint(event.clientX,event.clientY)?.closest('.artboard-canvas');
             const panelIndex=Number(target?.dataset.panelIndex); target?.classList.remove('drop-target');
@@ -1363,6 +1373,7 @@
             } else $('#library-panel').classList.remove('dragging-from-library');
             suppressAssetClickUntil=Date.now()+800;
           } else $('#library-panel').classList.remove('dragging-from-library');
+          $$('.artboard-canvas.drop-target').forEach(canvas=>canvas.classList.remove('drop-target'));
           pointerDrag.ghost?.remove(); pointerDrag=null;
         };
         card.addEventListener('pointerup',finishPointerDrag); card.addEventListener('pointercancel',finishPointerDrag);
