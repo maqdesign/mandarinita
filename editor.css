@@ -484,3 +484,34 @@ dialog.publish-episode-dialog::backdrop{background:#171411a8;backdrop-filter:blu
 @font-face{font-family:'Comic Neue';src:url('/assets/fonts/comic-neue-regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:'Comic Neue';src:url('/assets/fonts/comic-neue-bold.ttf') format('truetype');font-style:normal;font-weight:700;font-display:swap}
 @font-face{font-family:'Lilita One';src:url('/assets/fonts/lilita-one-latin.woff2') format('woff2');font-style:normal;font-weight:400;font-display:swap}
+
+/* Episode catalog and lifecycle controls */
+.home-sections{display:flex;gap:8px;margin:-10px 0 22px;border-bottom:1px solid var(--line);overflow:auto;scrollbar-width:none}
+.home-sections button{flex:0 0 auto;min-height:42px;padding:8px 14px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font:650 14px 'Work Sans',sans-serif;cursor:pointer}
+.home-sections button.active{border-bottom-color:var(--orange);color:var(--ink)}
+.published-episodes-section{min-width:0}
+.published-episodes-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:6px 0 22px}
+.published-episodes-heading h2{margin:4px 0;font:700 clamp(22px,3vw,30px) 'Fredoka',sans-serif;color:var(--ink)}
+.published-episodes-heading p{max-width:650px;margin:0;color:var(--muted);line-height:1.5}
+.published-episodes-filters{display:grid;grid-template-columns:minmax(220px,1fr) minmax(180px,260px);gap:12px;margin-bottom:16px}
+.published-episodes-filters label,.publish-metadata-fieldset>label{display:grid;gap:6px;color:var(--muted);font-size:12px;font-weight:650}
+.published-episodes-filters input,.published-episodes-filters select,.publish-metadata-fieldset input,.publish-metadata-fieldset textarea,.publish-episode-fields small{font:inherit}
+.published-episodes-filters input,.published-episodes-filters select,.publish-metadata-fieldset input,.publish-metadata-fieldset textarea{min-width:0;border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--surface);color:var(--ink)}
+.published-episode-list{display:grid;gap:10px}
+.published-episode-card{display:grid;grid-template-columns:76px minmax(0,1fr) auto;align-items:center;gap:14px;padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:13px}
+.published-episode-thumb{width:76px;height:76px;overflow:hidden;border-radius:9px;background:var(--canvas);display:grid;place-items:center}
+.published-episode-thumb img{width:100%;height:100%;object-fit:cover}
+.published-episode-copy{min-width:0;display:grid;gap:4px}
+.published-episode-copy strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);font:650 15px 'Fredoka',sans-serif}
+.published-episode-copy small{color:var(--muted);font-size:12px}
+.published-episode-meta{display:flex;flex-wrap:wrap;gap:5px}
+.published-episode-meta span{padding:3px 7px;border-radius:999px;background:var(--paper);color:var(--muted);font-size:10px}
+.published-episode-card>.button{white-space:nowrap}
+.publish-metadata-fieldset{display:grid;gap:12px;min-width:0;margin:18px 0;padding:14px;border:1px solid var(--line);border-radius:12px}
+.publish-metadata-fieldset legend{padding:0 5px;font-weight:700}
+.publish-metadata-fieldset>p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.publish-metadata-fieldset .publish-episode-fields{margin:0}
+.publish-episode-fields small{color:var(--muted);font-size:11px;font-weight:400}
+.published-episode-empty{padding:34px 16px;border:1px dashed var(--line);border-radius:14px;text-align:center;color:var(--muted)}
+@media(max-width:640px){.home-sections{margin-inline:-14px;padding-inline:14px}.published-episodes-heading{align-items:flex-start}.published-episodes-filters{grid-template-columns:1fr}.published-episode-card{grid-template-columns:56px minmax(0,1fr);gap:10px;padding:9px}.published-episode-thumb{width:56px;height:56px}.published-episode-card>.button{grid-column:2;justify-self:start;min-height:36px}.published-episode-copy strong{font-size:13px}.publish-metadata-fieldset{padding:11px}.publish-episode-footer{gap:8px}}
+@media(prefers-reduced-motion:no-preference){.published-episode-card{transition:border-color .15s ease,transform .15s ease}.published-episode-card:hover{border-color:var(--orange);transform:translateY(-1px)}}

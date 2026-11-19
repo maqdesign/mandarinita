@@ -23,7 +23,8 @@ export async function onRequestGet({ params, env, request }) {
   let manifest;
   try { manifest = await manifestObject.json(); } catch { return new Response('No encontrado.', { status: 404 }); }
   const today = santoDomingoToday();
-  const isAvailable = manifest.complete === true && (manifest.status === 'published' || manifest.status === 'scheduled' && manifest.publishedAt <= today);
+  const isAvailable = manifest.complete === true && (manifest.status === 'published' || manifest.status === 'scheduled' && manifest.publishedAt <= today)
+    && (!manifest.unpublishAt || manifest.unpublishAt > today);
   if (!isAvailable || manifest.revision !== revision || !manifest.panels?.some(entry => entry.order === order)) return new Response('No encontrado.', { status: 404 });
 
   const key = `${PREFIX}${id}/releases/${revision}/panels/${String(order).padStart(2, '0')}.png`;

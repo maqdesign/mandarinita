@@ -20,9 +20,9 @@ function syncSearchLanguage(){
   const heading=document.querySelector('#global-search-title');
   const label=document.querySelector('label[for="global-search-input"]');
   if(heading)heading.textContent=lang==='en'?'Search Mandarinita':'Buscar en Mandarinita';
-  if(searchInput)searchInput.placeholder=lang==='en'?'Title, character, object or number':'Título, personaje, objeto o número';
-  if(label)label.textContent=lang==='en'?'Find an episode by title, character, object or number':'Encuentra un episodio por título, personaje, objeto o número';
-  if(searchHint)searchHint.textContent=lang==='en'?'Search by who or what appears in a comic. Dialogue text is not indexed.':'Busca por quién o qué aparece en la historieta. No indexamos los diálogos.';
+  if(searchInput)searchInput.placeholder=lang==='en'?'Title, character, topic, color or number':'Título, personaje, tema, color o número';
+  if(label)label.textContent=lang==='en'?'Find an episode by title, character, topic, color or number':'Encuentra un episodio por título, personaje, tema, color o número';
+  if(searchHint)searchHint.textContent=lang==='en'?'Search titles, characters, objects, topics, colors or words from a comic.':'Busca títulos, personajes, objetos, temas, colores o palabras que aparezcan en una historieta.';
 }
 
 function openSearch(){if(!searchDialog)return;searchDialog.showModal();searchInput?.focus();}
@@ -50,7 +50,8 @@ function renderSearchResults(){
     const number=String(item.episodeNumber||'').includes(query);
     const characters=labelsFor(item.characters||[],searchCharacters).some(entry=>labelMatches(entry,query));
     const objects=labelsFor(item.objects||[],searchObjects).some(entry=>labelMatches(entry,query));
-    return titles||number||characters||objects;
+    const editorial=normalize([item.themes,item.colors,item.searchTerms,item.spokenText,item.objects].flatMap(value=>Array.isArray(value)?value:[value]).join(' ')).includes(query);
+    return titles||number||characters||objects||editorial;
   }).slice(0,12);
   const lang=language();
   for(const item of found){
