@@ -990,7 +990,7 @@
     $('#export-preset').value = state.format;
     $('#export-style').value = state.exportStyle || 'classic';
     $('#add-cta-panel').hidden = state.contentType !== 'episode';
-    $('#publish-episode').hidden = state.contentType !== 'episode';
+    $('#publish-episode').hidden = false;
     $('#mockup-preview').hidden=state.contentType!=='mockup';$('#change-mockup').hidden=state.contentType!=='mockup';$('#mockup-preview').setAttribute('aria-pressed',String(state.mockupPreview!==false));$('#mockup-preview').setAttribute('aria-label',state.mockupPreview===false?'Ver producto':'Ocultar simulación');$('#mockup-preview').title=state.mockupPreview===false?'Ver producto':'Ocultar simulación';$('#mockup-preview').innerHTML=`${svgIcon(state.mockupPreview===false?'eye':'eyeOff')}<span class="button-label">${state.mockupPreview===false?'Ver producto':'Ocultar simulación'}</span>`;
     $('#export-vector').hidden=!['design','mockup'].includes(state.contentType);
     renderPanels();
@@ -2084,7 +2084,13 @@
   }
 
   async function openPublishEpisodeDialog() {
-    if (state.contentType !== 'episode') return;
+    if (state.contentType !== 'episode') {
+      const previousType = state.contentType || 'diseño';
+      if (!window.confirm(`Este borrador está clasificado como «${previousType}». ¿Quieres publicarlo como episodio? Se conservarán las viñetas y sus capas.`)) return;
+      state.contentType = 'episode';
+      autosave();
+      render();
+    }
     $('#export-preview-dialog').close();
     const form = $('#publish-episode-form');
     const status = $('#publish-episode-status');
@@ -2209,7 +2215,7 @@
         const image=document.createElement('img');image.src=url;image.alt=`Vista previa final de la viñeta ${index+1}, con la plantilla ${styleLabel}`;
         card.append(label,image);pages.append(card);
       }
-    $('#publish-episode').hidden = state.contentType !== 'episode';
+    $('#publish-episode').hidden = false;
     $('#export-preview-dialog').showModal();
     } catch(error) {toast(error instanceof Error?error.message:'No se pudo preparar la vista previa.');}
     finally {button.disabled=false;}
