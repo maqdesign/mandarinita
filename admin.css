@@ -269,6 +269,8 @@
 .hero-preview-stage[data-layout="vertical"] { align-items: center; }
 @media (min-width: 1500px) {
   .site-content-form { grid-template-columns: minmax(0, 1.08fr) minmax(390px, .92fr); align-items: start; }
+  .site-content-editor-heading,.site-content-form-footer,.site-content-footnote { grid-column: 1 / -1; }
+  .site-content-fields { grid-column: 1; }
   .hero-admin-preview { position: sticky; top: 14px; grid-column: 2; grid-row: 2; max-height: calc(100dvh - 28px); overflow: hidden; }
   .hero-preview-stage { max-height: calc(100dvh - 194px); min-height: 340px; }
   .hero-preview-stage[data-layout="vertical"] { height: min(700px, calc(100dvh - 194px)); }
