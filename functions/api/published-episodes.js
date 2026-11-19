@@ -1,0 +1,187 @@
+import { authorizeProjectRequest, isValidProjectId } from '../_lib/projects.js';
+import { json } from '../_lib/session.js';
+
+const PREFIX = 'published/episodes/';
+const MAX_PANELS = 20;
+const MAX_PANEL_BYTES = 16 * 1024 * 1024;
+const MAX_TOTAL_BYTES = 80 * 1024 * 1024;
+const PUBLIC_ID = /^ep-[a-zA-Z0-9_-]{1,96}$/;
+
+function validDate(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+function santoDomingoToday() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function visible(manifest, today) {
+  return manifest?.complete === true && (manifest.status === 'published' || manifest.status === 'scheduled' && manifest.publishedAt <= today);
+}
+
+async function listManifests(bucket) {
+  const records = [];
+  let cursor;
+  do {
+    const page = await bucket.list({ prefix: PREFIX, cursor, limit: 1000 });
+    for (const object of page.objects) {
+      if (!object.key.endsWith('/manifest.json')) continue;
+      try {
+        const data = await bucket.get(object.key);
+        const record = data && await data.json();
+        if (record && PUBLIC_ID.test(record.id)) records.push(record);
+      } catch { /* An unreadable manifest stays private. */ }
+    }
+    cursor = page.truncated ? page.cursor : undefined;
+  } while (cursor);
+  return records;
+}
+
+function publicEpisode(record) {
+  return {
+    id: record.id,
+    episodeNumber: record.episodeNumber,
+    title: record.title,
+    publishedAt: record.publishedAt,
+    status: 'published',
+    type: 'comic',
+    complete: true,
+    exportTemplate: record.exportTemplate,
+    panels: record.panels.map(panel => ({
+      order: panel.order,
+      src: `/api/published-episodes/${record.id}/${panel.order}.png?v=${record.revision}`,
+      alt: panel.alt
+    }))
+  };
+}
+
+export async function onRequestGet({ env }) {
+  if (!env.MANDARINITA_PROJECTS) return json({ episodes: [] });
+  try {
+    const today = santoDomingoToday();
+    const records = await listManifests(env.MANDARINITA_PROJECTS);
+    const episodes = records.filter(record => visible(record, today) && Number.isInteger(record.episodeNumber) && Array.isArray(record.panels))
+      .map(publicEpisode)
+      .sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || '') || b.episodeNumber - a.episodeNumber);
+    return json({ schemaVersion: 1, episodes }, 200, { 'Cache-Control': 'public, max-age=30, s-maxage=60' });
+  } catch (error) {
+    console.error('Published episodes could not be read', { name: error?.name || 'Error' });
+    return json({ episodes: [] }, 200, { 'Cache-Control': 'no-store' });
+  }
+}
+
+export async function onRequestPost(context) {
+  const auth = await authorizeProjectRequest(context, true);
+  if (auth.response) return auth.response;
+  const { request, env } = context;
+  let form;
+  try { form = await request.formData(); }
+  catch { return json({ error: 'No pude leer el paquete del episodio.' }, 400); }
+
+  let input;
+  try { input = JSON.parse(String(form.get('metadata') || '')); }
+  catch { return json({ error: 'Los datos editoriales no son válidos.' }, 400); }
+
+  const id = input?.id;
+  const projectId = input?.projectId;
+  const episodeNumber = Number(input?.episodeNumber);
+  const title = { es: String(input?.title?.es || '').trim(), en: String(input?.title?.en || '').trim() };
+  const publishedAt = input?.publishedAt;
+  const panels = input?.panels;
+  if (!PUBLIC_ID.test(id || '') || !isValidProjectId(projectId) || id !== `ep-${projectId}`) return json({ error: 'El identificador del episodio no es válido.' }, 400);
+  if (!Number.isInteger(episodeNumber) || episodeNumber < 1 || episodeNumber > 9999) return json({ error: 'El número de episodio no es válido.' }, 400);
+  if (!title.es || title.es.length > 180 || !title.en || title.en.length > 180) return json({ error: 'Escribe el título del episodio en español e inglés (máximo 180 caracteres).' }, 400);
+  if (!validDate(publishedAt)) return json({ error: 'Elige una fecha de publicación válida.' }, 400);
+  if (!Array.isArray(panels) || panels.length < 1 || panels.length > MAX_PANELS) return json({ error: `El episodio debe tener entre 1 y ${MAX_PANELS} viñetas.` }, 400);
+
+  const checkedPanels = [];
+  let totalBytes = 0;
+  for (let index = 0; index < panels.length; index++) {
+    const panel = panels[index];
+    const order = index + 1;
+    const alt = { es: String(panel?.alt?.es || '').trim(), en: String(panel?.alt?.en || '').trim() };
+    const file = form.get(`panel-${order}`);
+    if (panel?.order !== order || alt.es.length < 8 || alt.en.length < 8 || alt.es.length > 300 || alt.en.length > 300) {
+      return json({ error: `Completa el texto alternativo de la viñeta ${order} en español e inglés.` }, 400);
+    }
+    if (!(file instanceof File) || file.type !== 'image/png' || file.size < 1 || file.size > MAX_PANEL_BYTES) {
+      return json({ error: `La imagen de la viñeta ${order} no es un PNG válido o supera 16 MB.` }, 400);
+    }
+    totalBytes += file.size;
+    if (totalBytes > MAX_TOTAL_BYTES) return json({ error: 'El conjunto de imágenes supera 80 MB.' }, 413);
+    checkedPanels.push({ order, alt, file });
+  }
+
+  const bucket = env.MANDARINITA_PROJECTS;
+  const manifestKey = `${PREFIX}${id}/manifest.json`;
+  let previousObject;
+  try { previousObject = await bucket.get(manifestKey); }
+  catch { return json({ error: 'El almacenamiento público no está disponible ahora. El borrador sigue guardado.' }, 503); }
+  let previous = null;
+  if (previousObject) {
+    try { previous = await previousObject.json(); } catch { return json({ error: 'El registro anterior del episodio está dañado y no se reemplazó.' }, 409); }
+    if (previous.projectId !== projectId) return json({ error: 'Ese identificador ya pertenece a otro proyecto.' }, 409);
+  }
+
+  let existingRecords;
+  try { existingRecords = await listManifests(bucket); }
+  catch { return json({ error: 'No se pudo comprobar el archivo público. Intenta publicar de nuevo.' }, 503); }
+  try {
+    const catalogResponse = await fetch(new URL('/episodes.json', request.url), { headers: { Accept: 'application/json' }, cf: { cacheTtl: 60 } });
+    if (!catalogResponse.ok) throw new Error('Static episode catalog unavailable');
+    const catalog = await catalogResponse.json();
+    if (catalog.episodes?.some(record => record.id !== id && Number(record.episodeNumber) === episodeNumber)) {
+      return json({ error: `El episodio ${episodeNumber} ya existe en el archivo. Elige otro número.` }, 409);
+    }
+  } catch {
+    return json({ error: 'No se pudo comprobar el número de episodio contra el archivo actual. Intenta publicar de nuevo.' }, 503);
+  }
+  const duplicate = existingRecords.find(record => record.id !== id && Number(record.episodeNumber) === episodeNumber);
+  if (duplicate) return json({ error: `El episodio ${episodeNumber} ya está publicado o programado. Elige otro número.` }, 409);
+
+  const today = santoDomingoToday();
+  const status = publishedAt > today ? 'scheduled' : 'published';
+  const revision = crypto.randomUUID();
+  const exportTemplate = ['classic', 'cream', 'footer', 'bleed'].includes(input.exportTemplate) ? input.exportTemplate : 'classic';
+  const next = {
+    schemaVersion: 1,
+    editorialPolicy: 'manual-approval',
+    id,
+    projectId,
+    revision,
+    episodeNumber,
+    title,
+    publishedAt,
+    status,
+    type: 'comic',
+    complete: true,
+    exportTemplate,
+    source: { kind: 'editor-publish', instagramMediaId: null, instagramPermalink: null },
+    panels: checkedPanels.map(({ order, alt }) => ({ order, alt }))
+  };
+
+  try {
+    for (const { order, file } of checkedPanels) {
+      const panelKey = `${PREFIX}${id}/releases/${revision}/panels/${String(order).padStart(2, '0')}.png`;
+      await bucket.put(panelKey, file.stream(), {
+        httpMetadata: { contentType: 'image/png', cacheControl: 'public, max-age=31536000, immutable' },
+        customMetadata: { episodeId: id, order: String(order) }
+      });
+    }
+    await bucket.put(manifestKey, JSON.stringify(next), {
+      httpMetadata: { contentType: 'application/json; charset=utf-8', cacheControl: 'no-store' },
+      customMetadata: { episodeId: id, episodeNumber: String(episodeNumber), status, publishedAt }
+    });
+  } catch (error) {
+    console.error('Episode could not be published', { name: error?.name || 'Error', episodeId: id });
+    return json({ error: 'No se pudo guardar el episodio en el sitio. El borrador del editor sigue intacto.' }, 503);
+  }
+
+  return json({ ok: true, episode: { ...publicEpisode(next), status }, scheduled: status === 'scheduled' }, 200);
+}

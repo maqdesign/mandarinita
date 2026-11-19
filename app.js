@@ -3,11 +3,26 @@ const menuButton = document.querySelector('.menu-button');
 const navigation = document.querySelector('.main-nav');
 // Share the same in-flight catalog request between the home cards, character
 // appearances, archive and global search instead of downloading it repeatedly.
-window.mandarinitaEpisodesCatalogPromise ||= fetch('episodes.json', { cache: 'no-cache' }).then(response => {
+window.mandarinitaEpisodesCatalogPromise ||= fetch('episodes.json', { cache: 'no-cache' }).then(async response => {
   if (!response.ok) throw new Error('Episode catalog unavailable');
-  return response.json();
+  const catalog = await response.json();
+  try {
+    const published = await fetch('/api/published-episodes', { cache: 'no-store' });
+    if (published.ok) {
+      const result = await published.json();
+      const currentIds = new Set(catalog.episodes.map(entry => entry.id));
+      catalog.episodes.push(...(Array.isArray(result.episodes) ? result.episodes.filter(entry => !currentIds.has(entry.id)) : []));
+    }
+  } catch { /* Published additions are optional; the curated catalog remains available offline. */ }
+  return catalog;
 });
 window.mandarinitaSetEpisodeThumbnail = (image, source, sizes, onFailure) => {
+  if (source.startsWith('/api/published-episodes/')) {
+    image.sizes = sizes;
+    image.src = source;
+    image.addEventListener('error', () => onFailure?.(), { once: true });
+    return;
+  }
   const thumbnail = source.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-$1.webp');
   const compact = source.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-320-$1.webp');
   const originalUrl = new URL(source, location.href).href;
@@ -164,6 +179,11 @@ function catalogTitle(entry, lang = language) {
   if (lang === 'en' && /^episode\s+\d+$/i.test(translated || '')) return entry.title?.es || translated;
   return translated || entry.title?.es || '';
 }
+function validEpisodePanelSource(entry, panel) {
+  const id = /^[a-zA-Z0-9_-]{1,100}$/.test(entry.id || '') ? entry.id : '';
+  return (/^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && !panel.src.includes('..'))
+    || Boolean(id && panel.src.startsWith(`/api/published-episodes/${id}/${panel.order}.png?v=`) && /^[a-f0-9-]{36}$/i.test(panel.src.split('?v=')[1] || ''));
+}
 setLanguage(language);
 syncInternalLanguageLinks();
 languageButton.addEventListener('click', () => {
@@ -207,7 +227,7 @@ async function loadApprovedEpisodes() {
     for (const entry of catalog.episodes) {
       if (entry.status !== 'published' || entry.type !== 'comic' || entry.complete !== true || !Array.isArray(entry.panels) || !entry.panels.length) continue;
       const ordered = [...entry.panels].sort((a,b)=>a.order-b.order);
-      if (!ordered.every((panel,i) => panel.order === i+1 && /^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && !panel.src.includes('..') && panel.alt?.es && panel.alt?.en)) continue;
+      if (!ordered.every((panel,i) => panel.order === i+1 && validEpisodePanelSource(entry, panel) && panel.alt?.es && panel.alt?.en)) continue;
       const staticKeys = {
         'ep-001-la-mosca':'episode1',
         'ep-051-tienes-hambre':'coffee',

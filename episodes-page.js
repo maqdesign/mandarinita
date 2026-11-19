@@ -52,11 +52,17 @@ function formatEpisodeDate(value) {
   return new Intl.DateTimeFormat(locale, { day:'numeric', month:'short', year:'numeric' }).format(date);
 }
 
+function validEpisodePanelSource(entry, panel) {
+  const id = /^[a-zA-Z0-9_-]{1,100}$/.test(entry.id || '') ? entry.id : '';
+  return (/^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && !panel.src.includes('..'))
+    || Boolean(id && panel.src.startsWith(`/api/published-episodes/${id}/${panel.order}.png?v=`) && /^[a-f0-9-]{36}$/i.test(panel.src.split('?v=')[1] || ''));
+}
+
 function approvedEpisodes(catalog) {
   if (catalog.schemaVersion !== 1 || catalog.editorialPolicy !== 'manual-approval' || !Array.isArray(catalog.episodes)) return [];
   return catalog.episodes.filter(entry => entry.status === 'published' && entry.type === 'comic' && entry.complete === true && Array.isArray(entry.panels) && entry.panels.length)
     .map(entry => ({...entry, panels:[...entry.panels].sort((a,b)=>a.order-b.order)}))
-    .filter(entry => entry.panels.every((panel,i) => panel.order === i+1 && /^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && !panel.src.includes('..') && panel.alt?.es && panel.alt?.en));
+    .filter(entry => entry.panels.every((panel,i) => panel.order === i+1 && validEpisodePanelSource(entry,panel) && panel.alt?.es && panel.alt?.en));
 }
 
 function renderBatch() {
