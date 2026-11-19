@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mandarinita-editor-v32';
+const CACHE_NAME = 'mandarinita-editor-v33';
 const APP_SHELL = [
   '/editor.css',
   '/editor.js',
