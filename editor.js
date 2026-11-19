@@ -1076,6 +1076,7 @@
       up.onclick = () => movePanel(index, index - 1); down.onclick = () => movePanel(index, index + 1);
       card.dataset.panelIndex = index; card.append(drag, button, up, down); list.append(card);
     });
+    const add=document.createElement('button');add.type='button';add.className='panel-add-ghost';add.setAttribute('aria-label','Añadir viñeta al final de la historia');add.title='Añadir una viñeta al final';add.innerHTML=`${svgIcon('plus')}<span>Añadir viñeta</span>`;add.onclick=addPanel;list.append(add);
   }
   function renderItem(item, index, panelIndex, boardCanvas, syncContinuationCopies) {
     const element = document.createElement('div');

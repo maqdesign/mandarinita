@@ -447,6 +447,13 @@ dialog.export-preview-dialog #export-preview-close{width:40px;height:40px;paddin
 @media(max-width:720px){.stage{padding-inline:6vw!important}.artboard-wrap{padding:0!important}.design-template-grid{grid-template-columns:1fr}.text-style-dialog .template-grid{grid-template-columns:1fr}.text-style-card{min-height:58px}.artboard-heading{margin-bottom:5px!important}}
 @media(max-width:720px){.tools .button-label,.filters .button-label{display:none}.tools .has-icon{min-width:36px;min-height:36px;padding:7px}.filters .has-icon{min-width:34px;justify-content:center}.layer-row .layer-grip,.layer-row .layer-rename{width:34px;height:36px}.layer-row .layer-order,.layer-row .lock{min-width:34px;min-height:34px}}
 @media(max-width:720px){.filters{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.filters button{display:inline-flex;flex:1 1 auto;align-items:center;justify-content:center;gap:5px;min-height:40px;padding:7px 9px}.filters .button-label{display:inline;white-space:nowrap}.filters .ui-icon{width:15px;height:15px}.filters button[aria-pressed="true"]{box-shadow:inset 0 0 0 1px currentColor}}
+.panel-add-ghost{display:flex;flex:0 0 142px;align-items:center;justify-content:center;flex-direction:column;gap:3px;height:78px;min-height:0;padding:4px;border:1.5px dashed var(--orange);border-radius:8px;background:transparent;color:var(--orange);font-weight:700;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.panel-add-ghost .ui-icon{width:29px;height:29px;stroke-width:2.4}
+.panel-add-ghost span{font-size:10px;line-height:1.1}
+.panel-add-ghost:hover{background:color-mix(in srgb,var(--orange) 9%,transparent);border-style:solid;transform:translateY(-1px)}
+.panel-add-ghost:focus-visible{outline:3px solid color-mix(in srgb,var(--orange) 42%,transparent);outline-offset:2px}
+@media(max-width:1100px){.panel-add-ghost{flex-basis:116px;height:66px}}
+@media(max-width:720px){.panel-add-ghost{height:100%;min-height:42px;gap:1px;padding:1px}.panel-add-ghost .ui-icon{width:24px;height:24px}.panel-add-ghost span{font-size:9px}}
 @font-face{font-family:'Fredoka';src:url('/assets/fonts/fredoka-latin.woff2') format('woff2');font-style:normal;font-weight:400 700;font-display:swap}
 @font-face{font-family:'Work Sans';src:url('/assets/fonts/work-sans-latin.woff2') format('woff2');font-style:normal;font-weight:400 700;font-display:swap}
 @font-face{font-family:'Baloo 2';src:url('/assets/fonts/baloo-2-latin.woff2') format('woff2');font-style:normal;font-weight:400 800;font-display:swap}
