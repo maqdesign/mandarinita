@@ -952,7 +952,7 @@
     $('#export-vector').hidden=!['design','mockup'].includes(state.contentType);
     renderPanels();
     state.panels.forEach((panel, panelIndex) => {
-      const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.dataset.panelIndex = panelIndex; wrapper.style.setProperty('--artboard-scale', scale);
+      const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.classList.toggle('has-cross-panel-art',panel.items.some(item=>item.x<0||item.x+item.w>LOGICAL_WIDTH)); wrapper.dataset.panelIndex = panelIndex; wrapper.style.setProperty('--artboard-scale', scale);
       const heading = document.createElement('div'); heading.className = 'artboard-heading';
       const activate = document.createElement('button'); activate.className = 'artboard-title'; activate.innerHTML = `<strong>Viñeta ${panelIndex + 1}</strong><span>${panel.items.length} capas</span>`; activate.onclick = () => setActivePanel(panelIndex, true);
       const viewportBadge=document.createElement('span');viewportBadge.className='viewport-badge';viewportBadge.textContent='ÁREA FINAL';viewportBadge.hidden=panelIndex!==state.active;
@@ -1772,7 +1772,7 @@
       erasing = null; if (current.changed) commit();
     }
   }
-  async function renderPanelPng(panel) {
+  async function renderPanelPng(panel, panelIndex = state.panels.indexOf(panel)) {
     await document.fonts?.ready;
     const preset = FORMAT[state.format]; const logicalHeight = state.pageHeight; const style = state.exportStyle || 'classic';
     const output = document.createElement('canvas'); output.width = preset.width; output.height = preset.height;
@@ -1794,8 +1794,17 @@
     const offsetX = bounds.x + (bounds.w - LOGICAL_WIDTH * scale) / 2; const offsetY = bounds.y + (bounds.h - logicalHeight * scale) / 2;
     ctx.save(); roundedRect(ctx,bounds.x,bounds.y,bounds.w,bounds.h,output.width*.045);ctx.clip();
     ctx.fillStyle = panel.backgroundColor || '#FFFFFF'; ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
-    for (const item of panel.items) {
-      ctx.save(); ctx.translate(offsetX + (item.x + item.w / 2) * scale, offsetY + (item.y + item.h / 2) * scale); ctx.rotate((item.rotation || 0) * Math.PI / 180); ctx.scale(item.flipX ? -1 : 1, item.flipY ? -1 : 1); ctx.scale(scale, scale);
+    const exportItems=[];
+    state.panels.forEach((sourcePanel,sourcePanelIndex)=>sourcePanel.items.forEach((item,layerIndex)=>{
+      const panelX=item.x+(sourcePanelIndex-panelIndex)*LOGICAL_WIDTH;
+      const reach=Math.hypot(item.w,item.h)/2+(item.blur||0)*2;
+      const centerX=panelX+item.w/2;
+      if(centerX+reach<=0||centerX-reach>=LOGICAL_WIDTH)return;
+      exportItems.push({item,panelX,sourcePanelIndex,layerIndex});
+    }));
+    exportItems.sort((a,b)=>a.sourcePanelIndex-b.sourcePanelIndex||a.layerIndex-b.layerIndex);
+    for (const {item,panelX} of exportItems) {
+      ctx.save(); ctx.translate(offsetX + (panelX + item.w / 2) * scale, offsetY + (item.y + item.h / 2) * scale); ctx.rotate((item.rotation || 0) * Math.PI / 180); ctx.scale(item.flipX ? -1 : 1, item.flipY ? -1 : 1); ctx.scale(scale, scale);
       if (item.type === 'image') {
         if(item.mockupOnly&&state.mockupPreview===false){ctx.restore();continue;}
         try { const image = await loadImage(item.src); ctx.save(); ctx.filter = item.blur ? `blur(${item.blur * (scale / 2)}px)` : 'none'; drawContained(ctx, image, item.w, item.h); ctx.restore(); } catch { /* Missing image stays represented by its source path in the editable project. */ }
@@ -1946,7 +1955,7 @@
       ? { schemaVersion: 1, editorialPolicy: 'manual-approval', exportTemplate:state.exportStyle, episodes: [{ id: slug, title: { es: title }, episodeNumber: null, status: 'review', type: 'comic', complete: false, source: { kind: 'editor-draft', instagramMediaId: null, instagramPermalink: null }, panels: state.panels.map((panel, index) => ({ order: index + 1, alt: { es: `Viñeta ${index + 1} pendiente de revisión` }, src: `assets/episodes/drafts/${slug}/vineta-${String(index + 1).padStart(2, '0')}.png` })) }] }
       : { schemaVersion:1, editorialPolicy:'manual-approval', exportTemplate:state.exportStyle, status:'review', published:false, contentType:state.contentType, title, projectSource:'proyecto.json', panels:state.panels.map((panel,index)=>({order:index+1,asset:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`,text:panel.items.filter(item=>item.type==='text'||item.type==='bubble').map(item=>({type:item.type,text:item.text||'',x:item.x,y:item.y,w:item.w,h:item.h,fontSize:item.fontSize||null,align:item.align||'center'}))})) };
     const files = [{ name: 'metadata-review.json', data: new TextEncoder().encode(JSON.stringify(metadata, null, 2)) }];
-    for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index]); const path=isEpisode?`assets/episodes/drafts/${slug}/vineta-${String(index+1).padStart(2,'0')}.png`:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`; files.push({ name:path, data: new Uint8Array(await image.arrayBuffer()) }); }
+    for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index],index); const path=isEpisode?`assets/episodes/drafts/${slug}/vineta-${String(index+1).padStart(2,'0')}.png`:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`; files.push({ name:path, data: new Uint8Array(await image.arrayBuffer()) }); }
     download(zipStore(files), `${slug}-revision.zip`); toast(savedLocally ? 'Paquete de revisión listo. No se publica automáticamente.' : 'Paquete listo; conserva el ZIP porque el borrador no cupo en este dispositivo.');
   }
   function slugify(value) { return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }

@@ -363,6 +363,7 @@ html.session-ended body{visibility:hidden!important}
 .stage{gap:0!important;padding-inline:max(5vw,28px)!important}
 .artboard-wrap{box-sizing:border-box;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;transition:none!important}
 .artboard-wrap.active{z-index:2;border:0!important;box-shadow:none!important}
+.artboard-wrap.has-cross-panel-art{z-index:15!important}
 .artboard-heading{margin:0 0 8px!important;padding-inline:2px}
 .artboard-frame{position:relative;margin:0!important;padding:0!important;isolation:isolate}
 .artboard-frame::after{content:"";position:absolute;inset:0;z-index:12;pointer-events:none;border-top:1px solid color-mix(in srgb,var(--muted) 34%,transparent);border-bottom:1px solid color-mix(in srgb,var(--muted) 34%,transparent)}
