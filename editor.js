@@ -1580,7 +1580,11 @@
   }
   function setupResourceFilters() {
     $$('.filters button').forEach(button => button.onclick = () => {
-      $$('.filters button').forEach(candidate => candidate.classList.toggle('active', candidate === button));
+      $$('.filters button').forEach(candidate => {
+        const active = candidate === button;
+        candidate.classList.toggle('active', active);
+        candidate.setAttribute('aria-pressed', String(active));
+      });
       resourceFilter = button.dataset.filter;
       const viewingReferences = resourceFilter === 'reference';
       $('#library-title').textContent = viewingReferences ? 'Referencias' : 'Componentes';
