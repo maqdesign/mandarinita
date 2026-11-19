@@ -13,6 +13,7 @@
   const progressFill = document.querySelector('#hero-carousel-progress-fill');
   const timing = document.querySelector('#hero-carousel-timing');
   const hero = document.querySelector('.hero');
+  const heroArt = document.querySelector('.hero-art-family');
   const previewMode = new URLSearchParams(location.search).has('admin-banner-preview');
   const editLabels = {
     'hero.eyebrow': { es: 'frase de entrada', en: 'intro line' },
@@ -189,6 +190,17 @@
     if (heroImage && image) heroImage.src = image;
     const alt = fields['hero.image.alt']?.[lang];
     if (heroImage && typeof alt === 'string') heroImage.alt = alt;
+    const featuredEpisode = fields['hero.mediaType']?.es === 'episode';
+    const isNewEpisode = featuredEpisode && fields['hero.isNew']?.es === 'true';
+    if (heroImage) {
+      heroImage.dataset.tilt = fields['hero.mediaStyle']?.es || 'straight';
+      heroImage.dataset.shadow = fields['hero.mediaShadow']?.es || 'soft';
+    }
+    if (heroArt) {
+      heroArt.dataset.featured = featuredEpisode ? 'episode' : 'image';
+      heroArt.dataset.isNew = String(isNewEpisode);
+      heroArt.dataset.newLabel = lang === 'en' ? 'NEW EPISODE' : 'NUEVO EPISODIO';
+    }
     const cta = document.querySelector('.hero-copy .button-dark');
     if (cta && (/^#[A-Za-z0-9_-]+$/.test(banner.ctaHref || '') || /^\/\?episode=[a-z0-9-]{1,100}$/i.test(banner.ctaHref || ''))) cta.href = banner.ctaHref;
     const effect = fields['hero.effect']?.es === 'still' ? 'still' : 'orbit';

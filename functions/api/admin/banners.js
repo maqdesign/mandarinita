@@ -11,6 +11,9 @@ const FIELD_COLUMNS = [
   ['hero.image.alt', 'alt_es', 'alt_en', 'text', 300],
   ['hero.mediaType', 'media_type', 'media_type', 'media-type', 10],
   ['hero.episode', 'episode_id', 'episode_id', 'episode', 100],
+  ['hero.mediaStyle', 'media_style', 'media_style', 'media-style', 20],
+  ['hero.mediaShadow', 'media_shadow', 'media_shadow', 'media-shadow', 20],
+  ['hero.isNew', 'is_new', 'is_new', 'boolean', 5],
   ['hero.startAt', 'starts_at', 'starts_at', 'schedule', 40],
   ['hero.endAt', 'ends_at', 'ends_at', 'schedule', 40]
 ];
@@ -20,7 +23,7 @@ const COLUMNS = [
   'id', 'position', 'enabled', 'eyebrow_es', 'eyebrow_en',
   'title_first_es', 'title_first_en', 'title_second_es', 'title_second_en',
   'description_es', 'description_en', 'cta_es', 'cta_en', 'image_path',
-  'effect', 'alt_es', 'alt_en', 'media_type', 'episode_id', 'starts_at', 'ends_at', 'cta_href', 'created_at', 'updated_at'
+  'effect', 'alt_es', 'alt_en', 'media_type', 'episode_id', 'media_style', 'media_shadow', 'is_new', 'starts_at', 'ends_at', 'cta_href', 'created_at', 'updated_at'
 ];
 
 async function authorize({ request, env }, write = false) {
@@ -65,6 +68,9 @@ function normalizeBanner(banner) {
     if (type === 'effect' && (es !== en || !['orbit', 'still'].includes(es))) return { error: 'Elige un movimiento disponible para cada banner.' };
     if (type === 'media-type' && !['image', 'episode'].includes(es)) return { error: 'Elige si el banner muestra una imagen o un episodio.' };
     if (type === 'episode' && es && !/^[a-z0-9-]{1,100}$/i.test(es)) return { error: 'El episodio seleccionado no tiene un identificador válido.' };
+    if (type === 'media-style' && !['straight', 'tilt-left', 'tilt-right'].includes(es)) return { error: 'Elige una inclinación disponible.' };
+    if (type === 'media-shadow' && !['none', 'soft', 'lifted'].includes(es)) return { error: 'Elige una sombra disponible.' };
+    if (type === 'boolean' && !['true', 'false'].includes(es)) return { error: 'Revisa si el banner debe anunciarse como episodio nuevo.' };
     if (type === 'schedule' && es && (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(es)
       || !Number.isFinite(Date.parse(es)) || new Date(es).toISOString() !== es)) return { error: 'Revisa la fecha programada del banner.' };
     row[esColumn] = es;

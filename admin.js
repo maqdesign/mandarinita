@@ -17,9 +17,15 @@
   const heroImagePreview = document.querySelector('#hero-image-preview');
   const heroImageStatus = document.querySelector('#hero-image-status');
   const heroMediaType = document.querySelector('#hero-media-type');
-  const heroEpisodeSelect = document.querySelector('#hero-episode-id');
+  const heroEpisodeId = document.querySelector('#hero-episode-id');
+  const heroEpisodeSearch = document.querySelector('#hero-episode-search');
+  const heroEpisodeOptions = document.querySelector('#hero-episode-options');
+  const heroEpisodeSelection = document.querySelector('#hero-episode-selection');
   const heroEpisodeWrap = document.querySelector('#hero-episode-select-wrap');
   const heroEffectLabel = document.querySelector('#hero-effect-label');
+  const heroMediaStyleLabel = document.querySelector('#hero-media-style-label');
+  const heroMediaShadowLabel = document.querySelector('#hero-media-shadow-label');
+  const heroEpisodeCustomDialog = document.querySelector('#hero-episode-custom-dialog');
   const heroStartAt = document.querySelector('#hero-start-at');
   const heroEndAt = document.querySelector('#hero-end-at');
   const bannerPreview = document.querySelector('#hero-banner-preview');
@@ -33,6 +39,8 @@
   const deleteBannerDialog = document.querySelector('#delete-banner-dialog');
   const confirmDeleteBanner = document.querySelector('#confirm-delete-banner');
   const heroPreviewToast = document.querySelector('#hero-preview-toast');
+  const episodeEditorFrame = document.querySelector('#admin-episode-editor');
+  const episodeEditorStatus = document.querySelector('#episode-editor-status');
   let bannerItems = [];
   let bannerBaseline = new Map();
   let selectedBannerId = '';
@@ -42,7 +50,10 @@
   let previewEditField = null;
   let heroPreviewLayout = 'horizontal';
   let approvedEpisodes = [];
+  let episodeSearchEntries = [];
   let episodeCatalogLoaded = false;
+  let pendingEpisodeCopy = null;
+  let highlightedEpisodeIndex = -1;
   siteContentForm.elements.hero_effect_es.addEventListener('change', () => {
     siteContentForm.elements.hero_effect_en.value = siteContentForm.elements.hero_effect_es.value;
   });
@@ -57,6 +68,9 @@
     ['hero.image.alt', 'hero_image_alt_es', 'hero_image_alt_en'],
     ['hero.mediaType', 'hero_media_type', 'hero_media_type'],
     ['hero.episode', 'hero_episode_id', 'hero_episode_id'],
+    ['hero.mediaStyle', 'hero_media_style', 'hero_media_style'],
+    ['hero.mediaShadow', 'hero_media_shadow', 'hero_media_shadow'],
+    ['hero.isNew', 'hero_is_new', 'hero_is_new'],
     ['hero.startAt', 'hero_start_at', 'hero_start_at'],
     ['hero.endAt', 'hero_end_at', 'hero_end_at']
   ];
@@ -173,39 +187,160 @@
     if (episodeCatalogLoaded) return;
     episodeCatalogLoaded = true;
     try {
-      const response = await fetch('/episodes.json', { cache: 'no-store' });
-      if (!response.ok) throw new Error('No se pudo cargar el catálogo de episodios.');
-      const catalog = await response.json();
+      const [response, characterResponse, objectResponse] = await Promise.all([
+        fetch('/episodes.json', { cache: 'no-store' }),
+        fetch('/characters.json', { cache: 'no-store' }),
+        fetch('/episode-objects.json', { cache: 'no-store' })
+      ]);
+      if (!response.ok || !characterResponse.ok || !objectResponse.ok) throw new Error('No se pudo cargar el catálogo de episodios y sus metadatos.');
+      const [catalog, characterCatalog, objectCatalog] = await Promise.all([response.json(), characterResponse.json(), objectResponse.json()]);
+      const characters = new Map((characterCatalog.characters || []).map(item => [item.id, item]));
+      const objects = new Map((objectCatalog.objects || []).map(item => [item.id, item]));
+      const localizedName = record => typeof record?.name === 'string' ? record.name : record?.name?.es || record?.name?.en || '';
       approvedEpisodes = (catalog.episodes || []).filter(entry => entry.status === 'published'
         && entry.type === 'comic' && entry.complete === true && Number.isInteger(entry.episodeNumber)
         && typeof entry.id === 'string' && /^[a-z0-9-]{1,100}$/i.test(entry.id)
         && entry.panels?.[0] && (entry.panels[0].watermarkedSrc || entry.panels[0].src)?.startsWith('assets/'));
-      heroEpisodeSelect.replaceChildren(new Option('Selecciona un episodio', ''));
-      for (const entry of approvedEpisodes) {
-        const title = typeof entry.title === 'string' ? entry.title : entry.title?.es || `Episodio ${entry.episodeNumber}`;
-        heroEpisodeSelect.add(new Option(`Ep. ${entry.episodeNumber} · ${title}`, entry.id));
-      }
-      if (!approvedEpisodes.length) heroEpisodeSelect.replaceChildren(new Option('No hay episodios publicados disponibles', ''));
+      const labelValues = (ids, source) => ids.flatMap(id => {
+        const record = source.get(id);
+        return record ? [id, localizedName(record), record.name?.en, ...(record.aliases?.es || []), ...(record.aliases?.en || [])].filter(Boolean) : [id];
+      });
+      episodeSearchEntries = approvedEpisodes.map(entry => {
+        const titleEs = typeof entry.title === 'string' ? entry.title : entry.title?.es || `Episodio ${entry.episodeNumber}`;
+        const titleEn = typeof entry.title === 'string' ? entry.title : entry.title?.en || titleEs;
+        const characterLabels = (entry.characters || []).map(id => localizedName(characters.get(id)) || id);
+        const objectLabels = (entry.objects || []).map(id => localizedName(objects.get(id)) || id);
+        const characterSearchTerms = labelValues(entry.characters || [], characters);
+        const objectSearchTerms = labelValues(entry.objects || [], objects);
+        const descriptions = (entry.panels || []).flatMap(panel => [panel.alt?.es, panel.alt?.en]).filter(Boolean);
+        const searchable = normalizeSearch([entry.episodeNumber, titleEs, titleEn, entry.id, ...characterSearchTerms, ...objectSearchTerms, ...descriptions].join(' '));
+        return { entry, titleEs, titleEn, characterLabels, objectLabels, searchable };
+      });
+      renderEpisodeOptions();
     } catch (error) {
-      heroEpisodeSelect.replaceChildren(new Option('No se pudo cargar el catálogo', ''));
       setBannerStatus(error.message);
+      heroEpisodeOptions.replaceChildren();
+      heroEpisodeOptions.hidden = true;
+      heroEpisodeSelection.textContent = 'No se pudo cargar el catálogo. Recarga la sección para volver a intentar.';
     }
+  }
+  function normalizeSearch(value) {
+    return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');
+  }
+  function renderEpisodeOptions() {
+    const query = normalizeSearch(heroEpisodeSearch.value.trim());
+    const matches = episodeSearchEntries.filter(item => !query || item.searchable.includes(query)).slice(0, 8);
+    heroEpisodeOptions.replaceChildren();
+    highlightedEpisodeIndex = matches.length ? 0 : -1;
+    for (const [index, item] of matches.entries()) {
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.className = 'hero-episode-option';
+      option.id = `hero-episode-option-${index}`;
+      option.setAttribute('role', 'option');
+      option.setAttribute('aria-selected', String(index === highlightedEpisodeIndex));
+      const title = document.createElement('strong');
+      title.textContent = `Ep. ${item.entry.episodeNumber} · ${item.titleEs}`;
+      const meta = document.createElement('small');
+      const details = [];
+      if (item.characterLabels.length) details.push(`Personajes: ${item.characterLabels.join(', ')}`);
+      if (item.objectLabels.length) details.push(`Objetos: ${item.objectLabels.join(', ')}`);
+      meta.textContent = details.join(' · ') || item.entry.panels[0]?.alt?.es || 'Episodio publicado';
+      option.append(title, meta);
+      option.addEventListener('mousedown', event => event.preventDefault());
+      option.addEventListener('click', () => chooseFeaturedEpisode(item.entry.id));
+      heroEpisodeOptions.append(option);
+    }
+    const isOpen = document.activeElement === heroEpisodeSearch && Boolean(query);
+    heroEpisodeOptions.hidden = !isOpen;
+    heroEpisodeSearch.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen && highlightedEpisodeIndex >= 0) heroEpisodeSearch.setAttribute('aria-activedescendant', `hero-episode-option-${highlightedEpisodeIndex}`);
+    else heroEpisodeSearch.removeAttribute('aria-activedescendant');
+    if (query && !matches.length && isOpen) {
+      const empty = document.createElement('p');
+      empty.className = 'hero-episode-empty';
+      empty.textContent = 'No encontramos episodios con esos datos.';
+      heroEpisodeOptions.append(empty);
+    }
+  }
+  function episodeCopy(entry, isNew) {
+    const titleEs = typeof entry.title === 'string' ? entry.title : entry.title?.es || `Episodio ${entry.episodeNumber}`;
+    const titleEn = typeof entry.title === 'string' ? entry.title : entry.title?.en || titleEs;
+    return {
+      'hero.eyebrow': { es: isNew ? 'Nuevo episodio' : 'Episodio destacado', en: isNew ? 'New episode' : 'Featured episode' },
+      'hero.title.first': { es: `Episodio ${entry.episodeNumber}`, en: `Episode ${entry.episodeNumber}` },
+      'hero.title.second': { es: titleEs, en: titleEn }
+    };
+  }
+  function episodeCopyIsCustom(banner, entry) {
+    const currentNew = banner.fields['hero.isNew']?.es === 'true';
+    const generated = episodeCopy(entry, currentNew);
+    const originals = {
+      'hero.eyebrow': ['Humor ilustrado desde República Dominicana', 'Illustrated humor from the Dominican Republic'],
+      'hero.title.first': ['La vida tiene', 'Life has'],
+      'hero.title.second': ['sus gajos.', 'its rough edges.']
+    };
+    return Object.entries(generated).some(([key, value]) => {
+      const saved = banner.fields[key];
+      const matchesGenerated = saved?.es === value.es && saved?.en === value.en;
+      const matchesOriginal = originals[key]?.includes(saved?.es) && originals[key]?.includes(saved?.en);
+      return !matchesGenerated && !matchesOriginal;
+    });
+  }
+  function applyEpisodeCopy(entry) {
+    const banner = selectedBanner();
+    if (!banner) return;
+    Object.assign(banner.fields, episodeCopy(entry, siteContentForm.elements.hero_is_new.checked));
+    for (const [key, value] of Object.entries(episodeCopy(entry, siteContentForm.elements.hero_is_new.checked))) {
+      const field = siteContentFields.find(([candidate]) => candidate === key);
+      if (field) {
+        siteContentForm.elements[field[1]].value = value.es;
+        siteContentForm.elements[field[2]].value = value.en;
+      }
+    }
+    captureBannerForm();
+  }
+  function chooseFeaturedEpisode(id) {
+    const banner = selectedBanner();
+    const episode = approvedEpisodes.find(item => item.id === id);
+    if (!banner || !episode) return;
+    const previous = approvedEpisodes.find(item => item.id === banner.fields['hero.episode']?.es);
+    const custom = (!previous || previous.id !== id) && episodeCopyIsCustom(banner, previous || { episodeNumber: 0, title: { es: '', en: '' } });
+    heroEpisodeId.value = id;
+    heroEpisodeSearch.value = `Ep. ${episode.episodeNumber} · ${(typeof episode.title === 'string' ? episode.title : episode.title?.es) || ''}`;
+    heroEpisodeOptions.hidden = true;
+    heroEpisodeSearch.setAttribute('aria-expanded', 'false');
+    const searchableEntry = episodeSearchEntries.find(item => item.entry.id === id);
+    const metadataLabel = [...(searchableEntry?.characterLabels || []), ...(searchableEntry?.objectLabels || [])].join(' · ');
+    heroEpisodeSelection.textContent = `${siteContentForm.elements.hero_is_new.checked ? 'Nuevo episodio · ' : ''}Ep. ${episode.episodeNumber} · ${typeof episode.title === 'string' ? episode.title : episode.title?.es || ''}${metadataLabel ? ` · ${metadataLabel}` : ''}`;
+    pendingEpisodeCopy = custom ? episode : null;
+    if (custom) heroEpisodeCustomDialog.showModal();
+    else applyEpisodeCopy(episode);
+    updateBannerMediaUI();
+    captureBannerForm();
   }
   function updateBannerMediaUI() {
     const isEpisode = heroMediaType.value === 'episode';
     heroEpisodeWrap.hidden = !isEpisode;
-    heroEpisodeSelect.disabled = !isEpisode;
-    heroEpisodeSelect.required = isEpisode;
+    heroEpisodeSearch.disabled = !isEpisode;
+    heroEpisodeSearch.required = isEpisode;
+    heroEpisodeId.required = false;
     siteContentForm.querySelector('.site-content-upload-label').hidden = isEpisode;
     heroImageFile.disabled = isEpisode;
     heroEffectLabel.hidden = isEpisode;
+    heroMediaStyleLabel.hidden = !isEpisode;
+    heroMediaShadowLabel.hidden = !isEpisode;
+    siteContentForm.elements.hero_is_new.disabled = !isEpisode;
+    heroImagePreview.dataset.tilt = siteContentForm.elements.hero_media_style.value;
+    heroImagePreview.dataset.shadow = siteContentForm.elements.hero_media_shadow.value;
     siteContentForm.elements.hero_effect_es.disabled = isEpisode;
     if (!isEpisode) return;
     siteContentForm.elements.hero_effect_es.value = 'still';
     siteContentForm.elements.hero_effect_en.value = 'still';
-    const episode = approvedEpisodes.find(item => item.id === heroEpisodeSelect.value);
+    const episode = approvedEpisodes.find(item => item.id === heroEpisodeId.value);
     if (!episode) {
       heroImageStatus.textContent = 'Selecciona un episodio publicado para usar su primera viñeta.';
+      heroEpisodeSelection.textContent = 'Busca un episodio y selecciónalo de las sugerencias.';
       return;
     }
     const panel = episode.panels[0];
@@ -222,21 +357,81 @@
       siteContentForm.elements[name].value = `${lang === 'en' ? 'First panel of episode' : 'Primera viñeta del episodio'} ${episode.episodeNumber}: ${alt}`.slice(0, 300);
     }
   }
+  function closeEpisodeSuggestions() {
+    heroEpisodeOptions.hidden = true;
+    heroEpisodeSearch.setAttribute('aria-expanded', 'false');
+    heroEpisodeSearch.removeAttribute('aria-activedescendant');
+  }
+  heroEpisodeSearch.addEventListener('focus', renderEpisodeOptions);
+  heroEpisodeSearch.addEventListener('input', () => {
+    const selected = approvedEpisodes.find(item => item.id === heroEpisodeId.value);
+    const expected = selected ? `Ep. ${selected.episodeNumber} · ${(typeof selected.title === 'string' ? selected.title : selected.title?.es) || ''}` : '';
+    if (heroEpisodeSearch.value !== expected) heroEpisodeId.value = '';
+    renderEpisodeOptions();
+    if (!heroEpisodeId.value && heroMediaType.value === 'episode') {
+      heroImageStatus.textContent = 'Selecciona un resultado para destacar su primera viñeta.';
+      heroEpisodeSelection.textContent = 'Elige un episodio de las sugerencias para continuar.';
+      captureBannerForm();
+    }
+  });
+  heroEpisodeSearch.addEventListener('keydown', event => {
+    const options = [...heroEpisodeOptions.querySelectorAll('[role="option"]')];
+    if (event.key === 'Escape') { closeEpisodeSuggestions(); return; }
+    if (!options.length) return;
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      highlightedEpisodeIndex = (highlightedEpisodeIndex + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
+      options.forEach((option, index) => option.setAttribute('aria-selected', String(index === highlightedEpisodeIndex)));
+      heroEpisodeSearch.setAttribute('aria-activedescendant', options[highlightedEpisodeIndex].id);
+    } else if (event.key === 'Enter' && highlightedEpisodeIndex >= 0) {
+      event.preventDefault();
+      options[highlightedEpisodeIndex].click();
+    }
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.hero-episode-picker')) closeEpisodeSuggestions();
+  });
+  document.querySelector('#hero-episode-apply-copy').addEventListener('click', () => {
+    if (pendingEpisodeCopy) applyEpisodeCopy(pendingEpisodeCopy);
+    pendingEpisodeCopy = null;
+    heroEpisodeCustomDialog.close();
+    setSiteContentStatus('Texto actualizado con el título y el anuncio del episodio.');
+  });
+  document.querySelector('#hero-episode-keep-copy').addEventListener('click', () => {
+    pendingEpisodeCopy = null;
+    heroEpisodeCustomDialog.close();
+    captureBannerForm();
+    setSiteContentStatus('Se conservaron tus textos personalizados.');
+  });
+  siteContentForm.elements.hero_is_new.addEventListener('change', () => {
+    const banner = selectedBanner();
+    const episode = approvedEpisodes.find(item => item.id === heroEpisodeId.value);
+    if (banner && episode) {
+      if (!episodeCopyIsCustom(banner, episode)) applyEpisodeCopy(episode);
+      else {
+        pendingEpisodeCopy = episode;
+        heroEpisodeCustomDialog.showModal();
+      }
+    }
+    captureBannerForm();
+  });
   function captureBannerForm() {
     const banner = selectedBanner();
     if (!banner) return;
     let changed = false;
     for (const [key, esName, enName] of siteContentFields) {
       const inputValue = inputName => {
-        const value = siteContentForm.elements[inputName].value;
+        const input = siteContentForm.elements[inputName];
+        const value = input.type === 'checkbox' ? String(input.checked) : input.value;
         return inputName === 'hero_start_at' || inputName === 'hero_end_at' ? fromLocalDateTime(value) : value;
       };
-      const es = inputValue(esName);
-      const en = key === 'hero.effect' || esName === enName ? es : inputValue(enName);
-      if (banner.fields[key].es !== es || banner.fields[key].en !== en) changed = true;
+      const es = inputName => inputValue(inputName);
+      const esValue = es(esName);
+      const enValue = key === 'hero.effect' || esName === enName ? esValue : es(enName);
+      if (banner.fields[key].es !== esValue || banner.fields[key].en !== enValue) changed = true;
       banner.fields[key] = {
-        es,
-        en
+        es: esValue,
+        en: enValue
       };
     }
     banner.fields['hero.effect'].en = banner.fields['hero.effect'].es;
@@ -257,13 +452,20 @@
       const value = banner.fields[key];
       const es = key === 'hero.startAt' || key === 'hero.endAt' ? toLocalDateTime(value.es) : value.es;
       const en = key === 'hero.startAt' || key === 'hero.endAt' ? toLocalDateTime(value.en) : value.en;
-      siteContentForm.elements[esName].value = es;
-      siteContentForm.elements[enName].value = en;
+      const esInput = siteContentForm.elements[esName];
+      if (esInput.type === 'checkbox') esInput.checked = es === 'true'; else esInput.value = es;
+      const enInput = siteContentForm.elements[enName];
+      if (enInput.type === 'checkbox') enInput.checked = en === 'true'; else enInput.value = en;
     }
     siteContentForm.elements.banner_id.value = banner.id;
     siteContentForm.elements.hero_effect_en.value = banner.fields['hero.effect'].es;
     heroImagePreview.src = new URL(banner.fields['hero.image'].es, location.href).href;
     heroImageStatus.textContent = 'Imagen de este banner';
+    const selectedEpisode = approvedEpisodes.find(item => item.id === banner.fields['hero.episode']?.es);
+    heroEpisodeSearch.value = selectedEpisode ? `Ep. ${selectedEpisode.episodeNumber} · ${(typeof selectedEpisode.title === 'string' ? selectedEpisode.title : selectedEpisode.title?.es) || ''}` : '';
+    const selectedMeta = episodeSearchEntries.find(item => item.entry.id === selectedEpisode?.id);
+    const selectedLabels = [...(selectedMeta?.characterLabels || []), ...(selectedMeta?.objectLabels || [])].join(' · ');
+    heroEpisodeSelection.textContent = selectedEpisode ? `${siteContentForm.elements.hero_is_new.checked ? 'Nuevo episodio · ' : ''}Ep. ${selectedEpisode.episodeNumber} · ${(typeof selectedEpisode.title === 'string' ? selectedEpisode.title : selectedEpisode.title?.es) || ''}${selectedLabels ? ` · ${selectedLabels}` : ''}` : 'Ningún episodio seleccionado.';
     updateBannerMediaUI();
     document.querySelector('#site-content-editor-title').textContent = `Editar banner ${bannerItems.indexOf(banner) + 1}`;
     siteContentForm.hidden = false;
@@ -320,7 +522,7 @@
     const fieldConfig = siteContentFields.find(([key]) => key === field);
     if (!fieldConfig || !['es', 'en'].includes(language)) return;
     const [, spanishName, englishName] = fieldConfig;
-    const control = siteContentForm.elements[language === 'en' ? englishName : spanishName];
+    const control = field === 'hero.episode' ? heroEpisodeSearch : siteContentForm.elements[language === 'en' ? englishName : spanishName];
     const group = control?.closest('.site-content-pair');
     if (!control || !group) return;
     group.classList.add('preview-edit-target');
@@ -385,7 +587,7 @@
       const detail = document.createElement('small');
       const featuredEpisode = approvedEpisodes.find(entry => entry.id === banner.fields['hero.episode']?.es);
       detail.textContent = banner.fields['hero.mediaType']?.es === 'episode'
-        ? featuredEpisode ? `Episodio destacado · Ep. ${featuredEpisode.episodeNumber}` : 'Episodio destacado'
+        ? `${banner.fields['hero.isNew']?.es === 'true' ? 'Nuevo · ' : ''}${featuredEpisode ? `Ep. ${featuredEpisode.episodeNumber}` : 'Episodio destacado'}`
         : banner.fields['hero.effect'].es === 'orbit' ? 'Órbita de episodios' : 'Imagen fija';
       copy.append(title, detail);
       const indexLabel = document.createElement('span');
@@ -593,9 +795,11 @@
     submit.disabled = true;
     await saveBanners();
   });
-  siteContentForm.addEventListener('input', event => { if (event.target !== heroImageFile) captureBannerForm(); });
+  siteContentForm.addEventListener('input', event => {
+    if (event.target !== heroImageFile && event.target !== siteContentForm.elements.hero_is_new) captureBannerForm();
+  });
   siteContentForm.addEventListener('change', event => {
-    if (event.target === heroMediaType || event.target === heroEpisodeSelect) updateBannerMediaUI();
+    if ([heroMediaType, heroEpisodeId, siteContentForm.elements.hero_media_style, siteContentForm.elements.hero_media_shadow].includes(event.target)) updateBannerMediaUI();
     if (event.target === siteContentForm.elements.hero_effect_es) siteContentForm.elements.hero_effect_en.value = event.target.value;
     if (event.target !== heroImageFile) captureBannerForm();
   });
@@ -637,6 +841,11 @@
       heading?.focus({ preventScroll: true });
       window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     }
+    if (view.id === 'episodios' && episodeEditorFrame && !episodeEditorFrame.dataset.loaded) {
+      episodeEditorFrame.dataset.loaded = 'true';
+      episodeEditorStatus.textContent = 'Cargando el editor de episodios…';
+      episodeEditorFrame.src = episodeEditorFrame.dataset.src;
+    }
     if (view.id === 'sitio') loadBanners();
     if (view.id === 'buzon') loadInquiries();
     if (view.id === 'rendimiento') loadAnalytics();
@@ -667,5 +876,16 @@
     privateContent.hidden = true;
     document.body.classList.add('admin-locked');
     location.assign('/');
+  });
+  episodeEditorFrame?.addEventListener('load', () => {
+    try {
+      const editorDocument = episodeEditorFrame.contentDocument;
+      const loaded = editorDocument?.querySelector('#project-home') && editorDocument?.querySelector('#editor-view');
+      episodeEditorStatus.textContent = loaded
+        ? 'Editor cargado. Sus borradores y sincronización con GitHub funcionan como en la sección independiente.'
+        : 'El editor no mostró su interfaz. Ábrelo en otra pestaña para revisar el acceso o el estado de carga.';
+    } catch {
+      episodeEditorStatus.textContent = 'El editor requiere la sesión de GitHub. Ábrelo en otra pestaña si no aparece en este panel.';
+    }
   });
 })();
