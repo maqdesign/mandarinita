@@ -156,6 +156,7 @@
     eyedropper: '<path d="m2 22 1-1h3l9-9m-6-6 8 8m-4-10 3-3 6 6-3 3M5 19l-2 2"/>',
     edit: '<path d="m18 2 4 4L8 20l-5 1 1-5L18 2zM15 5l4 4"/>',
     maximize: '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>',
+    minimize: '<path d="M8 3v5H3m18 0h-5V3m0 18v-5h5M3 16h5v5"/>',
     panelPlus: '<rect x="3" y="4" width="13" height="16" rx="1"/><path d="M19 8v8m-4-4h8"/>',
     send: '<path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"/>',
     logIn: '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4m-5-4 5-5-5-5m5 5H3"/>',
@@ -610,12 +611,15 @@
   function activeCanvas() { return $('#stage .artboard-canvas[data-panel-index="' + state.active + '"]'); }
   function canvasScale(target = activeCanvas()) { return target ? target.getBoundingClientRect().width / LOGICAL_WIDTH : 1; }
   function isFullyOffstage(item) { return item.x + item.w <= 0 || item.y + item.h <= 0 || item.x >= LOGICAL_WIDTH || item.y >= state.pageHeight; }
-  function setActivePanel(index, clearSelection = false) {
+  function setActivePanel(index, clearSelection = false, ensureVisible = true) {
     if (index < 0 || index >= state.panels.length) return;
-    if (index !== state.active && drawingObjectId) finishDrawingObject();
+    const changed=index!==state.active;
+    if (changed && drawingObjectId) finishDrawingObject();
     state.active = index; if (clearSelection) state.selected = null;
     $('#current-panel-label').textContent = `VIÑETA ${index + 1}`;
     $$('.artboard-wrap').forEach((element, i) => element.classList.toggle('active', i === index));
+    $$('.viewport-badge').forEach((element,i)=>element.hidden=i!==index);
+    if(changed&&ensureVisible)requestAnimationFrame(() => $(`.artboard-wrap[data-panel-index="${index}"]`)?.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' }));
     renderPanels(); renderInspector(); renderLayers(); renderOffstage();
   }
   function applyPanelBackground(color, name = color) {
@@ -896,16 +900,18 @@
     const stage = $('#stage'); const viewport = $('#stage-wrap');
     const savedScroll = viewport ? { left: viewport.scrollLeft, top: viewport.scrollTop } : null;
     stage.innerHTML = '';
-    const available = Math.max(300, stage.clientWidth || stage.parentElement.clientWidth || window.innerWidth - 32);
-    const gap = 14;
-    const baseColumns = Math.max(1, Math.floor((available + gap) / 300));
-    const baseCell = (available - (baseColumns - 1) * gap) / baseColumns;
-    const fitScale = Math.min(1, Math.max(.2, (baseCell - 18) / LOGICAL_WIDTH));
+    const availableWidth = Math.max(280, viewport?.clientWidth || stage.parentElement.clientWidth || window.innerWidth - 32);
+    const availableHeight = Math.max(220, viewport?.clientHeight || window.innerHeight - 250);
+    const singlePanelView = $('#app-shell').classList.contains('single-panel-mode');
+    const drawingMode=$('#toggle-draw').getAttribute('aria-pressed')==='true';
+    viewport?.classList.toggle('drawing-active',drawingMode);
+    const targetWidth = availableWidth * (availableWidth < 640 && drawingMode ? singlePanelView ? .78 : .62 : singlePanelView ? .94 : .72);
+    const fitScale = Math.min(1, Math.max(.2, targetWidth / LOGICAL_WIDTH), Math.max(.2, (availableHeight - 86) / state.pageHeight));
     const scale = fitScale * (state.zoom || 1);
-    const tileWidth = LOGICAL_WIDTH * scale + 18;
-    const columns = Math.max(1, Math.floor((available + gap) / (tileWidth + gap)));
-    const cellWidth = (available - (columns - 1) * gap) / columns;
-    stage.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`;
+    stage.style.setProperty('--artboard-scale', scale);
+    stage.style.setProperty('--artboard-gap', `${Math.max(8, Math.round(10 * scale))}px`);
+    const drawToolbar=$('#draw-toolbar'), workspaceBar=$('.workspace-bar');
+    if(drawToolbar&&workspaceBar)drawToolbar.style.top=`${workspaceBar.offsetHeight+8}px`;
     $('#zoom-label').textContent = `${Math.round(scale * 100)}%`;
     $('#project-title').textContent = state.title || 'Episodio nuevo';
     $('#export-preset').value = state.format;
@@ -916,7 +922,8 @@
       const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.dataset.panelIndex = panelIndex; wrapper.style.setProperty('--artboard-scale', scale);
       const heading = document.createElement('div'); heading.className = 'artboard-heading';
       const activate = document.createElement('button'); activate.className = 'artboard-title'; activate.innerHTML = `<strong>Viñeta ${panelIndex + 1}</strong><span>${panel.items.length} capas</span>`; activate.onclick = () => setActivePanel(panelIndex, true);
-      heading.append(activate); wrapper.append(heading);
+      const viewportBadge=document.createElement('span');viewportBadge.className='viewport-badge';viewportBadge.textContent='ÁREA FINAL';viewportBadge.hidden=panelIndex!==state.active;
+      heading.append(activate,viewportBadge); wrapper.append(heading);
       const artboard = document.createElement('div'); artboard.className = 'artboard-frame';
       artboard.style.width = `${LOGICAL_WIDTH * scale}px`; artboard.style.height = `${state.pageHeight * scale}px`;
       const boardCanvas = document.createElement('div'); boardCanvas.className = 'canvas artboard-canvas'; boardCanvas.dataset.panelIndex = panelIndex;
@@ -924,6 +931,7 @@
       boardCanvas.setAttribute('role','application'); boardCanvas.setAttribute('aria-label',`Lienzo de viñeta ${panelIndex + 1}`);
       boardCanvas.style.width = `${LOGICAL_WIDTH}px`; boardCanvas.style.height = `${state.pageHeight}px`; boardCanvas.style.transform = `scale(${scale})`;
       boardCanvas.classList.toggle('grid-off', !state.grid); boardCanvas.classList.toggle('draw-active', $('#toggle-draw').getAttribute('aria-pressed') === 'true');
+      boardCanvas.title='Límite de publicación. Lo que sobresale sigue visible aquí y se recorta al exportar.';
       boardCanvas.addEventListener('pointerdown', beginDrawing); boardCanvas.addEventListener('pointermove', continueDrawing); boardCanvas.addEventListener('pointerup', finishDrawing); boardCanvas.addEventListener('pointercancel', cancelDrawing);
       boardCanvas.addEventListener('dragover', event => { if (event.dataTransfer?.types.includes('application/x-mandarinita-resource')) { event.preventDefault(); boardCanvas.classList.add('drop-target'); } });
       boardCanvas.addEventListener('dragleave', event => { if (!boardCanvas.contains(event.relatedTarget)) boardCanvas.classList.remove('drop-target'); });
@@ -1037,7 +1045,7 @@
         return;
       }
       if ($('#toggle-draw').getAttribute('aria-pressed') === 'true' || item.locked || event.target === handle || event.target.tagName === 'TEXTAREA') return;
-      if (state.active !== panelIndex) setActivePanel(panelIndex, true);
+      if (state.active !== panelIndex) setActivePanel(panelIndex, true, false);
       if (state.selected !== item.id) selectItem(item.id);
       event.preventDefault(); element.setPointerCapture(event.pointerId);
       const start = { x: event.clientX, y: event.clientY, ix: item.x, iy: item.y, moved: false, scale: canvasScale(boardCanvas) };
@@ -1100,7 +1108,7 @@
     handle.onpointerdown = event => {
       if (item.locked) return;
       event.preventDefault(); event.stopPropagation(); snapshot();
-      if (state.active !== panelIndex) setActivePanel(panelIndex, true);
+      if (state.active !== panelIndex) setActivePanel(panelIndex, true, false);
       const start = { x: event.clientX, y: event.clientY, w: item.w, h: item.h, ratio: item.w / item.h, scale: canvasScale(boardCanvas) };
       handle.setPointerCapture(event.pointerId);
       handle.onpointermove = moveEvent => {
@@ -1624,12 +1632,13 @@
   function beginDrawing(event) {
     if ($('#toggle-draw').getAttribute('aria-pressed') !== 'true') return;
     event.preventDefault(); event.stopPropagation();
-    const target = event.currentTarget; const panelIndex = Number(target.dataset.panelIndex); if (state.active !== panelIndex) setActivePanel(panelIndex,true);
+    const target = event.currentTarget; const panelIndex = Number(target.dataset.panelIndex); if (state.active !== panelIndex) setActivePanel(panelIndex,true,false);
     if (brushMode === 'eraser') {
       erasing = { panelIndex, canvas:target, radius:Math.max(5,Number($('#brush-size').value)*1.4), changed:false, snapshot:false };
       target.setPointerCapture(event.pointerId); eraseAtPoint(pointOnCanvas(event,target)); return;
     }
-    drawing = { points:[pointOnCanvas(event,target)], color:selectedColor, size:Number($('#brush-size').value), brush:brushMode, opacity:brushMode === 'marker' ? .4 : brushMode === 'pencil' ? .75 : 1, panelIndex, canvas:target };
+    const first = pointOnCanvas(event,target);
+    drawing = { segments:new Map([[panelIndex,{canvas:target,points:[first]}]]), color:selectedColor, size:Number($('#brush-size').value), brush:brushMode, opacity:brushMode === 'marker' ? .4 : brushMode === 'pencil' ? .75 : 1, panelIndex, canvas:target, lastClient:{x:event.clientX,y:event.clientY} };
     target.setPointerCapture(event.pointerId);
   }
   function eraseAtPoint(point) {
@@ -1656,13 +1665,39 @@
   function continueDrawing(event) {
     if (erasing && erasing.canvas.hasPointerCapture(event.pointerId)) { eraseAtPoint(pointOnCanvas(event,erasing.canvas)); return; }
     if (!drawing || !drawing.canvas.hasPointerCapture(event.pointerId)) return;
-    drawing.points.push(pointOnCanvas(event,drawing.canvas)); drawPreview();
+    const from=drawing.lastClient, to={x:event.clientX,y:event.clientY};
+    const boards=$$('#stage .artboard-canvas').filter(board=>board.getClientRects().length).map(canvas=>({canvas,index:Number(canvas.dataset.panelIndex),rect:canvas.getBoundingClientRect()})).sort((a,b)=>a.rect.left-b.rect.left);
+    const dx=to.x-from.x;
+    if(Math.abs(dx)<.5){
+      const board=boards.find(entry=>to.x>=entry.rect.left&&to.x<=entry.rect.right)||boards.reduce((best,entry)=>!best||Math.min(Math.abs(to.x-entry.rect.left),Math.abs(to.x-entry.rect.right))<Math.min(Math.abs(to.x-best.rect.left),Math.abs(to.x-best.rect.right))?entry:best,null);
+      if(board)appendDrawingPoint(board.index,board.canvas,pointOnCanvas({clientX:to.x,clientY:to.y,pointerType:event.pointerType,pressure:event.pressure},board.canvas));
+    }else{
+      let routed=false;
+      for(const board of boards){
+        const a=(board.rect.left-from.x)/dx, b=(board.rect.right-from.x)/dx;
+        const start=Math.max(0,Math.min(a,b)), end=Math.min(1,Math.max(a,b)); if(end<start)continue;
+        routed=true;
+        const pointAt=t=>({x:from.x+dx*t,y:from.y+(to.y-from.y)*t});
+        const p0=pointAt(start), p1=pointAt(end);
+        const makePoint=point=>({x:(point.x-board.rect.left)/(board.rect.width/LOGICAL_WIDTH),y:(point.y-board.rect.top)/(board.rect.width/LOGICAL_WIDTH),pressure:event.pointerType==='pen'?Math.max(.15,event.pressure):.65});
+        appendDrawingPoint(board.index,board.canvas,makePoint(p0)); appendDrawingPoint(board.index,board.canvas,makePoint(p1));
+      }
+      if(!routed&&boards.length){const board=boards.reduce((best,entry)=>!best||Math.min(Math.abs(to.x-entry.rect.left),Math.abs(to.x-entry.rect.right))<Math.min(Math.abs(to.x-best.rect.left),Math.abs(to.x-best.rect.right))?entry:best,null);appendDrawingPoint(board.index,board.canvas,pointOnCanvas({clientX:to.x,clientY:to.y,pointerType:event.pointerType,pressure:event.pressure},board.canvas));}
+    }
+    drawing.lastClient=to; drawPreview();
+  }
+  function appendDrawingPoint(panelIndex,canvas,point) {
+    if(!drawing.segments.has(panelIndex))drawing.segments.set(panelIndex,{canvas,points:[]});
+    const points=drawing.segments.get(panelIndex).points, previous=points.at(-1);
+    if(!previous||Math.hypot(previous.x-point.x,previous.y-point.y)>.25)points.push(point);
   }
   function drawPreview() {
-    if (!drawing || drawing.points.length < 2) return;
-    drawing.canvas.querySelector('.temporary-stroke')?.remove();
-    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.classList.add('temporary-stroke'); svg.setAttribute('viewBox',`0 0 ${LOGICAL_WIDTH} ${state.pageHeight}`);
-    const path = document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',drawing.points.map((p,i)=>`${i?'L':'M'}${p.x},${p.y}`).join(' ')); path.setAttribute('fill','none'); path.setAttribute('stroke',drawing.color); path.setAttribute('stroke-width',drawing.size*(drawing.brush==='marker'?1.8:drawing.brush==='pencil'?.65:1)); path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round'); path.setAttribute('opacity',drawing.opacity); if(drawing.brush==='pencil')path.setAttribute('stroke-dasharray','1 1'); svg.append(path); drawing.canvas.append(svg);
+    if (!drawing) return;
+    for(const segment of drawing.segments.values()){
+      segment.canvas.querySelector('.temporary-stroke')?.remove(); if(segment.points.length<2)continue;
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.classList.add('temporary-stroke'); svg.setAttribute('viewBox',`0 0 ${LOGICAL_WIDTH} ${state.pageHeight}`);
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',segment.points.map((p,i)=>`${i?'L':'M'}${p.x},${p.y}`).join(' ')); path.setAttribute('fill','none'); path.setAttribute('stroke',drawing.color); path.setAttribute('stroke-width',drawing.size*(drawing.brush==='marker'?1.8:drawing.brush==='pencil'?.65:1)); path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round'); path.setAttribute('opacity',drawing.opacity); if(drawing.brush==='pencil')path.setAttribute('stroke-dasharray','1 1'); svg.append(path); segment.canvas.append(svg);
+    }
   }
   function finishDrawing(event) {
     if (erasing) {
@@ -1670,23 +1705,31 @@
       if(current.changed)commit(); return;
     }
     if (!drawing) return;
-    const current = drawing; const target = current.canvas; if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId); drawing=null; target.querySelector('.temporary-stroke')?.remove();
-    if (current.points.length < 2) return;
-    const pressure = current.points.reduce((sum,p)=>sum+p.pressure,0)/current.points.length;
-    const strokeWidth = Math.max(1,current.size*(.45+pressure*.95)); const first=current.points[0],last=current.points.at(-1);
-    const closed = current.points.length > 4 && Math.hypot(first.x-last.x,first.y-last.y) <= Math.max(14,strokeWidth*2);
-    const stroke = {points:current.points.map(({x,y})=>({x,y})),color:current.color,strokeWidth,opacity:current.opacity,brush:current.brush,closed};
-    const panel=state.panels[current.panelIndex]; let item=drawingObjectId ? panel.items.find(entry=>entry.id===drawingObjectId&&entry.type==='drawing') : null;
-    snapshot();
-    if(item){item.strokes.push(stroke);updateDrawingBounds(item);}
-    else {item={id:id(),type:'drawing',name:drawingObjectId?'Dibujo':'Trazo',x:0,y:0,w:1,h:1,path:'',strokes:[stroke],color:stroke.color,strokeWidth:stroke.strokeWidth,fillEnabled:false,fillColor:'#F87209',locked:false,rotation:0};updateDrawingBounds(item);panel.items.push(item);if(drawingObjectId)drawingObjectId=item.id;}
-    state.selected=item.id; commit();
+    const current = drawing; const target = current.canvas; if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId); drawing=null;
+    for(const segment of current.segments.values())segment.canvas.querySelector('.temporary-stroke')?.remove();
+    const strokes=[];
+    for(const [panelIndex,segment] of current.segments){
+      if(segment.points.length<2)continue;
+      const pressure=segment.points.reduce((sum,p)=>sum+p.pressure,0)/segment.points.length;
+      const strokeWidth=Math.max(1,current.size*(.45+pressure*.95)); const first=segment.points[0],last=segment.points.at(-1);
+      const closed=segment.points.length>4&&Math.hypot(first.x-last.x,first.y-last.y)<=Math.max(14,strokeWidth*2);
+      strokes.push({panelIndex,stroke:{points:segment.points.map(({x,y})=>({x,y})),color:current.color,strokeWidth,opacity:current.opacity,brush:current.brush,closed}});
+    }
+    if(!strokes.length)return;
+    snapshot(); let selectedItem=null;
+    for(const {panelIndex,stroke} of strokes){
+      const panel=state.panels[panelIndex]; let item=drawingObjectId?panel.items.find(entry=>entry.id===drawingObjectId&&entry.type==='drawing'):null;
+      if(item){item.strokes.push(stroke);updateDrawingBounds(item);}
+      else{item={id:drawingObjectId||id(),type:'drawing',name:drawingObjectId?'Dibujo':'Trazo',x:0,y:0,w:1,h:1,path:'',strokes:[stroke],color:stroke.color,strokeWidth:stroke.strokeWidth,fillEnabled:false,fillColor:'#F87209',locked:false,rotation:0};updateDrawingBounds(item);panel.items.push(item);}
+      selectedItem ||= item;
+    }
+    state.selected=selectedItem?.id||null; commit();
   }
   function cancelDrawing(event) {
     const target = event.currentTarget;
     if (drawing?.canvas === target) {
       if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId);
-      target.querySelector('.temporary-stroke')?.remove(); drawing = null;
+      for(const segment of drawing.segments.values())segment.canvas.querySelector('.temporary-stroke')?.remove(); drawing = null;
     }
     if (erasing?.canvas === target) {
       const current = erasing;
@@ -1916,7 +1959,7 @@
     labeledIcon('#new-project','plus','Nuevo contenido'); labeledIcon('#import-project','upload','Importar archivo .mandarinita'); labeledIcon('#install-app','download','Instalar taller');
     labeledIcon('#confirm-delete','trash','Borrar episodio'); labeledIcon('#delete-project-dialog [value="cancel"]','close','Cancelar');
     labeledIcon('#conflict-download-local','fileDown','Descargar mi copia editable'); labeledIcon('#conflict-use-cloud','cloudDownload','Usar la nube y reemplazar mi copia local'); labeledIcon('#conflict-overwrite-cloud','cloudUpload','Reemplazar la nube con mi copia local'); labeledIcon('#conflict-later','close','Resolver más tarde');
-    labeledIcon('#upload-asset','upload',''); labeledIcon('#close-library','close',''); labeledIcon('#close-inspector','close',''); labeledIcon('#focus-mode','maximize','Lienzo amplio');
+    labeledIcon('#upload-asset','upload',''); labeledIcon('#close-library','close',''); labeledIcon('#close-inspector','close',''); labeledIcon('#focus-mode','maximize','Viñeta única');
     labeledIcon('#mobile-library','panelLeft','Componentes'); labeledIcon('#mobile-properties','sliders','Propiedades');
     $('#tab-components').innerHTML=`${svgIcon('box')}<span>Componentes</span>`;
     $('#tab-layers').innerHTML=`${svgIcon('layers')}<span>Capas</span> <span id="layer-count-tab">0</span>`;
@@ -2026,7 +2069,17 @@
       if(open)$('#close-inspector').focus({preventScroll:true});
     };
     $('#close-inspector').onclick = () => { $('#inspector-panel').classList.remove('open'); $('#mobile-properties').setAttribute('aria-expanded','false'); $('#mobile-properties').focus({preventScroll:true}); };
-    $('#focus-mode').onclick = event => { const active = $('#app-shell').classList.toggle('focus-mode'); event.currentTarget.setAttribute('aria-pressed', String(active)); };
+    $('#focus-mode').onclick = event => {
+      const active=$('#app-shell').classList.toggle('single-panel-mode');
+      $('#app-shell').classList.toggle('focus-mode',active);
+      event.currentTarget.setAttribute('aria-pressed',String(active));
+      const label=active?'Volver a la tira':'Viñeta única';
+      event.currentTarget.innerHTML=`${svgIcon(active?'minimize':'maximize')}<span class="button-label">${label}</span>`;
+      event.currentTarget.title=active?'Volver a ver todas las viñetas':'Ver viñeta única a pantalla completa';
+      event.currentTarget.setAttribute('aria-label',event.currentTarget.title);
+      render();
+      if(!active)requestAnimationFrame(()=>activeCanvas()?.closest('.artboard-wrap')?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}));
+    };
     $('#theme-toggle').onclick = () => {
       const choices = ['system','dark','light']; const current = getThemeChoice(); const next = choices[(choices.indexOf(current) + 1) % choices.length];
       localStorage.setItem('mandarinita-editor-theme', next); applyTheme(next);
