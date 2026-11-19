@@ -28,6 +28,38 @@
     document.querySelectorAll('#main > :not(.hero)').forEach(section => { section.hidden = true; });
   }
   const language = () => document.documentElement.dataset.lang === 'en' ? 'en' : 'es';
+  function dominantImageColor(image) {
+    if (!image?.naturalWidth || !image?.naturalHeight) return '';
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 18;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) return '';
+      context.drawImage(image, 0, 0, 18, 18);
+      const pixels = context.getImageData(0, 0, 18, 18).data;
+      const buckets = new Map();
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] < 96) continue;
+        const rgb = [pixels[i], pixels[i + 1], pixels[i + 2]].map(channel => Math.round(channel / 32) * 32);
+        const key = rgb.join(',');
+        buckets.set(key, (buckets.get(key) || 0) + pixels[i + 3]);
+      }
+      const best = [...buckets].sort((a, b) => b[1] - a[1])[0]?.[0];
+      return best ? `rgb(${best})` : '';
+    } catch { return ''; }
+  }
+  function updateEpisodeFrame() {
+    if (!heroImage || !heroArt) return;
+    if (heroArt.dataset.featured !== 'episode' || !heroImage.naturalWidth || !heroImage.naturalHeight) {
+      heroArt.style.removeProperty('--episode-frame-color');
+      heroImage.style.removeProperty('--episode-aspect-ratio');
+      return;
+    }
+    heroImage.style.setProperty('--episode-aspect-ratio', `${heroImage.naturalWidth} / ${heroImage.naturalHeight}`);
+    const color = dominantImageColor(heroImage);
+    if (color) heroArt.style.setProperty('--episode-frame-color', color);
+  }
+  heroImage?.addEventListener('load', updateEpisodeFrame);
   if (previewMode) {
     for (const target of textTargets) {
       const key = target.dataset.liveContent;
@@ -200,6 +232,7 @@
       heroArt.dataset.featured = featuredEpisode ? 'episode' : 'image';
       heroArt.dataset.isNew = String(isNewEpisode);
       heroArt.dataset.newLabel = lang === 'en' ? 'NEW EPISODE' : 'NUEVO EPISODIO';
+      updateEpisodeFrame();
     }
     const cta = document.querySelector('.hero-copy .button-dark');
     if (cta && (/^#[A-Za-z0-9_-]+$/.test(banner.ctaHref || '') || /^\/\?episode=[a-z0-9-]{1,100}$/i.test(banner.ctaHref || ''))) cta.href = banner.ctaHref;

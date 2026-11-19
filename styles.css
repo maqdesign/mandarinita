@@ -838,3 +838,26 @@ body.hero-only-preview.hero-preview-single .hero-carousel-arrow,body.hero-only-p
   body.hero-only-preview.hero-preview-vertical .hero-carousel-timing{min-width:58px;font-size:.52rem}
 }
 @media(max-width:680px) and (max-height:700px){body.hero-only-preview.hero-preview-vertical .hero{padding-block:6px}body.hero-only-preview.hero-preview-vertical .hero h1{font-size:clamp(1.05rem,4.1vh,1.8rem);margin-bottom:4px}body.hero-only-preview.hero-preview-vertical .hero-description{font-size:clamp(.54rem,1.45vh,.68rem);margin-bottom:5px}body.hero-only-preview.hero-preview-vertical .hero .eyebrow{margin-bottom:3px}body.hero-only-preview.hero-preview-vertical .hero .button{min-height:28px}body.hero-only-preview.hero-preview-vertical .hero-carousel-controls{margin-top:2px}}
+
+/* Featured comic art keeps its own aspect ratio and picks a tone from the comic. */
+.hero-art-family[data-featured="episode"] .hero-family-image {
+  inset: auto;
+  width: auto !important;
+  height: auto !important;
+  max-width: 70%;
+  max-height: 70%;
+  aspect-ratio: var(--episode-aspect-ratio, auto);
+  box-sizing: border-box;
+  padding: 0;
+  border: 5px solid var(--episode-frame-color, #d88b18);
+  border-radius: 14px;
+  background: var(--episode-frame-color, #d88b18);
+  object-fit: contain;
+  mix-blend-mode: normal;
+  box-shadow: 0 12px 24px rgba(48,34,27,.2);
+}
+.hero-art-family[data-featured="episode"] .hero-family-image[data-tilt="tilt-left"] { transform: rotate(-3deg) scale(.96); }
+.hero-art-family[data-featured="episode"] .hero-family-image[data-tilt="tilt-right"] { transform: rotate(3deg) scale(.96); }
+.hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="none"] { box-shadow: none; }
+.hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="soft"] { box-shadow: 0 10px 18px rgba(48,34,27,.18),0 2px 4px rgba(48,34,27,.1); }
+.hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="lifted"] { box-shadow: 0 22px 30px rgba(48,34,27,.27),0 5px 10px rgba(48,34,27,.16); }

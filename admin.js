@@ -2,6 +2,8 @@
   const user = document.querySelector('#admin-user');
   const privateContent = document.querySelector('#admin-private-content');
   const logout = document.querySelector('#admin-logout');
+  const sidebarToggle = document.querySelector('#admin-sidebar-toggle');
+  const runtimeError = document.querySelector('#admin-runtime-error');
   const inboxList = document.querySelector('#admin-inquiries-list');
   const inboxStatus = document.querySelector('#inquiry-load-status');
   const inboxCount = document.querySelector('#inquiry-count');
@@ -78,6 +80,58 @@
   const sectionLinks = [...document.querySelectorAll('.admin-sidebar nav a, .admin-quick-link')];
   let currentView = '';
   const escape = value => String(value || '').replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]);
+  function showRuntimeError(message) {
+    if (!runtimeError || !message) return;
+    runtimeError.textContent = `La administración encontró un problema: ${String(message).slice(0, 240)}`;
+    runtimeError.hidden = false;
+  }
+  window.addEventListener('error', event => showRuntimeError(event.message || 'Error al cargar una sección.'));
+  window.addEventListener('unhandledrejection', event => showRuntimeError(event.reason?.message || event.reason || 'Falló una solicitud.'));
+  const collapsedPreference = (() => { try { return localStorage.getItem('mandarinita-admin-sidebar-collapsed') === 'true'; } catch { return false; } })();
+  privateContent.classList.toggle('sidebar-collapsed', collapsedPreference);
+  sidebarToggle?.setAttribute('aria-expanded', String(!collapsedPreference));
+  sidebarToggle?.setAttribute('aria-label', collapsedPreference ? 'Expandir menú' : 'Contraer menú');
+  sidebarToggle?.addEventListener('click', () => {
+    const collapsed = privateContent.classList.toggle('sidebar-collapsed');
+    sidebarToggle.setAttribute('aria-expanded', String(!collapsed));
+    sidebarToggle.setAttribute('aria-label', collapsed ? 'Expandir menú' : 'Contraer menú');
+    try { localStorage.setItem('mandarinita-admin-sidebar-collapsed', String(collapsed)); } catch { /* The menu still works without storage. */ }
+  });
+  function dominantImageColor(image) {
+    if (!image?.naturalWidth || !image?.naturalHeight) return '';
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 18;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) return '';
+      context.drawImage(image, 0, 0, 18, 18);
+      const pixels = context.getImageData(0, 0, 18, 18).data;
+      const buckets = new Map();
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] < 96) continue;
+        const rgb = [pixels[i], pixels[i + 1], pixels[i + 2]].map(channel => Math.round(channel / 32) * 32);
+        const key = rgb.join(',');
+        buckets.set(key, (buckets.get(key) || 0) + pixels[i + 3]);
+      }
+      const best = [...buckets].sort((a, b) => b[1] - a[1])[0]?.[0];
+      return best ? `rgb(${best})` : '';
+    } catch { return ''; }
+  }
+  function updateEpisodeImageFrame() {
+    if (!heroImagePreview) return;
+    const isEpisode = heroMediaType?.value === 'episode';
+    heroImagePreview.dataset.mediaType = isEpisode ? 'episode' : 'image';
+    if (!isEpisode) {
+      heroImagePreview.style.removeProperty('--episode-aspect-ratio');
+      heroImagePreview.style.removeProperty('--episode-frame-color');
+      return;
+    }
+    if (!heroImagePreview.naturalWidth || !heroImagePreview.naturalHeight) return;
+    heroImagePreview.style.setProperty('--episode-aspect-ratio', `${heroImagePreview.naturalWidth} / ${heroImagePreview.naturalHeight}`);
+    const color = dominantImageColor(heroImagePreview);
+    if (color) heroImagePreview.style.setProperty('--episode-frame-color', color);
+  }
+  heroImagePreview?.addEventListener('load', updateEpisodeImageFrame);
   async function loadInquiries() {
     refreshInbox.disabled = true;
     try {
@@ -321,6 +375,7 @@
   }
   function updateBannerMediaUI() {
     const isEpisode = heroMediaType.value === 'episode';
+    updateEpisodeImageFrame();
     heroEpisodeWrap.hidden = !isEpisode;
     heroEpisodeSearch.disabled = !isEpisode;
     heroEpisodeSearch.required = isEpisode;
