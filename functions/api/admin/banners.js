@@ -45,7 +45,7 @@ function fromRow(row) {
   return { id: row.id, position: row.position, enabled: Boolean(row.enabled), fields, ctaHref: row.cta_href };
 }
 
-function normalizeBanner(banner) {
+function normalizeBanner(banner, { allowIncomplete = false } = {}) {
   if (!banner || typeof banner.id !== 'string' || !/^[a-z0-9-]{1,50}$/i.test(banner.id) || typeof banner.enabled !== 'boolean' || !banner.fields || typeof banner.fields !== 'object') {
     return { error: 'Uno de los banners no tiene el formato esperado.' };
   }
@@ -60,13 +60,13 @@ function normalizeBanner(banner) {
     const es = value.es.trim();
     const en = value.en.trim();
     const optionalSchedule = type === 'schedule';
-    if ((!optionalSchedule && (!es || !en)) || es.length > maxLength || en.length > maxLength || CONTROL_CHARACTERS.test(es) || CONTROL_CHARACTERS.test(en)) {
+    if ((!allowIncomplete && !optionalSchedule && (!es || !en)) || es.length > maxLength || en.length > maxLength || CONTROL_CHARACTERS.test(es) || CONTROL_CHARACTERS.test(en)) {
       return { error: `Revisa el contenido de “${key}”: no puede estar vacío ni superar ${maxLength} caracteres.` };
     }
     // Localized text has separate database columns and may differ by language.
     // Only fields stored in one shared column must match between the form values.
     if (esColumn === enColumn && es !== en) return { error: `Los valores de “${key}” deben coincidir.` };
-    if (type === 'image' && (es !== en || !IMAGE_PATH.test(es) || es.split('/').includes('..'))) return { error: 'Sube una imagen válida para este banner antes de guardar.' };
+    if (type === 'image' && (es !== en || (!allowIncomplete || es) && (!IMAGE_PATH.test(es) || es.split('/').includes('..')))) return { error: 'Sube una imagen válida para este banner antes de guardar.' };
     if (type === 'effect' && (es !== en || !['orbit', 'still'].includes(es))) return { error: 'Elige un movimiento disponible para cada banner.' };
     if (type === 'media-type' && !['image', 'episode'].includes(es)) return { error: 'Elige si el banner muestra una imagen o un episodio.' };
     if (type === 'episode' && es && !/^[a-z0-9-]{1,100}$/i.test(es)) return { error: 'El episodio seleccionado no tiene un identificador válido.' };
@@ -78,8 +78,8 @@ function normalizeBanner(banner) {
     row[esColumn] = es;
     row[enColumn] = en;
   }
-  if (row.media_type === 'episode' && !row.episode_id) return { error: 'Selecciona el episodio que quieres destacar.' };
-  if (row.starts_at && row.ends_at && Date.parse(row.ends_at) <= Date.parse(row.starts_at)) return { error: 'La fecha de fin debe ser posterior a la fecha de inicio.' };
+  if (!allowIncomplete && row.media_type === 'episode' && !row.episode_id) return { error: 'Selecciona el episodio que quieres destacar.' };
+  if (!allowIncomplete && row.starts_at && row.ends_at && Date.parse(row.ends_at) <= Date.parse(row.starts_at)) return { error: 'La fecha de fin debe ser posterior a la fecha de inicio.' };
   row.cta_href = row.media_type === 'episode' ? `/?episode=${encodeURIComponent(row.episode_id)}` : '#historietas';
   return { row };
 }
@@ -117,6 +117,28 @@ export async function onRequestPost(context) {
   await auth.db.prepare(`INSERT INTO hero_banners (${COLUMNS.join(', ')}) VALUES (${COLUMNS.map(() => '?').join(', ')})`)
     .bind(...COLUMNS.map(column => row[column])).run();
   return json({ ok: true, banner: { ...clone, id, position: row.position, enabled: false } }, 201);
+}
+
+export async function onRequestPatch(context) {
+  const auth = await authorize(context, true);
+  if (auth.response) return auth.response;
+  let body;
+  try { body = await context.request.json(); } catch { return json({ error: 'No pudimos leer el borrador.' }, 400); }
+  const normalized = normalizeBanner(body?.banner, { allowIncomplete: true });
+  if (normalized.error) return json({ error: normalized.error }, 400);
+  const row = normalized.row;
+  if (row.enabled) return json({ error: 'Activa el banner y guárdalo para publicarlo.' }, 409);
+  const current = await auth.db.prepare('SELECT * FROM hero_banners WHERE id = ?').bind(row.id).first();
+  if (!current) return json({ error: 'El borrador ya no existe. Recarga los banners e inténtalo de nuevo.' }, 404);
+  if (current.enabled) return json({ error: 'Este banner está publicado. Usa Guardar cambios para modificarlo.' }, 409);
+  row.position = current.position;
+  row.created_at = current.created_at;
+  row.updated_at = new Date().toISOString();
+  const columns = COLUMNS.filter(column => !['id', 'position', 'enabled', 'created_at'].includes(column));
+  const updated = await auth.db.prepare(`UPDATE hero_banners SET ${columns.map(column => `${column} = ?`).join(', ')} WHERE id = ? AND enabled = 0`)
+    .bind(...columns.map(column => row[column]), row.id).run();
+  if (!updated.meta?.changes) return json({ error: 'Este banner cambió mientras se guardaba. Recarga e inténtalo de nuevo.' }, 409);
+  return json({ ok: true, banner: fromRow(row) });
 }
 
 export async function onRequestPut(context) {
