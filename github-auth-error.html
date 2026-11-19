@@ -24,6 +24,7 @@
     const reason = new URLSearchParams(location.search).get('reason');
     if (reason === 'not-authorized') document.querySelector('#message').textContent = 'La cuenta de GitHub no tiene verificado el correo autorizado para este taller. Añádelo y verifícalo en GitHub, o cambia a la cuenta que ya lo tenga verificado, y vuelve a intentarlo.';
     if (reason === 'cancelled') document.querySelector('#message').textContent = 'Cancelaste el acceso de GitHub. Puedes intentarlo otra vez cuando quieras.';
+    if (reason === 'oauth-exchange') document.querySelector('#message').textContent = 'GitHub no aceptó el intercambio del código de acceso. Si entraste desde una URL de preview de Cloudflare Pages, esa URL debe coincidir exactamente con el callback de la OAuth App y usar su Client ID y secreto de entorno Preview. La URL de producción mandarinita.art requiere su propio callback y sus credenciales de producción.';
   </script>
 </body>
 </html>

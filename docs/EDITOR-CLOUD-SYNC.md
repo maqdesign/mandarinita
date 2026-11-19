@@ -4,18 +4,23 @@
 
 El editor y sus Pages Functions ya están desplegados en producción en `mandarinita.art`. El inicio de sesión usa GitHub OAuth y el almacenamiento privado usa el bucket R2 `mandarinita-editor-projects`, enlazado como `MANDARINITA_PROJECTS`. La autorización y el guardado se ejecutan en el servidor; el navegador nunca recibe `GITHUB_CLIENT_SECRET` ni `SESSION_SECRET`.
 
-La autenticación limita el acceso al correo de GitHub verificado que está configurado en Cloudflare. El flujo OAuth solicita `read:user` y `user:email`, no solicita repositorios ni permisos para publicar. La sesión usa cookie `HttpOnly`, `Secure`, `SameSite=Lax` y expira en siete días. Los proyectos se guardan bajo `users/mauricio/projects/`, con límite de 25 MB por proyecto.
+La autenticación limita el acceso a los correos de GitHub verificados configurados en Cloudflare. `MANDARINITA_SYNC_EMAIL` admite una sola dirección o una lista separada por comas, espacios o punto y coma; así se puede conceder acceso a colaboradores sin hacer público el taller. Los colaboradores autorizados comparten actualmente el mismo archivo de proyectos en R2. El flujo OAuth solicita `read:user` y `user:email`, no solicita repositorios ni permisos para publicar. La sesión usa cookie `HttpOnly`, `Secure`, `SameSite=Lax` y expira en siete días. Los proyectos se guardan bajo `users/mauricio/projects/`, con límite de 25 MB por proyecto.
 
 ## Guardado y conflictos
 
 - Cada cambio se guarda primero en el dispositivo y la subida a R2 se agrupa tras una pausa breve.
+- Al iniciar sesión o reintentar, se reparan los IDs heredados o inconsistentes en el índice local antes de subirlos. El contenido se escribe bajo un ID nuevo antes de retirar la clave local anterior.
+- Si la sincronización inicial aún está comparando la nube y se edita un borrador, la subida espera a que termine esa comparación y luego envía la versión más reciente.
+- Si R2 devuelve el error de ID inválido, el editor conserva el proyecto, lo reidentifica localmente y reintenta la subida una vez.
 - Al conectar un dispositivo, el editor compara la copia local con la versión de R2. Los proyectos que faltan se descargan; los cambios locales pendientes se suben con una condición de versión.
+- Con el taller abierto y visible, cada dispositivo consulta cambios de la nube cada 30 segundos; al volver a la pestaña también comprueba si hay cambios.
 - Las escrituras usan ETags de R2 (`If-Match` para actualizar y `If-None-Match: *` para crear). Si la versión remota cambió desde la última sincronización, R2 rechaza la escritura y el editor conserva la copia local.
 - El editor ofrece descargar la copia local, reemplazarla con la versión de la nube o reemplazar la nube con la copia local. La última opción requiere una acción explícita.
-- No hay edición en tiempo real ni bloqueo del archivo. Si Mauricio edita un proyecto desde dos dispositivos, los cambios concurrentes producen un conflicto visible en lugar de reemplazarse en silencio.
+- No hay edición simultánea en tiempo real ni bloqueo del archivo. Si Mauricio edita un proyecto desde dos dispositivos, la otra pantalla recoge cambios en la siguiente consulta; los cambios concurrentes producen un conflicto visible en lugar de reemplazarse en silencio.
 - La detección de conflictos compara el ETag con la última versión sincronizada en cada dispositivo. En la primera conexión de una instalación antigua que no tenga esa marca, cualquier diferencia entre la copia local y la remota requiere elección explícita.
+- Un rechazo HTTP 400 muestra ahora el motivo de validación que devuelve Pages Functions, en vez de ocultarlo tras el número de error. Cada dispositivo conserva su copia local hasta que una escritura o descarga a R2 termine correctamente.
 
-Los proyectos no se borran de `episodes.json`, no se publican en la web ni se programan en Instagram. Los paquetes exportados siguen en revisión hasta que Mauricio los apruebe.
+Los proyectos no se borran de `episodes.json` ni se publican en la web. La programación automática de Instagram sigue pendiente. Los paquetes exportados siguen en revisión hasta que Mauricio los apruebe.
 
 ## Validación de lanzamiento
 
