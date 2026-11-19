@@ -15,6 +15,7 @@
   const analyticsDays = document.querySelector('#analytics-days');
   const siteContentForm = document.querySelector('#site-content-form');
   const siteContentStatus = document.querySelector('#site-content-status');
+  const siteContentSaveState = document.querySelector('#site-content-save-state');
   const heroImageFile = document.querySelector('#hero-image-file');
   const heroImagePreview = document.querySelector('#hero-image-preview');
   const heroImageStatus = document.querySelector('#hero-image-status');
@@ -45,6 +46,7 @@
   const episodeEditorStatus = document.querySelector('#episode-editor-status');
   let bannerItems = [];
   let bannerBaseline = new Map();
+  let bannerBaselineOrder = [];
   let selectedBannerId = '';
   let bannersLoaded = false;
   let bannerDirty = false;
@@ -78,6 +80,10 @@
   ];
   const adminViews = [...document.querySelectorAll('[data-admin-view]')];
   const sectionLinks = [...document.querySelectorAll('.admin-sidebar nav a, .admin-quick-link')];
+  for (const link of document.querySelectorAll('.admin-sidebar nav a')) {
+    const label = link.querySelector('span:not(.admin-nav-icon)')?.textContent?.trim();
+    if (label) { link.title = label; link.setAttribute('aria-label', label); }
+  }
   let currentView = '';
   const escape = value => String(value || '').replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]);
   function showRuntimeError(message) {
@@ -213,6 +219,26 @@
   const setSiteContentStatus = message => { if (siteContentStatus) siteContentStatus.textContent = message; };
   const selectedBanner = () => bannerItems.find(item => item.id === selectedBannerId);
   const bannerSignature = banner => JSON.stringify({ position: banner.position, enabled: banner.enabled, ctaHref: banner.ctaHref, fields: banner.fields });
+  function hasPendingBannerChanges() {
+    return bannerItems.some(item => !bannerBaseline.has(item.id) || bannerBaseline.get(item.id) !== bannerSignature(item))
+      || bannerItems.some((item, index) => bannerBaselineOrder[index] !== item.id)
+      || bannerItems.length !== bannerBaselineOrder.length;
+  }
+  function updateBannerSaveState() {
+    bannerDirty = hasPendingBannerChanges();
+    const submit = siteContentForm.querySelector('[type="submit"]');
+    const saving = submit?.dataset.busy === 'true';
+    if (siteContentSaveState) {
+      const state = saving ? 'saving' : bannerDirty ? 'dirty' : 'saved';
+      siteContentSaveState.dataset.state = state;
+      siteContentSaveState.querySelectorAll('[data-save-icon]').forEach(icon => { icon.hidden = icon.dataset.saveIcon !== state; });
+      const label = siteContentSaveState.querySelector('span');
+      if (label) label.textContent = saving ? 'Guardando…' : bannerDirty ? 'Cambios sin guardar' : 'Todo guardado';
+      siteContentSaveState.setAttribute('aria-label', saving ? 'Guardando cambios' : bannerDirty ? 'Hay cambios sin guardar' : 'Todos los cambios están guardados');
+    }
+    if (submit && !saving) submit.disabled = !bannerDirty;
+    updateDeleteBannerState();
+  }
   function hasPendingChangesExcept(id) {
     return bannerItems.some(item => item.id !== id && bannerBaseline.get(item.id) !== bannerSignature(item));
   }
@@ -490,11 +516,8 @@
       };
     }
     banner.fields['hero.effect'].en = banner.fields['hero.effect'].es;
-    if (changed) {
-      bannerDirty = true;
-      updateDeleteBannerState();
-      setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
-    }
+    updateBannerSaveState();
+    if (changed) setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
     updateBannerPreview();
   }
   function fillBannerForm() {
@@ -668,9 +691,8 @@
           return;
         }
         banner.enabled = enabled.checked;
-        bannerDirty = true;
+        updateBannerSaveState();
         updateBannerPreview();
-        updateDeleteBannerState();
         setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
       });
       const startsAt = Date.parse(banner.fields['hero.startAt']?.es || '');
@@ -693,8 +715,7 @@
         move.addEventListener('click', () => {
           const offset = direction === 'up' ? -1 : 1;
           [bannerItems[index], bannerItems[index + offset]] = [bannerItems[index + offset], bannerItems[index]];
-          bannerDirty = true;
-          updateDeleteBannerState();
+          updateBannerSaveState();
           updateBannerPreview();
           setBannerStatus('Orden pendiente. Guarda los cambios para publicarlos en Preview.');
           renderBannerList(direction);
@@ -720,13 +741,15 @@
       if (!response.ok) throw new Error(result.error || 'No se pudieron cargar los banners.');
       bannerItems = result.banners || [];
       bannerBaseline = new Map(bannerItems.map(item => [item.id, bannerSignature(item)]));
+      bannerBaselineOrder = bannerItems.map(item => item.id);
       selectedBannerId = bannerItems.find(item => item.enabled)?.id || bannerItems[0]?.id || '';
       bannersLoaded = true;
-      bannerDirty = false;
+      updateBannerSaveState();
       renderBannerList();
       fillBannerForm();
       setBannerStatus(bannerItems.length ? `${bannerItems.length} ${bannerItems.length === 1 ? 'banner' : 'banners'} en la portada.` : 'Aún no hay banners.');
-      setSiteContentStatus('Edita este banner; los cambios se guardan directamente en Preview.');
+      updateBannerSaveState();
+      setSiteContentStatus('Edita el banner. Usa Guardar cambios o Ctrl/Cmd+S para publicarlo en Preview.');
     } catch (error) { setBannerStatus(error.message); }
   }
   async function createBanner() {
@@ -737,7 +760,7 @@
       if (!response.ok) throw new Error(result.error || 'No se pudo crear el banner.');
       bannerItems.push(result.banner);
       selectedBannerId = result.banner.id;
-      bannerDirty = true;
+      updateBannerSaveState();
       renderBannerList();
       fillBannerForm();
       setBannerStatus('Banner nuevo, todavía en borrador. Cámbialo y guarda para publicarlo.');
@@ -763,7 +786,7 @@
       const sourceIndex = bannerItems.findIndex(item => item.id === source.id);
       bannerItems.splice(sourceIndex + 1, 0, clone);
       selectedBannerId = clone.id;
-      bannerDirty = true;
+      updateBannerSaveState();
       renderBannerList();
       fillBannerForm();
       setBannerStatus('Copia creada como borrador inactivo. Ajusta el contenido y guarda para publicarla en Preview.');
@@ -778,8 +801,12 @@
   }
   async function saveBanners() {
     captureBannerForm();
+    if (!bannerDirty) { setSiteContentStatus('No hay cambios pendientes.'); return; }
     const submit = siteContentForm.querySelector('[type="submit"]');
+    if (submit.dataset.busy === 'true') return;
+    submit.dataset.busy = 'true';
     submit.disabled = true;
+    updateBannerSaveState();
     setSiteContentStatus('Guardando banners en Preview…');
     try {
       const response = await fetch('/api/admin/banners', { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ banners: bannerItems }) });
@@ -788,14 +815,16 @@
       bannerItems = result.banners;
       bannerDirty = false;
       bannerBaseline = new Map(bannerItems.map(item => [item.id, bannerSignature(item)]));
+      bannerBaselineOrder = bannerItems.map(item => item.id);
       renderBannerList();
       fillBannerForm();
+      updateBannerSaveState();
       setBannerStatus('Cambios publicados en Preview.');
       setSiteContentStatus('Listo: los banners ya aparecen en Preview. Recarga la portada para verlos.');
     } catch (error) {
       setSiteContentStatus(error.message);
       setBannerStatus(error.message);
-    } finally { submit.disabled = false; updateDeleteBannerState(); }
+    } finally { submit.dataset.busy = 'false'; updateBannerSaveState(); }
   }
   async function deleteBanner() {
     const deletingDraft = !bannerBaseline.has(selectedBannerId);
@@ -810,8 +839,9 @@
       if (!response.ok) throw new Error(result.error || 'No se pudo quitar el banner.');
       bannerItems = result.banners;
       bannerBaseline = new Map(bannerItems.map(item => [item.id, bannerSignature(item)]));
+      bannerBaselineOrder = bannerItems.map(item => item.id);
       selectedBannerId = bannerItems.find(item => item.enabled)?.id || bannerItems[0]?.id || '';
-      bannerDirty = false;
+      updateBannerSaveState();
       renderBannerList();
       fillBannerForm();
       setBannerStatus(deletingDraft ? 'Borrador descartado sin publicarlo.' : 'Banner quitado del carrusel de Preview.');
@@ -841,14 +871,22 @@
       heroImageStatus.textContent = error.message;
     } finally {
       heroImageFile.disabled = false;
-      submit.disabled = false;
+      updateBannerSaveState();
     }
   });
   siteContentForm.addEventListener('submit', async event => {
     event.preventDefault();
-    const submit = siteContentForm.querySelector('[type="submit"]');
-    submit.disabled = true;
     await saveBanners();
+  });
+  document.addEventListener('keydown', event => {
+    if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 's' || currentView !== 'sitio' || !bannerDirty) return;
+    event.preventDefault();
+    void saveBanners();
+  });
+  window.addEventListener('beforeunload', event => {
+    if (!bannerDirty) return;
+    event.preventDefault();
+    event.returnValue = '';
   });
   siteContentForm.addEventListener('input', event => {
     if (event.target !== heroImageFile && event.target !== siteContentForm.elements.hero_is_new) captureBannerForm();
@@ -943,4 +981,11 @@
       episodeEditorStatus.textContent = 'El editor requiere la sesión de GitHub. Ábrelo en otra pestaña si no aparece en este panel.';
     }
   });
+  if (episodeEditorFrame) {
+    window.setTimeout(() => {
+      if (episodeEditorFrame.dataset.loaded === 'true' && episodeEditorStatus.textContent === 'Cargando el editor de episodios…') {
+        episodeEditorStatus.textContent = 'El editor está tardando en responder. Puedes continuar desde el editor independiente mientras revisamos esta integración.';
+      }
+    }, 12000);
+  }
 })();

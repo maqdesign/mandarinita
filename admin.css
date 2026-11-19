@@ -382,3 +382,34 @@
 @media (prefers-reduced-transparency: reduce) {
   .admin-header,.admin-section-heading,.site-content-action-bar { backdrop-filter: none; }
 }
+
+/* Put the navigation toggle beside the brand, and keep the live preview clear of the action bar. */
+.admin-brand-group { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.admin-brand-group .admin-sidebar-toggle { width: 38px; height: 38px; flex: 0 0 38px; padding: 0; border-radius: 11px; }
+.admin-layout.sidebar-collapsed .admin-sidebar-toggle .ui-icon { transform: rotate(180deg); }
+.site-content-action-bar .site-content-save-state { display: inline-flex; align-items: center; gap: 6px; margin-right: auto; color: #426326; font-size: .7rem; font-weight: 700; white-space: nowrap; }
+.site-content-save-state .ui-icon { width: 16px; height: 16px; }
+.site-content-save-state[data-state="dirty"] { color: #8d4a00; }
+.site-content-save-state[data-state="saving"] { color: #665b51; }
+.site-content-save-state [hidden] { display: none !important; }
+.episode-editor-fallback { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 12px 0; padding: 14px 16px; border: 1px solid #efc18d; border-radius: 14px; background: #fff4e6; }
+.episode-editor-fallback strong { display: block; margin-bottom: 3px; font-size: .82rem; }
+.episode-editor-fallback p { margin: 0; color: var(--muted); font-size: .76rem; }
+.episode-editor-fallback a { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.episode-editor-fallback .ui-icon { width: 16px; height: 16px; }
+@media (min-width: 1181px) {
+  .site-content-action-bar { grid-column: 1; position: sticky; top: calc(var(--admin-header-height) + 92px); z-index: 45; }
+  .site-content-action-bar .site-content-save-state { margin-right: auto; }
+  .hero-admin-preview { top: calc(var(--admin-header-height) + 92px); max-height: calc(100dvh - var(--admin-header-height) - 108px); }
+  .hero-preview-stage { max-height: calc(100dvh - 260px); }
+  .hero-preview-stage iframe { height: clamp(300px, 52dvh, 600px); }
+}
+@media (max-width: 1180px) {
+  .site-content-action-bar { top: calc(var(--admin-header-height) + 92px); }
+}
+@media (max-width: 760px) {
+  .admin-brand-group { gap: 7px; }
+  .admin-brand-group .admin-sidebar-toggle { width: 34px; height: 34px; flex-basis: 34px; }
+  .site-content-save-state { margin-right: 6px; }
+  .episode-editor-fallback { align-items: flex-start; flex-direction: column; }
+}
