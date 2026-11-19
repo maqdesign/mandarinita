@@ -3,6 +3,7 @@
   const PROJECT_KEY = id => `mandarinita-editor-project-v1:${id}`;
   const LEGACY_KEY = 'mandarinita-editor-project';
   const LOGICAL_WIDTH = 600;
+  let exportPreviewUrls = [];
   const FORMAT = {
     web: { width: 1200, height: 800, logicalHeight: 400, label: 'Web 3:2' },
     square: { width: 1080, height: 1080, logicalHeight: 600, label: 'Instagram 1:1' },
@@ -953,8 +954,9 @@
     $('#mockup-preview').hidden=state.contentType!=='mockup';$('#change-mockup').hidden=state.contentType!=='mockup';$('#mockup-preview').setAttribute('aria-pressed',String(state.mockupPreview!==false));$('#mockup-preview').setAttribute('aria-label',state.mockupPreview===false?'Ver producto':'Ocultar simulación');$('#mockup-preview').title=state.mockupPreview===false?'Ver producto':'Ocultar simulación';$('#mockup-preview').innerHTML=`${svgIcon(state.mockupPreview===false?'eye':'eyeOff')}<span class="button-label">${state.mockupPreview===false?'Ver producto':'Ocultar simulación'}</span>`;
     $('#export-vector').hidden=!['design','mockup'].includes(state.contentType);
     renderPanels();
+    const panelLayers=[];
     state.panels.forEach((panel, panelIndex) => {
-      const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.classList.toggle('has-cross-panel-art',panel.items.some(item=>item.x<0||item.x+item.w>LOGICAL_WIDTH)); wrapper.dataset.panelIndex = panelIndex; wrapper.style.setProperty('--artboard-scale', scale);
+      const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.dataset.panelIndex = panelIndex; wrapper.style.setProperty('--artboard-scale', scale);
       const heading = document.createElement('div'); heading.className = 'artboard-heading';
       const activate = document.createElement('button'); activate.className = 'artboard-title'; activate.innerHTML = `<strong>Viñeta ${panelIndex + 1}</strong><span>${panel.items.length} capas</span>`; activate.onclick = () => setActivePanel(panelIndex, true);
       const viewportBadge=document.createElement('span');viewportBadge.className='viewport-badge';viewportBadge.textContent='ÁREA FINAL';viewportBadge.hidden=panelIndex!==state.active;
@@ -978,9 +980,33 @@
         dropResourceAt(resource,panelIndex,boardCanvas,event.clientX,event.clientY);
       });
       boardCanvas.addEventListener('click', event => { if (event.target === boardCanvas) { setActivePanel(panelIndex); if ($('#toggle-draw').getAttribute('aria-pressed') !== 'true') selectItem(null); } });
+      const continuationLayer=document.createElement('div');continuationLayer.className='panel-continuation-layer';continuationLayer.setAttribute('aria-hidden','true');boardCanvas.append(continuationLayer);
+      panelLayers[panelIndex]={canvas:boardCanvas,continuationLayer,wrapper};
       artboard.append(boardCanvas); wrapper.append(artboard); stage.append(wrapper);
       panel.items.forEach((item, index) => renderItem(item, index, panelIndex, boardCanvas));
     });
+    state.panels.forEach((sourcePanel,sourcePanelIndex)=>sourcePanel.items.forEach(item=>{
+      const sourceElement=panelLayers[sourcePanelIndex]?.canvas.querySelectorAll('.placed');
+      if(!sourceElement)return;
+      const original=[...sourceElement].find(element=>element.dataset.id===item.id);
+      if(!original)return;
+      panelLayers.forEach((target,index)=>{
+        if(!target||index===sourcePanelIndex)return;
+        const shift=(sourcePanelIndex-index)*LOGICAL_WIDTH;
+        const reach=Math.hypot(item.w,item.h)/2;
+        const center=item.x+shift+item.w/2;
+        if(center+reach<=0||center-reach>=LOGICAL_WIDTH)return;
+        const copy=original.cloneNode(true);
+        copy.classList.remove('selected','offstage','sampling-background');
+        copy.classList.add('panel-continuation-copy');
+        copy.dataset.id='';
+        copy.style.left=`${item.x+shift}px`;
+        copy.querySelector('.resize-handle')?.remove();
+        copy.querySelectorAll('textarea').forEach(textarea=>{textarea.readOnly=true;textarea.tabIndex=-1;});
+        target.wrapper.classList.add('has-incoming-continuation');
+        target.continuationLayer.append(copy);
+      });
+    }));
     $('#current-panel-label').textContent = `VIÑETA ${state.active + 1}`;
     renderInspector(); renderLayers(); renderOffstage();
     if (savedScroll && viewport) { viewport.scrollLeft = savedScroll.left; viewport.scrollTop = savedScroll.top; }
@@ -1742,6 +1768,7 @@
       if(current.changed)commit(); return;
     }
     if (!drawing) return;
+    continueDrawing(event);
     const current = drawing; const target = current.canvas; if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId); drawing=null;
     for(const segment of current.segments.values())segment.canvas.querySelector('.temporary-stroke')?.remove();
     const strokes=[];
@@ -1844,10 +1871,14 @@
       ctx.fillStyle='#F87209';ctx.fillRect(output.width*.035,output.height*.86,output.width*.93,Math.max(4,output.height*.006));
     }
     const logo = await loadImage('/assets/mandarinita-logo.svg').catch(()=>null);
-    const logoW=output.width*.25, logoH=output.height*.075, logoX=(output.width-logoW)/2, logoY=style==='footer'?output.height*.875:0;
+    const maxLogoWidth=output.width*.26, maxLogoHeight=Math.min(output.height*.105,output.width*.085);
+    const logoScale=logo?Math.min(maxLogoWidth/logo.naturalWidth,maxLogoHeight/logo.naturalHeight):0;
+    const logoW=logo?logo.naturalWidth*logoScale:0, logoH=logo?logo.naturalHeight*logoScale:0;
+    const logoX=(output.width-logoW)/2, logoY=style==='footer'?output.height*.875+(output.height*.105-logoH)/2:0;
     if (logo) {
-      ctx.fillStyle='#F5FFE0';roundedRect(ctx,logoX-output.width*.025,logoY,logoW+output.width*.05,logoH+output.height*.015,output.width*.045);ctx.fill();
-      ctx.drawImage(logo,logoX,logoY+output.height*.008,logoW,logoH);
+      const padX=logoH*.34,padY=logoH*.12;
+      ctx.fillStyle='#F5FFE0';roundedRect(ctx,logoX-padX,logoY-padY,logoW+padX*2,logoH+padY*2,(logoH+padY*2)*.48);ctx.fill();
+      ctx.drawImage(logo,logoX,logoY,logoW,logoH);
     }
     const copyright=`© ${new Date().getFullYear()}. Mandarinita es una marca comercial mixta, registrada por Mauricio Quezada.`;
     ctx.save();ctx.translate(output.width*.035,output.height*.51);ctx.rotate(-Math.PI/2);ctx.fillStyle='#50493D';ctx.font=`${Math.max(10,output.width*.012)}px "Work Sans",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(copyright,0,0,output.height*.9);ctx.restore();
@@ -1960,6 +1991,31 @@
     for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index],index); const path=isEpisode?`assets/episodes/drafts/${slug}/vineta-${String(index+1).padStart(2,'0')}.png`:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`; files.push({ name:path, data: new Uint8Array(await image.arrayBuffer()) }); }
     download(zipStore(files), `${slug}-revision.zip`); toast(savedLocally ? 'Paquete de revisión listo. No se publica automáticamente.' : 'Paquete listo; conserva el ZIP porque el borrador no cupo en este dispositivo.');
   }
+  async function openExportPreview() {
+    const button=$('#preview-export');
+    button.disabled=true;
+    exportPreviewUrls.forEach(url=>URL.revokeObjectURL(url));exportPreviewUrls=[];
+    const pages=$('#export-preview-pages');pages.replaceChildren();
+    state.format=$('#export-preset').value;state.exportStyle=$('#export-style').value||'classic';
+    state.pageHeight=FORMAT[state.format].logicalHeight;autosave();render();
+    const formatLabel=$('#export-preset').selectedOptions[0]?.textContent.trim()||FORMAT[state.format].label;
+    const styleLabel=$('#export-style').selectedOptions[0]?.textContent.trim()||state.exportStyle;
+    $('#export-preview-template').textContent=`Formato: ${formatLabel} · Plantilla: ${styleLabel} · ${state.panels.length} viñetas`;
+    try {
+      for(let index=0;index<state.panels.length;index++){
+        const blob=await renderPanelPng(state.panels[index],index);
+        if(!blob)throw new Error('No se pudo generar la imagen de vista previa.');
+        const url=URL.createObjectURL(blob);exportPreviewUrls.push(url);
+        const card=document.createElement('article');card.className='export-preview-page';
+        const label=document.createElement('span');label.textContent=`VIÑETA ${index+1}`;
+        const image=document.createElement('img');image.src=url;image.alt=`Vista previa final de la viñeta ${index+1}, con la plantilla ${styleLabel}`;
+        card.append(label,image);pages.append(card);
+      }
+      $('#export-preview-dialog').showModal();
+    } catch(error) {toast(error instanceof Error?error.message:'No se pudo preparar la vista previa.');}
+    finally {button.disabled=false;}
+  }
+  function closeExportPreview() { exportPreviewUrls.forEach(url=>URL.revokeObjectURL(url));exportPreviewUrls=[];$('#export-preview-pages').replaceChildren(); }
   function slugify(value) { return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function download(blob, filename) { const url = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 2000); }
   function loadImage(src) { return new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = reject; image.src = src; }); }
@@ -2069,7 +2125,7 @@
     labeledIcon('#mobile-library','panelLeft','Componentes'); labeledIcon('#mobile-properties','sliders','Propiedades');
     $('#tab-components').innerHTML=`${svgIcon('box')}<span>Componentes</span>`;
     $('#tab-layers').innerHTML=`${svgIcon('layers')}<span>Capas</span> <span id="layer-count-tab">0</span>`;
-    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#text-style','sparkles','Estilos');labeledIcon('#change-mockup','refresh','Cambiar producto');labeledIcon('#mockup-preview','eyeOff','Ocultar simulación');labeledIcon('#export-vector','fileDown','Arte vectorial SVG');labeledIcon('#add-bubble','bubble','Añadir globo');
+    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#text-style','sparkles','Estilos');labeledIcon('#change-mockup','refresh','Cambiar producto');labeledIcon('#mockup-preview','eyeOff','Ocultar simulación');labeledIcon('#export-vector','fileDown','Arte vectorial SVG');labeledIcon('#add-bubble','bubble','Añadir globo');labeledIcon('#preview-export','eye','Vista previa final');
     const filterIcons={all:'grid',character:'users',object:'box',background:'image',sticker:'layers',reference:'book'};
     $$('.filters [data-filter]').forEach(button=>{const label=button.textContent.trim();button.classList.add('has-icon');button.innerHTML=`${svgIcon(filterIcons[button.dataset.filter]||'grid')}<span class="button-label">${label}</span>`;button.setAttribute('aria-label',label);button.title=label;});
     const orderToggle = $('#toggle-order-strip');
@@ -2094,6 +2150,10 @@
     $('#save-project').onclick = () => { if (autosave()) toast(cloudUser ? 'Guardado local; sincronizando con GitHub.' : 'Guardado en este dispositivo.'); };
     $('#download-source').onclick = exportSource;
     $('#export-project').onclick = exportReview;
+    $('#preview-export').onclick = openExportPreview;
+    $('#export-preview-close').onclick = () => $('#export-preview-dialog').close();
+    $('#export-preview-download').onclick = () => { $('#export-preview-dialog').close(); exportReview(); };
+    $('#export-preview-dialog').addEventListener('close',closeExportPreview);
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;
     $('#add-cta-panel').onclick = addClosingPanel;
