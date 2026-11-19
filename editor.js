@@ -267,7 +267,9 @@
       : 'Tus borradores se guardan en este navegador. El archivo .mandarinita sirve para moverlos a otro dispositivo.';
   }
   async function cloudFetch(path, options = {}) {
-    const response = await fetch(path, { cache:'no-store', ...options, credentials: 'same-origin', headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) } });
+    let response;
+    try { response = await fetch(path, { cache:'no-store', ...options, credentials: 'same-origin', headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) } }); }
+    catch (cause) { const error = new Error('El navegador no logró completar la solicitud.'); error.code = 'cloud_network_error'; error.syncPath = path; error.cause = cause; throw error; }
     let body = {};
     try { body = await response.json(); } catch { /* Surface status when a proxy returned a non-JSON response. */ }
     if (!response.ok) { const error=new Error(body.error || `Sincronización: ${response.status}`);error.status=response.status;error.code=body.code||'';throw error; }
@@ -317,9 +319,18 @@
     catch { /* The remote copy is still authoritative even if this tiny cache cannot persist. */ }
   }
   async function readRemoteProject(projectId) {
-    const response=await fetch(`/api/projects/${encodeURIComponent(projectId)}`,{credentials:'same-origin',cache:'no-store'});
+    const path=`/api/projects/${encodeURIComponent(projectId)}`;
+    let response;
+    try { response=await fetch(path,{credentials:'same-origin',cache:'no-store'}); }
+    catch (cause) { const error=new Error('El navegador no logró descargar el borrador.');error.code='cloud_network_error';error.syncPath=path;error.cause=cause;throw error; }
     let project;try{project=await response.json();}catch{project=null;}
     if (!response.ok) { const error=new Error(project?.error||`No se pudo descargar la versión de la nube (error ${response.status}).`);error.status=response.status;error.code=project?.code||'';throw error; }
+    if (!project || typeof project !== 'object' || Array.isArray(project)) { const error=new Error('La nube devolvió un archivo que no es un borrador editable.');error.status=422;error.code='incompatible_remote_project';throw error; }
+    const storedId=project.projectId;
+    project.projectId=projectId;
+    try { validateEditableProject(project); }
+    catch (cause) { const error=new Error(cause instanceof Error?cause.message:'El borrador de la nube usa un formato no compatible.');error.status=422;error.code='incompatible_remote_project';error.cause=cause;throw error; }
+    if (storedId !== projectId) console.warn('Cloud project ID repaired from its storage key', { projectId, hadStoredId: Boolean(storedId) });
     return {project,etag:response.headers.get('ETag')};
   }
   function repairCloudProjectId(project) {
@@ -380,7 +391,9 @@
       :error?.code==='invalid_project_id'?'La nube no aceptó el identificador de este borrador. Se conservó localmente; pulsa “Reintentar sincronización” para volver a intentarlo.'
       :error?.status===400?`La nube rechazó el borrador: ${(error.message||'la solicitud no es válida').replace(/[.!?]+$/,'')}. El borrador local sigue guardado.`
       :Number.isInteger(error?.status)?`No se pudo sincronizar (error ${error.status}). ${error.message&&error.message!==`Sincronización: ${error.status}`?`${error.message} `:''}El borrador sigue guardado en este dispositivo.`
-      :'No se pudo conectar con la nube. El borrador sigue guardado en este dispositivo.';
+      :error?.code==='cloud_network_error'?`El navegador no pudo conectar con Cloudflare${error.syncPath?` al solicitar ${error.syncPath.startsWith('/api/projects/')?'/api/projects/[id]':error.syncPath}`:''}. Comprueba la conexión y reintenta; el borrador sigue guardado en este dispositivo.`
+      :'No se pudo completar la sincronización. El borrador sigue guardado en este dispositivo.';
+    console.error('Cloud synchronization failed', { name: error?.name||'Error', code: error?.code||'', status: error?.status||0, endpoint: error?.syncPath||'', message: error?.message||'' });
     setCloudStatus(message,'error');
     if(state)$('#save-state').textContent='Guardado local · sincronización pendiente';
     toast(message);
@@ -441,21 +454,27 @@
       const { projects: remoteProjects } = await cloudFetch('/api/projects');
       const localProjects = listProjects();
       const remoteById = new Map(remoteProjects.map(project => [project.id, project]));
+      const skippedRemoteProjects = [];
       for (const remote of remoteProjects) {
-        let local;try { local=JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id))||'null'); } catch { local=null; }
-        if(!local){const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag||remote.etag);continue;}
-        const base=cloudBases.get(remote.id);
-        if(!base){
-          const latest=await readRemoteProject(remote.id);
-          if(JSON.stringify(local)===JSON.stringify(latest.project))saveCloudBase(remote.id,latest.etag,local.updatedAt);
-          else markCloudConflict(remote.id);
-        }else if(base.etag!==remote.etag){
-          if(Number(local.updatedAt)>Number(base.localUpdatedAt))markCloudConflict(remote.id);
-          else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);if(state?.projectId===remote.id){state=normalizeProject(latest.project);render();}}
-        }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
-          cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
-          try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
-        }else saveCloudBase(remote.id,remote.etag,local.updatedAt);
+        try {
+          let local;try { local=JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id))||'null'); } catch { local=null; }
+          if(!local){const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag||remote.etag);continue;}
+          const base=cloudBases.get(remote.id);
+          if(!base){
+            const latest=await readRemoteProject(remote.id);
+            if(JSON.stringify(local)===JSON.stringify(latest.project))saveCloudBase(remote.id,latest.etag,local.updatedAt);
+            else markCloudConflict(remote.id);
+          }else if(base.etag!==remote.etag){
+            if(Number(local.updatedAt)>Number(base.localUpdatedAt))markCloudConflict(remote.id);
+            else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);if(state?.projectId===remote.id){state=normalizeProject(latest.project);render();}}
+          }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
+            cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
+            try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
+          }else saveCloudBase(remote.id,remote.etag,local.updatedAt);
+        } catch (error) {
+          if(error?.code==='incompatible_remote_project'||error?.status===404){skippedRemoteProjects.push(remote);console.warn('A remote draft could not be imported', { id: remote.id, code: error.code||'project_not_found' });continue;}
+          throw error;
+        }
       }
       for (const record of localProjects) {
         if (!remoteById.has(record.id)) {
@@ -464,7 +483,8 @@
         }
       }
       cloudReady = true;
-      setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':'Sincronización al día',cloudConflicts.size?'conflict':'ready');
+      const skippedMessage=skippedRemoteProjects.length?`${skippedRemoteProjects.length} borrador${skippedRemoteProjects.length===1?'':'es'} de la nube tiene${skippedRemoteProjects.length===1?'':'n'} un formato que esta versión no puede abrir. El resto sí se sincronizó; esos archivos no se modificaron.`:'';
+      setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':skippedMessage||'Sincronización al día',cloudConflicts.size?'conflict':skippedMessage?'error':'ready');
       renderProjectList();
     } catch (error) {
       cloudReady=false;setSyncFailure(error);
