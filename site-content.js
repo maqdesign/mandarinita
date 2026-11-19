@@ -282,7 +282,12 @@
         if (editLabels[field] || field === 'hero.image') {
           event.preventDefault();
           event.stopImmediatePropagation();
-          window.parent.postMessage({ type: 'mandarinita:preview-edit', field, language: language() }, location.origin);
+          window.parent.postMessage({
+            type: 'mandarinita:preview-edit',
+            field,
+            language: language(),
+            bannerId: typeof banners[current]?.id === 'string' ? banners[current].id : ''
+          }, location.origin);
           return;
         }
       }

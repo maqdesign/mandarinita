@@ -73,8 +73,17 @@ export async function onRequestGet(context) {
 export async function onRequestPost(context) {
   const auth = await authorize(context, true);
   if (auth.response) return auth.response;
-  const result = await auth.db.prepare('SELECT * FROM hero_banners ORDER BY position, created_at LIMIT 1').first();
-  if (!result) return json({ error: 'Primero debe existir el banner principal.' }, 409);
+  let sourceId = '';
+  try {
+    const body = await context.request.json();
+    if (typeof body?.sourceId === 'string' && /^[a-z0-9-]{1,50}$/i.test(body.sourceId)) sourceId = body.sourceId;
+  } catch { /* An empty body creates a copy of the first banner, preserving the add-banner behavior. */ }
+  const result = sourceId
+    ? await auth.db.prepare('SELECT * FROM hero_banners WHERE id = ?').bind(sourceId).first()
+    : await auth.db.prepare('SELECT * FROM hero_banners ORDER BY position, created_at LIMIT 1').first();
+  if (!result) return sourceId
+    ? json({ error: 'El banner que quieres copiar ya no está disponible.' }, 404)
+    : json({ error: 'Primero debe existir el banner principal.' }, 409);
   const count = await auth.db.prepare('SELECT COUNT(*) AS total, COALESCE(MAX(position), -1) AS last_position FROM hero_banners').first();
   if (count.total >= 8) return json({ error: 'Por ahora puedes tener hasta 8 banners.' }, 409);
   const id = crypto.randomUUID();

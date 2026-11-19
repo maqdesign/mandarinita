@@ -22,6 +22,7 @@
   const bannerList = document.querySelector('#hero-banner-list');
   const bannerManagerStatus = document.querySelector('#banner-manager-status');
   const createBannerButton = document.querySelector('#create-banner');
+  const duplicateBannerButton = document.querySelector('#duplicate-banner');
   const deleteBannerButton = document.querySelector('#delete-banner');
   const deleteBannerDialog = document.querySelector('#delete-banner-dialog');
   const confirmDeleteBanner = document.querySelector('#confirm-delete-banner');
@@ -170,6 +171,8 @@
     siteContentForm.hidden = false;
     deleteBannerButton.disabled = bannerDirty || bannerItems.length <= 1;
     deleteBannerButton.title = bannerItems.length <= 1 ? 'Debe quedar al menos un banner en la portada.' : '';
+    duplicateBannerButton.disabled = bannerItems.length >= 8;
+    duplicateBannerButton.title = bannerItems.length >= 8 ? 'El carrusel admite hasta ocho banners.' : '';
     heroImageFile.value = '';
     updateBannerPreview();
   }
@@ -204,7 +207,7 @@
     heroPreviewToast.hidden = false;
     heroPreviewToastTimer = window.setTimeout(() => { heroPreviewToast.hidden = true; }, 3800);
   }
-  function focusPreviewField(field, language) {
+  function focusPreviewField(field, language, bannerNumber) {
     previewEditField?.element?.classList.remove('preview-edit-target');
     window.clearTimeout(previewEditField?.timer);
     if (field === 'hero.image') {
@@ -213,8 +216,8 @@
       previewEditField = { element: artwork, timer: window.setTimeout(() => artwork?.classList.remove('preview-edit-target'), 2600) };
       heroImageFile.scrollIntoView({ behavior: 'smooth', block: 'center' });
       heroImageFile.focus({ preventScroll: true });
-      setSiteContentStatus('Imagen seleccionada en la vista previa. Elige el archivo nuevo en “Imagen y movimiento”.');
-      showHeroPreviewToast('Seleccionaste la imagen. Elige el archivo nuevo en “Imagen y movimiento”.');
+      setSiteContentStatus(`Banner ${bannerNumber}: imagen seleccionada en la vista previa. Elige el archivo nuevo en “Imagen y movimiento”.`);
+      showHeroPreviewToast(`Banner ${bannerNumber}: seleccionaste la imagen. Elige el archivo nuevo en “Imagen y movimiento”.`);
       return;
     }
     const fieldConfig = siteContentFields.find(([key]) => key === field);
@@ -227,12 +230,20 @@
     previewEditField = { element: group, timer: window.setTimeout(() => group.classList.remove('preview-edit-target'), 3000) };
     control.scrollIntoView({ behavior: 'smooth', block: 'center' });
     control.focus({ preventScroll: true });
-    setSiteContentStatus(`Editando ${group.querySelector('legend')?.textContent || 'el campo'} · ${language === 'en' ? 'English' : 'Español'}. Los cambios aparecen en la vista previa.`);
+    setSiteContentStatus(`Banner ${bannerNumber} · ${group.querySelector('legend')?.textContent || 'el campo'} · ${language === 'en' ? 'English' : 'Español'}. Los cambios aparecen en la vista previa.`);
   }
   window.addEventListener('message', event => {
     if (event.origin !== location.origin || event.source !== bannerPreview?.contentWindow) return;
     if (event.data?.type === 'mandarinita:preview-edit') {
-      focusPreviewField(event.data.field, event.data.language);
+      const requestedBanner = typeof event.data.bannerId === 'string' ? bannerItems.find(item => item.id === event.data.bannerId) : null;
+      if (requestedBanner && requestedBanner.id !== selectedBannerId) {
+        captureBannerForm();
+        selectedBannerId = requestedBanner.id;
+        fillBannerForm();
+        renderBannerList();
+      }
+      const bannerIndex = bannerItems.findIndex(item => item.id === selectedBannerId);
+      focusPreviewField(event.data.field, event.data.language, Math.max(1, bannerIndex + 1));
       return;
     }
     if (event.data?.type === 'mandarinita:preview-action') {
@@ -369,6 +380,37 @@
     } catch (error) { setBannerStatus(error.message); }
     finally { createBannerButton.disabled = bannerItems.length >= 8; }
   }
+  async function duplicateBanner() {
+    const source = selectedBanner();
+    if (!source || bannerItems.length >= 8) return;
+    duplicateBannerButton.disabled = true;
+    setSiteContentStatus('Preparando una copia de este banner…');
+    try {
+      const response = await fetch('/api/admin/banners', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sourceId: source.id }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudo duplicar el banner.');
+      const clone = {
+        ...result.banner,
+        enabled: false,
+        ctaHref: source.ctaHref,
+        fields: JSON.parse(JSON.stringify(source.fields))
+      };
+      const sourceIndex = bannerItems.findIndex(item => item.id === source.id);
+      bannerItems.splice(sourceIndex + 1, 0, clone);
+      selectedBannerId = clone.id;
+      bannerDirty = true;
+      renderBannerList();
+      fillBannerForm();
+      setBannerStatus('Copia creada como borrador inactivo. Ajusta el contenido y guarda para publicarla en Preview.');
+      setSiteContentStatus('Edita la copia. Se mantiene inactiva hasta que la actives y guardes los cambios.');
+      siteContentForm.elements.hero_title_first_es.focus();
+    } catch (error) {
+      setSiteContentStatus(error.message);
+      setBannerStatus(error.message);
+    } finally {
+      duplicateBannerButton.disabled = bannerItems.length >= 8;
+    }
+  }
   async function saveBanners() {
     captureBannerForm();
     const submit = siteContentForm.querySelector('[type="submit"]');
@@ -443,6 +485,7 @@
   });
   bannerPreview?.addEventListener('load', updateBannerPreview);
   createBannerButton.addEventListener('click', createBanner);
+  duplicateBannerButton.addEventListener('click', duplicateBanner);
   deleteBannerButton.addEventListener('click', () => {
     if (bannerDirty) { setBannerStatus('Guarda los cambios pendientes antes de quitar un banner.'); return; }
     if (bannerItems.length <= 1) { setBannerStatus('Debe quedar al menos un banner en la portada.'); return; }
