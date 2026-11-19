@@ -148,6 +148,7 @@
     trash: '<path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/>',
     copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
     grip: '<circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>',
+    move: '<path d="M12 2v20M2 12h20M12 2l-3 3m3-3 3 3M12 22l-3-3m3 3 3-3M2 12l3-3m-3 3 3 3m16-3-3-3m3 3-3 3"/>',
     eraser: '<path d="m7 21-4.3-4.3a2.4 2.4 0 0 1 0-3.4L13.3 2.7a2.4 2.4 0 0 1 3.4 0l4.6 4.6a2.4 2.4 0 0 1 0 3.4L11 21H7zM5 14l5 5M12 21h9"/>'
     ,marker: '<path d="m15 4 5 5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20zM3 21h18"/>',
     pencil: '<path d="m15 5 4 4M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20z"/>',
@@ -801,9 +802,18 @@
     const item = { id: id(), type: 'bubble', kind, name: kind === 'sfx' ? 'Efecto de sonido' : `Globo · ${labels[kind]}`, text: kind === 'sfx' ? 'POW!' : 'Escribe aquí…', ...pos, ...size, fontSize: kind === 'sfx' ? 42 : kind === 'shout' ? 24 : 17, align: 'center', shape:'auto', tail: ['dialogue', 'shout', 'thought'].includes(kind), tailAngle: 90, tailLength: 34, actionStyle: 'raised', overflow: 'auto', locked: false };
     currentPanel().items.push(item); selectItem(item.id); commit();
   }
-  const TEXT_STYLES={baloo:{fontFamily:'Baloo 2',fontSize:38,fontWeight:700,color:'#282522'},bangers:{fontFamily:'Bangers',fontSize:48,fontWeight:400,color:'#F87209',textEffect:'outline'},lilita:{fontFamily:'Lilita One',fontSize:42,fontWeight:400,color:'#607D3B'},fredoka:{fontFamily:'Fredoka',fontSize:32,fontWeight:600,color:'#282522'}};
+  const TEXT_STYLES={comic:{fontFamily:'Comic Neue',fontSize:34,fontWeight:700,color:'#302d2a'},baloo:{fontFamily:'Baloo 2',fontSize:38,fontWeight:700,color:'#282522'},lilita:{fontFamily:'Lilita One',fontSize:42,fontWeight:400,color:'#607D3B'},fredoka:{fontFamily:'Fredoka',fontSize:32,fontWeight:600,color:'#282522'},arc:{fontFamily:'Comic Neue',fontSize:38,fontWeight:700,color:'#F87209',textCurve:34}};
   function addTextBlock(text='Escribe aquí…',styleKey='fredoka') {
     const style=TEXT_STYLES[styleKey]||TEXT_STYLES.fredoka;const pos=placeWithoutOverlap(360,110);snapshot();const item={id:id(),type:'text',name:'Texto',text,x:pos.x,y:pos.y,w:360,h:110,...style,align:'center',rotation:0,locked:false};currentPanel().items.push(item);selectItem(item.id);commit();
+  }
+  function updateCurvedTextElement(item,element){
+    let svg=element.querySelector('.curved-text-preview');
+    if(!item.textCurve){svg?.remove();element.classList.remove('curved-text');return;}
+    if(!svg){svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('curved-text-preview');svg.setAttribute('aria-hidden','true');element.prepend(svg);}
+    svg.setAttribute('viewBox',`0 0 ${item.w} ${item.h}`);svg.replaceChildren();
+    const defs=document.createElementNS('http://www.w3.org/2000/svg','defs'),path=document.createElementNS('http://www.w3.org/2000/svg','path'),pathId=`curve-${item.id.replace(/[^a-zA-Z0-9_-]/g,'')}`;
+    const baseline=item.h*.58,amount=Number(item.textCurve)||0;path.id=pathId;path.setAttribute('d',`M 4 ${baseline} Q ${item.w/2} ${baseline-amount*1.8} ${item.w-4} ${baseline}`);defs.append(path);svg.append(defs);
+    const text=document.createElementNS('http://www.w3.org/2000/svg','text'),textPath=document.createElementNS('http://www.w3.org/2000/svg','textPath');textPath.setAttribute('href',`#${pathId}`);textPath.setAttribute('startOffset','50%');textPath.setAttribute('text-anchor','middle');textPath.textContent=String(item.text||'');text.setAttribute('font-family',item.fontFamily||'Comic Neue');text.setAttribute('font-size',item.fontSize||34);text.setAttribute('font-weight',item.fontWeight||700);text.setAttribute('fill',item.color||'#302d2a');text.append(textPath);svg.append(text);element.classList.add('curved-text');
   }
   function dataSvg(svg){return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;}
   function productMockupSvg(kind){
@@ -815,15 +825,24 @@
     return dataSvg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750">${common}${shape}</svg>`);
   }
   function createDesignProject(templateKey){
-    const product=['shirt','tote','mug'].includes(templateKey), format=templateKey==='post'?'square':'portrait';
-    const names={post:'Post Mandarinita',story:'Story Mandarinita',shirt:'Diseño para camiseta',tote:'Diseño para tote bag',mug:'Diseño para taza'};
-    state=makeProject(names[templateKey]||'Diseño nuevo',product?'mockup':'design');state.format=format;state.pageHeight=FORMAT[format].logicalHeight;state.panels=[{id:id(),backgroundColor:product?'#EEE9E2':templateKey==='story'?'#607D3B':'#FFF8EC',items:[]}];state.mockupPreview=true;undoStack=[];redoStack=[];
+    const product=['shirt','tote','mug'].includes(templateKey),promo=templateKey==='promo',quote=templateKey==='quote';
+    const format=product||templateKey==='story'?'portrait':'square';
+    const names={post:'Post Mandarinita',story:'Story Mandarinita',promo:'Anuncio de Mandarinita',quote:'Frase destacada',shirt:'Diseño para camiseta',tote:'Diseño para tote bag',mug:'Diseño para taza'};
+    state=makeProject(names[templateKey]||'Diseño nuevo',product?'mockup':'design');state.format=format;state.pageHeight=FORMAT[format].logicalHeight;state.panels=[{id:id(),backgroundColor:product?'#EEE9E2':templateKey==='story'?'#607D3B':quote?'#302D2A':'#FFF8EC',items:[]}];state.mockupPreview=true;undoStack=[];redoStack=[];
     const panel=state.panels[0];
     if(product)panel.items.push({id:id(),type:'image',name:'Simulación de producto',src:productMockupSvg(templateKey),x:0,y:0,w:600,h:750,locked:true,mockupOnly:true,rotation:0});
-    const titleText=templateKey==='story'?'¡Hoy toca algo bueno!':templateKey==='post'?'La vida tiene sus gajos.':'Tu diseño aquí';
-    const title={id:id(),type:'text',name:'Titular',text:titleText,x:product?155:48,y:product?320:templateKey==='story'?170:170,w:product?290:504,h:product?70:170,fontSize:product?31:templateKey==='post'?58:54,fontWeight:templateKey==='post'?400:700,fontFamily:templateKey==='post'?'Bangers':'Baloo 2',textEffect:templateKey==='post'?'outline':'none',align:'center',color:templateKey==='story'?'#FFF8EC':'#F87209',rotation:0,locked:false};panel.items.push(title);
-    const subtitle={id:id(),type:'text',name:'Mensaje',text:product?'Edítame y crea tu propio diseño':'Humor dominicano, con mucha pulpa.',x:product?180:82,y:product?398:templateKey==='story'?360:370,w:product?240:436,h:product?62:80,fontSize:product?17:22,fontWeight:600,fontFamily:'Fredoka',align:'center',color:templateKey==='story'?'#FFF8EC':'#282522',rotation:0,locked:false};panel.items.push(subtitle);state.selected=title.id;
-    try{saveProject();showEditor();toast(product?'Mockup listo. Cambia los textos y descarga el arte vectorial sin la simulación.':'Plantilla lista. Los titulares y textos son editables.');}catch{showEditor();toast('Este navegador no permitió guardar automáticamente. Descarga el archivo editable.');}
+    if(promo||quote){
+      const decoration=promo
+        ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600"><path fill="#F87209" d="M0 0h600v172q-125 60-300 5T0 190z"/><path fill="#607D38" d="M0 492q165-38 310 4t290-6v110H0z"/><circle cx="530" cy="75" r="33" fill="#F7C843"/><path d="M65 220h470" stroke="#F7C843" stroke-width="6" stroke-linecap="round"/><rect x="166" y="510" width="268" height="58" rx="29" fill="#302D2A"/></svg>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600"><path fill="#FFF8EC" d="M52 100q8-54 66-54h364q58 0 66 54v400q-8 54-66 54H118q-58 0-66-54z"/><path fill="#F87209" d="M0 0h165q-20 120-165 145zM600 455v145H450q32-108 150-145z"/><circle cx="500" cy="92" r="30" fill="#607D38"/><circle cx="95" cy="515" r="22" fill="#F7C843"/></svg>`;
+      panel.items.push({id:id(),type:'image',name:'Decoración de plantilla',src:dataSvg(decoration),x:0,y:0,w:600,h:600,locked:true,rotation:0});
+    }
+    const titleText=promo?'¡Nuevo sabor, misma pulpa!':quote?'La vida tiene sus gajos.':templateKey==='story'?'¡Hoy toca algo bueno!':product?'Tu diseño aquí':'La vida tiene sus gajos.';
+    const title={id:id(),type:'text',name:'Titular',text:titleText,x:product?155:promo?42:quote?52:48,y:product?320:promo?42:quote?102:templateKey==='story'?170:170,w:product?290:promo?516:quote?496:504,h:product?70:promo?138:quote?150:templateKey==='story'?170:170,fontSize:product?31:promo?50:quote?45:templateKey==='post'?58:54,fontWeight:templateKey==='story'?700:700,fontFamily:promo||quote||templateKey==='post'?'Comic Neue':'Baloo 2',textEffect:templateKey==='post'?'outline':'none',textCurve:quote?20:0,align:'center',color:templateKey==='story'?'#FFF8EC':promo?'#FFFFFF':quote?'#302D2A':'#F87209',rotation:0,locked:false};panel.items.push(title);
+    const subtitle={id:id(),type:'text',name:'Mensaje',text:product?'Edítame y crea tu propio diseño':promo?'Humor dominicano, con mucha pulpa.':quote?'Escribe aquí la frase que quieres destacar.':'Humor dominicano, con mucha pulpa.',x:product?180:promo?72:quote?82:82,y:product?398:promo?270:quote?308:templateKey==='story'?360:370,w:product?240:promo?456:quote?436:436,h:product?62:promo?78:quote?90:80,fontSize:product?17:promo?25:quote?22:22,fontWeight:600,fontFamily:'Fredoka',align:'center',color:templateKey==='story'?'#FFF8EC':quote?'#302D2A':'#282522',rotation:0,locked:false};panel.items.push(subtitle);
+    if(promo)panel.items.push({id:id(),type:'text',name:'Llamada a la acción',text:'PRUÉBALO HOY',x:166,y:515,w:268,h:48,fontSize:25,fontWeight:700,fontFamily:'Comic Neue',align:'center',color:'#FFFFFF',rotation:0,locked:false});
+    state.selected=title.id;
+    try{saveProject();showEditor();toast(product?'Mockup listo. Cambia los textos y descarga el arte vectorial sin la simulación.':promo||quote?'Composición lista: edita sus titulares, colores y capas para adaptarla a tu anuncio.':'Plantilla lista. Los titulares y textos son editables.');}catch{showEditor();toast('Este navegador no permitió guardar automáticamente. Descarga el archivo editable.');}
   }
   function changeProductMockup(templateKey){
     if(!['shirt','tote','mug'].includes(templateKey))return;
@@ -872,10 +891,10 @@
   }
   function styleBubbleText(item, textarea) {
     textarea.style.fontSize = `${item.kind === 'shout' ? Math.max(24,item.fontSize || 24) : item.kind === 'sfx' ? Math.max(30,item.fontSize || 42) : item.fontSize || 17}px`;
-    textarea.style.fontWeight = item.kind === 'shout' || item.kind === 'sfx' ? '700' : '500';
+    textarea.style.fontWeight = item.kind === 'shout' || item.kind === 'sfx' ? '700' : '400';
     textarea.style.textAlign = item.align || 'center'; textarea.style.overflow = item.overflow || 'auto';
     textarea.style.textTransform = item.kind === 'shout' || item.kind === 'sfx' ? 'uppercase' : 'none';
-    textarea.style.fontFamily = "'Bangers', sans-serif";
+    textarea.style.fontFamily = "'Comic Neue', sans-serif";
     textarea.style.color = '#302d2a';
     textarea.dataset.kind = item.kind;
     if (item.kind === 'sfx') textarea.dataset.style = item.actionStyle || 'raised';
@@ -887,6 +906,8 @@
       element.classList.toggle('selected', active && !currentPanel().items.find(item => item.id === itemId)?.locked);
       const handle = element.querySelector('.resize-handle');
       if (handle) handle.hidden = !active || Boolean(currentPanel().items.find(item => item.id === itemId)?.locked);
+      const move = element.querySelector('.move-handle');
+      if (move) move.hidden = !active || Boolean(currentPanel().items.find(item => item.id === itemId)?.locked);
     });
     renderInspector(); renderLayers();
   }
@@ -920,6 +941,8 @@
     selectItem(item.id);
     const menu = $('#canvas-context-menu');
     const actions = [];
+    const overlapping=[...new Set(document.elementsFromPoint(x,y).map(node=>node.closest?.('.placed')).filter(node=>node&&node.dataset.id&&node.dataset.id!==item.id&&node.closest('.artboard-canvas')?.dataset.panelIndex===String(panelIndex)))];
+    overlapping.forEach(node=>{const candidate=currentPanel().items.find(entry=>entry.id===node.dataset.id);if(candidate&&!candidate.locked)actions.push([`choose:${candidate.id}`,`Seleccionar ${candidate.name}`]);});
     const characterResource = item.type === 'image' && (item.category === 'character' || resources.some(resource => resource.name === item.resourceId && resource.category === 'character'));
     if (characterResource) actions.push(['replace', 'Sustituir personaje']);
     if (['image','drawing'].includes(item.type)) { actions.push(['flip-x', 'Voltear horizontalmente']); actions.push(['flip-y', 'Voltear verticalmente']); }
@@ -934,6 +957,7 @@
     menu.querySelector('button')?.focus();
     menu.querySelectorAll('[data-context-action]').forEach(button => button.onclick = () => {
       const action = button.dataset.contextAction; closeCanvasContextMenu();
+      if(action.startsWith('choose:')){const targetId=action.slice(7);if(currentPanel().items.some(entry=>entry.id===targetId))selectItem(targetId);return;}
       if (action === 'replace') { openCharacterPicker(item.id); return; }
       if (action === 'recover') { recoverItem(item.id); return; }
       if (action === 'duplicate') { snapshot(); const copy = { ...item, id: id(), x: item.x + 24, y: item.y + 24, name: `${item.name} · copia` }; currentPanel().items.push(copy); selectItem(copy.id); commit(); return; }
@@ -966,6 +990,18 @@
     $('#export-vector').hidden=!['design','mockup'].includes(state.contentType);
     renderPanels();
     const panelLayers=[];
+    const syncContinuationCopies=(item,sourcePanelIndex,original,refreshContent=false)=>{
+      state.panels.forEach((_,targetIndex)=>{
+        if(targetIndex===sourcePanelIndex)return;
+        const target=panelLayers[targetIndex];if(!target)return;
+        let copy=[...target.continuationLayer.children].find(node=>node.dataset.sourceId===item.id);
+        const shift=(sourcePanelIndex-targetIndex)*LOGICAL_WIDTH,reach=Math.hypot(item.w,item.h)/2,center=item.x+shift+item.w/2;
+        if(center+reach<=0||center-reach>=LOGICAL_WIDTH){copy?.remove();return;}
+        if(!copy){copy=original.cloneNode(true);copy.classList.remove('selected','offstage','sampling-background');copy.classList.add('panel-continuation-copy');copy.dataset.id='';copy.dataset.sourceId=item.id;copy.querySelector('.move-handle')?.remove();copy.querySelector('.resize-handle')?.remove();copy.querySelectorAll('textarea').forEach((textarea,index)=>{textarea.value=original.querySelectorAll('textarea')[index]?.value??textarea.value;textarea.readOnly=true;textarea.tabIndex=-1;});target.wrapper.classList.add('has-incoming-continuation');target.continuationLayer.append(copy);}
+        if(refreshContent&&copy){copy.innerHTML=original.innerHTML;copy.querySelector('.move-handle')?.remove();copy.querySelector('.resize-handle')?.remove();copy.querySelectorAll('textarea').forEach((textarea,index)=>{textarea.value=original.querySelectorAll('textarea')[index]?.value??textarea.value;textarea.readOnly=true;textarea.tabIndex=-1;});}
+        copy.style.left=`${item.x+shift}px`;copy.style.top=`${item.y}px`;copy.style.width=`${item.w}px`;copy.style.height=`${item.h}px`;copy.style.transform=`rotate(${item.rotation||0}deg) scale(${item.flipX?-1:1},${item.flipY?-1:1})`;copy.style.zIndex=original.style.zIndex;
+      });
+    };
     state.panels.forEach((panel, panelIndex) => {
       const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.dataset.panelIndex = panelIndex; wrapper.style.setProperty('--artboard-scale', scale);
       const heading = document.createElement('div'); heading.className = 'artboard-heading';
@@ -994,7 +1030,7 @@
       const continuationLayer=document.createElement('div');continuationLayer.className='panel-continuation-layer';continuationLayer.setAttribute('aria-hidden','true');boardCanvas.append(continuationLayer);
       panelLayers[panelIndex]={canvas:boardCanvas,continuationLayer,wrapper};
       artboard.append(boardCanvas); wrapper.append(artboard); stage.append(wrapper);
-      panel.items.forEach((item, index) => renderItem(item, index, panelIndex, boardCanvas));
+      panel.items.forEach((item, index) => renderItem(item, index, panelIndex, boardCanvas,syncContinuationCopies));
     });
     state.panels.forEach((sourcePanel,sourcePanelIndex)=>sourcePanel.items.forEach(item=>{
       const sourceElement=panelLayers[sourcePanelIndex]?.canvas.querySelectorAll('.placed');
@@ -1007,15 +1043,8 @@
         const reach=Math.hypot(item.w,item.h)/2;
         const center=item.x+shift+item.w/2;
         if(center+reach<=0||center-reach>=LOGICAL_WIDTH)return;
-        const copy=original.cloneNode(true);
-        copy.classList.remove('selected','offstage','sampling-background');
-        copy.classList.add('panel-continuation-copy');
-        copy.dataset.id='';
-        copy.style.left=`${item.x+shift}px`;
-        copy.querySelector('.resize-handle')?.remove();
-        copy.querySelectorAll('textarea').forEach(textarea=>{textarea.readOnly=true;textarea.tabIndex=-1;});
         target.wrapper.classList.add('has-incoming-continuation');
-        target.continuationLayer.append(copy);
+        syncContinuationCopies(item,sourcePanelIndex,original);
       });
     }));
     $('#current-panel-label').textContent = `VIÑETA ${state.active + 1}`;
@@ -1048,8 +1077,9 @@
       card.dataset.panelIndex = index; card.append(drag, button, up, down); list.append(card);
     });
   }
-  function renderItem(item, index, panelIndex, boardCanvas) {
+  function renderItem(item, index, panelIndex, boardCanvas, syncContinuationCopies) {
     const element = document.createElement('div');
+    element.syncContinuations=(refreshContent=true)=>syncContinuationCopies?.(item,panelIndex,element,refreshContent);
     element.className = `placed${item.mockupOnly ? ' mockup-only' : ''}${state.selected === item.id && !item.locked ? ' selected' : ''}${item.locked ? ' locked' : ''}${backgroundPickerItemId === item.id ? ' sampling-background' : ''}${item.type === 'bubble' ? ` bubble bubble-${item.kind}${item.tail ? ' has-tail' : ''}` : ''}${item.type === 'drawing' ? ' drawing' : ''}${isFullyOffstage(item) ? ' offstage' : ''}`;
     element.dataset.id = item.id;
     element.style.cssText = `left:${item.x}px;top:${item.y}px;width:${item.w}px;height:${item.h}px;transform:rotate(${item.rotation || 0}deg) scale(${item.flipX ? -1 : 1},${item.flipY ? -1 : 1});--tail-x:${item.tailX ?? 28}%;z-index:${index + 1};`;
@@ -1073,8 +1103,9 @@
     } else if (item.type === 'text') {
       element.classList.add('text-layer');
       const textarea=document.createElement('textarea');textarea.setAttribute('aria-label',`Texto: ${item.name}`);textarea.value=item.text||'';textarea.readOnly=Boolean(item.locked);textarea.tabIndex=item.locked?-1:0;textarea.style.fontSize=`${item.fontSize||28}px`;textarea.style.fontWeight=String(item.fontWeight||600);textarea.style.textAlign=item.align||'center';textarea.style.color=item.color||'#292725';textarea.style.fontFamily=`'${item.fontFamily||'Fredoka'}', sans-serif`;if(item.textEffect==='outline'){textarea.style.webkitTextStroke='1.2px #fff';textarea.style.paintOrder='stroke fill';}else if(item.textEffect==='shadow')textarea.style.textShadow='2px 3px 0 #0003';
-      textarea.onfocus=()=>{if(!item._typingSnapshot){snapshot();item._typingSnapshot=true;}};textarea.onblur=()=>{delete item._typingSnapshot;autosave();};
-      textarea.oninput=()=>{item.text=textarea.value;textarea.style.height='auto';item.h=Math.max(56,Math.min(state.pageHeight-item.y,textarea.scrollHeight+12));element.style.height=`${item.h}px`;autosave();};element.append(textarea);
+      if(item.textCurve){textarea.classList.add('curved-text-input');updateCurvedTextElement(item,element);}
+      textarea.onfocus=()=>{element.classList.add('editing-curved-text');if(!item._typingSnapshot){snapshot();item._typingSnapshot=true;}};textarea.onblur=()=>{element.classList.remove('editing-curved-text');delete item._typingSnapshot;autosave();};
+      textarea.oninput=()=>{item.text=textarea.value;textarea.style.height='auto';item.h=Math.max(56,Math.min(state.pageHeight-item.y,textarea.scrollHeight+12));element.style.height=`${item.h}px`;updateCurvedTextElement(item,element);element.syncContinuations(true);autosave();};element.append(textarea);
     } else {
       applyBubbleShape(item,element);
       updateBubbleAccessories(item, element);
@@ -1085,13 +1116,14 @@
       textarea.oninput = () => {
         item.text = textarea.value;
         if (item.autoGrow !== false) { textarea.style.height = 'auto'; item.h = Math.max(78, Math.min(state.pageHeight - item.y, textarea.scrollHeight + 26)); element.style.height = `${item.h}px`; }
-        applyBubbleShape(item,element); updateBubbleAccessories(item,element);
+        applyBubbleShape(item,element); updateBubbleAccessories(item,element); element.syncContinuations(true);
         autosave();
       };
       element.append(textarea);
     }
+    const moveHandle=document.createElement('button');moveHandle.className='move-handle';moveHandle.type='button';moveHandle.innerHTML=svgIcon('move');moveHandle.hidden=item.id!==state.selected||item.locked;moveHandle.setAttribute('aria-label',`Mover capa ${item.name}`);moveHandle.title=`Arrastra para mover ${item.name}`;element.append(moveHandle);
     const handle = document.createElement('button'); handle.className = 'resize-handle'; handle.type = 'button'; handle.setAttribute('aria-label', `Cambiar tamaño de ${item.name}`); handle.hidden = item.id !== state.selected || item.locked; element.append(handle);
-    attachResize(handle, element, item, boardCanvas, panelIndex);
+    attachResize(handle, element, item, boardCanvas, panelIndex,()=>element.syncContinuations(false));
     let longPressTimer = null; let longPressOrigin = null;
     element.addEventListener('contextmenu', event => { event.preventDefault(); event.stopPropagation(); if (!item.locked) openCanvasContextMenu(item,panelIndex,event.clientX,event.clientY); });
     element.addEventListener('pointerdown', event => {
@@ -1116,7 +1148,12 @@
         });
         return;
       }
-      if ($('#toggle-draw').getAttribute('aria-pressed') === 'true' || item.locked || event.target === handle || event.target.tagName === 'TEXTAREA') return;
+      if(event.altKey){
+        const stack=[...new Set(document.elementsFromPoint(event.clientX,event.clientY).map(node=>node.closest?.('.placed')).filter(node=>node&&node.dataset.id&&node.closest('.artboard-canvas')===boardCanvas))];
+        if(stack.length>1){const index=stack.findIndex(node=>node.dataset.id===item.id),next=stack[(index+1)%stack.length];if(next){event.preventDefault();selectItem(next.dataset.id);return;}}
+      }
+      if(event.target.tagName==='TEXTAREA') { if(state.active!==panelIndex)setActivePanel(panelIndex,true,false);if(state.selected!==item.id)selectItem(item.id);return; }
+      if ($('#toggle-draw').getAttribute('aria-pressed') === 'true' || item.locked || event.target.closest('.resize-handle')) return;
       if (state.active !== panelIndex) setActivePanel(panelIndex, true, false);
       if (state.selected !== item.id) selectItem(item.id);
       event.preventDefault(); element.setPointerCapture(event.pointerId);
@@ -1128,6 +1165,7 @@
         if (!start.moved) return;
         item.x = start.ix + dx; item.y = start.iy + dy;
         element.style.left = `${item.x}px`; element.style.top = `${item.y}px`;
+        syncContinuationCopies?.(item,panelIndex,element);
         element.classList.toggle('offstage', isFullyOffstage(item));
         $$('.transfer-target').forEach(target => target.classList.remove('transfer-target'));
         const candidate = $$('.artboard-canvas').find(canvas => {
@@ -1176,7 +1214,7 @@
     if ($('#toggle-draw').getAttribute('aria-pressed') === 'true') element.style.pointerEvents = 'none';
     boardCanvas.append(element);
   }
-  function attachResize(handle, element, item, boardCanvas, panelIndex) {
+  function attachResize(handle, element, item, boardCanvas, panelIndex,syncContinuationCopies) {
     handle.onpointerdown = event => {
       if (item.locked) return;
       event.preventDefault(); event.stopPropagation(); snapshot();
@@ -1191,6 +1229,7 @@
           item.w = Math.min(LOGICAL_WIDTH - item.x, width); item.h = item.w / start.ratio;
         } else { item.w = Math.max(78, Math.min(LOGICAL_WIDTH - item.x, start.w + dx)); item.h = Math.max(58, Math.min(state.pageHeight - item.y, start.h + dy)); item.autoGrow = false; }
         element.style.width = `${item.w}px`; element.style.height = `${item.h}px`;
+        syncContinuationCopies?.();
       };
       handle.onpointerup = () => { if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId); handle.onpointermove = null; autosave(); renderInspector(); renderOffstage(); };
     };
@@ -1203,13 +1242,13 @@
     const replaceControl = characterResource ? `<button id="replace-character" class="button replace-character has-icon">${svgIcon('replace')}<span class="button-label">Sustituir personaje</span></button>` : '';
     const sampleHex = item.backgroundSample ? `#${item.backgroundSample.map(value => value.toString(16).padStart(2, '0')).join('')}`.toUpperCase() : '';
     const imageControls = item.type === 'image' ? `<div class="field"><label for="p-blur">Desenfoque · <span id="blur-value">${item.blur || 0}px</span></label><input id="p-blur" type="range" min="0" max="36" step="0.5" value="${item.blur || 0}"><small>Se conserva en el proyecto y también aparece en la exportación.</small></div><div class="field bg-remove-tools"><label for="p-bg-tolerance">Quitar fondo blanco o plano</label><input id="p-bg-tolerance" aria-label="Tolerancia del recorte de fondo" type="range" min="8" max="100" step="2" value="36"><small>Elige el color directamente sobre el dibujo para quitar fondos blancos u otros tonos planos. Se conserva el original para poder restaurarlo.</small><button id="sample-background" type="button" class="button" aria-pressed="${backgroundPickerItemId === item.id}">${backgroundPickerItemId === item.id ? 'Cancelar selección' : sampleHex ? `Cambiar color · ${sampleHex}` : '1 · Elegir color en el dibujo'}</button><button id="remove-background" type="button" class="button">2 · Quitar fondo</button><p id="bg-remove-status" class="bg-remove-status" role="status" aria-live="polite" ${item.backgroundSample ? '' : 'hidden'}>${item.backgroundSample ? `Color ${sampleHex} seleccionado. Pulsa “2 · Quitar fondo”.` : ''}</p>${item.originalSrc ? '<button id="restore-background" type="button" class="button">Restaurar imagen original</button>' : ''}</div>` : '';
-    const textControls = item.type === 'text' ? `<div class="field"><label>Contenido</label><textarea id="p-text" rows="4">${escapeHTML(item.text||'')}</textarea></div><div class="field"><label>Tamaño de letra</label><input id="p-text-font" type="range" min="10" max="100" value="${item.fontSize||28}"></div><div class="field"><label>Tipografía</label><select id="p-text-family">${['Fredoka','Baloo 2','Bangers','Lilita One'].map(font=>`<option value="${font}" ${item.fontFamily===font?'selected':''}>${font}</option>`).join('')}</select></div><div class="field"><label>Tratamiento</label><select id="p-text-effect"><option value="none">Limpio</option><option value="outline" ${item.textEffect==='outline'?'selected':''}>Contorno blanco</option><option value="shadow" ${item.textEffect==='shadow'?'selected':''}>Sombra suave</option></select></div><div class="field"><label>Alineación</label><select id="p-text-align"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option></select></div><div class="field"><label>Color</label><input id="p-text-color" type="color" value="${item.color||'#292725'}"></div>` : '';
+    const textControls = item.type === 'text' ? `<div class="field"><label>Contenido</label><textarea id="p-text" rows="4">${escapeHTML(item.text||'')}</textarea></div><div class="field"><label>Tamaño de letra</label><input id="p-text-font" type="range" min="10" max="100" value="${item.fontSize||28}"></div><div class="field"><label>Tipografía</label><select id="p-text-family">${['Comic Neue','Fredoka','Baloo 2','Lilita One'].map(font=>`<option value="${font}" ${item.fontFamily===font?'selected':''}>${font}</option>`).join('')}</select></div><div class="field"><label>Arco · <span id="curve-value">${item.textCurve||0}px</span></label><input id="p-text-curve" type="range" min="-70" max="70" value="${item.textCurve||0}"><small>Curva el titular para sellos, títulos y anuncios.</small></div><div class="field"><label>Tratamiento</label><select id="p-text-effect"><option value="none">Limpio</option><option value="outline" ${item.textEffect==='outline'?'selected':''}>Contorno blanco</option><option value="shadow" ${item.textEffect==='shadow'?'selected':''}>Sombra suave</option></select></div><div class="field"><label>Alineación</label><select id="p-text-align"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option></select></div><div class="field"><label>Color</label><input id="p-text-color" type="color" value="${item.color||'#292725'}"></div>` : '';
     const variantControl = item.variants?.length ? `<div class="field"><label>Variación del mismo personaje</label><select id="p-variant">${item.variants.map((variant, i) => `<option value="${i}" ${i === item.variantIndex ? 'selected' : ''}>${escapeHTML(variant.name)}</option>`).join('')}</select></div>` : '';
     const bubbleControls = item.type === 'bubble' ? `<div class="field"><label>Tipo</label><select id="p-kind"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto de sonido</option></select></div>${['dialogue','thought'].includes(item.kind) ? `<div class="field"><label>Forma</label><select id="p-shape"><option value="auto">Adaptar al texto</option><option value="oval">Óvalo</option><option value="rounded">Rectángulo redondeado</option></select></div>` : ''}${item.kind === 'sfx' ? `<div class="field"><label>Estilo de efecto</label><select id="p-action-style"><option value="raised">Naranja con sombra</option><option value="outline">Contorno blanco</option><option value="impact">Sombra dramática</option></select></div>` : ''}<div class="field"><label>Tamaño de letra</label><input id="p-font" type="range" min="10" max="56" value="${item.fontSize || 17}"></div><div class="field"><label>Alineación</label><select id="p-align"><option value="center">Centrada</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div>${['dialogue','thought','shout'].includes(item.kind) ? `<label class="check-field"><input id="p-tail" type="checkbox" ${item.tail ? 'checked' : ''}> ${item.kind === 'thought' ? 'Burbujas de pensamiento' : 'Cola del globo'}</label>${item.tail ? `<div class="field"><label>Dirección de la cola</label><input id="p-tail-angle" type="range" min="-180" max="180" value="${item.tailAngle ?? 90}"></div><div class="field"><label>Largo de la cola</label><input id="p-tail-length" type="range" min="16" max="90" value="${item.tailLength ?? 34}"></div>` : ''}` : ''}<label class="check-field"><input id="p-autogrow" type="checkbox" ${item.autoGrow === false ? '' : 'checked'}> Ajustar alto al texto</label>` : '';
     const drawingControls = item.type === 'drawing' ? `<div class="field"><label>Relleno del contorno cerrado</label><label class="check-field"><input id="p-fill" type="checkbox" ${item.fillEnabled ? 'checked' : ''}> Aplicar relleno</label><input id="p-fill-color" type="color" value="${item.fillColor || '#F87209'}"></div><div class="field"><label>Color del trazo</label><input id="p-color" type="color" value="${item.color || '#282522'}"></div><div class="field"><label>Grosor</label><input id="p-stroke-width" type="range" min="1" max="40" value="${item.strokeWidth || 5}"></div>` : '';
     const recoverControl = isOffstage(item) ? '<button id="bring-in" class="button recovery">Recuperar dentro del lienzo</button>' : '';
     const flipControls = ['image','drawing'].includes(item.type) ? `<div class="field"><label>Voltear</label><div class="inspector-buttons flip-buttons"><button id="flip-x" aria-pressed="${!!item.flipX}">Horizontal</button><button id="flip-y" aria-pressed="${!!item.flipY}">Vertical</button></div></div>` : '';
-    box.innerHTML = `<div class="field"><label>Nombre de capa</label><input id="p-name" value=""></div>${replaceControl}${variantControl}${imageControls}${bubbleControls}${textControls}${drawingControls}<div class="field-row"><div class="field"><label>X</label><input id="p-x" type="number" value="${Math.round(item.x)}"></div><div class="field"><label>Y</label><input id="p-y" type="number" value="${Math.round(item.y)}"></div></div><div class="field-row"><div class="field"><label>Ancho</label><input id="p-w" type="number" value="${Math.round(item.w)}"></div><div class="field"><label>Alto</label><input id="p-h" type="number" value="${Math.round(item.h)}"></div></div><div class="field"><label>Giro</label><input id="p-rot" type="range" min="-180" max="180" value="${item.rotation || 0}"></div>${flipControls}<div class="inspector-buttons"><button id="duplicate">Duplicar</button><button id="delete" class="danger">Borrar</button></div>${recoverControl}`;
+    box.innerHTML = `<div class="field"><label>Nombre de capa</label><input id="p-name" value=""></div><p class="placement-help">Arrastra el tirador de cuatro flechas para mover. Usa las flechas del teclado para ajustes precisos. Con capas superpuestas: clic con Alt/Opción o mantén pulsado.</p>${replaceControl}${variantControl}${imageControls}${bubbleControls}${textControls}${drawingControls}<div class="field-row"><div class="field"><label>X</label><input id="p-x" type="number" value="${Math.round(item.x)}"></div><div class="field"><label>Y</label><input id="p-y" type="number" value="${Math.round(item.y)}"></div></div><div class="field-row"><div class="field"><label>Ancho</label><input id="p-w" type="number" value="${Math.round(item.w)}"></div><div class="field"><label>Alto</label><input id="p-h" type="number" value="${Math.round(item.h)}"></div></div><div class="field"><label>Giro</label><input id="p-rot" type="range" min="-180" max="180" value="${item.rotation || 0}"></div>${flipControls}<div class="inspector-buttons"><button id="duplicate">Duplicar</button><button id="delete" class="danger">Borrar</button></div>${recoverControl}`;
     [['#sample-background','eyedropper'],['#remove-background','image'],['#restore-background','undo'],['#bring-in','focus'],['#flip-x','flipH'],['#flip-y','flipV']].forEach(([selector,icon])=>{const button=box.querySelector(selector);if(!button)return;const label=button.textContent.trim();button.classList.add('has-icon');button.innerHTML=`${svgIcon(icon)}<span class="button-label">${escapeHTML(label)}</span>`;button.setAttribute('aria-label',label);});
     const setInspectorButtonLabel=(button,label)=>{const text=button.querySelector('.button-label');if(text)text.textContent=label;else button.textContent=label;};
     $('#p-name').value = item.name;
@@ -1259,12 +1298,14 @@
     for (const [axis, property] of [['x','flipX'],['y','flipY']]) $(`#flip-${axis}`)?.addEventListener('click', () => { snapshot(); item[property] = !item[property]; commit(); });
     $('#p-variant')?.addEventListener('change', event => { snapshot(); item.variantIndex = Number(event.target.value); item.src = item.variants[item.variantIndex].src; commit(); });
     $('#replace-character')?.addEventListener('click', () => openCharacterPicker(item.id));
-    $('#p-text')?.addEventListener('input',event=>{item.text=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.value=item.text;autosave();});
-    $('#p-text-font')?.addEventListener('input',event=>{item.fontSize=Number(event.target.value);const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.fontSize=`${item.fontSize}px`;autosave();});
-    $('#p-text-align')?.addEventListener('change',event=>{item.align=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.textAlign=item.align;autosave();});
-    $('#p-text-color')?.addEventListener('input',event=>{item.color=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.color=item.color;autosave();});
-    $('#p-text-family')?.addEventListener('change',event=>{item.fontFamily=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.fontFamily=`'${item.fontFamily}', sans-serif`;autosave();});
-    $('#p-text-effect')?.addEventListener('change',event=>{item.textEffect=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el){el.style.webkitTextStroke=item.textEffect==='outline'?'1.2px #fff':'';el.style.textShadow=item.textEffect==='shadow'?'2px 3px 0 #0003':'';}autosave();});
+    const textCanvasElement=()=>activeCanvas()?.querySelector(`[data-id="${item.id}"]`);
+    $('#p-text')?.addEventListener('input',event=>{item.text=event.target.value;const el=textCanvasElement();if(el){const textarea=el.querySelector('textarea');if(textarea)textarea.value=item.text;updateCurvedTextElement(item,el);el.syncContinuations?.(true);}autosave();});
+    $('#p-text-font')?.addEventListener('input',event=>{item.fontSize=Number(event.target.value);const el=textCanvasElement();if(el){const textarea=el.querySelector('textarea');if(textarea)textarea.style.fontSize=`${item.fontSize}px`;updateCurvedTextElement(item,el);el.syncContinuations?.(true);}autosave();});
+    $('#p-text-curve')?.addEventListener('input',event=>{item.textCurve=Number(event.target.value)||0;$('#curve-value').textContent=`${item.textCurve}px`;const el=textCanvasElement();if(el){const textarea=el.querySelector('textarea');textarea?.classList.toggle('curved-text-input',Boolean(item.textCurve));updateCurvedTextElement(item,el);el.syncContinuations?.(true);}autosave();});
+    $('#p-text-align')?.addEventListener('change',event=>{item.align=event.target.value;const el=textCanvasElement();if(el){const textarea=el.querySelector('textarea');if(textarea)textarea.style.textAlign=item.align;el.syncContinuations?.(true);}autosave();});
+    $('#p-text-color')?.addEventListener('input',event=>{item.color=event.target.value;const el=textCanvasElement();if(el){const textarea=el.querySelector('textarea');if(textarea)textarea.style.color=item.color;updateCurvedTextElement(item,el);el.syncContinuations?.(true);}autosave();});
+    $('#p-text-family')?.addEventListener('change',event=>{item.fontFamily=event.target.value;const el=textCanvasElement();if(el){const textarea=el.querySelector('textarea');if(textarea)textarea.style.fontFamily=`'${item.fontFamily}', sans-serif`;updateCurvedTextElement(item,el);el.syncContinuations?.(true);}autosave();});
+    $('#p-text-effect')?.addEventListener('change',event=>{item.textEffect=event.target.value;const el=textCanvasElement();if(el){const textarea=el.querySelector('textarea');if(textarea){textarea.style.webkitTextStroke=item.textEffect==='outline'?'1.2px #fff':'';textarea.style.textShadow=item.textEffect==='shadow'?'2px 3px 0 #0003':'';}el.syncContinuations?.(true);}autosave();});
     $('#p-kind')?.addEventListener('change', event => { snapshot(); item.kind = event.target.value; item.name = item.kind === 'sfx' ? 'Efecto de sonido' : `Globo · ${({dialogue:'Diálogo',thought:'Pensamiento',narration:'Narración',shout:'Voz fuerte'})[item.kind]}`; item.tail = ['dialogue','thought','shout'].includes(item.kind); item.fontSize = item.kind === 'sfx' ? Math.max(item.fontSize,42) : item.kind === 'shout' ? Math.max(item.fontSize,24) : item.fontSize; commit(); });
     $('#p-action-style')?.addEventListener('change', event => { snapshot(); item.actionStyle = event.target.value; commit(); });
     $('#p-shape')?.addEventListener('change', event => { snapshot(); item.shape = event.target.value; commit(); });
@@ -1812,6 +1853,17 @@
       erasing = null; if (current.changed) commit();
     }
   }
+  function drawCurvedCanvasText(ctx,item){
+    const fontSize=item.fontSize||34,lines=String(item.text||'').split('\n'),sagitta=Number(item.textCurve)||0,sign=Math.sign(sagitta),sag=Math.abs(sagitta);
+    if(!sag){wrapText(ctx,item.text,0,0,item.w*.92,fontSize*1.2);return;}
+    const measured=lines.map(line=>line||' '),lineGap=fontSize*1.15;
+    measured.forEach((line,row)=>{
+      const fullWidth=ctx.measureText(line).width,ratio=Math.min(1,item.w*.92/Math.max(1,fullWidth)),width=fullWidth*ratio,radius=(width*width/4+sag*sag)/(2*sag),sweep=2*Math.asin(Math.min(.999,width/2/radius)),centerY=(row-(measured.length-1)/2)*lineGap+sign*(radius-sag),start=sign>0?-Math.PI/2-sweep/2:Math.PI/2+sweep/2;
+      let offset=0;ctx.save();ctx.scale(ratio,1);
+      for(const character of line){const advance=ctx.measureText(character).width*ratio,angle=start+sign*(offset+advance/2)/Math.max(1,radius),x=radius*Math.cos(angle),y=centerY+radius*Math.sin(angle),rotation=angle+(sign>0?Math.PI/2:-Math.PI/2);ctx.save();ctx.translate(x,y);ctx.rotate(rotation);if(item.textEffect==='outline'){ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.strokeText(character,-advance/(2*ratio),0);}ctx.fillText(character,-advance/(2*ratio),0);ctx.restore();offset+=advance;}
+      ctx.restore();
+    });
+  }
   async function renderPanelPng(panel, panelIndex = state.panels.indexOf(panel)) {
     await document.fonts?.ready;
     const preset = FORMAT[state.format]; const logicalHeight = state.pageHeight; const style = state.exportStyle || 'classic';
@@ -1862,7 +1914,7 @@
           ctx.stroke(path); ctx.restore();
         });
       } else if (item.type === 'text') {
-        ctx.fillStyle=item.color||'#292725';ctx.font=`${item.fontWeight||600} ${item.fontSize||28}px "${item.fontFamily||'Fredoka'}", sans-serif`;ctx.textAlign=item.align||'center';ctx.textBaseline='middle';if(item.textEffect==='shadow'){ctx.shadowColor='#0003';ctx.shadowBlur=2;ctx.shadowOffsetX=2;ctx.shadowOffsetY=3;}if(item.textEffect==='outline'){ctx.lineJoin='round';ctx.lineWidth=3;ctx.strokeStyle='#fff';const lines=String(item.text||'').split('\n');for(let i=0;i<lines.length;i++)ctx.strokeText(lines[i],0,(i-(lines.length-1)/2)*(item.fontSize||28)*1.25,item.w*.92);}wrapText(ctx,item.text,0,0,item.w*.92,(item.fontSize||28)*1.25);
+        ctx.fillStyle=item.color||'#292725';ctx.font=`${item.fontWeight||600} ${item.fontSize||28}px "${item.fontFamily||'Fredoka'}", sans-serif`;ctx.textAlign=item.align||'center';ctx.textBaseline='middle';if(item.textEffect==='shadow'){ctx.shadowColor='#0003';ctx.shadowBlur=2;ctx.shadowOffsetX=2;ctx.shadowOffsetY=3;}if(item.textEffect==='outline'){ctx.lineJoin='round';ctx.lineWidth=3;ctx.strokeStyle='#fff';const lines=String(item.text||'').split('\n');for(let i=0;i<lines.length;i++)ctx.strokeText(lines[i],0,(i-(lines.length-1)/2)*(item.fontSize||28)*1.25,item.w*.92);}if(item.textCurve)drawCurvedCanvasText(ctx,item);else wrapText(ctx,item.text,0,0,item.w*.92,(item.fontSize||28)*1.25);
       } else {
         if (item.kind === 'sfx') {
           ctx.fillStyle='#F87209';ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.shadowColor='#292725';ctx.shadowBlur=0;ctx.shadowOffsetX=3;ctx.shadowOffsetY=4;
@@ -1871,7 +1923,7 @@
           const silhouette=new Path2D(organicBubblePath(item.w,item.h,item));ctx.save();ctx.translate(-item.w/2,-item.h/2);ctx.fill(silhouette);ctx.stroke(silhouette);ctx.restore();
           if(item.kind==='thought'&&item.tail){const a=(item.tailAngle??90)*Math.PI/180,ux=Math.cos(a),uy=Math.sin(a);[14,9,5].forEach((diameter,i)=>{const t=[.34,.62,.86][i],distance=Math.max(item.w,item.h)*.46+(item.tailLength??34)*t;ctx.beginPath();ctx.arc(ux*distance,uy*distance,diameter/2,0,Math.PI*2);ctx.fill();ctx.stroke();});}
         }
-        ctx.fillStyle = item.kind === 'sfx' ? '#F87209' : '#302d2a'; ctx.font = `${['sfx','shout'].includes(item.kind) ? '700 ' : ''}${item.kind==='shout'?Math.max(24,item.fontSize||24):item.fontSize || 17}px Bangers, sans-serif`; ctx.textAlign = item.align || 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = item.kind === 'sfx' ? '#F87209' : '#302d2a'; ctx.font = `${['sfx','shout'].includes(item.kind) ? '700 ' : '400 '}${item.kind==='shout'?Math.max(24,item.fontSize||24):item.fontSize || 17}px "Comic Neue", sans-serif`; ctx.textAlign = item.align || 'center'; ctx.textBaseline = 'middle';
         wrapText(ctx, ['sfx','shout'].includes(item.kind)?String(item.text||'').toUpperCase():item.text, 0, 0, item.w * 0.82, (item.fontSize || 17) * 1.25);
       }
       ctx.restore();
@@ -1960,9 +2012,9 @@
   }
   async function renderPanelSvg(panel) {
     const hasMockup=(state.contentType||'')==='mockup';
-    const fontFiles={'Fredoka':'/assets/fonts/fredoka-latin.woff2','Baloo 2':'/assets/fonts/baloo-2-latin.woff2','Bangers':'/assets/fonts/bangers-latin.woff2','Lilita One':'/assets/fonts/lilita-one-latin.woff2'};
-    const usedFonts=[...new Set(panel.items.filter(item=>(item.type==='text'&&!item.mockupOnly)||item.type==='bubble').map(item=>item.type==='bubble'?'Bangers':item.fontFamily).filter(font=>fontFiles[font]))];
-    const fontFaces=await Promise.all(usedFonts.map(async font=>`@font-face{font-family:'${font}';src:url('${await base64Asset(fontFiles[font])}') format('woff2');font-weight:100 900;font-style:normal}`));
+    const fontFiles={'Fredoka':'/assets/fonts/fredoka-latin.woff2','Baloo 2':'/assets/fonts/baloo-2-latin.woff2','Bangers':'/assets/fonts/bangers-latin.woff2','Comic Neue':'/assets/fonts/comic-neue-regular.ttf','Lilita One':'/assets/fonts/lilita-one-latin.woff2'};
+    const usedFonts=[...new Set(panel.items.filter(item=>(item.type==='text'&&!item.mockupOnly)||item.type==='bubble').map(item=>item.type==='bubble'?'Comic Neue':item.fontFamily).filter(font=>fontFiles[font]))];
+    const fontFaces=await Promise.all(usedFonts.flatMap(font=>(font==='Comic Neue'?[['400','/assets/fonts/comic-neue-regular.ttf'],['700','/assets/fonts/comic-neue-bold.ttf']]:[['100 900',fontFiles[font]]]).map(async ([weight,path])=>`@font-face{font-family:'${font}';src:url('${await base64Asset(path)}') format('${font==='Comic Neue'?'truetype':'woff2'}');font-weight:${weight};font-style:normal}`)));
     const content=[];
     if(!hasMockup&&panel.backgroundColor)content.push(`<rect width="${LOGICAL_WIDTH}" height="${state.pageHeight}" fill="${svgEscape(panel.backgroundColor)}"/>`);
     for(const item of panel.items){
@@ -1983,10 +2035,12 @@
           shape=`<path d="${organicBubblePath(item.w,item.h,item)}" fill="${item.kind==='narration'?'#fff5df':'#fff'}" stroke="#302d2a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
           if(item.kind==='thought'&&item.tail){const a=(item.tailAngle??90)*Math.PI/180,ux=Math.cos(a),uy=Math.sin(a);shape+=[14,9,5].map((diameter,index)=>{const t=[.34,.62,.86][index],distance=Math.max(item.w,item.h)*.46+(item.tailLength??34)*t;return `<circle cx="${item.w/2+ux*distance}" cy="${item.h/2+uy*distance}" r="${diameter/2}" fill="#fff" stroke="#302d2a" stroke-width="2"/>`;}).join('');}
         }
-        const family=isBubble?'Bangers':font,weight=item.fontWeight||(isBubble?600:700),color=item.color||(item.kind==='sfx'?'#F87209':'#302d2a');
+        const family=isBubble?'Comic Neue':font,weight=item.fontWeight||(isBubble&&['shout','sfx'].includes(item.kind)?700:isBubble?400:700),color=item.color||(item.kind==='sfx'?'#F87209':'#302d2a');
         const effect=item.textEffect==='outline'?'stroke="#fff" stroke-width="2" paint-order="stroke fill"':item.textEffect==='shadow'?'filter="url(#text-shadow)"':'';
         const textLines=lines.map((line,index)=>`<tspan x="${x}" y="${startY+index*leading}">${svgEscape(isBubble&&['sfx','shout'].includes(item.kind)?line.toUpperCase():line)}</tspan>`).join('');
-        content.push(`<g transform="${transform}">${shape}<text text-anchor="${anchor}" font-family="'${svgEscape(family)}',sans-serif" font-size="${size}" font-weight="${weight}" fill="${svgEscape(color)}" ${effect}>${textLines}</text></g>`);
+        const curveId=`curve-export-${String(item.id).replace(/[^a-zA-Z0-9_-]/g,'')}`,curveBase=item.h*.58,curvePath=`M 4 ${curveBase} Q ${item.w/2} ${curveBase-(item.textCurve||0)*1.8} ${item.w-4} ${curveBase}`;
+        const curved=!isBubble&&item.textCurve?`<defs><path id="${curveId}" d="${curvePath}"/></defs><textPath href="#${curveId}" startOffset="50%" text-anchor="middle">${svgEscape(item.text)}</textPath>`:textLines;
+        content.push(`<g transform="${transform}">${shape}<text text-anchor="${anchor}" font-family="'${svgEscape(family)}',sans-serif" font-size="${size}" font-weight="${weight}" fill="${svgEscape(color)}" ${effect}>${curved}</text></g>`);
       }
     }
     const svg=`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${LOGICAL_WIDTH*2}" height="${state.pageHeight*2}" viewBox="0 0 ${LOGICAL_WIDTH} ${state.pageHeight}"><defs><filter id="text-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="2" dy="3" stdDeviation="1" flood-opacity=".25"/></filter></defs><style>${fontFaces.join('')}</style>${content.join('')}</svg>`;
@@ -2315,6 +2369,9 @@
     document.addEventListener('keydown', event => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'z') { event.preventDefault(); $('#undo').click(); }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'y') { event.preventDefault(); $('#redo').click(); }
+      if(state?.selected&&/^Arrow(Left|Right|Up|Down)$/.test(event.key)&&!['TEXTAREA','INPUT','SELECT'].includes(document.activeElement.tagName)&&!document.activeElement.isContentEditable){
+        const item=currentItem();if(item&&!item.locked){event.preventDefault();if(!event.repeat)snapshot();const step=event.shiftKey?10:1;item.x+=event.key==='ArrowLeft'?-step:event.key==='ArrowRight'?step:0;item.y+=event.key==='ArrowUp'?-step:event.key==='ArrowDown'?step:0;const element=activeCanvas()?.querySelector(`[data-id="${item.id}"]`);if(element){element.style.left=`${item.x}px`;element.style.top=`${item.y}px`;element.syncContinuations?.(false);element.classList.toggle('offstage',isFullyOffstage(item));}renderOffstage();autosave();}
+      }
       if (event.key === 'Delete' && state?.selected && !['TEXTAREA', 'INPUT'].includes(document.activeElement.tagName)) $('#delete')?.click();
       if (event.key === 'Escape') {
         if ($('#library-panel').classList.contains('open') || !$('#app-shell').classList.contains('library-collapsed')) setLibraryOpen(false);

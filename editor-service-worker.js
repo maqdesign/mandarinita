@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mandarinita-editor-v39';
+const CACHE_NAME = 'mandarinita-editor-v40';
 const APP_SHELL = [
   '/editor.css',
   '/editor.js',
@@ -10,6 +10,8 @@ const APP_SHELL = [
   '/assets/mandarinita-pwa-180.png',
   '/assets/fonts/baloo-2-latin.woff2',
   '/assets/fonts/bangers-latin.woff2',
+  '/assets/fonts/comic-neue-regular.ttf',
+  '/assets/fonts/comic-neue-bold.ttf',
   '/assets/fonts/lilita-one-latin.woff2',
   '/assets/fonts/fredoka-latin.woff2',
   '/assets/fonts/work-sans-latin.woff2',

@@ -389,11 +389,16 @@ dialog.export-preview-dialog::backdrop{background:#171411a8;backdrop-filter:blur
 .design-template-card[hidden]{display:none!important}
 .text-style-card b{font-size:23px;line-height:1.1}
 .text-style-card[data-text-style="baloo"] b{font-family:'Baloo 2',sans-serif}
-.text-style-card[data-text-style="bangers"] b{font:30px Bangers,sans-serif;color:var(--orange);letter-spacing:.04em}
+.text-style-card[data-text-style="comic"] b{font:400 24px 'Comic Neue',sans-serif;color:var(--ink)}
+.text-style-card[data-text-style="arc"] b{font:700 22px 'Comic Neue',sans-serif;color:var(--orange);transform:rotate(-5deg);letter-spacing:.04em}
 .text-style-card[data-text-style="lilita"] b{font:25px 'Lilita One',sans-serif;color:#607d3b}
 .text-style-card[data-text-style="fredoka"] b{font:600 23px Fredoka,sans-serif}
 .brand-template{background:radial-gradient(circle at 82% 18%,#fac421 0 9%,transparent 9.5%),linear-gradient(145deg,#fff8ec 0 58%,#f87209 58% 100%)}
-.brand-template i{flex:none!important;width:auto!important;height:auto!important;border:0!important;background:none!important;color:#282522;font:36px Bangers,sans-serif;transform:rotate(-7deg)}
+.brand-template i{flex:none!important;width:auto!important;height:auto!important;border:0!important;background:none!important;color:#282522;font:700 32px 'Comic Neue',sans-serif;transform:rotate(-7deg)}
+.promo-art{background:linear-gradient(165deg,#f87209 0 42%,#fff8ec 42% 74%,#607d3b 74%)}
+.promo-art i{flex:none!important;width:auto!important;height:auto!important;border:0!important;background:none!important;color:white;font:700 22px 'Comic Neue',sans-serif;transform:rotate(-5deg)}
+.quote-art{background:radial-gradient(circle at 50% 45%,#f7c843 0 34%,transparent 35%),linear-gradient(145deg,#302d2a 0 100%)}
+.quote-art i{flex:none!important;width:auto!important;height:auto!important;border:0!important;background:none!important;color:#f87209;font:700 23px 'Comic Neue',sans-serif;transform:rotate(-8deg)}
 .story-art{background:linear-gradient(155deg,#607d3b 0 60%,#f87209 60% 100%)}
 .story-art i{flex:none!important;width:auto!important;height:auto!important;border:0!important;background:none!important;color:#fff8ec;font:24px 'Baloo 2',sans-serif}
 .product-template{background:linear-gradient(145deg,#f2eee8,#ddd8d0)}
@@ -414,10 +419,19 @@ dialog.export-preview-dialog #export-preview-close{width:40px;height:40px;paddin
 .placed.bubble-shape-oval,.placed.bubble-shape-rounded{border-radius:0!important}
 .bubble-tail-svg{z-index:0;overflow:visible}
 .bubble-tail-svg path{stroke:#302d2a;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-.placed.bubble textarea{font-family:'Bangers',sans-serif!important;font-weight:400!important;letter-spacing:.025em;color:#302d2a!important}
+.placed.bubble textarea{font-family:'Comic Neue',sans-serif!important;letter-spacing:.005em;color:#302d2a!important}
 .placed.bubble-sfx textarea{color:var(--orange)!important}
 .placed.bubble-sfx{background:transparent!important;border:0!important}
 .theme-dark .placed.bubble{background:transparent!important}
+.move-handle{position:absolute;z-index:20;top:-22px;left:-22px;width:38px;height:38px;display:grid;place-items:center;padding:7px;border:2px solid white;border-radius:50%;background:var(--orange);color:#fff;box-shadow:0 2px 8px #17141155;cursor:grab;touch-action:none}
+.move-handle:active{cursor:grabbing}.move-handle .ui-icon{width:19px;height:19px}.move-handle[hidden]{display:none!important}
+.placement-help{grid-column:1/-1;margin:0 0 6px;color:var(--muted);font-size:10px;line-height:1.4}
+.curved-text-preview{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.curved-text-preview text{dominant-baseline:auto;letter-spacing:.01em}
+.curved-text-input{color:transparent!important;caret-color:transparent!important;user-select:none!important}
+.editing-curved-text .curved-text-preview{visibility:hidden}
+.editing-curved-text .curved-text-input{color:var(--ink)!important;caret-color:var(--orange)!important;user-select:text!important}
+.canvas-context-menu{max-height:min(65dvh,420px);overflow:auto}
 @media(min-width:1101px){
  .app-shell.library-collapsed{grid-template-columns:0 minmax(0,1fr) minmax(280px,320px)!important}
  .app-shell.inspector-collapsed{grid-template-columns:minmax(248px,280px) minmax(0,1fr) 0!important}
@@ -437,4 +451,6 @@ dialog.export-preview-dialog #export-preview-close{width:40px;height:40px;paddin
 @font-face{font-family:'Work Sans';src:url('/assets/fonts/work-sans-latin.woff2') format('woff2');font-style:normal;font-weight:400 700;font-display:swap}
 @font-face{font-family:'Baloo 2';src:url('/assets/fonts/baloo-2-latin.woff2') format('woff2');font-style:normal;font-weight:400 800;font-display:swap}
 @font-face{font-family:'Bangers';src:url('/assets/fonts/bangers-latin.woff2') format('woff2');font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:'Comic Neue';src:url('/assets/fonts/comic-neue-regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:'Comic Neue';src:url('/assets/fonts/comic-neue-bold.ttf') format('truetype');font-style:normal;font-weight:700;font-display:swap}
 @font-face{font-family:'Lilita One';src:url('/assets/fonts/lilita-one-latin.woff2') format('woff2');font-style:normal;font-weight:400;font-display:swap}
