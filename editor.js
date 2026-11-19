@@ -260,8 +260,10 @@
     ['#cloud-status','#editor-cloud-status'].forEach(selector => { const region=$(selector); if(region){region.textContent=text;region.dataset.state=syncState;} });
     ['#retry-cloud','#editor-retry-cloud'].forEach(selector => { const retry=$(selector); if(retry){retry.hidden=!(signedIn&&(syncState==='error'||cloudConflicts.size));const label=cloudConflicts.size?'Resolver conflicto':'Reintentar sincronización';retry.classList.add('has-icon');retry.innerHTML=`${svgIcon(cloudConflicts.size?'users':'refresh')}<span class="button-label">${label}</span>`;retry.title=label;retry.setAttribute('aria-label',label);} });
     const footnote = $('#home-footnote');
+    const storageLabel = $('#project-storage-label');
+    if (storageLabel) storageLabel.textContent = signedIn ? 'CENTRO DE CONTENIDO · NUBE SINCRONIZADA' : 'CENTRO DE CONTENIDO · BORRADORES';
     if (footnote) footnote.textContent = signedIn
-      ? 'Tus borradores se guardan en este dispositivo y se sincronizan con tu almacenamiento privado de GitHub.'
+      ? 'Tus borradores y lienzos se sincronizan en la nube privada. Inicia sesión con la misma cuenta autorizada en tus dispositivos para verlos allí.'
       : 'Tus borradores se guardan en este navegador. El archivo .mandarinita sirve para moverlos a otro dispositivo.';
   }
   async function cloudFetch(path, options = {}) {
@@ -667,7 +669,7 @@
     return groups.length > 0 && groups.every(group => group.some(term => text.includes(term)));
   }
   function showHome() {
-    $('#editor-view').hidden = true; $('#project-home').hidden = false; renderProjectList();
+    $('#editor-view').hidden = true; $('#project-home').hidden = false; renderProjectList(); showHomeSection('drafts');
   }
   function showEditor() {
     $('#project-home').hidden = true; $('#editor-view').hidden = false;
@@ -703,9 +705,11 @@
       preview.append(previewCanvas);
       const main = document.createElement('div'); main.className = 'project-card-main';
       const reviewState = record.status === 'review';
+      const publicationLabel = record.status === 'published' ? 'Publicado en la web' : record.status === 'scheduled' ? `Programado · ${project.publishedAt || ''}` : reviewState ? 'En revisión' : 'Borrador';
+      const publicationClass = record.status === 'published' ? 'published' : record.status === 'scheduled' ? 'scheduled' : reviewState ? 'ready' : '';
       const kindLabels = {episode:'Episodio',copy:'Texto / copy',banner:'Banner',section:'Sección web',design:'Diseño gráfico',mockup:'Diseño de producto'};
       const isEpisode = (project.contentType || record.contentType || 'episode') === 'episode';
-      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${reviewState ? 'ready' : ''}">${reviewState ? 'En revisión' : 'Borrador'}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
+      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${publicationClass}">${publicationLabel}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
       const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${record.title}`); open.append(preview,main); open.onclick = () => openProject(record.id);
       const menu = document.createElement('details'); menu.className = 'project-card-menu';
       menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
@@ -986,6 +990,7 @@
     $('#export-preset').value = state.format;
     $('#export-style').value = state.exportStyle || 'classic';
     $('#add-cta-panel').hidden = state.contentType !== 'episode';
+    $('#publish-episode').hidden = false;
     $('#mockup-preview').hidden=state.contentType!=='mockup';$('#change-mockup').hidden=state.contentType!=='mockup';$('#mockup-preview').setAttribute('aria-pressed',String(state.mockupPreview!==false));$('#mockup-preview').setAttribute('aria-label',state.mockupPreview===false?'Ver producto':'Ocultar simulación');$('#mockup-preview').title=state.mockupPreview===false?'Ver producto':'Ocultar simulación';$('#mockup-preview').innerHTML=`${svgIcon(state.mockupPreview===false?'eye':'eyeOff')}<span class="button-label">${state.mockupPreview===false?'Ver producto':'Ocultar simulación'}</span>`;
     $('#export-vector').hidden=!['design','mockup'].includes(state.contentType);
     renderPanels();
@@ -2065,6 +2070,318 @@
     for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index],index); const path=isEpisode?`assets/episodes/drafts/${slug}/vineta-${String(index+1).padStart(2,'0')}.png`:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`; files.push({ name:path, data: new Uint8Array(await image.arrayBuffer()) }); }
     download(zipStore(files), `${slug}-revision.zip`); toast(savedLocally ? 'Paquete de revisión listo. No se publica automáticamente.' : 'Paquete listo; conserva el ZIP porque el borrador no cupo en este dispositivo.');
   }
+
+  function suggestedPanelAlt(panel, index, language, episodeNumber, title) {
+    const images = panel.items.filter(item => item.type === 'image').map(item => item.name).filter(Boolean);
+    const texts = panel.items.filter(item => item.type === 'text' || item.type === 'bubble').map(item => String(item.text || '').trim()).filter(Boolean);
+    const names = [...new Set(images)].slice(0, 5);
+    const esParts = [`Viñeta ${index + 1} del episodio ${episodeNumber}: ${title}.`];
+    const enParts = [`Panel ${index + 1} of episode ${episodeNumber}: ${title}.`];
+    if (names.length) { esParts.push(`Aparecen ${names.join(', ')}.`); enParts.push(`Featuring ${names.join(', ')}.`); }
+    if (texts.length) { esParts.push(`Texto visible: ${texts.join('; ')}.`); enParts.push(`Visible text: ${texts.join('; ')}.`); }
+    const value = language === 'en' ? enParts.join(' ') : esParts.join(' ');
+    return value.slice(0, 300);
+  }
+
+  let publishedEpisodeRecords = [];
+  let editorCharacterCatalog = null;
+  async function getEditorCharacterCatalog() {
+    if (!editorCharacterCatalog) editorCharacterCatalog = fetch('/characters.json', { cache: 'no-cache' }).then(response => response.ok ? response.json() : { characters: [] }).then(data => data.characters || []).catch(() => []);
+    return editorCharacterCatalog;
+  }
+  const splitEditorialList = value => [...new Set(String(value || '').split(/[\n,;]+/).map(item => item.trim()).filter(Boolean))].slice(0, 24);
+  function episodeCanvasMetadata() {
+    const imageItems = state.panels.flatMap(panel => panel.items.filter(item => item.type === 'image'));
+    const characters = [...new Set(imageItems.flatMap(item => {
+      const person = people.find(candidate => candidate.name === item.name || candidate.variants?.some(variant => variant.name === item.name || variant.src === item.src));
+      return person ? [person.name] : [];
+    }))];
+    const objects = [...new Set(imageItems.filter(item => item.category === 'object').map(item => item.name).filter(Boolean))];
+    const swatches = [...new Set(state.panels.map(panel => panel.backgroundColor).concat(state.panels.flatMap(panel => panel.items.flatMap(item => [item.color, item.fillColor]))).filter(value => typeof value === 'string' && /^#[\da-f]{6}$/i.test(value)))];
+    const knownColorNames = { '#f87209': 'naranja Mandarinita', '#607d3b': 'verde Mandarinita', '#fac421': 'amarillo Mandarinita', '#ffc928': 'amarillo sol', '#fff8ec': 'crema Mandarinita', '#282522': 'tinta oscura', '#ffffff': 'blanco' };
+    const colors = [...new Set(swatches.flatMap(color => [color.toUpperCase(), knownColorNames[color.toLowerCase()]].filter(Boolean)))];
+    const spokenText = state.panels.flatMap(panel => panel.items.filter(item => item.type === 'text' || item.type === 'bubble').map(item => String(item.text || '').trim())).filter(Boolean).join('\n');
+    return { characters, objects, themes: [], colors, searchTerms: [...new Set(imageItems.map(item => item.name).filter(Boolean))], spokenText, externalLinks: [] };
+  }
+  function parseExternalLinks(value) {
+    return String(value || '').split('\n').map(line => line.trim()).filter(Boolean).slice(0, 12).flatMap(line => {
+      const [rawLabel, ...parts] = line.split('|');
+      const url = (parts.length ? parts.join('|') : rawLabel).trim();
+      const label = (parts.length ? rawLabel : (() => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return 'Enlace'; } })()).trim();
+      try { return /^https:$/.test(new URL(url).protocol) && label ? [{ label: label.slice(0, 60), url: new URL(url).href }] : []; } catch { return []; }
+    });
+  }
+  function externalLinksText(links) { return (links || []).map(link => `${link.label} | ${link.url}`).join('\n'); }
+  async function characterIdsFromNames(value) {
+    const entries = await getEditorCharacterCatalog();
+    const normalize = text => String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim();
+    const tokens = splitEditorialList(value);
+    const ids = [], unknown = [];
+    for (const token of tokens) {
+      const match = entries.find(entry => entry.id === token || normalize(entry.name) === normalize(token) || (entry.aliases || []).some(alias => normalize(alias) === normalize(token)));
+      if (match) ids.push(match.id); else unknown.push(token);
+    }
+    return { ids: [...new Set(ids)], unknown };
+  }
+  async function characterNamesFromIds(ids) {
+    const entries = await getEditorCharacterCatalog();
+    return (ids || []).map(value => entries.find(entry => entry.id === value)?.name || value);
+  }
+
+  async function openPublishEpisodeDialog() {
+    if (state.contentType !== 'episode') {
+      const previousType = state.contentType || 'diseño';
+      if (!window.confirm(`Este borrador está clasificado como «${previousType}». ¿Quieres publicarlo como episodio? Se conservarán las viñetas y sus capas.`)) return;
+      state.contentType = 'episode';
+      autosave();
+      render();
+    }
+    $('#export-preview-dialog').close();
+    const form = $('#publish-episode-form');
+    const status = $('#publish-episode-status');
+    status.textContent = '';
+    $('#publish-episode-title-en').value = state.episodeTitleEn || state.title || '';
+    const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    $('#publish-episode-date').value = state.publishedAt || localToday;
+    $('#publish-episode-unpublish-date').value = state.unpublishAt || '';
+    let catalog = { episodes: [] };
+    try {
+      const response = await fetch('/api/editor/episodes', { credentials: 'same-origin', cache: 'no-store' });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Inicia sesión para consultar el catálogo y publicar.');
+      catalog.episodes = result.episodes || [];
+    } catch (error) { toast(error instanceof Error ? error.message : 'No pude consultar el catálogo de episodios.'); return; }
+    const maxEpisode = Math.max(0, ...(catalog.episodes || []).map(entry => Number(entry.episodeNumber) || 0));
+    $('#publish-episode-number').value = state.episodeNumber || maxEpisode + 1;
+    const inferred = episodeCanvasMetadata();
+    const saved = state.editorialMetadata || {};
+    const characterNames = saved.characters ? await characterNamesFromIds(saved.characters) : inferred.characters;
+    $('#publish-characters').value = characterNames.join(', ');
+    $('#publish-objects').value = (saved.objects || inferred.objects).join(', ');
+    $('#publish-themes').value = (saved.themes || []).join(', ');
+    $('#publish-colors').value = (saved.colors || inferred.colors).join(', ');
+    $('#publish-search-terms').value = (saved.searchTerms || inferred.searchTerms).join(', ');
+    $('#publish-spoken-text').value = saved.spokenText || inferred.spokenText;
+    $('#publish-external-links').value = externalLinksText(saved.externalLinks || []);
+    const descriptions = $('#publish-panel-descriptions');
+    descriptions.replaceChildren();
+    state.panels.forEach((panel, index) => {
+      const card = document.createElement('section');
+      card.className = 'publish-panel-description';
+      const heading = document.createElement('h3');
+      heading.textContent = `Viñeta ${index + 1}`;
+      card.append(heading);
+      for (const [language, label] of [['es', 'Descripción en español'], ['en', 'Description in English']]) {
+        const fieldLabel = document.createElement('label');
+        fieldLabel.textContent = label;
+        const textarea = document.createElement('textarea');
+        textarea.name = `alt-${language}-${index + 1}`;
+        textarea.required = true;
+        textarea.minLength = 8;
+        textarea.maxLength = 300;
+        textarea.value = panel.alt?.[language] || suggestedPanelAlt(panel, index, language, state.episodeNumber || maxEpisode + 1, state.title || 'Episodio nuevo');
+        fieldLabel.append(textarea);
+        card.append(fieldLabel);
+      }
+      descriptions.append(card);
+    });
+    form.dataset.pending = 'false';
+    $('#publish-episode-submit').disabled = false;
+    $('#publish-episode-submit').textContent = state.publishedEpisodeId ? 'Actualizar publicación' : 'Publicar episodio';
+    $('#publish-episode-dialog').showModal();
+  }
+
+  async function submitEpisodePublication(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.dataset.pending === 'true' || !form.reportValidity()) return;
+    form.dataset.pending = 'true';
+    const submit = $('#publish-episode-submit');
+    const status = $('#publish-episode-status');
+    submit.disabled = true;
+    $('#publish-episode-close').disabled = true;
+    $('#publish-episode-cancel').disabled = true;
+    submit.textContent = 'Preparando viñetas…';
+    status.textContent = 'Subiendo el episodio al sitio. No cierres esta ventana todavía.';
+    try {
+      const episodeNumber = Number($('#publish-episode-number').value);
+      const publishedAt = $('#publish-episode-date').value;
+      const unpublishAt = $('#publish-episode-unpublish-date').value || null;
+      const title = { es: String(state.title || '').trim(), en: $('#publish-episode-title-en').value.trim() };
+      const idValue = state.publishedEpisodeId || `ep-${String(state.projectId || '').replace(/[^a-zA-Z0-9_-]/g, '')}`;
+      const resolvedCharacters = await characterIdsFromNames($('#publish-characters').value);
+      const editorialMetadata = {
+        characters: resolvedCharacters.ids,
+        objects: splitEditorialList($('#publish-objects').value),
+        themes: splitEditorialList($('#publish-themes').value),
+        colors: splitEditorialList($('#publish-colors').value),
+        searchTerms: [...new Set(splitEditorialList($('#publish-search-terms').value).concat(resolvedCharacters.unknown))],
+        spokenText: $('#publish-spoken-text').value.trim(),
+        externalLinks: parseExternalLinks($('#publish-external-links').value)
+      };
+      const panels = state.panels.map((panel, index) => ({
+        order: index + 1,
+        alt: {
+          es: form.elements.namedItem(`alt-es-${index + 1}`).value.trim(),
+          en: form.elements.namedItem(`alt-en-${index + 1}`).value.trim()
+        }
+      }));
+      const payload = new FormData();
+      payload.append('metadata', JSON.stringify({ id: idValue, projectId: state.projectId, episodeNumber, publishedAt, unpublishAt, title, exportTemplate: state.exportStyle || 'classic', metadata: editorialMetadata, panels }));
+      for (let index = 0; index < state.panels.length; index++) {
+        const image = await renderPanelPng(state.panels[index], index);
+        payload.append(`panel-${index + 1}`, image, `episodio-${episodeNumber}-vineta-${index + 1}.png`);
+        submit.textContent = `Subiendo viñeta ${index + 1} de ${state.panels.length}…`;
+      }
+      const response = await fetch('/api/published-episodes', { method: 'POST', credentials: 'same-origin', body: payload });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No se pudo publicar el episodio.');
+      state.publishedEpisodeId = idValue;
+      state.episodeNumber = episodeNumber;
+      state.publishedAt = publishedAt;
+      state.unpublishAt = unpublishAt;
+      state.editorialMetadata = editorialMetadata;
+      state.episodeTitleEn = title.en;
+      state.status = result.scheduled ? 'scheduled' : 'published';
+      autosave();
+      $('#publish-episode-dialog').close();
+      $('#publish-episode-close').disabled = false;
+      $('#publish-episode-cancel').disabled = false;
+      const archiveUrl = `${location.origin}/episodios.html`;
+      toast(result.scheduled ? `Episodio ${episodeNumber} programado para ${publishedAt}. Se mostrará en ${archiveUrl}.` : `Episodio ${episodeNumber} publicado en ${archiveUrl}.`);
+      if (!$('#published-episodes-section').hidden) loadPublishedEpisodes();
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'No se pudo publicar. El borrador sigue guardado.';
+      form.dataset.pending = 'false';
+      submit.disabled = false;
+      $('#publish-episode-close').disabled = false;
+      $('#publish-episode-cancel').disabled = false;
+      submit.textContent = state.publishedEpisodeId ? 'Actualizar publicación' : 'Publicar episodio';
+    }
+  }
+
+  function showHomeSection(section) {
+    const published = section === 'published';
+    $('#home-heading').hidden = published;
+    $('#project-list').hidden = published;
+    $('#home-footnote').hidden = published;
+    $('#published-episodes-section').hidden = !published;
+    $('#show-drafts').classList.toggle('active', !published);
+    $('#show-published-episodes').classList.toggle('active', published);
+    if (published) { $('#show-published-episodes').setAttribute('aria-current', 'page'); $('#show-drafts').removeAttribute('aria-current'); }
+    else { $('#show-drafts').setAttribute('aria-current', 'page'); $('#show-published-episodes').removeAttribute('aria-current'); }
+    $('.home-actions').hidden = published;
+    if (published) loadPublishedEpisodes();
+  }
+
+  async function loadPublishedEpisodes() {
+    const status = $('#published-episode-list-status');
+    status.textContent = 'Cargando catálogo…';
+    try {
+      const response = await fetch('/api/editor/episodes', { credentials: 'same-origin', cache: 'no-store' });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No pude cargar los episodios.');
+      publishedEpisodeRecords = Array.isArray(result.episodes) ? result.episodes : [];
+      renderPublishedEpisodes();
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'No pude cargar el catálogo. Vuelve a intentarlo.';
+    }
+  }
+
+  function renderPublishedEpisodes() {
+    const list = $('#published-episode-list');
+    const query = String($('#published-episode-search').value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim();
+    const selectedStatus = $('#published-episode-status-filter').value;
+    const filtered = publishedEpisodeRecords.filter(entry => {
+      if (selectedStatus !== 'all' && entry.status !== selectedStatus) return false;
+      const search = [entry.episodeNumber, entry.title?.es, entry.title?.en, entry.status, entry.publishedAt, entry.unpublishAt, entry.characters, entry.objects, entry.themes, entry.colors, entry.searchTerms, entry.spokenText, entry.externalLinks?.map(link => `${link.label} ${link.url}`)].flat(2).join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');
+      return !query || search.includes(query);
+    });
+    list.replaceChildren();
+    $('#published-episode-list-status').textContent = `${filtered.length} de ${publishedEpisodeRecords.length} episodios · Puedes buscar por personaje, color, tema, frase o número.`;
+    if (!filtered.length) {
+      const empty = document.createElement('div'); empty.className = 'published-episode-empty';
+      empty.textContent = publishedEpisodeRecords.length ? 'No encontré episodios con esa búsqueda.' : 'No hay episodios en el catálogo. Comprueba la sesión y actualiza.';
+      list.append(empty); return;
+    }
+    for (const entry of filtered) {
+      const card = document.createElement('article'); card.className = 'published-episode-card';
+      const thumb = document.createElement('div'); thumb.className = 'published-episode-thumb';
+      if (entry.thumbnail) { const image = document.createElement('img'); image.src = entry.thumbnail; image.alt = ''; image.loading = 'lazy'; image.onerror = () => image.remove(); thumb.append(image); }
+      const copy = document.createElement('div'); copy.className = 'published-episode-copy';
+      const title = document.createElement('strong'); title.textContent = `#${entry.episodeNumber || '—'} · ${entry.title?.es || 'Episodio sin título'}`;
+      const status = document.createElement('small');
+      const labels = { published: 'Publicado', scheduled: 'Programado', unpublished: 'No publicado' };
+      status.textContent = `${labels[entry.status] || entry.status} · ${entry.panelCount} viñetas${entry.publishedAt ? ` · ${entry.publishedAt}` : ''}${entry.unpublishAt ? ` → ${entry.unpublishAt}` : ''} · ${entry.sourceType === 'editor' ? 'Del editor' : 'Catálogo existente'}`;
+      const tags = document.createElement('div'); tags.className = 'published-episode-meta';
+      for (const value of [...(entry.characters || []), ...(entry.themes || []), ...(entry.colors || [])].slice(0, 6)) { const tag = document.createElement('span'); tag.textContent = value; tags.append(tag); }
+      copy.append(title, status); if (tags.childElementCount) copy.append(tags);
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'button'; button.textContent = 'Administrar'; button.onclick = () => openManagePublishedEpisode(entry);
+      card.append(thumb, copy, button); list.append(card);
+    }
+  }
+
+  async function openManagePublishedEpisode(entry) {
+    const form = $('#manage-published-episode-form');
+    $('#manage-published-episode-id').value = entry.id;
+    $('#manage-published-episode-title').textContent = `Episodio ${entry.episodeNumber || ''}`;
+    $('#manage-episode-number').value = entry.episodeNumber || '';
+    $('#manage-episode-status').value = entry.status || 'published';
+    $('#manage-episode-title-es').value = entry.title?.es || '';
+    $('#manage-episode-title-en').value = entry.title?.en || '';
+    $('#manage-episode-date').value = entry.publishedAt || '';
+    $('#manage-episode-unpublish-date').value = entry.unpublishAt || '';
+    $('#manage-episode-characters').value = (await characterNamesFromIds(entry.characters || [])).join(', ');
+    $('#manage-episode-objects').value = (entry.objects || []).join(', ');
+    $('#manage-episode-themes').value = (entry.themes || []).join(', ');
+    $('#manage-episode-colors').value = (entry.colors || []).join(', ');
+    $('#manage-episode-search-terms').value = (entry.searchTerms || []).join(', ');
+    $('#manage-episode-spoken-text').value = entry.spokenText || '';
+    $('#manage-episode-external-links').value = externalLinksText(entry.externalLinks || []);
+    $('#manage-published-episode-status').textContent = '';
+    form.dataset.pending = 'false';
+    $('#manage-published-episode-save').disabled = false;
+    $('#manage-published-episode-close').disabled = false;
+    $('#manage-published-episode-cancel').disabled = false;
+    $('#manage-published-episode-dialog').showModal();
+  }
+
+  async function saveManagedEpisode(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.dataset.pending === 'true' || !form.reportValidity()) return;
+    form.dataset.pending = 'true';
+    const button = $('#manage-published-episode-save');
+    const status = $('#manage-published-episode-status');
+    button.disabled = true; $('#manage-published-episode-close').disabled = true; $('#manage-published-episode-cancel').disabled = true; status.textContent = 'Guardando…';
+    try {
+      const characters = await characterIdsFromNames($('#manage-episode-characters').value);
+      const payload = {
+        id: $('#manage-published-episode-id').value,
+        episodeNumber: Number($('#manage-episode-number').value),
+        title: { es: $('#manage-episode-title-es').value.trim(), en: $('#manage-episode-title-en').value.trim() },
+        status: $('#manage-episode-status').value,
+        publishedAt: $('#manage-episode-date').value,
+        unpublishAt: $('#manage-episode-unpublish-date').value || null,
+        metadata: {
+          characters: characters.ids, objects: splitEditorialList($('#manage-episode-objects').value),
+          themes: splitEditorialList($('#manage-episode-themes').value), colors: splitEditorialList($('#manage-episode-colors').value),
+          searchTerms: [...new Set(splitEditorialList($('#manage-episode-search-terms').value).concat(characters.unknown))],
+          spokenText: $('#manage-episode-spoken-text').value.trim(), externalLinks: parseExternalLinks($('#manage-episode-external-links').value)
+        }
+      };
+      const response = await fetch('/api/editor/episodes', { method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No se pudieron guardar los cambios.');
+      $('#manage-published-episode-dialog').close();
+      await loadPublishedEpisodes();
+      toast(payload.status === 'unpublished' ? `Episodio ${payload.episodeNumber} marcado como no publicado.` : `Cambios guardados para el episodio ${payload.episodeNumber}.`);
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'No se pudieron guardar los cambios.';
+      form.dataset.pending = 'false'; button.disabled = false; $('#manage-published-episode-close').disabled = false; $('#manage-published-episode-cancel').disabled = false;
+    }
+  }
+
   async function openExportPreview() {
     const button=$('#preview-export');
     button.disabled=true;
@@ -2085,7 +2402,8 @@
         const image=document.createElement('img');image.src=url;image.alt=`Vista previa final de la viñeta ${index+1}, con la plantilla ${styleLabel}`;
         card.append(label,image);pages.append(card);
       }
-      $('#export-preview-dialog').showModal();
+    $('#publish-episode').hidden = false;
+    $('#export-preview-dialog').showModal();
     } catch(error) {toast(error instanceof Error?error.message:'No se pudo preparar la vista previa.');}
     finally {button.disabled=false;}
   }
@@ -2199,7 +2517,7 @@
     labeledIcon('#mobile-library','panelLeft','Componentes'); labeledIcon('#mobile-properties','sliders','Propiedades');
     $('#tab-components').innerHTML=`${svgIcon('box')}<span>Componentes</span>`;
     $('#tab-layers').innerHTML=`${svgIcon('layers')}<span>Capas</span> <span id="layer-count-tab">0</span>`;
-    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#text-style','sparkles','Estilos');labeledIcon('#change-mockup','refresh','Cambiar producto');labeledIcon('#mockup-preview','eyeOff','Ocultar simulación');labeledIcon('#export-vector','fileDown','Arte vectorial SVG');labeledIcon('#add-bubble','bubble','Añadir globo');labeledIcon('#preview-export','eye','Vista previa final');labeledIcon('#export-preview-download','download','Exportar esta revisión');
+    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#text-style','sparkles','Estilos');labeledIcon('#change-mockup','refresh','Cambiar producto');labeledIcon('#mockup-preview','eyeOff','Ocultar simulación');labeledIcon('#export-vector','fileDown','Arte vectorial SVG');labeledIcon('#add-bubble','bubble','Añadir globo');labeledIcon('#preview-export','eye','Vista previa final');labeledIcon('#export-preview-download','download','Exportar esta revisión');labeledIcon('#publish-episode','cloudUpload','Publicar episodio en la web');
     const filterIcons={all:'grid',character:'users',object:'box',background:'image',sticker:'layers',reference:'book'};
     $$('.filters [data-filter]').forEach(button=>{const label=button.textContent.trim();button.classList.add('has-icon');button.innerHTML=`${svgIcon(filterIcons[button.dataset.filter]||'grid')}<span class="button-label">${label}</span>`;button.setAttribute('aria-label',label);button.title=label;});
     const orderToggle = $('#toggle-order-strip');
@@ -2210,6 +2528,15 @@
     labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías'); labeledIcon('#add-cta-panel','message','Añadir cierre');
     $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
     $('#new-project').onclick = newProject;
+    $('#show-drafts').onclick = () => showHomeSection('drafts');
+    $('#show-published-episodes').onclick = () => showHomeSection('published');
+    $('#refresh-published-episodes').onclick = loadPublishedEpisodes;
+    $('#published-episode-search').addEventListener('input', renderPublishedEpisodes);
+    $('#published-episode-status-filter').addEventListener('change', renderPublishedEpisodes);
+    $('#manage-published-episode-form').addEventListener('submit', saveManagedEpisode);
+    $('#manage-published-episode-close').onclick = () => $('#manage-published-episode-dialog').close();
+    $('#manage-published-episode-cancel').onclick = () => $('#manage-published-episode-dialog').close();
+    $('#manage-published-episode-dialog').addEventListener('cancel', event => { if ($('#manage-published-episode-form').dataset.pending === 'true') event.preventDefault(); });
     $$('.content-type-card').forEach(button=>button.onclick=()=>{$('#new-content-dialog').close();createContentDraft(button.dataset.contentType);});
     $$('.design-template-card').forEach(button=>button.onclick=()=>{$('#design-template-dialog').close();if(changingMockup)changeProductMockup(button.dataset.designTemplate);else createDesignProject(button.dataset.designTemplate);changingMockup=false;});
     $$('.text-style-card').forEach(button=>button.onclick=()=>{$('#text-style-dialog').close();addTextBlock('Escribe aquí…',button.dataset.textStyle);});
@@ -2226,6 +2553,11 @@
     $('#preview-export').onclick = openExportPreview;
     $('#export-preview-close').onclick = () => $('#export-preview-dialog').close();
     $('#export-preview-download').onclick = () => { $('#export-preview-dialog').close(); exportReview(); };
+    $('#publish-episode').onclick = openPublishEpisodeDialog;
+    $('#publish-episode-close').onclick = () => $('#publish-episode-dialog').close();
+    $('#publish-episode-cancel').onclick = () => $('#publish-episode-dialog').close();
+    $('#publish-episode-form').addEventListener('submit', submitEpisodePublication);
+    $('#publish-episode-dialog').addEventListener('cancel', event => { if ($('#publish-episode-form').dataset.pending === 'true') event.preventDefault(); });
     $('#export-preview-dialog').addEventListener('close',closeExportPreview);
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;

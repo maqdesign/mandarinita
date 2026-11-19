@@ -3,11 +3,36 @@ const menuButton = document.querySelector('.menu-button');
 const navigation = document.querySelector('.main-nav');
 // Share the same in-flight catalog request between the home cards, character
 // appearances, archive and global search instead of downloading it repeatedly.
-window.mandarinitaEpisodesCatalogPromise ||= fetch('episodes.json', { cache: 'no-cache' }).then(response => {
+window.mandarinitaEpisodesCatalogPromise ||= fetch('episodes.json', { cache: 'no-cache' }).then(async response => {
   if (!response.ok) throw new Error('Episode catalog unavailable');
-  return response.json();
+  const catalog = await response.json();
+  try {
+    const published = await fetch('/api/published-episodes', { cache: 'no-store' });
+    if (published.ok) {
+      const result = await published.json();
+      const values = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date()).map(part => [part.type, part.value]));
+      const today = `${values.year}-${values.month}-${values.day}`;
+      const overrides = new Map((Array.isArray(result.overrides) ? result.overrides : []).map(item => [item.id, item]));
+      catalog.episodes = catalog.episodes.map(entry => {
+        const override = overrides.get(entry.id);
+        if (!override) return entry;
+        const status = override.status === 'scheduled' && override.publishedAt <= today ? 'published'
+          : override.unpublishAt && override.unpublishAt <= today ? 'unpublished' : override.status;
+        return { ...entry, ...override.metadata, title: override.title || entry.title, episodeNumber: override.episodeNumber ?? entry.episodeNumber, publishedAt: override.publishedAt || entry.publishedAt, status };
+      });
+      const currentIds = new Set(catalog.episodes.map(entry => entry.id));
+      catalog.episodes.push(...(Array.isArray(result.episodes) ? result.episodes.filter(entry => !currentIds.has(entry.id)) : []));
+    }
+  } catch { /* Published additions are optional; the curated catalog remains available offline. */ }
+  return catalog;
 });
 window.mandarinitaSetEpisodeThumbnail = (image, source, sizes, onFailure) => {
+  if (source.startsWith('/api/published-episodes/')) {
+    image.sizes = sizes;
+    image.src = source;
+    image.addEventListener('error', () => onFailure?.(), { once: true });
+    return;
+  }
   const thumbnail = source.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-$1.webp');
   const compact = source.replace(/([^/]+)\.(?:png|jpe?g|webp)$/i, 'thumb-320-$1.webp');
   const originalUrl = new URL(source, location.href).href;
@@ -129,7 +154,8 @@ function setLanguage(next, updateUrl = false) {
     home: ['Mandarinita® — Historietas y arte', 'Mandarinita® — Comics and art'],
     episodes: ['Todos los episodios — Mandarinita®', 'All episodes — Mandarinita®'],
     characters: ['Personajes originales — Mandarinita®', 'Original characters — Mandarinita®'],
-    sketches: ['Bocetos — Mandarinita®', 'Sketches — Mandarinita®']
+    sketches: ['Bocetos — Mandarinita®', 'Sketches — Mandarinita®'],
+    services: ['Diseño web para tu proyecto — Mandarinita', 'Web design for your project — Mandarinita']
   };
   document.title = pageTitles[page][next === 'es' ? 0 : 1];
   const description = document.querySelector('meta[name=description]');
@@ -140,6 +166,7 @@ function setLanguage(next, updateUrl = false) {
   });
   syncAccessibleLanguage();
   try { localStorage.setItem('mandarinita-language', next); } catch (_) { /* Continue without persistence. */ }
+  window.dispatchEvent(new Event('mandarinita-language-change'));
 }
 function syncInternalLanguageLinks() {
   document.querySelectorAll('a[href]').forEach(link => {
@@ -147,7 +174,7 @@ function syncInternalLanguageLinks() {
     try {
       const url = new URL(link.href, window.location.href);
       if (url.origin !== window.location.origin) return;
-      if (!['/', '/index.html', '/personajes', '/personajes.html', '/episodios', '/episodios.html', '/bocetos', '/bocetos.html'].includes(url.pathname)) return;
+      if (!['/', '/index.html', '/personajes', '/personajes.html', '/episodios', '/episodios.html', '/bocetos', '/bocetos.html', '/servicios', '/servicios.html'].includes(url.pathname)) return;
       url.searchParams.set('lang', language);
       link.href = url.pathname + url.search + url.hash;
     } catch (_) { /* Leave invalid or nonstandard links untouched. */ }
@@ -161,6 +188,11 @@ function catalogTitle(entry, lang = language) {
   const translated = entry.title?.[lang];
   if (lang === 'en' && /^episode\s+\d+$/i.test(translated || '')) return entry.title?.es || translated;
   return translated || entry.title?.es || '';
+}
+function validEpisodePanelSource(entry, panel) {
+  const id = /^[a-zA-Z0-9_-]{1,100}$/.test(entry.id || '') ? entry.id : '';
+  return (/^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && !panel.src.includes('..'))
+    || Boolean(id && panel.src.startsWith(`/api/published-episodes/${id}/${panel.order}.png?v=`) && /^[a-f0-9-]{36}$/i.test(panel.src.split('?v=')[1] || ''));
 }
 setLanguage(language);
 syncInternalLanguageLinks();
@@ -205,7 +237,7 @@ async function loadApprovedEpisodes() {
     for (const entry of catalog.episodes) {
       if (entry.status !== 'published' || entry.type !== 'comic' || entry.complete !== true || !Array.isArray(entry.panels) || !entry.panels.length) continue;
       const ordered = [...entry.panels].sort((a,b)=>a.order-b.order);
-      if (!ordered.every((panel,i) => panel.order === i+1 && /^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && !panel.src.includes('..') && panel.alt?.es && panel.alt?.en)) continue;
+      if (!ordered.every((panel,i) => panel.order === i+1 && validEpisodePanelSource(entry, panel) && panel.alt?.es && panel.alt?.en)) continue;
       const staticKeys = {
         'ep-001-la-mosca':'episode1',
         'ep-051-tienes-hambre':'coffee',
@@ -237,16 +269,25 @@ async function loadApprovedEpisodes() {
       })
       .map(({id,key})=>({id,key}));
     if (grid.id === 'home-featured-grid') {
+      let lastHomeSelection = '';
+      let homeLanguageListeners = [];
+      const renderHomeFeatured = () => {
+      for (const [toggle,handler] of homeLanguageListeners) toggle?.removeEventListener('click',handler);
+      homeLanguageListeners = [];
       grid.replaceChildren();
       const pool = [...approved];
       for (let i=pool.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
-      const chosen = pool.slice(0,3);
+      let chosen = pool.slice(0,3);
+      let signature = chosen.map(item=>item.entry.id).sort().join('|');
+      if(pool.length>3&&signature===lastHomeSelection){chosen=pool.slice(3,6);signature=chosen.map(item=>item.entry.id).sort().join('|');}
+      lastHomeSelection=signature;
       for (const {entry,ordered,key} of chosen) {
         const article=document.createElement('article');article.className='work-card catalog-card';
         const button=document.createElement('button');button.className='work-image';button.type='button';button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${catalogTitle(entry,'en')}`);
         const cover=document.createElement('img');const fullResolutionSrc=ordered[0].sourceSrc||ordered[0].src;cover.alt=ordered[0].alt[language]||ordered[0].alt.es;cover.loading='lazy';cover.decoding='async';window.mandarinitaSetEpisodeThumbnail(cover,fullResolutionSrc,'(min-width:1200px) 32vw, (min-width:641px) 40vw, 80vw');button.append(cover);button.addEventListener('click',()=>openReader(key));
         const copy=document.createElement('div');copy.className='work-copy';
         const meta=document.createElement('p');meta.className='work-meta';meta.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;
+        const favorite=window.createMandarinitaFavoriteButton?.(entry.id);if(favorite)meta.append(favorite);
         const share=document.createElement('button');share.type='button';share.className='episode-share';share.setAttribute('aria-label',language==='es'?'Compartir episodio':'Share episode');share.title=share.getAttribute('aria-label');share.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg>';share.addEventListener('click',event=>{event.stopPropagation();window.shareMandarinitaEpisode?.(entry.id);});meta.append(share);
         if(ordered[0].watermarkedSrc)meta.append(markedDownloadLink(ordered[0].watermarkedSrc,`episodio-${entry.episodeNumber}-portada.webp`,language==='es'?'Descargar imagen con firma':'Download credited image'));
         const heading=document.createElement('h3');heading.textContent=catalogTitle(entry);heading.title=heading.textContent;
@@ -254,8 +295,14 @@ async function loadApprovedEpisodes() {
         if (entry.publishedAt) { const date=document.createElement('time');date.className='episode-date';date.dateTime=entry.publishedAt;date.textContent=formatCatalogDate(entry.publishedAt);copy.append(meta,heading,summary,date); } else copy.append(meta,heading,summary);
         const action=document.createElement('button');action.type='button';action.className='text-button';action.textContent=language==='es'?'Leer episodio':'Read episode';action.addEventListener('click',()=>openReader(key));
         copy.append(action);article.append(button,copy);grid.append(article);
-        document.querySelector('.language-toggle')?.addEventListener('click',()=>{if(entry.publishedAt){const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);}share.setAttribute('aria-label',language==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');const download=copy.querySelector('.episode-download');if(download){download.setAttribute('aria-label',language==='en'?'Download credited image':'Descargar imagen con firma');download.title=download.getAttribute('aria-label');}});
+        const languageToggle=document.querySelector('.language-toggle');
+        const syncCardLanguage=()=>{meta.firstChild.textContent=language==='es'?`Episodio ${entry.episodeNumber}`:`Episode ${entry.episodeNumber}`;button.setAttribute('aria-label',language==='es'?`Leer episodio ${entry.episodeNumber}: ${entry.title.es}`:`Read episode ${entry.episodeNumber}: ${catalogTitle(entry,'en')}`);cover.alt=ordered[0].alt[language]||ordered[0].alt.es;heading.textContent=catalogTitle(entry);heading.title=heading.textContent;summary.textContent=language==='es'?`${ordered.length} viñetas en orden de lectura.`:`${ordered.length} panels in reading order.`;action.textContent=language==='es'?'Leer episodio':'Read episode';if(entry.publishedAt){const date=copy.querySelector('time');if(date)date.textContent=formatCatalogDate(entry.publishedAt);}share.setAttribute('aria-label',language==='en'?'Share episode':'Compartir episodio');share.title=share.getAttribute('aria-label');const download=copy.querySelector('.episode-download');if(download){download.setAttribute('aria-label',language==='en'?'Download credited image':'Descargar imagen con firma');download.title=download.getAttribute('aria-label');}};
+        languageToggle?.addEventListener('click',syncCardLanguage);homeLanguageListeners.push([languageToggle,syncCardLanguage]);
       }
+      };
+      window.mandarinitaShuffleHomeEpisodes = renderHomeFeatured;
+      document.querySelector('#home-reroll')?.addEventListener('click', renderHomeFeatured);
+      renderHomeFeatured();
     }
     const requestedEpisode = new URLSearchParams(window.location.search).get('episode');
     if (requestedEpisode) {
