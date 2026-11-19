@@ -3,6 +3,10 @@
   const privateContent = document.querySelector('#admin-private-content');
   const logout = document.querySelector('#admin-logout');
   const sidebarToggle = document.querySelector('#admin-sidebar-toggle');
+  const adminNav = document.querySelector('.admin-sidebar nav');
+  const adminMoreMenu = document.querySelector('#admin-more-toggle')?.closest('.admin-more-menu');
+  const adminMoreToggle = document.querySelector('#admin-more-toggle');
+  const adminMoreOptions = document.querySelector('#admin-more-options');
   const adminAlert = document.querySelector('#admin-alert');
   const adminAlertMessage = document.querySelector('#admin-alert-message');
   const adminAlertDismiss = document.querySelector('#admin-alert-dismiss');
@@ -113,11 +117,43 @@
   window.addEventListener('error', event => showRuntimeError(event.message || 'Error al cargar una sección.'));
   window.addEventListener('unhandledrejection', event => showRuntimeError(event.reason?.message || event.reason || 'Falló una solicitud.'));
   const collapsedPreference = (() => { try { return localStorage.getItem('mandarinita-admin-sidebar-collapsed') === 'true'; } catch { return false; } })();
-  privateContent.classList.toggle('sidebar-collapsed', collapsedPreference);
+  const mobileNavigation = matchMedia('(max-width: 760px)');
+  let desktopSidebarCollapsed = collapsedPreference;
+  function closeMoreMenu({ restoreFocus = false } = {}) {
+    if (!adminMoreToggle || !adminMoreOptions) return;
+    adminMoreToggle.setAttribute('aria-expanded', 'false');
+    adminMoreOptions.hidden = true;
+    if (restoreFocus) adminMoreToggle.focus();
+  }
+  function syncAdminNavigation() {
+    if (!adminNav || !adminMoreMenu || !adminMoreOptions) return;
+    const mobile = mobileNavigation.matches;
+    privateContent.classList.toggle('sidebar-collapsed', !mobile && desktopSidebarCollapsed);
+    if (mobile) {
+      [...adminNav.children].filter(item => item.matches('a')).slice(4).forEach(link => adminMoreOptions.append(link));
+    } else {
+      [...adminMoreOptions.querySelectorAll('a')].forEach(link => adminNav.insertBefore(link, adminMoreMenu));
+      closeMoreMenu();
+    }
+  }
+  syncAdminNavigation();
+  mobileNavigation.addEventListener('change', syncAdminNavigation);
+  adminMoreToggle?.addEventListener('click', () => {
+    const expanded = adminMoreToggle.getAttribute('aria-expanded') === 'true';
+    adminMoreToggle.setAttribute('aria-expanded', String(!expanded));
+    if (adminMoreOptions) adminMoreOptions.hidden = expanded;
+  });
+  document.addEventListener('click', event => {
+    if (adminMoreMenu && !adminMoreMenu.contains(event.target)) closeMoreMenu();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && adminMoreToggle?.getAttribute('aria-expanded') === 'true') closeMoreMenu({ restoreFocus: true });
+  });
   sidebarToggle?.setAttribute('aria-expanded', String(!collapsedPreference));
   sidebarToggle?.setAttribute('aria-label', collapsedPreference ? 'Expandir menú' : 'Contraer menú');
   sidebarToggle?.addEventListener('click', () => {
     const collapsed = privateContent.classList.toggle('sidebar-collapsed');
+    desktopSidebarCollapsed = collapsed;
     sidebarToggle.setAttribute('aria-expanded', String(!collapsed));
     sidebarToggle.setAttribute('aria-label', collapsed ? 'Expandir menú' : 'Contraer menú');
     try { localStorage.setItem('mandarinita-admin-sidebar-collapsed', String(collapsed)); } catch { /* The menu still works without storage. */ }
@@ -1050,9 +1086,9 @@
       link.classList.toggle('active', active);
       if (active) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
-      if (active && link.closest('.admin-sidebar nav') && matchMedia('(max-width: 760px)').matches) {
-        link.scrollIntoView({ block: 'nearest', inline: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
-      }
+      if (active && adminMoreOptions?.contains(link)) adminMoreToggle?.classList.add('has-active');
+      else if (active) adminMoreToggle?.classList.remove('has-active');
+      if (adminMoreOptions?.contains(link) && active) closeMoreMenu();
     }
     if (updateHistory && location.hash !== `#${view.id}`) history.pushState(null, '', `#${view.id}`);
     if (focusHeading) {
