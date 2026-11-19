@@ -1,4 +1,4 @@
-import { isConfigured, json, readSession } from '../../../_lib/session.js';
+import { isAuthConfigured, json, readSession } from '../../../_lib/session.js';
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const TYPES = new Map([
@@ -16,7 +16,7 @@ function hasMatchingSignature(buffer, contentType) {
 }
 
 export async function onRequestPost({ request, env }) {
-  if (!isConfigured(env)) return json({ error: 'La administración privada no está configurada.' }, 503);
+  if (!isAuthConfigured(env)) return json({ error: 'La administración privada no está configurada.' }, 503);
   const session = await readSession(request, env.SESSION_SECRET);
   if (!session || session.email !== env.MANDARINITA_SYNC_EMAIL.trim().toLowerCase()) {
     return json({ error: 'Inicia sesión con tu cuenta autorizada de GitHub.' }, 401);

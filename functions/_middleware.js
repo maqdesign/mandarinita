@@ -1,4 +1,4 @@
-import { isAllowedEmail, isConfigured, readSession } from './_lib/session.js';
+import { isAllowedEmail, isAuthConfigured, readSession } from './_lib/session.js';
 
 const PRIVATE_EDITOR_PATHS = new Set([
   '/editor', '/editor/', '/editor.html', '/editor.css', '/editor.js',
@@ -70,7 +70,7 @@ export async function onRequest({ request, env, next }) {
     }
     return next();
   }
-  if (!isConfigured(env)) return unavailablePage();
+  if (!isAuthConfigured(env)) return unavailablePage();
   const session = await readSession(request, env.SESSION_SECRET);
   if (isAllowedEmail(env, session?.email)) {
     const response = await next();

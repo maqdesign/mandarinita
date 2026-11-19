@@ -1,4 +1,4 @@
-import { isConfigured, json } from '../_lib/session.js';
+import { isAuthConfigured, json } from '../_lib/session.js';
 
 const MAX_BODY_BYTES = 12000;
 const MAX_PER_HOUR = 5;
@@ -14,7 +14,7 @@ async function rateLimitKey(ip, secret) {
 
 export async function onRequestPost({ request, env }) {
   if (request.headers.get('Origin') !== new URL(request.url).origin) return json({ error: 'Origen no permitido.' }, 403);
-  if (!isConfigured(env)) return json({ error: 'El formulario no está configurado en este entorno.' }, 503);
+  if (!isAuthConfigured(env)) return json({ error: 'El formulario no está configurado en este entorno.' }, 503);
   if (!env.MANDARINITA_INBOX) return json({ error: 'El buzón de prueba todavía no está conectado.' }, 503);
   const contentLength = Number(request.headers.get('Content-Length') || 0);
   if (contentLength > MAX_BODY_BYTES) return json({ error: 'El mensaje es demasiado largo.' }, 413);

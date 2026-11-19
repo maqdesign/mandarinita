@@ -1,9 +1,9 @@
-import { isConfigured, json, readSession } from '../../_lib/session.js';
+import { isAuthConfigured, json, readSession } from '../../_lib/session.js';
 
 const STATUSES = new Set(['new', 'reviewing', 'replied', 'archived']);
 
 async function authorize({ request, env }, write = false) {
-  if (!isConfigured(env)) return { response: json({ error: 'La administración privada no está configurada.' }, 503) };
+  if (!isAuthConfigured(env)) return { response: json({ error: 'La administración privada no está configurada.' }, 503) };
   const session = await readSession(request, env.SESSION_SECRET);
   if (!session || session.email !== env.MANDARINITA_SYNC_EMAIL.trim().toLowerCase()) return { response: json({ error: 'Inicia sesión con tu cuenta autorizada de GitHub.' }, 401) };
   if (write && request.headers.get('Origin') !== new URL(request.url).origin) return { response: json({ error: 'Origen no permitido.' }, 403) };

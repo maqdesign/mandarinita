@@ -1,4 +1,4 @@
-import { isConfigured, json } from '../../_lib/session.js';
+import { isAuthConfigured, json } from '../../_lib/session.js';
 
 function randomState() {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
@@ -8,7 +8,7 @@ function randomState() {
 }
 
 export function onRequestGet({ request, env }) {
-  if (!isConfigured(env)) return json({ error: 'Falta configurar el acceso privado del editor.' }, 503);
+  if (!isAuthConfigured(env)) return json({ error: 'Falta configurar el acceso privado del editor.' }, 503);
   const state = randomState();
   const callback = new URL('/api/auth/github/callback', request.url).toString();
   const authorize = new URL('https://github.com/login/oauth/authorize');

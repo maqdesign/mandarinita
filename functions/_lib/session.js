@@ -66,6 +66,10 @@ export function json(data, status = 200, headers = {}) {
   return Response.json(data, { status, headers: { 'Cache-Control': 'no-store', ...headers } });
 }
 
+export function isAuthConfigured(env) {
+  return Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET && env.SESSION_SECRET && allowedEmails(env).length);
+}
+
 export function isConfigured(env) {
-  return Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET && env.SESSION_SECRET && allowedEmails(env).length && env.MANDARINITA_PROJECTS);
+  return Boolean(isAuthConfigured(env) && env.MANDARINITA_PROJECTS);
 }

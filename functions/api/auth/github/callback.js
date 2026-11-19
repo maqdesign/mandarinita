@@ -1,11 +1,11 @@
-import { allowedEmails, isConfigured, json, makeSessionCookie } from '../../../_lib/session.js';
+import { allowedEmails, isAuthConfigured, json, makeSessionCookie } from '../../../_lib/session.js';
 
 function cookie(request, name) {
   return (request.headers.get('Cookie') || '').split(';').map(part => part.trim()).find(part => part.startsWith(`${name}=`))?.slice(name.length + 1) || '';
 }
 
 export async function onRequestGet({ request, env }) {
-  if (!isConfigured(env)) return json({ error: 'Falta configurar el acceso privado del editor.' }, 503);
+  if (!isAuthConfigured(env)) return json({ error: 'Falta configurar el acceso privado del editor.' }, 503);
   const url = new URL(request.url);
   const state = url.searchParams.get('state') || '';
   const validStateShape = /^[A-Za-z0-9_-]{43}$/.test(state);
