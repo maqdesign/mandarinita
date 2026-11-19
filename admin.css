@@ -310,6 +310,8 @@
 :root { --admin-header-height: 68px; }
 .admin-header { position: sticky; top: 0; z-index: 100; height: var(--admin-header-height); padding-inline: clamp(16px, 2vw, 32px); }
 .admin-header .ui-icon { width: 19px; height: 19px; }
+.admin-editor-shortcut { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 7px 11px; white-space: nowrap; }
+.admin-editor-shortcut .ui-icon { width: 17px; height: 17px; }
 .admin-sidebar-toggle { width: 38px; height: 38px; display: grid; place-items: center; padding: 0; border: 1px solid var(--line); border-radius: 11px; background: var(--paper); color: var(--ink); cursor: pointer; }
 .admin-sidebar-toggle:hover { border-color: var(--orange); color: #b64c00; }
 .admin-layout { grid-template-columns: 232px minmax(0, 1fr); }
@@ -371,6 +373,8 @@
   .admin-header { padding-inline: 12px; }
   .admin-brand img { width: 108px; }
   .admin-account { gap: 8px; }
+  .admin-editor-shortcut { width: 38px; min-width: 38px; justify-content: center; padding: 7px; }
+  .admin-editor-shortcut span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
   .admin-user { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .admin-sidebar { top: var(--admin-header-height); padding: 8px 10px; }
   .admin-sidebar-toggle { width: 34px; height: 34px; }
