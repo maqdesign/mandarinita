@@ -17,7 +17,7 @@ export function onRequestGet({ request, env }) {
   authorize.searchParams.set('scope', 'read:user user:email');
   authorize.searchParams.set('state', state);
   const response = new Response(null, { status: 302, headers: { Location: authorize.toString(), 'Cache-Control': 'no-store' } });
-  response.headers.append('Set-Cookie', `mandarinita_oauth_state=${state}; Path=/api/auth/github/callback; Max-Age=600; HttpOnly; Secure; SameSite=Lax`);
-  response.headers.append('Set-Cookie', `mandarinita_oauth_area=${new URL(request.url).searchParams.get('area') === 'admin' ? 'admin' : 'editor'}; Path=/api/auth/github/callback; Max-Age=600; HttpOnly; Secure; SameSite=Lax`);
+  const area = new URL(request.url).searchParams.get('area') === 'admin' ? 'admin' : 'editor';
+  response.headers.append('Set-Cookie', `mandarinita_oauth_${state}=${area}; Path=/; Max-Age=600; HttpOnly; Secure; SameSite=Lax`);
   return response;
 }

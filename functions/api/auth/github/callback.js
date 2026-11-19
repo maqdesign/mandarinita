@@ -8,10 +8,26 @@ export async function onRequestGet({ request, env }) {
   if (!isConfigured(env)) return json({ error: 'Falta configurar el acceso privado del editor.' }, 503);
   const url = new URL(request.url);
   const state = url.searchParams.get('state') || '';
-  if (!state || state !== cookie(request, 'mandarinita_oauth_state')) return json({ error: 'No se pudo validar el inicio de sesión. Vuelve a intentarlo.' }, 400);
+  const validStateShape = /^[A-Za-z0-9_-]{43}$/.test(state);
+  const stateCookieName = validStateShape ? `mandarinita_oauth_${state}` : '';
+  const area = stateCookieName ? cookie(request, stateCookieName) : '';
+  const clearStateCookie = stateCookieName
+    ? `${stateCookieName}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`
+    : '';
+  if (!stateCookieName || !['admin', 'editor'].includes(area)) {
+    console.warn('GitHub OAuth state validation failed', {
+      hasState: Boolean(state),
+      validStateShape,
+      matchingCookiePresent: Boolean(area),
+      host: url.hostname
+    });
+    const response = json({ error: 'No se pudo validar el inicio de sesión. Vuelve a intentarlo desde el panel.' }, 400);
+    if (clearStateCookie) response.headers.append('Set-Cookie', clearStateCookie);
+    return response;
+  }
   if (url.searchParams.has('error')) return new Response(null, { status: 303, headers: {
     Location: new URL('/github-auth-error.html?reason=cancelled', request.url).toString(),
-    'Set-Cookie': 'mandarinita_oauth_state=; Path=/api/auth/github/callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax',
+    'Set-Cookie': clearStateCookie,
     'Cache-Control': 'no-store'
   } });
 
@@ -70,19 +86,17 @@ export async function onRequestGet({ request, env }) {
   const verified = emails.some(entry => entry.verified && entry.email.toLowerCase() === allowedEmail);
   if (!verified) return new Response(null, { status: 303, headers: {
     Location: new URL('/github-auth-error.html?reason=not-authorized', request.url).toString(),
-    'Set-Cookie': 'mandarinita_oauth_state=; Path=/api/auth/github/callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax',
+    'Set-Cookie': clearStateCookie,
     'Cache-Control': 'no-store'
   } });
 
   const sessionCookie = await makeSessionCookie({ login: user.login, email: allowedEmail }, env.SESSION_SECRET);
-  const area = cookie(request, 'mandarinita_oauth_area') === 'admin' ? 'admin' : 'editor';
   const destination = area === 'admin' ? '/admin.html' : '/editor.html?github=connected';
   const response = new Response(null, { status: 303, headers: {
     Location: new URL(destination, request.url).toString(),
     'Cache-Control': 'no-store'
   } });
   response.headers.append('Set-Cookie', sessionCookie);
-  response.headers.append('Set-Cookie', 'mandarinita_oauth_state=; Path=/api/auth/github/callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax');
-  response.headers.append('Set-Cookie', 'mandarinita_oauth_area=; Path=/api/auth/github/callback; Max-Age=0; HttpOnly; Secure; SameSite=Lax');
+  response.headers.append('Set-Cookie', clearStateCookie);
   return response;
 }
