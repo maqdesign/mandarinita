@@ -67,7 +67,16 @@ export function json(data, status = 200, headers = {}) {
 }
 
 export function isAuthConfigured(env) {
-  return Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET && env.SESSION_SECRET && allowedEmails(env).length);
+  return missingAuthSettings(env).length === 0;
+}
+
+export function missingAuthSettings(env) {
+  return [
+    ['GITHUB_CLIENT_ID', env.GITHUB_CLIENT_ID],
+    ['GITHUB_CLIENT_SECRET', env.GITHUB_CLIENT_SECRET],
+    ['SESSION_SECRET', env.SESSION_SECRET],
+    ['MANDARINITA_SYNC_EMAIL', allowedEmails(env).length]
+  ].filter(([, value]) => !value).map(([name]) => name);
 }
 
 export function isConfigured(env) {
