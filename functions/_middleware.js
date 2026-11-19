@@ -5,7 +5,7 @@ const PRIVATE_EDITOR_PATHS = new Set([
   '/editor.webmanifest', '/editor-service-worker.js', '/editor-art-catalog.json',
   '/admin', '/admin/', '/admin.html', '/admin.css', '/admin.js'
 ]);
-const HERO_IMAGE_PATH = /^(?:assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)|\/api\/site-content\/image\/site-content\/hero\/[0-9a-f-]{36}\.(?:png|webp|jpg))$/i;
+const HERO_IMAGE_PATH = /^(?:assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)|\/api\/site-content\/image\/(?:site-content\/hero\/)?[0-9a-f-]{36}\.(?:png|webp|jpg))$/i;
 
 async function updateHomeShareImage(request, env, next) {
   const response = await next();

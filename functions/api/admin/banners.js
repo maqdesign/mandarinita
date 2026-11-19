@@ -10,7 +10,7 @@ const FIELD_COLUMNS = [
   ['hero.effect', 'effect', 'effect', 'effect', 20],
   ['hero.image.alt', 'alt_es', 'alt_en', 'text', 300]
 ];
-const IMAGE_PATH = /^(?:assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)|\/api\/site-content\/image\/site-content\/hero\/[0-9a-f-]{36}\.(?:png|webp|jpg))$/i;
+const IMAGE_PATH = /^(?:assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)|\/api\/site-content\/image\/(?:site-content\/hero\/)?[0-9a-f-]{36}\.(?:png|webp|jpg))$/i;
 const CONTROL_CHARACTERS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/;
 const COLUMNS = [
   'id', 'position', 'enabled', 'eyebrow_es', 'eyebrow_en',

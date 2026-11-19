@@ -43,5 +43,5 @@ export async function onRequestPost({ request, env }) {
     console.error('Homepage image upload failed', { name: error?.name || 'Error' });
     return json({ error: 'No se pudo guardar la imagen. Inténtalo de nuevo.' }, 503);
   }
-  return json({ ok: true, path: `/api/site-content/image/${key}`, contentType: file.type, size: file.size });
+  return json({ ok: true, path: `/api/site-content/image/${key.slice(key.lastIndexOf('/') + 1)}`, contentType: file.type, size: file.size });
 }
