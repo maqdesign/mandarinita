@@ -87,6 +87,6 @@ export async function onRequest({ request, env, next }) {
     }
     return response;
   }
-  const target = url.pathname.startsWith('/admin') ? '?area=admin' : '';
-  return new Response(null, { status: 302, headers: { Location: `/api/auth/github${target}`, 'Cache-Control': 'no-store' } });
+  const target = url.pathname.startsWith('/admin') ? 'admin' : 'editor';
+  return new Response(null, { status: 302, headers: { Location: `/login.html?area=${target}`, 'Cache-Control': 'no-store' } });
 }

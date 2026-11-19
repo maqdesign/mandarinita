@@ -1,4 +1,4 @@
-import { isAuthConfigured, json } from '../../_lib/session.js';
+import { isAuthConfigured } from '../../_lib/session.js';
 
 function randomState() {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
@@ -8,7 +8,9 @@ function randomState() {
 }
 
 export function onRequestGet({ request, env }) {
-  if (!isAuthConfigured(env)) return json({ error: 'Falta configurar el acceso privado del editor.' }, 503);
+  if (!isAuthConfigured(env)) return new Response(null, { status: 303, headers: {
+    Location: new URL('/github-auth-error.html?reason=not-configured', request.url).toString(), 'Cache-Control': 'no-store'
+  } });
   const state = randomState();
   const callback = new URL('/api/auth/github/callback', request.url).toString();
   const authorize = new URL('https://github.com/login/oauth/authorize');
@@ -18,6 +20,6 @@ export function onRequestGet({ request, env }) {
   authorize.searchParams.set('state', state);
   const response = new Response(null, { status: 302, headers: { Location: authorize.toString(), 'Cache-Control': 'no-store' } });
   const area = new URL(request.url).searchParams.get('area') === 'admin' ? 'admin' : 'editor';
-  response.headers.append('Set-Cookie', `mandarinita_oauth_${state}=${area}; Path=/; Max-Age=600; HttpOnly; Secure; SameSite=None`);
+  response.headers.append('Set-Cookie', `mandarinita_oauth_${state}=${area}; Path=/; Max-Age=600; HttpOnly; Secure; SameSite=Lax`);
   return response;
 }
