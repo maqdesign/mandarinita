@@ -31,6 +31,7 @@
   let bannersLoaded = false;
   let bannerDirty = false;
   let heroPreviewToastTimer = 0;
+  let previewEditField = null;
   let heroPreviewLayout = 'horizontal';
   siteContentForm.elements.hero_effect_es.addEventListener('change', () => {
     siteContentForm.elements.hero_effect_en.value = siteContentForm.elements.hero_effect_es.value;
@@ -203,8 +204,37 @@
     heroPreviewToast.hidden = false;
     heroPreviewToastTimer = window.setTimeout(() => { heroPreviewToast.hidden = true; }, 3800);
   }
+  function focusPreviewField(field, language) {
+    previewEditField?.element?.classList.remove('preview-edit-target');
+    window.clearTimeout(previewEditField?.timer);
+    if (field === 'hero.image') {
+      const artwork = siteContentForm.querySelector('.site-content-artwork');
+      artwork?.classList.add('preview-edit-target');
+      previewEditField = { element: artwork, timer: window.setTimeout(() => artwork?.classList.remove('preview-edit-target'), 2600) };
+      heroImageFile.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      heroImageFile.focus({ preventScroll: true });
+      setSiteContentStatus('Imagen seleccionada en la vista previa. Elige el archivo nuevo en “Imagen y movimiento”.');
+      showHeroPreviewToast('Seleccionaste la imagen. Elige el archivo nuevo en “Imagen y movimiento”.');
+      return;
+    }
+    const fieldConfig = siteContentFields.find(([key]) => key === field);
+    if (!fieldConfig || !['es', 'en'].includes(language)) return;
+    const [, spanishName, englishName] = fieldConfig;
+    const control = siteContentForm.elements[language === 'en' ? englishName : spanishName];
+    const group = control?.closest('.site-content-pair');
+    if (!control || !group) return;
+    group.classList.add('preview-edit-target');
+    previewEditField = { element: group, timer: window.setTimeout(() => group.classList.remove('preview-edit-target'), 3000) };
+    control.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    control.focus({ preventScroll: true });
+    setSiteContentStatus(`Editando ${group.querySelector('legend')?.textContent || 'el campo'} · ${language === 'en' ? 'English' : 'Español'}. Los cambios aparecen en la vista previa.`);
+  }
   window.addEventListener('message', event => {
     if (event.origin !== location.origin || event.source !== bannerPreview?.contentWindow) return;
+    if (event.data?.type === 'mandarinita:preview-edit') {
+      focusPreviewField(event.data.field, event.data.language);
+      return;
+    }
     if (event.data?.type === 'mandarinita:preview-action') {
       const label = typeof event.data.label === 'string' ? event.data.label.trim().slice(0, 70) : '';
       showHeroPreviewToast(`${label ? `“${label}”` : 'El botón'} responde. En la portada pública llevará a las historietas.`);

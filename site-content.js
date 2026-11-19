@@ -14,11 +14,45 @@
   const timing = document.querySelector('#hero-carousel-timing');
   const hero = document.querySelector('.hero');
   const previewMode = new URLSearchParams(location.search).has('admin-banner-preview');
+  const editLabels = {
+    'hero.eyebrow': { es: 'frase de entrada', en: 'intro line' },
+    'hero.title.first': { es: 'primera línea del título', en: 'first title line' },
+    'hero.title.second': { es: 'segunda línea del título', en: 'second title line' },
+    'hero.description': { es: 'descripción', en: 'description' },
+    'hero.cta': { es: 'texto del botón', en: 'button text' }
+  };
   if (previewMode) {
     document.body.classList.add('hero-only-preview');
     document.querySelectorAll('#main > :not(.hero)').forEach(section => { section.hidden = true; });
   }
   const language = () => document.documentElement.dataset.lang === 'en' ? 'en' : 'es';
+  if (previewMode) {
+    for (const target of textTargets) {
+      const key = target.dataset.liveContent;
+      if (!editLabels[key]) continue;
+      if (key === 'hero.cta') {
+        target.title = language() === 'en' ? 'Click to edit this button text' : 'Haz clic para editar el texto del botón';
+        continue;
+      }
+      target.tabIndex = 0;
+      target.setAttribute('role', 'button');
+      target.setAttribute('aria-label', language() === 'en' ? `Edit ${editLabels[key].en}` : `Editar ${editLabels[key].es}`);
+      target.title = language() === 'en' ? 'Click to edit this text' : 'Haz clic para editar este texto';
+    }
+    if (heroImage) {
+      heroImage.tabIndex = 0;
+      heroImage.setAttribute('role', 'button');
+      heroImage.setAttribute('aria-label', language() === 'en' ? 'Choose a different banner image' : 'Elegir otra imagen para el banner');
+      heroImage.title = language() === 'en' ? 'Click to change this image' : 'Haz clic para cambiar esta imagen';
+    }
+    document.addEventListener('keydown', event => {
+      if ((event.key !== 'Enter' && event.key !== ' ') || !(event.target instanceof Element)) return;
+      const target = event.target.closest('[data-live-content], .hero-family-image');
+      if (!target) return;
+      event.preventDefault();
+      target.click();
+    });
+  }
   const safeImage = path => {
     if (typeof path !== 'string' || !(path.startsWith('assets/') || path.startsWith('/api/site-content/image/'))) return null;
     const url = new URL(path, location.href);
@@ -238,7 +272,21 @@
   });
   if (previewMode) {
     document.addEventListener('click', event => {
-      const link = event.target instanceof Element ? event.target.closest('a') : null;
+      const target = event.target instanceof Element ? event.target : null;
+      const linkTarget = target?.closest('a');
+      const editableText = target?.closest('[data-live-content]') || linkTarget?.querySelector('[data-live-content]');
+      const editableImage = target?.closest('.hero-family-image');
+      const editable = editableText || editableImage;
+      if (editable) {
+        const field = editableText?.dataset.liveContent || 'hero.image';
+        if (editLabels[field] || field === 'hero.image') {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          window.parent.postMessage({ type: 'mandarinita:preview-edit', field, language: language() }, location.origin);
+          return;
+        }
+      }
+      const link = target?.closest('a') || null;
       if (!link) return;
       event.preventDefault();
       event.stopImmediatePropagation();
