@@ -735,3 +735,14 @@
 .hero-carousel-dot[aria-current=true]{width:23px;border-radius:999px;background:var(--ink)}
 .hero-carousel-arrow:disabled,.hero-carousel-toggle:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:680px){.hero-carousel-controls{gap:7px;margin-top:17px}.hero-carousel-arrow,.hero-carousel-toggle{width:34px;height:34px;padding:7px}.hero-carousel-status{min-width:72px;font-size:.62rem}.hero-carousel-dots{gap:6px;margin-inline:2px}.hero-carousel-dot{width:7px;height:7px}.hero-carousel-dot[aria-current=true]{width:18px}}
+
+/* The admin embeds the real homepage hero so banner edits can be previewed before saving. */
+body.hero-only-preview{min-height:100vh;overflow:hidden}
+body.hero-only-preview .skip-link,body.hero-only-preview .site-header,body.hero-only-preview .site-footer,body.hero-only-preview #main>:not(.hero){display:none!important}
+body.hero-only-preview #main{margin:0;padding:0}
+body.hero-only-preview .hero{min-height:520px;height:100vh;padding:28px clamp(22px,4vw,54px);grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+body.hero-only-preview .hero-copy{max-width:100%}
+body.hero-only-preview .hero h1{font-size:clamp(2.5rem,4.5vw,4.2rem);margin-bottom:18px}
+body.hero-only-preview .hero-description{font-size:clamp(.88rem,1.3vw,1.05rem);margin-bottom:20px}
+body.hero-only-preview .hero-art.hero-art-family{width:min(100%,520px)}
+@media(max-width:680px){body.hero-only-preview{overflow:auto}body.hero-only-preview .hero{height:auto;min-height:100vh;padding:42px 24px;grid-template-columns:1fr;gap:4px}body.hero-only-preview .hero h1{font-size:clamp(2.8rem,13vw,4.4rem)}body.hero-only-preview .hero-description{font-size:1rem}body.hero-only-preview .hero-art.hero-art-family{width:min(100%,390px)}}

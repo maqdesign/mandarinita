@@ -8,6 +8,8 @@
   const previous = document.querySelector('#hero-carousel-previous');
   const next = document.querySelector('#hero-carousel-next');
   const toggle = document.querySelector('#hero-carousel-toggle');
+  const previewMode = new URLSearchParams(location.search).has('admin-banner-preview');
+  if (previewMode) document.body.classList.add('hero-only-preview');
   const language = () => document.documentElement.dataset.lang === 'en' ? 'en' : 'es';
   const safeImage = path => {
     if (typeof path !== 'string' || !(path.startsWith('assets/') || path.startsWith('/api/site-content/image/'))) return null;
@@ -122,7 +124,7 @@
       return;
     }
     buildDots();
-    autoPlay = !reduceMotion.matches;
+    autoPlay = !previewMode && !reduceMotion.matches;
     updateToggle();
     applyBanner(0);
   }
@@ -149,6 +151,11 @@
   });
   document.querySelector('.language-toggle')?.addEventListener('click', () => {
     if (banners.length) applyBanner(current);
+  });
+  window.addEventListener('message', event => {
+    if (!previewMode || event.origin !== location.origin || event.source !== window.parent) return;
+    if (event.data?.type !== 'mandarinita:preview-banner' || !event.data.banner?.fields) return;
+    initializeCarousel([event.data.banner]);
   });
 
   fetch('/api/site-content', { cache: 'no-store' })

@@ -16,6 +16,7 @@
   const heroImageFile = document.querySelector('#hero-image-file');
   const heroImagePreview = document.querySelector('#hero-image-preview');
   const heroImageStatus = document.querySelector('#hero-image-status');
+  const bannerPreview = document.querySelector('#hero-banner-preview');
   const bannerList = document.querySelector('#hero-banner-list');
   const bannerManagerStatus = document.querySelector('#banner-manager-status');
   const createBannerButton = document.querySelector('#create-banner');
@@ -141,6 +142,7 @@
       deleteBannerButton.disabled = true;
       setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
     }
+    updateBannerPreview();
   }
   function fillBannerForm() {
     const banner = selectedBanner();
@@ -162,6 +164,12 @@
     deleteBannerButton.disabled = bannerDirty || bannerItems.length <= 1;
     deleteBannerButton.title = bannerItems.length <= 1 ? 'Debe quedar al menos un banner en la portada.' : '';
     heroImageFile.value = '';
+    updateBannerPreview();
+  }
+  function updateBannerPreview() {
+    const banner = selectedBanner();
+    if (!bannerPreview?.contentWindow || !banner) return;
+    bannerPreview.contentWindow.postMessage({ type: 'mandarinita:preview-banner', banner }, location.origin);
   }
   function createIcon(pathData) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -362,6 +370,7 @@
     if (event.target === siteContentForm.elements.hero_effect_es) siteContentForm.elements.hero_effect_en.value = event.target.value;
     if (event.target !== heroImageFile) captureBannerForm();
   });
+  bannerPreview?.addEventListener('load', updateBannerPreview);
   createBannerButton.addEventListener('click', createBanner);
   deleteBannerButton.addEventListener('click', () => {
     if (bannerDirty) { setBannerStatus('Guarda los cambios pendientes antes de quitar un banner.'); return; }
