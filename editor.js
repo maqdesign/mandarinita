@@ -705,9 +705,11 @@
       preview.append(previewCanvas);
       const main = document.createElement('div'); main.className = 'project-card-main';
       const reviewState = record.status === 'review';
+      const publicationLabel = record.status === 'published' ? 'Publicado en la web' : record.status === 'scheduled' ? `Programado · ${project.publishedAt || ''}` : reviewState ? 'En revisión' : 'Borrador';
+      const publicationClass = record.status === 'published' ? 'published' : record.status === 'scheduled' ? 'scheduled' : reviewState ? 'ready' : '';
       const kindLabels = {episode:'Episodio',copy:'Texto / copy',banner:'Banner',section:'Sección web',design:'Diseño gráfico',mockup:'Diseño de producto'};
       const isEpisode = (project.contentType || record.contentType || 'episode') === 'episode';
-      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${reviewState ? 'ready' : ''}">${reviewState ? 'En revisión' : 'Borrador'}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
+      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${publicationClass}">${publicationLabel}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
       const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${record.title}`); open.append(preview,main); open.onclick = () => openProject(record.id);
       const menu = document.createElement('details'); menu.className = 'project-card-menu';
       menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
@@ -988,6 +990,7 @@
     $('#export-preset').value = state.format;
     $('#export-style').value = state.exportStyle || 'classic';
     $('#add-cta-panel').hidden = state.contentType !== 'episode';
+    $('#publish-episode').hidden = state.contentType !== 'episode';
     $('#mockup-preview').hidden=state.contentType!=='mockup';$('#change-mockup').hidden=state.contentType!=='mockup';$('#mockup-preview').setAttribute('aria-pressed',String(state.mockupPreview!==false));$('#mockup-preview').setAttribute('aria-label',state.mockupPreview===false?'Ver producto':'Ocultar simulación');$('#mockup-preview').title=state.mockupPreview===false?'Ver producto':'Ocultar simulación';$('#mockup-preview').innerHTML=`${svgIcon(state.mockupPreview===false?'eye':'eyeOff')}<span class="button-label">${state.mockupPreview===false?'Ver producto':'Ocultar simulación'}</span>`;
     $('#export-vector').hidden=!['design','mockup'].includes(state.contentType);
     renderPanels();
@@ -2067,6 +2070,125 @@
     for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index],index); const path=isEpisode?`assets/episodes/drafts/${slug}/vineta-${String(index+1).padStart(2,'0')}.png`:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`; files.push({ name:path, data: new Uint8Array(await image.arrayBuffer()) }); }
     download(zipStore(files), `${slug}-revision.zip`); toast(savedLocally ? 'Paquete de revisión listo. No se publica automáticamente.' : 'Paquete listo; conserva el ZIP porque el borrador no cupo en este dispositivo.');
   }
+
+  function suggestedPanelAlt(panel, index, language, episodeNumber, title) {
+    const images = panel.items.filter(item => item.type === 'image').map(item => item.name).filter(Boolean);
+    const texts = panel.items.filter(item => item.type === 'text' || item.type === 'bubble').map(item => String(item.text || '').trim()).filter(Boolean);
+    const names = [...new Set(images)].slice(0, 5);
+    const esParts = [`Viñeta ${index + 1} del episodio ${episodeNumber}: ${title}.`];
+    const enParts = [`Panel ${index + 1} of episode ${episodeNumber}: ${title}.`];
+    if (names.length) { esParts.push(`Aparecen ${names.join(', ')}.`); enParts.push(`Featuring ${names.join(', ')}.`); }
+    if (texts.length) { esParts.push(`Texto visible: ${texts.join('; ')}.`); enParts.push(`Visible text: ${texts.join('; ')}.`); }
+    const value = language === 'en' ? enParts.join(' ') : esParts.join(' ');
+    return value.slice(0, 300);
+  }
+
+  async function openPublishEpisodeDialog() {
+    if (state.contentType !== 'episode') return;
+    $('#export-preview-dialog').close();
+    const form = $('#publish-episode-form');
+    const status = $('#publish-episode-status');
+    status.textContent = '';
+    $('#publish-episode-title-en').value = state.episodeTitleEn || state.title || '';
+    const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    $('#publish-episode-date').value = state.publishedAt || localToday;
+    const catalogPromise = window.mandarinitaEpisodesCatalogPromise || fetch('/episodes.json', { cache: 'no-cache' }).then(response => response.ok ? response.json() : { episodes: [] }).then(async catalog => {
+      try {
+        const response = await fetch('/api/published-episodes', { cache: 'no-store' });
+        if (response.ok) {
+          const published = await response.json();
+          const ids = new Set((catalog.episodes || []).map(entry => entry.id));
+          catalog.episodes.push(...(published.episodes || []).filter(entry => !ids.has(entry.id)));
+        }
+      } catch { /* The server validates episode numbers again before publishing. */ }
+      return catalog;
+    });
+    const catalog = await catalogPromise.catch(() => ({ episodes: [] }));
+    const maxEpisode = Math.max(0, ...(catalog.episodes || []).map(entry => Number(entry.episodeNumber) || 0));
+    $('#publish-episode-number').value = state.episodeNumber || maxEpisode + 1;
+    const descriptions = $('#publish-panel-descriptions');
+    descriptions.replaceChildren();
+    state.panels.forEach((panel, index) => {
+      const card = document.createElement('section');
+      card.className = 'publish-panel-description';
+      const heading = document.createElement('h3');
+      heading.textContent = `Viñeta ${index + 1}`;
+      card.append(heading);
+      for (const [language, label] of [['es', 'Descripción en español'], ['en', 'Description in English']]) {
+        const fieldLabel = document.createElement('label');
+        fieldLabel.textContent = label;
+        const textarea = document.createElement('textarea');
+        textarea.name = `alt-${language}-${index + 1}`;
+        textarea.required = true;
+        textarea.minLength = 8;
+        textarea.maxLength = 300;
+        textarea.value = panel.alt?.[language] || suggestedPanelAlt(panel, index, language, state.episodeNumber || maxEpisode + 1, state.title || 'Episodio nuevo');
+        fieldLabel.append(textarea);
+        card.append(fieldLabel);
+      }
+      descriptions.append(card);
+    });
+    form.dataset.pending = 'false';
+    $('#publish-episode-submit').disabled = false;
+    $('#publish-episode-submit').textContent = state.publishedEpisodeId ? 'Actualizar publicación' : 'Publicar episodio';
+    $('#publish-episode-dialog').showModal();
+  }
+
+  async function submitEpisodePublication(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.dataset.pending === 'true' || !form.reportValidity()) return;
+    form.dataset.pending = 'true';
+    const submit = $('#publish-episode-submit');
+    const status = $('#publish-episode-status');
+    submit.disabled = true;
+    $('#publish-episode-close').disabled = true;
+    $('#publish-episode-cancel').disabled = true;
+    submit.textContent = 'Preparando viñetas…';
+    status.textContent = 'Subiendo el episodio al sitio. No cierres esta ventana todavía.';
+    try {
+      const episodeNumber = Number($('#publish-episode-number').value);
+      const publishedAt = $('#publish-episode-date').value;
+      const title = { es: String(state.title || '').trim(), en: $('#publish-episode-title-en').value.trim() };
+      const idValue = state.publishedEpisodeId || `ep-${String(state.projectId || '').replace(/[^a-zA-Z0-9_-]/g, '')}`;
+      const panels = state.panels.map((panel, index) => ({
+        order: index + 1,
+        alt: {
+          es: form.elements.namedItem(`alt-es-${index + 1}`).value.trim(),
+          en: form.elements.namedItem(`alt-en-${index + 1}`).value.trim()
+        }
+      }));
+      const payload = new FormData();
+      payload.append('metadata', JSON.stringify({ id: idValue, projectId: state.projectId, episodeNumber, publishedAt, title, exportTemplate: state.exportStyle || 'classic', panels }));
+      for (let index = 0; index < state.panels.length; index++) {
+        const image = await renderPanelPng(state.panels[index], index);
+        payload.append(`panel-${index + 1}`, image, `episodio-${episodeNumber}-vineta-${index + 1}.png`);
+        submit.textContent = `Subiendo viñeta ${index + 1} de ${state.panels.length}…`;
+      }
+      const response = await fetch('/api/published-episodes', { method: 'POST', credentials: 'same-origin', body: payload });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No se pudo publicar el episodio.');
+      state.publishedEpisodeId = idValue;
+      state.episodeNumber = episodeNumber;
+      state.publishedAt = publishedAt;
+      state.episodeTitleEn = title.en;
+      state.status = result.scheduled ? 'scheduled' : 'published';
+      autosave();
+      $('#publish-episode-dialog').close();
+      $('#publish-episode-close').disabled = false;
+      $('#publish-episode-cancel').disabled = false;
+      const archiveUrl = `${location.origin}/episodios.html`;
+      toast(result.scheduled ? `Episodio ${episodeNumber} programado para ${publishedAt}. Se mostrará en ${archiveUrl}.` : `Episodio ${episodeNumber} publicado en ${archiveUrl}.`);
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'No se pudo publicar. El borrador sigue guardado.';
+      form.dataset.pending = 'false';
+      submit.disabled = false;
+      $('#publish-episode-close').disabled = false;
+      $('#publish-episode-cancel').disabled = false;
+      submit.textContent = state.publishedEpisodeId ? 'Actualizar publicación' : 'Publicar episodio';
+    }
+  }
+
   async function openExportPreview() {
     const button=$('#preview-export');
     button.disabled=true;
@@ -2087,7 +2209,8 @@
         const image=document.createElement('img');image.src=url;image.alt=`Vista previa final de la viñeta ${index+1}, con la plantilla ${styleLabel}`;
         card.append(label,image);pages.append(card);
       }
-      $('#export-preview-dialog').showModal();
+    $('#publish-episode').hidden = state.contentType !== 'episode';
+    $('#export-preview-dialog').showModal();
     } catch(error) {toast(error instanceof Error?error.message:'No se pudo preparar la vista previa.');}
     finally {button.disabled=false;}
   }
@@ -2201,7 +2324,7 @@
     labeledIcon('#mobile-library','panelLeft','Componentes'); labeledIcon('#mobile-properties','sliders','Propiedades');
     $('#tab-components').innerHTML=`${svgIcon('box')}<span>Componentes</span>`;
     $('#tab-layers').innerHTML=`${svgIcon('layers')}<span>Capas</span> <span id="layer-count-tab">0</span>`;
-    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#text-style','sparkles','Estilos');labeledIcon('#change-mockup','refresh','Cambiar producto');labeledIcon('#mockup-preview','eyeOff','Ocultar simulación');labeledIcon('#export-vector','fileDown','Arte vectorial SVG');labeledIcon('#add-bubble','bubble','Añadir globo');labeledIcon('#preview-export','eye','Vista previa final');labeledIcon('#export-preview-download','download','Exportar esta revisión');
+    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#text-style','sparkles','Estilos');labeledIcon('#change-mockup','refresh','Cambiar producto');labeledIcon('#mockup-preview','eyeOff','Ocultar simulación');labeledIcon('#export-vector','fileDown','Arte vectorial SVG');labeledIcon('#add-bubble','bubble','Añadir globo');labeledIcon('#preview-export','eye','Vista previa final');labeledIcon('#export-preview-download','download','Exportar esta revisión');labeledIcon('#publish-episode','cloudUpload','Publicar episodio en la web');
     const filterIcons={all:'grid',character:'users',object:'box',background:'image',sticker:'layers',reference:'book'};
     $$('.filters [data-filter]').forEach(button=>{const label=button.textContent.trim();button.classList.add('has-icon');button.innerHTML=`${svgIcon(filterIcons[button.dataset.filter]||'grid')}<span class="button-label">${label}</span>`;button.setAttribute('aria-label',label);button.title=label;});
     const orderToggle = $('#toggle-order-strip');
@@ -2228,6 +2351,11 @@
     $('#preview-export').onclick = openExportPreview;
     $('#export-preview-close').onclick = () => $('#export-preview-dialog').close();
     $('#export-preview-download').onclick = () => { $('#export-preview-dialog').close(); exportReview(); };
+    $('#publish-episode').onclick = openPublishEpisodeDialog;
+    $('#publish-episode-close').onclick = () => $('#publish-episode-dialog').close();
+    $('#publish-episode-cancel').onclick = () => $('#publish-episode-dialog').close();
+    $('#publish-episode-form').addEventListener('submit', submitEpisodePublication);
+    $('#publish-episode-dialog').addEventListener('cancel', event => { if ($('#publish-episode-form').dataset.pending === 'true') event.preventDefault(); });
     $('#export-preview-dialog').addEventListener('close',closeExportPreview);
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;
