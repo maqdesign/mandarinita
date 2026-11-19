@@ -791,3 +791,8 @@ body.hero-only-preview .hero-art.hero-art-family{width:min(100%,520px)}
   .hero-carousel-arrow,.hero-carousel-toggle{border-color:rgba(48,34,27,.3)}
   .hero-carousel-progress>span{background:var(--text-on-orange)}
 }
+
+.site-footer .footer-admin-link{display:grid;place-items:center;width:36px;height:36px;margin:12px auto 0;border:1px solid transparent;border-radius:50%;color:rgba(244,237,232,.52);opacity:.8;transition:color .18s ease,background .18s ease,border-color .18s ease,opacity .18s ease}
+.site-footer .footer-admin-link svg{width:16px;height:16px}
+.site-footer .footer-admin-link:hover,.site-footer .footer-admin-link:focus-visible{color:var(--yellow);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);opacity:1}
+.site-footer .footer-admin-link:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
