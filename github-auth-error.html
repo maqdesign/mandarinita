@@ -7,10 +7,11 @@
   <title>Acceso a Taller Mandarinita</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    body{min-height:100vh;display:grid;place-items:center;padding:24px;background:#f4f1ec;color:#302d2a;font:16px 'Work Sans',sans-serif}
-    main{width:min(100%,520px);padding:36px;border:1px solid #ebe7e1;border-radius:18px;background:#fffaf3;box-shadow:0 18px 50px #302d2a12}
-    h1{font:600 30px Fredoka,sans-serif;margin:8px 0}p{line-height:1.6;color:#77716a}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.actions a{display:inline-block;padding:11px 15px;border:1px solid #ebe7e1;border-radius:9px;background:white;color:#302d2a;text-decoration:none;font-weight:600}.actions a:first-child{background:#f87209;border-color:#f87209;color:white}
-    @media(max-width:540px){main{padding:24px}}
+    body{min-height:100vh;display:grid;place-items:center;padding:24px;background:#f4f1ec;color:#302d2a;font:16px/1.55 'Work Sans',sans-serif}
+    main{width:min(100%,540px);padding:clamp(24px,6vw,38px);border:1px solid #ebe7e1;border-radius:22px;background:#fffaf3;box-shadow:0 18px 50px #302d2a12}
+    h1{font:600 clamp(27px,7vw,32px)/1.15 Fredoka,sans-serif;margin:9px 0 10px}p{line-height:1.6;color:#77716a}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.actions a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;box-sizing:border-box;padding:10px 15px;border:1px solid #ebe7e1;border-radius:9px;background:white;color:#302d2a;text-decoration:none;font-weight:650}.actions a:first-child{background:#f87209;border-color:#f87209;color:white}.actions a:focus-visible{outline:3px solid #2878ff;outline-offset:3px}
+    @media(prefers-color-scheme:dark){body{background:#211f1d;color:#f8f2eb}main{background:#2b2926;border-color:#46423e}p{color:#bdb5ab}.actions a:not(:first-child){background:#211f1d;color:#f8f2eb;border-color:#46423e}}
+    @media(max-width:540px){main{padding:24px}.actions a{flex:1}}
   </style>
 </head>
 <body>
@@ -18,12 +19,20 @@
     <span class="eyebrow">TALLER MANDARINITA</span>
     <h1 id="title">No se pudo iniciar sesión</h1>
     <p id="message">Vuelve a intentarlo o regresa al sitio.</p>
-    <div class="actions"><a href="/api/auth/github">Intentar de nuevo</a><a href="/">Volver al sitio</a></div>
+    <div class="actions"><a id="retry" href="/login.html">Volver a iniciar sesión</a><a href="/">Volver al sitio</a></div>
   </main>
   <script>
     const reason = new URLSearchParams(location.search).get('reason');
+    const area = new URLSearchParams(location.search).get('area') === 'admin' ? 'admin' : 'editor';
+    document.querySelector('#retry').href = `/login.html?area=${area}`;
     if (reason === 'not-authorized') document.querySelector('#message').textContent = 'La cuenta de GitHub no tiene verificado el correo autorizado para este taller. Añádelo y verifícalo en GitHub, o cambia a la cuenta que ya lo tenga verificado, y vuelve a intentarlo.';
     if (reason === 'cancelled') document.querySelector('#message').textContent = 'Cancelaste el acceso de GitHub. Puedes intentarlo otra vez cuando quieras.';
+    if (reason === 'cookies') document.querySelector('#message').textContent = 'El navegador no conservó la verificación temporal de este acceso. Abre el enlace en Safari o en el mismo navegador donde empezaste, permite las cookies para mandarinita.art y vuelve a intentarlo desde aquí.';
+    if (reason === 'expired') document.querySelector('#message').textContent = 'El enlace de acceso venció o ya se usó. Inicia un intento nuevo desde el botón de abajo.';
+    if (reason === 'missing-code') document.querySelector('#message').textContent = 'GitHub no terminó el acceso. Inicia un intento nuevo desde el botón de abajo.';
+    if (reason === 'network' || reason === 'verify') document.querySelector('#message').textContent = 'No pudimos verificar la sesión con GitHub. Comprueba tu conexión y vuelve a intentarlo.';
+    if (reason === 'not-configured') document.querySelector('#message').textContent = 'El acceso privado no está configurado para este entorno. Vuelve al sitio e inténtalo más tarde.';
+    if (reason === 'oauth-config') document.querySelector('#message').textContent = 'GitHub no aceptó las credenciales de esta versión del taller. Comprueba que la aplicación OAuth tenga registrado el callback de este dominio y que Client ID y secreto pertenezcan al mismo entorno.';
     if (reason === 'oauth-exchange') document.querySelector('#message').textContent = 'GitHub no aceptó el intercambio del código de acceso. Si entraste desde una URL de preview de Cloudflare Pages, esa URL debe coincidir exactamente con el callback de la OAuth App y usar su Client ID y secreto de entorno Preview. La URL de producción mandarinita.art requiere su propio callback y sus credenciales de producción.';
   </script>
 </body>

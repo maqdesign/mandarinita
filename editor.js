@@ -539,7 +539,7 @@
   async function setupCloudSync() {
     const button = $('#github-sync');
     button.onclick = async () => {
-      if (cloudAuthExpired) { window.location.assign('/api/auth/github'); return; }
+      if (cloudAuthExpired) { window.location.assign('/login.html?area=editor'); return; }
       if (cloudUser) {
         try {
           await cloudFetch('/api/auth/logout', { method: 'POST' });
@@ -554,7 +554,7 @@
         return;
       }
       if (!cloudConfigured) { toast('La sincronización requiere configurar OAuth de GitHub y almacenamiento R2 en Cloudflare.'); return; }
-      window.location.assign('/api/auth/github');
+      window.location.assign('/login.html?area=editor');
     };
     $('#retry-cloud').onclick=retryCloudSync;$('#editor-retry-cloud').onclick=retryCloudSync;
     window.addEventListener('focus',scheduleCloudRefresh);
