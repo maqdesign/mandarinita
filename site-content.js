@@ -84,8 +84,10 @@
     const playIcon = toggle.querySelector('[data-carousel-icon="play"]');
     const pauseIcon = toggle.querySelector('[data-carousel-icon="pause"]');
     const active = autoPlay;
-    if (playIcon) playIcon.hidden = active;
-    if (pauseIcon) pauseIcon.hidden = !active;
+    // SVGElement does not reflect the HTMLElement `hidden` property consistently.
+    // Toggle the actual attribute so the visible icon always matches the action.
+    playIcon?.toggleAttribute('hidden', active);
+    pauseIcon?.toggleAttribute('hidden', !active);
     if (toggleLabel) toggleLabel.textContent = active ? (language() === 'en' ? 'Pause' : 'Pausar') : (language() === 'en' ? 'Resume' : 'Reanudar');
     toggle.setAttribute('aria-pressed', String(active));
     toggle.setAttribute('aria-label', active
