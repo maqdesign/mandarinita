@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f2e9">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Acceso privado · Mandarinita</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{color-scheme:light;--paper:#fffefa;--canvas:#f7f2e9;--ink:#30221b;--muted:#766b63;--line:#eadcc9;--orange:#f87209;--green:#58753b}
+    *{box-sizing:border-box}body{min-height:100vh;margin:0;padding:24px;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 0,#ffe4c6 0,transparent 48%),var(--canvas);color:var(--ink);font:400 16px/1.55 'Work Sans',sans-serif}
+    main{width:min(100%,500px);padding:clamp(26px,6vw,48px);border:1px solid var(--line);border-radius:26px;background:var(--paper);box-shadow:0 24px 70px #30221b18;text-align:center}
+    .brand{display:inline-flex;align-items:center;justify-content:center;margin-bottom:30px}.brand img{width:190px;height:auto}.eyebrow{margin:0 0 8px;color:var(--green);font-size:.7rem;font-weight:800;letter-spacing:.15em}
+    h1{margin:0;font:600 clamp(1.8rem,7vw,2.35rem)/1.1 Fredoka,sans-serif}.copy{max-width:370px;margin:14px auto 26px;color:var(--muted)}
+    .login{min-height:52px;display:flex;align-items:center;justify-content:center;gap:11px;padding:12px 20px;border:0;border-radius:999px;background:var(--ink);color:white;font:700 .95rem 'Work Sans',sans-serif;text-decoration:none;transition:background .18s,transform .18s}
+    .login:hover{background:#493126;transform:translateY(-1px)}.login:focus-visible,.back:focus-visible{outline:3px solid #8f59a6;outline-offset:3px}.login svg{width:21px;height:21px;fill:currentColor}
+    .notice{min-height:1.5em;margin:14px 0 0;color:#9a3e24;font-size:.83rem;font-weight:600}.back{display:inline-block;margin-top:22px;color:#86502e;font-size:.84rem;font-weight:600;text-decoration:none}.back:hover{text-decoration:underline}
+    @media(prefers-reduced-motion:reduce){.login{transition:none}}
+  </style>
+</head>
+<body>
+  <main>
+    <a class="brand" href="/" aria-label="Mandarinita, volver al sitio"><img src="/assets/mandarinita-logo.svg" alt="Mandarinita"></a>
+    <p class="eyebrow">TALLER PERSONAL</p>
+    <h1 id="title">Tu espacio creativo te espera</h1>
+    <p class="copy" id="copy">Inicia sesión con la cuenta de GitHub autorizada para entrar a la administración privada de Mandarinita.</p>
+    <a class="login" id="login" href="/api/auth/github?area=admin">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.07c-3.1.68-3.75-1.32-3.75-1.32-.5-1.3-1.24-1.65-1.24-1.65-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 .1.77 2.28 3.44 1.61.1-.72.39-1.2.7-1.48-2.48-.28-5.09-1.24-5.09-5.53 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.05 1.15a10.6 10.6 0 0 1 5.55 0c2.11-1.44 3.04-1.15 3.04-1.15.61 1.54.23 2.68.11 2.96.72.78 1.15 1.78 1.15 3 0 4.3-2.62 5.25-5.11 5.52.4.35.75 1.03.75 2.08V22c0 .29.2.63.77.52A11.1 11.1 0 0 0 12 .9Z"/></svg>
+      <span>Continuar con GitHub</span>
+    </a>
+    <p class="notice" id="notice" role="status" aria-live="polite"></p>
+    <a class="back" href="/">Volver al sitio público</a>
+  </main>
+  <script>
+    const params=new URLSearchParams(location.search);
+    const area=params.get('area')==='editor'?'editor':'admin';
+    const admin=area==='admin';
+    document.querySelector('#title').textContent=admin?'Tu espacio creativo te espera':'Continúa creando tus historietas';
+    document.querySelector('#copy').textContent=admin?'Inicia sesión con la cuenta de GitHub autorizada para entrar a la administración privada de Mandarinita.':'Inicia sesión con la cuenta de GitHub autorizada para abrir el editor privado de episodios.';
+    document.querySelector('#login').href=`/api/auth/github?area=${area}`;
+    document.querySelector('#notice').textContent=params.has('reason')?'No pudimos comprobar tu sesión. Inicia sesión para continuar.':'';
+  </script>
+</body>
+</html>

@@ -1084,13 +1084,13 @@
     .then(response => response.json())
     .then(session => {
       if (!session.configured) throw new Error('No está configurado el acceso privado.');
-      if (!session.user) { location.replace('/api/auth/github?area=admin'); return; }
+      if (!session.user) { location.replace('/acceso.html?area=admin'); return; }
       document.body.classList.remove('admin-locked');
       privateContent.hidden = false;
       user.textContent = `Sesión: ${session.user.login}`;
       showAdminView(location.hash.slice(1) || 'resumen', { updateHistory: false });
     })
-    .catch(() => { user.textContent = 'No se pudo verificar el acceso'; });
+    .catch(() => { location.replace('/acceso.html?area=admin&reason=check'); });
   logout.addEventListener('click', async () => {
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {});
     privateContent.hidden = true;
