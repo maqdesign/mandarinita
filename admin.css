@@ -398,10 +398,10 @@
 .episode-editor-fallback a { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
 .episode-editor-fallback .ui-icon { width: 16px; height: 16px; }
 @media (min-width: 1181px) {
-  .site-content-action-bar { grid-column: 1; position: sticky; top: calc(var(--admin-header-height) + 92px); z-index: 45; }
+  .site-content-action-bar { grid-column: 1 / -1; position: sticky; top: calc(var(--admin-header-height) + 92px); z-index: 60; }
   .site-content-action-bar .site-content-save-state { margin-right: auto; }
-  .hero-admin-preview { top: calc(var(--admin-header-height) + 92px); max-height: calc(100dvh - var(--admin-header-height) - 108px); }
-  .hero-preview-stage { max-height: calc(100dvh - 260px); }
+  .hero-admin-preview { top: calc(var(--admin-header-height) + 148px); max-height: calc(100dvh - var(--admin-header-height) - 164px); }
+  .hero-preview-stage { max-height: calc(100dvh - 310px); }
   .hero-preview-stage iframe { height: clamp(300px, 52dvh, 600px); }
 }
 @media (max-width: 1180px) {
