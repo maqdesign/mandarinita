@@ -333,8 +333,13 @@
 .hero-preview-stage { min-height: 280px; }
 .site-content-image-preview img[data-media-type="episode"] { width: auto; height: auto; max-width: min(220px, 55%); max-height: 150px; aspect-ratio: var(--episode-aspect-ratio, auto); box-sizing: border-box; object-fit: contain; border: 4px solid var(--episode-frame-color, #d88b18); border-radius: 12px; background: var(--episode-frame-color, #d88b18); }
 .site-content-image-preview img[data-media-type="image"] { border: 0; border-radius: 0; background: transparent; }
-.admin-runtime-error { position: sticky; top: calc(var(--admin-header-height) + 4px); z-index: 110; margin: 8px 0; padding: 11px 14px; border: 1px solid #b54732; border-radius: 12px; background: #fff1ed; color: #842d1a; font-size: .82rem; font-weight: 600; }
-.admin-runtime-error[hidden] { display: none !important; }
+.admin-alert { position: fixed; top: calc(var(--admin-header-height) + 12px); left: 50%; transform: translateX(-50%); z-index: 1200; display: grid; grid-template-columns: 24px minmax(0,1fr) 38px; align-items: center; gap: 12px; width: min(760px, calc(100vw - 28px)); padding: 12px 14px; border: 2px solid #a33320; border-radius: 14px; background: #fff1ed; color: #702516; font-size: .88rem; font-weight: 650; line-height: 1.45; box-shadow: 0 12px 36px rgba(48,34,27,.24); }
+.admin-alert[hidden] { display: none !important; }
+.admin-alert > .ui-icon { width: 22px; height: 22px; color: #a33320; }
+.admin-alert button { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #c46a54; border-radius: 10px; background: #fffefa; color: #702516; cursor: pointer; }
+.admin-alert button:hover { background: #ffe0d8; }
+.admin-alert button:focus-visible { outline: 3px solid #8f59a6; outline-offset: 2px; }
+.admin-alert button .ui-icon { width: 19px; height: 19px; }
 .admin-layout.sidebar-collapsed { grid-template-columns: 68px minmax(0, 1fr); }
 .admin-layout.sidebar-collapsed .admin-sidebar { padding-inline: 10px; }
 .admin-layout.sidebar-collapsed .admin-sidebar > .admin-kicker,.admin-layout.sidebar-collapsed .admin-sidebar h1,.admin-layout.sidebar-collapsed .admin-sidebar nav a > span:not(.admin-nav-icon),.admin-layout.sidebar-collapsed .admin-private-note { display: none; }

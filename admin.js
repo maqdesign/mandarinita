@@ -3,7 +3,9 @@
   const privateContent = document.querySelector('#admin-private-content');
   const logout = document.querySelector('#admin-logout');
   const sidebarToggle = document.querySelector('#admin-sidebar-toggle');
-  const runtimeError = document.querySelector('#admin-runtime-error');
+  const adminAlert = document.querySelector('#admin-alert');
+  const adminAlertMessage = document.querySelector('#admin-alert-message');
+  const adminAlertDismiss = document.querySelector('#admin-alert-dismiss');
   const inboxList = document.querySelector('#admin-inquiries-list');
   const inboxStatus = document.querySelector('#inquiry-load-status');
   const inboxCount = document.querySelector('#inquiry-count');
@@ -98,10 +100,15 @@
   }
   let currentView = '';
   const escape = value => String(value || '').replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]);
+  function showAdminAlert(message) {
+    if (!adminAlert || !adminAlertMessage || !message) return;
+    adminAlertMessage.textContent = String(message).slice(0, 360);
+    adminAlert.hidden = false;
+  }
+  adminAlertDismiss?.addEventListener('click', () => { adminAlert.hidden = true; });
   function showRuntimeError(message) {
-    if (!runtimeError || !message) return;
-    runtimeError.textContent = `La administración encontró un problema: ${String(message).slice(0, 240)}`;
-    runtimeError.hidden = false;
+    if (!message) return;
+    showAdminAlert(`La administración encontró un problema: ${String(message).slice(0, 300)}`);
   }
   window.addEventListener('error', event => showRuntimeError(event.message || 'Error al cargar una sección.'));
   window.addEventListener('unhandledrejection', event => showRuntimeError(event.reason?.message || event.reason || 'Falló una solicitud.'));
@@ -178,6 +185,7 @@
             inboxStatus.textContent = 'Estado actualizado.';
             inboxCount.textContent = `${inboxList.querySelectorAll('.inquiry-new').length} nuevas`;
           } catch (error) {
+            showAdminAlert(`No se pudo actualizar la consulta: ${error.message}`);
             inboxStatus.textContent = error.message;
             select.value = item.status;
           } finally { select.disabled = false; }
@@ -187,6 +195,7 @@
     } catch (error) {
       inboxStatus.textContent = error.message;
       inboxCount.textContent = 'Sin conexión';
+      showAdminAlert(`No se pudieron cargar los mensajes: ${error.message}`);
     } finally { refreshInbox.disabled = false; }
   }
   async function loadAnalytics() {
@@ -222,6 +231,7 @@
       analyticsStatus.textContent = `Datos del ${new Date(`${result.period.start}T12:00:00Z`).toLocaleDateString('es-DO')} al ${new Date(`${result.period.end}T12:00:00Z`).toLocaleDateString('es-DO')}.`;
     } catch (error) {
       analyticsStatus.textContent = error.message;
+      showAdminAlert(`No se pudieron cargar las métricas: ${error.message}`);
       analyticsVisits.textContent = '—';
       analyticsRequests.textContent = '—';
       analyticsDays.replaceChildren();
@@ -309,6 +319,7 @@
       await task;
     } catch (error) {
       if (id === selectedBannerId) {
+        showAdminAlert(`No se pudo guardar el borrador en la nube: ${error.message} Tus cambios siguen en esta pantalla; vuelve a intentarlo antes de salir.`);
         setBannerStatus(error.message);
         setSiteContentStatus(`${error.message} Este cambio aún no está guardado; reintenta antes de recargar.`);
       }
@@ -375,6 +386,7 @@
       renderEpisodeOptions();
     } catch (error) {
       setBannerStatus(error.message);
+      showAdminAlert(error.message);
       heroEpisodeOptions.replaceChildren();
       heroEpisodeOptions.hidden = true;
       heroEpisodeSelection.textContent = 'No se pudo cargar el catálogo. Recarga la sección para volver a intentar.';
@@ -774,6 +786,7 @@
         if (!enabled.checked && bannerItems.filter(item => item.enabled).length <= 1) {
           enabled.checked = true;
           setBannerStatus('Deja al menos un banner activo en la portada.');
+          showAdminAlert('Debe quedar al menos un banner activo en la portada.');
           return;
         }
         banner.enabled = enabled.checked;
@@ -837,7 +850,7 @@
       setBannerStatus(bannerItems.length ? `${bannerItems.length} ${bannerItems.length === 1 ? 'banner' : 'banners'} en la portada.` : 'Aún no hay banners.');
       updateBannerSaveState();
       setSiteContentStatus(`Edita el banner. Usa Guardar cambios o Ctrl/Cmd+S para publicarlo en ${contentEnvironmentLabel}.`);
-    } catch (error) { setBannerStatus(error.message); }
+    } catch (error) { setBannerStatus(error.message); showAdminAlert(`No se pudieron cargar los banners: ${error.message}`); }
   }
   async function createBanner() {
     createBannerButton.disabled = true;
@@ -856,7 +869,7 @@
       setBannerStatus('Borrador creado y guardado en la nube. Sigue inactivo hasta que lo actives.');
       setSiteContentStatus('Este borrador ya está guardado en la nube. Sus cambios se guardan automáticamente mientras permanece inactivo.');
       siteContentForm.elements.hero_title_first_es.focus();
-    } catch (error) { setBannerStatus(error.message); }
+    } catch (error) { setBannerStatus(error.message); showAdminAlert(`No se pudo crear el borrador: ${error.message}`); }
     finally { createBannerButton.disabled = bannerItems.length >= 8; }
   }
   async function duplicateBanner() {
@@ -890,6 +903,7 @@
     } catch (error) {
       setSiteContentStatus(error.message);
       setBannerStatus(error.message);
+      showAdminAlert(`No se pudo duplicar el banner: ${error.message}`);
     } finally {
       duplicateBannerButton.disabled = bannerItems.length >= 8;
     }
@@ -922,10 +936,12 @@
       fillBannerForm();
       updateBannerSaveState();
       setBannerStatus(`Cambios publicados en ${contentEnvironmentLabel}.`);
-      setSiteContentStatus(`Listo: los banners ya aparecen en ${contentEnvironmentLabel}. Recarga la portada para verlos.`);
+      const activeCount = bannerItems.filter(item => item.enabled).length;
+      setSiteContentStatus(activeCount ? `Listo: ${activeCount} ${activeCount === 1 ? 'banner activo' : 'banners activos'} publicado${activeCount === 1 ? '' : 's'} en ${contentEnvironmentLabel}. Recarga la portada para verlos.` : 'Los cambios se guardaron, pero no se publicaron banners: activa al menos uno para que aparezca en la portada.');
     } catch (error) {
       setSiteContentStatus(error.message);
       setBannerStatus(error.message);
+      showAdminAlert(`No se pudieron guardar los banners: ${error.message}`);
     } finally { submit.dataset.busy = 'false'; updateBannerSaveState(); }
   }
   async function deleteBanner() {
@@ -949,7 +965,7 @@
       fillBannerForm();
       setBannerStatus(deletingDraft ? 'Borrador descartado sin publicarlo.' : `Banner quitado del carrusel de ${contentEnvironmentLabel}.`);
       deleteBannerDialog.close();
-    } catch (error) { setBannerStatus(error.message); }
+    } catch (error) { setBannerStatus(error.message); showAdminAlert(`No se pudo eliminar el banner: ${error.message}`); }
     finally { confirmDeleteBanner.disabled = false; }
   }
   heroImageFile.addEventListener('change', async () => {
@@ -972,6 +988,7 @@
       captureBannerForm();
     } catch (error) {
       heroImageStatus.textContent = error.message;
+      showAdminAlert(`No se pudo subir la imagen: ${error.message}`);
     } finally {
       heroImageFile.disabled = false;
       updateBannerSaveState();
@@ -1010,10 +1027,10 @@
   createBannerButton.addEventListener('click', createBanner);
   duplicateBannerButton.addEventListener('click', duplicateBanner);
   deleteBannerButton.addEventListener('click', () => {
-    if (hasPendingChangesExcept(selectedBannerId)) { setBannerStatus('Guarda los cambios de los otros banners antes de quitar este banner.'); return; }
+    if (hasPendingChangesExcept(selectedBannerId)) { const message = 'Guarda los cambios de los otros banners antes de quitar este banner.'; setBannerStatus(message); showAdminAlert(message); return; }
     const isNewDraft = selectedBanner()?.enabled === false;
-    if (bannerDirty && !isNewDraft) { setBannerStatus('Guarda los cambios pendientes antes de quitar un banner.'); return; }
-    if (bannerItems.length <= 1) { setBannerStatus('Debe quedar al menos un banner en la portada.'); return; }
+    if (bannerDirty && !isNewDraft) { const message = 'Guarda los cambios pendientes antes de quitar un banner.'; setBannerStatus(message); showAdminAlert(message); return; }
+    if (bannerItems.length <= 1) { const message = 'Debe quedar al menos un banner en la portada.'; setBannerStatus(message); showAdminAlert(message); return; }
     document.querySelector('#delete-banner-title').textContent = isNewDraft ? '¿Descartar este borrador?' : '¿Quitar este banner?';
     document.querySelector('#delete-banner-description').textContent = isNewDraft
       ? 'Este banner todavía no se ha publicado. Se descartará sin cambiar los banners guardados.'
