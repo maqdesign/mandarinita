@@ -15,6 +15,7 @@
   const analyticsDays = document.querySelector('#analytics-days');
   const siteContentForm = document.querySelector('#site-content-form');
   const siteContentStatus = document.querySelector('#site-content-status');
+  const siteContentFootnote = document.querySelector('.site-content-footnote');
   const siteContentSaveState = document.querySelector('#site-content-save-state');
   const heroImageFile = document.querySelector('#hero-image-file');
   const heroImagePreview = document.querySelector('#hero-image-preview');
@@ -79,6 +80,12 @@
     ['hero.endAt', 'hero_end_at', 'hero_end_at']
   ];
   const adminViews = [...document.querySelectorAll('[data-admin-view]')];
+  if (siteContentFootnote) {
+    const isProductionHost = ['mandarinita.art', 'www.mandarinita.art'].includes(location.hostname);
+    siteContentFootnote.textContent = isProductionHost
+      ? 'Estás editando los banners de Producción. Los cambios guardados se verán en el sitio público.'
+      : 'Estás en Preview. Los cambios guardados aquí no modifican la portada de Producción.';
+  }
   const sectionLinks = [...document.querySelectorAll('.admin-sidebar nav a, .admin-quick-link')];
   for (const link of document.querySelectorAll('.admin-sidebar nav a')) {
     const label = link.querySelector('span:not(.admin-nav-icon)')?.textContent?.trim();

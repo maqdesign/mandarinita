@@ -63,7 +63,9 @@ function normalizeBanner(banner) {
     if ((!optionalSchedule && (!es || !en)) || es.length > maxLength || en.length > maxLength || CONTROL_CHARACTERS.test(es) || CONTROL_CHARACTERS.test(en)) {
       return { error: `Revisa el contenido de “${key}”: no puede estar vacío ni superar ${maxLength} caracteres.` };
     }
-    if (es !== en) return { error: `El valor de “${key}” debe ser igual en ambos idiomas.` };
+    // Localized text has separate database columns and may differ by language.
+    // Only fields stored in one shared column must match between the form values.
+    if (esColumn === enColumn && es !== en) return { error: `Los valores de “${key}” deben coincidir.` };
     if (type === 'image' && (es !== en || !IMAGE_PATH.test(es) || es.split('/').includes('..'))) return { error: 'Sube una imagen válida para este banner antes de guardar.' };
     if (type === 'effect' && (es !== en || !['orbit', 'still'].includes(es))) return { error: 'Elige un movimiento disponible para cada banner.' };
     if (type === 'media-type' && !['image', 'episode'].includes(es)) return { error: 'Elige si el banner muestra una imagen o un episodio.' };
