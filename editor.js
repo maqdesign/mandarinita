@@ -128,6 +128,9 @@
   const ICON = {
     more: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
     image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+    eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
+    eyeOff: '<path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a15 15 0 0 1-3.2 4.1M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7a10 10 0 0 0 4-.8"/>',
+    sparkles: '<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Zm7 11 .9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14ZM5 2l.7 1.8L7.5 4.5l-1.8.7L5 7l-.7-1.8L2.5 4.5l1.8-.7L5 2Z"/>',
     bubble: '<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/>',
     up: '<path d="m18 15-6-6-6 6"/>', down: '<path d="m6 9 6 6 6-6"/>',
     lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
@@ -698,7 +701,7 @@
       preview.append(previewCanvas);
       const main = document.createElement('div'); main.className = 'project-card-main';
       const reviewState = record.status === 'review';
-      const kindLabels = {episode:'Episodio',copy:'Texto / copy',banner:'Banner',section:'Sección web'};
+      const kindLabels = {episode:'Episodio',copy:'Texto / copy',banner:'Banner',section:'Sección web',design:'Diseño gráfico',mockup:'Diseño de producto'};
       const isEpisode = (project.contentType || record.contentType || 'episode') === 'episode';
       main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${reviewState ? 'ready' : ''}">${reviewState ? 'En revisión' : 'Borrador'}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
       const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${record.title}`); open.append(preview,main); open.onclick = () => openProject(record.id);
@@ -726,8 +729,10 @@
     state.panels = Array.from({length:template.panels},() => ({id:id(),items:[]})); undoStack = []; redoStack = [];
     try { saveProject(); showEditor(); } catch { showEditor(); toast('Este navegador no permitió guardar automáticamente. Descarga el .mandarinita.'); }
   }
+  let pendingDesignType = 'design', changingMockup = false;
   function createContentDraft(type) {
     if(type==='episode'){ $('#template-dialog').showModal(); return; }
+    if(type==='design'||type==='mockup') { changingMockup=false;pendingDesignType=type; $$('.product-template-choice').forEach(button=>button.hidden=type!=='mockup'); $$('.design-template-card:not(.product-template-choice)').forEach(button=>button.hidden=type==='mockup'); $('#design-template-dialog').showModal(); return; }
     const presets={copy:{title:'Texto o copy nuevo',label:'Escribe el texto o copy aquí…'},banner:{title:'Banner nuevo',label:'Escribe el titular del banner…'},section:{title:'Sección web nueva',label:'Escribe el título de la sección…'}};
     const preset=presets[type]||presets.copy; state=makeProject(preset.title,type); state.panels=[{id:id(),items:[]}]; undoStack=[];redoStack=[];
     const item={id:id(),type:'text',name:preset.title,text:preset.label,x:80,y:105,w:440,h:150,fontSize:32,fontWeight:600,align:'center',color:'#292725',rotation:0,locked:false};state.panels[0].items.push(item);state.selected=item.id;
@@ -795,8 +800,34 @@
     const item = { id: id(), type: 'bubble', kind, name: kind === 'sfx' ? 'Efecto de sonido' : `Globo · ${labels[kind]}`, text: kind === 'sfx' ? 'POW!' : 'Escribe aquí…', ...pos, ...size, fontSize: kind === 'sfx' ? 42 : kind === 'shout' ? 24 : 17, align: 'center', shape:'auto', tail: ['dialogue', 'shout', 'thought'].includes(kind), tailAngle: 90, tailLength: 34, actionStyle: 'raised', overflow: 'auto', locked: false };
     currentPanel().items.push(item); selectItem(item.id); commit();
   }
-  function addTextBlock(text='Escribe aquí…') {
-    const pos=placeWithoutOverlap(360,100);snapshot();const item={id:id(),type:'text',name:'Texto',text,x:pos.x,y:pos.y,w:360,h:100,fontSize:28,fontWeight:600,align:'center',color:'#292725',rotation:0,locked:false};currentPanel().items.push(item);selectItem(item.id);commit();
+  const TEXT_STYLES={baloo:{fontFamily:'Baloo 2',fontSize:38,fontWeight:700,color:'#282522'},bangers:{fontFamily:'Bangers',fontSize:48,fontWeight:400,color:'#F87209',textEffect:'outline'},lilita:{fontFamily:'Lilita One',fontSize:42,fontWeight:400,color:'#607D3B'},fredoka:{fontFamily:'Fredoka',fontSize:32,fontWeight:600,color:'#282522'}};
+  function addTextBlock(text='Escribe aquí…',styleKey='fredoka') {
+    const style=TEXT_STYLES[styleKey]||TEXT_STYLES.fredoka;const pos=placeWithoutOverlap(360,110);snapshot();const item={id:id(),type:'text',name:'Texto',text,x:pos.x,y:pos.y,w:360,h:110,...style,align:'center',rotation:0,locked:false};currentPanel().items.push(item);selectItem(item.id);commit();
+  }
+  function dataSvg(svg){return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;}
+  function productMockupSvg(kind){
+    const common=`<defs><linearGradient id="fabric" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#dedbd5"/></linearGradient><filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#32281f" flood-opacity=".18"/></filter></defs><rect width="600" height="750" rx="28" fill="#eee9e2"/><ellipse cx="300" cy="686" rx="175" ry="20" fill="#a9a29a" opacity=".24"/>`;
+    let shape='';
+    if(kind==='shirt') shape=`<g filter="url(#shadow)" fill="url(#fabric)" stroke="#c9c4bc" stroke-width="5" stroke-linejoin="round"><path d="M205 115 252 90q48 45 96 0l47 25 100 85-60 74-45-35v370H210V239l-45 35-60-74z"/><path d="M252 90q4 54 48 54t48-54" fill="none"/></g><rect x="225" y="275" width="150" height="190" rx="8" fill="#fff" opacity=".28" stroke="#8e887e" stroke-dasharray="8 8" stroke-width="3"/>`;
+    if(kind==='tote') shape=`<g filter="url(#shadow)" stroke="#c9c4bc" stroke-width="5" stroke-linejoin="round"><path d="M155 205h290l-24 415H179z" fill="url(#fabric)"/><path d="M220 220v-58q0-72 80-72t80 72v58" fill="none" stroke="#8b7761" stroke-width="18" stroke-linecap="round"/></g><rect x="205" y="310" width="190" height="180" rx="8" fill="#fff" opacity=".28" stroke="#8e887e" stroke-dasharray="8 8" stroke-width="3"/>`;
+    if(kind==='mug') shape=`<g filter="url(#shadow)" stroke="#c9c4bc" stroke-width="5"><path d="M130 230h310l-28 340q-4 58-62 58h-130q-58 0-62-58z" fill="url(#fabric)"/><path d="M432 300h42q82 0 70 104t-86 104h-35" fill="none" stroke="#d5d0c7" stroke-width="24"/></g><path d="M177 300h205l-17 220H195z" fill="#fff" opacity=".3" stroke="#8e887e" stroke-dasharray="8 8" stroke-width="3"/>`;
+    return dataSvg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750">${common}${shape}</svg>`);
+  }
+  function createDesignProject(templateKey){
+    const product=['shirt','tote','mug'].includes(templateKey), format=templateKey==='post'?'square':'portrait';
+    const names={post:'Post Mandarinita',story:'Story Mandarinita',shirt:'Diseño para camiseta',tote:'Diseño para tote bag',mug:'Diseño para taza'};
+    state=makeProject(names[templateKey]||'Diseño nuevo',product?'mockup':'design');state.format=format;state.pageHeight=FORMAT[format].logicalHeight;state.panels=[{id:id(),backgroundColor:product?'#EEE9E2':templateKey==='story'?'#607D3B':'#FFF8EC',items:[]}];state.mockupPreview=true;undoStack=[];redoStack=[];
+    const panel=state.panels[0];
+    if(product)panel.items.push({id:id(),type:'image',name:'Simulación de producto',src:productMockupSvg(templateKey),x:0,y:0,w:600,h:750,locked:true,mockupOnly:true,rotation:0});
+    const titleText=templateKey==='story'?'¡Hoy toca algo bueno!':templateKey==='post'?'La vida tiene sus gajos.':'Tu diseño aquí';
+    const title={id:id(),type:'text',name:'Titular',text:titleText,x:product?155:48,y:product?320:templateKey==='story'?170:170,w:product?290:504,h:product?70:170,fontSize:product?31:templateKey==='post'?58:54,fontWeight:templateKey==='post'?400:700,fontFamily:templateKey==='post'?'Bangers':'Baloo 2',textEffect:templateKey==='post'?'outline':'none',align:'center',color:templateKey==='story'?'#FFF8EC':'#F87209',rotation:0,locked:false};panel.items.push(title);
+    const subtitle={id:id(),type:'text',name:'Mensaje',text:product?'Edítame y crea tu propio diseño':'Humor dominicano, con mucha pulpa.',x:product?180:82,y:product?398:templateKey==='story'?360:370,w:product?240:436,h:product?62:80,fontSize:product?17:22,fontWeight:600,fontFamily:'Fredoka',align:'center',color:templateKey==='story'?'#FFF8EC':'#282522',rotation:0,locked:false};panel.items.push(subtitle);state.selected=title.id;
+    try{saveProject();showEditor();toast(product?'Mockup listo. Cambia los textos y descarga el arte vectorial sin la simulación.':'Plantilla lista. Los titulares y textos son editables.');}catch{showEditor();toast('Este navegador no permitió guardar automáticamente. Descarga el archivo editable.');}
+  }
+  function changeProductMockup(templateKey){
+    if(!['shirt','tote','mug'].includes(templateKey))return;
+    const mockup=currentPanel().items.find(item=>item.mockupOnly);if(!mockup)return;
+    snapshot();mockup.src=productMockupSvg(templateKey);mockup.name=`Simulación · ${{shirt:'Camiseta',tote:'Tote bag',mug:'Taza'}[templateKey]}`;state.title=`Diseño para ${{shirt:'camiseta',tote:'tote bag',mug:'taza'}[templateKey]}`;commit();toast(`Mockup cambiado a ${{shirt:'camiseta',tote:'tote bag',mug:'taza'}[templateKey]}. El arte editable se conservó.`);
   }
   function updateBubbleAccessories(item, element) {
     element.querySelectorAll('.bubble-tail-svg,.thought-dot').forEach(node => node.remove());
@@ -907,9 +938,9 @@
     viewport?.classList.toggle('drawing-active',drawingMode);
     const targetWidth = availableWidth * (availableWidth < 640 && drawingMode ? singlePanelView ? .78 : .62 : singlePanelView ? .94 : .72);
     const fitScale = Math.min(1, Math.max(.2, targetWidth / LOGICAL_WIDTH), Math.max(.2, (availableHeight - 86) / state.pageHeight));
-    const scale = fitScale * (state.zoom || 1);
+    const scale = Math.max(.2, Math.round(fitScale * (state.zoom || 1) * LOGICAL_WIDTH) / LOGICAL_WIDTH);
     stage.style.setProperty('--artboard-scale', scale);
-    stage.style.setProperty('--artboard-gap', `${Math.max(8, Math.round(10 * scale))}px`);
+    stage.style.setProperty('--artboard-gap', '0px');
     const drawToolbar=$('#draw-toolbar'), workspaceBar=$('.workspace-bar');
     if(drawToolbar&&workspaceBar)drawToolbar.style.top=`${workspaceBar.offsetHeight+8}px`;
     $('#zoom-label').textContent = `${Math.round(scale * 100)}%`;
@@ -917,6 +948,8 @@
     $('#export-preset').value = state.format;
     $('#export-style').value = state.exportStyle || 'classic';
     $('#add-cta-panel').hidden = state.contentType !== 'episode';
+    $('#mockup-preview').hidden=state.contentType!=='mockup';$('#change-mockup').hidden=state.contentType!=='mockup';$('#mockup-preview').setAttribute('aria-pressed',String(state.mockupPreview!==false));$('#mockup-preview').setAttribute('aria-label',state.mockupPreview===false?'Ver producto':'Ocultar simulación');$('#mockup-preview').title=state.mockupPreview===false?'Ver producto':'Ocultar simulación';$('#mockup-preview').innerHTML=`${svgIcon(state.mockupPreview===false?'eye':'eyeOff')}<span class="button-label">${state.mockupPreview===false?'Ver producto':'Ocultar simulación'}</span>`;
+    $('#export-vector').hidden=!['design','mockup'].includes(state.contentType);
     renderPanels();
     state.panels.forEach((panel, panelIndex) => {
       const wrapper = document.createElement('section'); wrapper.className = `artboard-wrap${panelIndex === state.active ? ' active' : ''}`; wrapper.dataset.panelIndex = panelIndex; wrapper.style.setProperty('--artboard-scale', scale);
@@ -978,11 +1011,11 @@
   }
   function renderItem(item, index, panelIndex, boardCanvas) {
     const element = document.createElement('div');
-    element.className = `placed${state.selected === item.id && !item.locked ? ' selected' : ''}${item.locked ? ' locked' : ''}${backgroundPickerItemId === item.id ? ' sampling-background' : ''}${item.type === 'bubble' ? ` bubble bubble-${item.kind}${item.tail ? ' has-tail' : ''}` : ''}${item.type === 'drawing' ? ' drawing' : ''}${isFullyOffstage(item) ? ' offstage' : ''}`;
+    element.className = `placed${item.mockupOnly ? ' mockup-only' : ''}${state.selected === item.id && !item.locked ? ' selected' : ''}${item.locked ? ' locked' : ''}${backgroundPickerItemId === item.id ? ' sampling-background' : ''}${item.type === 'bubble' ? ` bubble bubble-${item.kind}${item.tail ? ' has-tail' : ''}` : ''}${item.type === 'drawing' ? ' drawing' : ''}${isFullyOffstage(item) ? ' offstage' : ''}`;
     element.dataset.id = item.id;
     element.style.cssText = `left:${item.x}px;top:${item.y}px;width:${item.w}px;height:${item.h}px;transform:rotate(${item.rotation || 0}deg) scale(${item.flipX ? -1 : 1},${item.flipY ? -1 : 1});--tail-x:${item.tailX ?? 28}%;z-index:${index + 1};`;
     if (item.type === 'image') {
-      const img = document.createElement('img'); img.src = item.src; img.alt = item.name; img.style.filter = item.blur ? `blur(${item.blur}px)` : ''; element.append(img);
+      const img = document.createElement('img'); img.src = item.src; img.alt = item.mockupOnly ? '' : item.name; img.style.filter = item.blur ? `blur(${item.blur}px)` : ''; if(item.mockupOnly&&state.mockupPreview===false)element.hidden=true;element.append(img);
     } else if (item.type === 'drawing') {
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.setAttribute('viewBox', `0 0 ${item.w} ${item.h}`); svg.setAttribute('aria-label', item.name);
@@ -1000,7 +1033,7 @@
       element.append(svg);
     } else if (item.type === 'text') {
       element.classList.add('text-layer');
-      const textarea=document.createElement('textarea');textarea.setAttribute('aria-label',`Texto: ${item.name}`);textarea.value=item.text||'';textarea.readOnly=Boolean(item.locked);textarea.tabIndex=item.locked?-1:0;textarea.style.fontSize=`${item.fontSize||28}px`;textarea.style.fontWeight=String(item.fontWeight||600);textarea.style.textAlign=item.align||'center';textarea.style.color=item.color||'#292725';
+      const textarea=document.createElement('textarea');textarea.setAttribute('aria-label',`Texto: ${item.name}`);textarea.value=item.text||'';textarea.readOnly=Boolean(item.locked);textarea.tabIndex=item.locked?-1:0;textarea.style.fontSize=`${item.fontSize||28}px`;textarea.style.fontWeight=String(item.fontWeight||600);textarea.style.textAlign=item.align||'center';textarea.style.color=item.color||'#292725';textarea.style.fontFamily=`'${item.fontFamily||'Fredoka'}', sans-serif`;if(item.textEffect==='outline'){textarea.style.webkitTextStroke='1.2px #fff';textarea.style.paintOrder='stroke fill';}else if(item.textEffect==='shadow')textarea.style.textShadow='2px 3px 0 #0003';
       textarea.onfocus=()=>{if(!item._typingSnapshot){snapshot();item._typingSnapshot=true;}};textarea.onblur=()=>{delete item._typingSnapshot;autosave();};
       textarea.oninput=()=>{item.text=textarea.value;textarea.style.height='auto';item.h=Math.max(56,Math.min(state.pageHeight-item.y,textarea.scrollHeight+12));element.style.height=`${item.h}px`;autosave();};element.append(textarea);
     } else {
@@ -1131,7 +1164,7 @@
     const replaceControl = characterResource ? `<button id="replace-character" class="button replace-character has-icon">${svgIcon('replace')}<span class="button-label">Sustituir personaje</span></button>` : '';
     const sampleHex = item.backgroundSample ? `#${item.backgroundSample.map(value => value.toString(16).padStart(2, '0')).join('')}`.toUpperCase() : '';
     const imageControls = item.type === 'image' ? `<div class="field"><label for="p-blur">Desenfoque · <span id="blur-value">${item.blur || 0}px</span></label><input id="p-blur" type="range" min="0" max="36" step="0.5" value="${item.blur || 0}"><small>Se conserva en el proyecto y también aparece en la exportación.</small></div><div class="field bg-remove-tools"><label for="p-bg-tolerance">Quitar fondo blanco o plano</label><input id="p-bg-tolerance" aria-label="Tolerancia del recorte de fondo" type="range" min="8" max="100" step="2" value="36"><small>Elige el color directamente sobre el dibujo para quitar fondos blancos u otros tonos planos. Se conserva el original para poder restaurarlo.</small><button id="sample-background" type="button" class="button" aria-pressed="${backgroundPickerItemId === item.id}">${backgroundPickerItemId === item.id ? 'Cancelar selección' : sampleHex ? `Cambiar color · ${sampleHex}` : '1 · Elegir color en el dibujo'}</button><button id="remove-background" type="button" class="button">2 · Quitar fondo</button><p id="bg-remove-status" class="bg-remove-status" role="status" aria-live="polite" ${item.backgroundSample ? '' : 'hidden'}>${item.backgroundSample ? `Color ${sampleHex} seleccionado. Pulsa “2 · Quitar fondo”.` : ''}</p>${item.originalSrc ? '<button id="restore-background" type="button" class="button">Restaurar imagen original</button>' : ''}</div>` : '';
-    const textControls = item.type === 'text' ? `<div class="field"><label>Contenido</label><textarea id="p-text" rows="4">${escapeHTML(item.text||'')}</textarea></div><div class="field"><label>Tamaño de letra</label><input id="p-text-font" type="range" min="10" max="72" value="${item.fontSize||28}"></div><div class="field"><label>Alineación</label><select id="p-text-align"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option></select></div><div class="field"><label>Color</label><input id="p-text-color" type="color" value="${item.color||'#292725'}"></div>` : '';
+    const textControls = item.type === 'text' ? `<div class="field"><label>Contenido</label><textarea id="p-text" rows="4">${escapeHTML(item.text||'')}</textarea></div><div class="field"><label>Tamaño de letra</label><input id="p-text-font" type="range" min="10" max="100" value="${item.fontSize||28}"></div><div class="field"><label>Tipografía</label><select id="p-text-family">${['Fredoka','Baloo 2','Bangers','Lilita One'].map(font=>`<option value="${font}" ${item.fontFamily===font?'selected':''}>${font}</option>`).join('')}</select></div><div class="field"><label>Tratamiento</label><select id="p-text-effect"><option value="none">Limpio</option><option value="outline" ${item.textEffect==='outline'?'selected':''}>Contorno blanco</option><option value="shadow" ${item.textEffect==='shadow'?'selected':''}>Sombra suave</option></select></div><div class="field"><label>Alineación</label><select id="p-text-align"><option value="left">Izquierda</option><option value="center">Centrada</option><option value="right">Derecha</option></select></div><div class="field"><label>Color</label><input id="p-text-color" type="color" value="${item.color||'#292725'}"></div>` : '';
     const variantControl = item.variants?.length ? `<div class="field"><label>Variación del mismo personaje</label><select id="p-variant">${item.variants.map((variant, i) => `<option value="${i}" ${i === item.variantIndex ? 'selected' : ''}>${escapeHTML(variant.name)}</option>`).join('')}</select></div>` : '';
     const bubbleControls = item.type === 'bubble' ? `<div class="field"><label>Tipo</label><select id="p-kind"><option value="dialogue">Diálogo</option><option value="thought">Pensamiento</option><option value="narration">Narración</option><option value="shout">Voz fuerte</option><option value="sfx">Efecto de sonido</option></select></div>${['dialogue','thought'].includes(item.kind) ? `<div class="field"><label>Forma</label><select id="p-shape"><option value="auto">Adaptar al texto</option><option value="oval">Óvalo</option><option value="rounded">Rectángulo redondeado</option></select></div>` : ''}${item.kind === 'sfx' ? `<div class="field"><label>Estilo de efecto</label><select id="p-action-style"><option value="raised">Naranja con sombra</option><option value="outline">Contorno blanco</option><option value="impact">Sombra dramática</option></select></div>` : ''}<div class="field"><label>Tamaño de letra</label><input id="p-font" type="range" min="10" max="56" value="${item.fontSize || 17}"></div><div class="field"><label>Alineación</label><select id="p-align"><option value="center">Centrada</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div>${['dialogue','thought','shout'].includes(item.kind) ? `<label class="check-field"><input id="p-tail" type="checkbox" ${item.tail ? 'checked' : ''}> ${item.kind === 'thought' ? 'Burbujas de pensamiento' : 'Cola del globo'}</label>${item.tail ? `<div class="field"><label>Dirección de la cola</label><input id="p-tail-angle" type="range" min="-180" max="180" value="${item.tailAngle ?? 90}"></div><div class="field"><label>Largo de la cola</label><input id="p-tail-length" type="range" min="16" max="90" value="${item.tailLength ?? 34}"></div>` : ''}` : ''}<label class="check-field"><input id="p-autogrow" type="checkbox" ${item.autoGrow === false ? '' : 'checked'}> Ajustar alto al texto</label>` : '';
     const drawingControls = item.type === 'drawing' ? `<div class="field"><label>Relleno del contorno cerrado</label><label class="check-field"><input id="p-fill" type="checkbox" ${item.fillEnabled ? 'checked' : ''}> Aplicar relleno</label><input id="p-fill-color" type="color" value="${item.fillColor || '#F87209'}"></div><div class="field"><label>Color del trazo</label><input id="p-color" type="color" value="${item.color || '#282522'}"></div><div class="field"><label>Grosor</label><input id="p-stroke-width" type="range" min="1" max="40" value="${item.strokeWidth || 5}"></div>` : '';
@@ -1191,6 +1224,8 @@
     $('#p-text-font')?.addEventListener('input',event=>{item.fontSize=Number(event.target.value);const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.fontSize=`${item.fontSize}px`;autosave();});
     $('#p-text-align')?.addEventListener('change',event=>{item.align=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.textAlign=item.align;autosave();});
     $('#p-text-color')?.addEventListener('input',event=>{item.color=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.color=item.color;autosave();});
+    $('#p-text-family')?.addEventListener('change',event=>{item.fontFamily=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el)el.style.fontFamily=`'${item.fontFamily}', sans-serif`;autosave();});
+    $('#p-text-effect')?.addEventListener('change',event=>{item.textEffect=event.target.value;const el=activeCanvas()?.querySelector(`[data-id="${item.id}"] textarea`);if(el){el.style.webkitTextStroke=item.textEffect==='outline'?'1.2px #fff':'';el.style.textShadow=item.textEffect==='shadow'?'2px 3px 0 #0003':'';}autosave();});
     $('#p-kind')?.addEventListener('change', event => { snapshot(); item.kind = event.target.value; item.name = item.kind === 'sfx' ? 'Efecto de sonido' : `Globo · ${({dialogue:'Diálogo',thought:'Pensamiento',narration:'Narración',shout:'Voz fuerte'})[item.kind]}`; item.tail = ['dialogue','thought','shout'].includes(item.kind); item.fontSize = item.kind === 'sfx' ? Math.max(item.fontSize,42) : item.kind === 'shout' ? Math.max(item.fontSize,24) : item.fontSize; commit(); });
     $('#p-action-style')?.addEventListener('change', event => { snapshot(); item.actionStyle = event.target.value; commit(); });
     $('#p-shape')?.addEventListener('change', event => { snapshot(); item.shape = event.target.value; commit(); });
@@ -1738,6 +1773,7 @@
     }
   }
   async function renderPanelPng(panel) {
+    await document.fonts?.ready;
     const preset = FORMAT[state.format]; const logicalHeight = state.pageHeight; const style = state.exportStyle || 'classic';
     const output = document.createElement('canvas'); output.width = preset.width; output.height = preset.height;
     const ctx = output.getContext('2d');
@@ -1761,6 +1797,7 @@
     for (const item of panel.items) {
       ctx.save(); ctx.translate(offsetX + (item.x + item.w / 2) * scale, offsetY + (item.y + item.h / 2) * scale); ctx.rotate((item.rotation || 0) * Math.PI / 180); ctx.scale(item.flipX ? -1 : 1, item.flipY ? -1 : 1); ctx.scale(scale, scale);
       if (item.type === 'image') {
+        if(item.mockupOnly&&state.mockupPreview===false){ctx.restore();continue;}
         try { const image = await loadImage(item.src); ctx.save(); ctx.filter = item.blur ? `blur(${item.blur * (scale / 2)}px)` : 'none'; drawContained(ctx, image, item.w, item.h); ctx.restore(); } catch { /* Missing image stays represented by its source path in the editable project. */ }
       } else if (item.type === 'drawing') {
         const strokes = item.strokes?.length ? item.strokes : [{path:item.path,color:item.color,strokeWidth:item.strokeWidth,opacity:item.opacity,brush:'pen'}];
@@ -1772,7 +1809,7 @@
           ctx.stroke(path); ctx.restore();
         });
       } else if (item.type === 'text') {
-        ctx.fillStyle=item.color||'#292725';ctx.font=`${item.fontWeight||600} ${item.fontSize||28}px Fredoka, sans-serif`;ctx.textAlign=item.align||'center';ctx.textBaseline='middle';wrapText(ctx,item.text,0,0,item.w*.92,(item.fontSize||28)*1.25);
+        ctx.fillStyle=item.color||'#292725';ctx.font=`${item.fontWeight||600} ${item.fontSize||28}px "${item.fontFamily||'Fredoka'}", sans-serif`;ctx.textAlign=item.align||'center';ctx.textBaseline='middle';if(item.textEffect==='shadow'){ctx.shadowColor='#0003';ctx.shadowBlur=2;ctx.shadowOffsetX=2;ctx.shadowOffsetY=3;}if(item.textEffect==='outline'){ctx.lineJoin='round';ctx.lineWidth=3;ctx.strokeStyle='#fff';const lines=String(item.text||'').split('\n');for(let i=0;i<lines.length;i++)ctx.strokeText(lines[i],0,(i-(lines.length-1)/2)*(item.fontSize||28)*1.25,item.w*.92);}wrapText(ctx,item.text,0,0,item.w*.92,(item.fontSize||28)*1.25);
       } else {
         const form = getBubbleForm(item); const angle = (item.tailAngle ?? 90) * Math.PI / 180; const ux=Math.cos(angle), uy=Math.sin(angle); const radiusX=item.w*.49, radiusY=item.h*.49;
         const denom = form==='rounded' ? Math.max(Math.abs(ux)/radiusX,Math.abs(uy)/radiusY) : Math.sqrt(ux*ux/(radiusX*radiusX)+uy*uy/(radiusY*radiusY));
@@ -1842,6 +1879,64 @@
   async function exportSource() {
     const clone = captureState(); clone.selected = null;
     downloadEditableProject(clone);
+  }
+  function svgEscape(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[char])); }
+  function svgLines(text, maxChars) {
+    const lines=[];
+    for (const paragraph of String(text||'').split('\n')) {
+      let line='';
+      for (const word of paragraph.split(/\s+/)) {
+        const next=line?`${line} ${word}`:word;
+        if(line&&next.length>maxChars){lines.push(line);line=word;}else line=next;
+      }
+      lines.push(line);
+    }
+    return lines;
+  }
+  async function base64Asset(src) {
+    if(/^data:/.test(src))return src;
+    const response=await fetch(src);if(!response.ok)throw new Error(`No pude preparar el recurso ${src}`);
+    const blob=await response.blob(),bytes=new Uint8Array(await blob.arrayBuffer());let binary='';
+    for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));
+    return `data:${blob.type||'application/octet-stream'};base64,${btoa(binary)}`;
+  }
+  async function renderPanelSvg(panel) {
+    const hasMockup=(state.contentType||'')==='mockup';
+    const fontFiles={'Fredoka':'/assets/fonts/fredoka-latin.woff2','Baloo 2':'/assets/fonts/baloo-2-latin.woff2','Bangers':'/assets/fonts/bangers-latin.woff2','Lilita One':'/assets/fonts/lilita-one-latin.woff2'};
+    const usedFonts=[...new Set(panel.items.filter(item=>item.type==='text'&&!item.mockupOnly).map(item=>item.fontFamily).filter(font=>fontFiles[font]))];
+    const fontFaces=await Promise.all(usedFonts.map(async font=>`@font-face{font-family:'${font}';src:url('${await base64Asset(fontFiles[font])}') format('woff2');font-weight:100 900;font-style:normal}`));
+    const content=[];
+    if(!hasMockup&&panel.backgroundColor)content.push(`<rect width="${LOGICAL_WIDTH}" height="${state.pageHeight}" fill="${svgEscape(panel.backgroundColor)}"/>`);
+    for(const item of panel.items){
+      if(item.mockupOnly)continue;
+      const transform=`translate(${item.x+item.w/2} ${item.y+item.h/2}) rotate(${item.rotation||0}) scale(${item.flipX?-1:1} ${item.flipY?-1:1}) translate(${-item.w/2} ${-item.h/2})`;
+      if(item.type==='image'){
+        const src=await base64Asset(item.src).catch(()=>item.src);
+        content.push(`<image x="0" y="0" width="${item.w}" height="${item.h}" transform="${transform}" href="${svgEscape(src)}" preserveAspectRatio="xMidYMid meet" style="filter:${item.blur?`blur(${item.blur}px)`:'none'}"/>`);
+      } else if(item.type==='drawing'){
+        const strokes=item.strokes?.length?item.strokes:[{path:item.path,color:item.color,strokeWidth:item.strokeWidth}];
+        const paths=strokes.map(stroke=>{let d=stroke.path||'';if(stroke.points?.length)d=stroke.points.map((point,index)=>`${index?'L':'M'}${point.x-item.x} ${point.y-item.y}`).join(' ')+(stroke.closed?' Z':'');return `<path d="${svgEscape(d)}" fill="${item.fillEnabled&&stroke.closed?svgEscape(item.fillColor||'#F87209'):'none'}" stroke="${svgEscape(stroke.color||item.color||'#292725')}" stroke-width="${stroke.strokeWidth||item.strokeWidth||5}" stroke-linecap="round" stroke-linejoin="round" opacity="${stroke.opacity??1}"/>`;}).join('');
+        content.push(`<g transform="${transform}">${paths}</g>`);
+      } else if(item.type==='text'||item.type==='bubble'){
+        const isBubble=item.type==='bubble',size=item.fontSize||28,font=item.fontFamily||'Fredoka',align=item.align||'center',anchor=align==='left'?'start':align==='right'?'end':'middle';
+        const x=align==='left'?8:align==='right'?item.w-8:item.w/2,lines=svgLines(item.text,Math.max(8,Math.floor(item.w/(size*.53)))),leading=size*1.16,startY=(item.h-lines.length*leading)/2+size*.82;
+        let shape='';
+        if(isBubble&&item.kind!=='sfx')shape=item.shape==='rounded'?`<rect width="${item.w}" height="${item.h}" rx="24" fill="${item.kind==='narration'?'#fff5df':'#fff'}" stroke="#292725" stroke-width="3"/>`:`<ellipse cx="${item.w/2}" cy="${item.h/2}" rx="${item.w/2-2}" ry="${item.h/2-2}" fill="#fff" stroke="#292725" stroke-width="3"/>`;
+        const family=isBubble?'Fredoka':font,weight=item.fontWeight||(isBubble?600:700),color=item.color||(item.kind==='sfx'?'#F87209':'#292725');
+        const effect=item.textEffect==='outline'?'stroke="#fff" stroke-width="2" paint-order="stroke fill"':item.textEffect==='shadow'?'filter="url(#text-shadow)"':'';
+        const textLines=lines.map((line,index)=>`<tspan x="${x}" y="${startY+index*leading}">${svgEscape(isBubble&&['sfx','shout'].includes(item.kind)?line.toUpperCase():line)}</tspan>`).join('');
+        content.push(`<g transform="${transform}">${shape}<text text-anchor="${anchor}" font-family="'${svgEscape(family)}',sans-serif" font-size="${size}" font-weight="${weight}" fill="${svgEscape(color)}" ${effect}>${textLines}</text></g>`);
+      }
+    }
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${LOGICAL_WIDTH*2}" height="${state.pageHeight*2}" viewBox="0 0 ${LOGICAL_WIDTH} ${state.pageHeight}"><defs><filter id="text-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="2" dy="3" stdDeviation="1" flood-opacity=".25"/></filter></defs><style>${fontFaces.join('')}</style>${content.join('')}</svg>`;
+    return svg;
+  }
+  async function exportPanelSvg() {
+    try {
+      const svg=await renderPanelSvg(currentPanel()),blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+      download(blob,`${slugify(state.title||'diseno-mandarinita')}-arte.svg`);
+      toast(state.contentType==='mockup'?'SVG listo: conserva el texto como vector y omite el mockup del producto.':'SVG listo para escalar; las imágenes de personajes conservan su resolución original.');
+    } catch(error) { toast(error instanceof Error?error.message:'No pude exportar el arte vectorial.'); }
   }
   async function exportReview() {
     state.format = $('#export-preset').value; state.exportStyle = $('#export-style').value || 'classic'; state.status = 'review'; const savedLocally = autosave();
@@ -1918,7 +2013,7 @@
       throw new Error('El archivo no contiene un proyecto editable con viñetas y capas.');
     }
     if (project.schemaVersion !== undefined && project.schemaVersion !== 1) throw new Error(`La versión ${project.schemaVersion} del archivo no es compatible con este editor.`);
-    if (project.contentType !== undefined && !['episode', 'copy', 'banner', 'section'].includes(project.contentType)) throw new Error('El archivo tiene un tipo de contenido no compatible.');
+    if (project.contentType !== undefined && !['episode', 'copy', 'banner', 'section','design','mockup'].includes(project.contentType)) throw new Error('El archivo tiene un tipo de contenido no compatible.');
     const itemTypes = new Set(['image', 'text', 'bubble', 'drawing']);
     const bubbleKinds = new Set(['dialogue', 'thought', 'narration', 'shout', 'sfx']);
     for (const panel of project.panels) for (const item of panel.items) {
@@ -1963,7 +2058,7 @@
     labeledIcon('#mobile-library','panelLeft','Componentes'); labeledIcon('#mobile-properties','sliders','Propiedades');
     $('#tab-components').innerHTML=`${svgIcon('box')}<span>Componentes</span>`;
     $('#tab-layers').innerHTML=`${svgIcon('layers')}<span>Capas</span> <span id="layer-count-tab">0</span>`;
-    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#add-bubble','bubble','Añadir globo');
+    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#text-style','sparkles','Estilos');labeledIcon('#change-mockup','refresh','Cambiar producto');labeledIcon('#mockup-preview','eyeOff','Ocultar simulación');labeledIcon('#export-vector','fileDown','Arte vectorial SVG');labeledIcon('#add-bubble','bubble','Añadir globo');
     const filterIcons={all:'grid',character:'users',object:'box',background:'image',sticker:'layers',reference:'book'};
     $$('.filters [data-filter]').forEach(button=>{const label=button.textContent.trim();button.classList.add('has-icon');button.innerHTML=`${svgIcon(filterIcons[button.dataset.filter]||'grid')}<span class="button-label">${label}</span>`;button.setAttribute('aria-label',label);button.title=label;});
     const orderToggle = $('#toggle-order-strip');
@@ -1975,6 +2070,12 @@
     $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
     $('#new-project').onclick = newProject;
     $$('.content-type-card').forEach(button=>button.onclick=()=>{$('#new-content-dialog').close();createContentDraft(button.dataset.contentType);});
+    $$('.design-template-card').forEach(button=>button.onclick=()=>{$('#design-template-dialog').close();if(changingMockup)changeProductMockup(button.dataset.designTemplate);else createDesignProject(button.dataset.designTemplate);changingMockup=false;});
+    $$('.text-style-card').forEach(button=>button.onclick=()=>{$('#text-style-dialog').close();addTextBlock('Escribe aquí…',button.dataset.textStyle);});
+    $('#text-style').onclick=()=>$('#text-style-dialog').showModal();
+    $('#change-mockup').onclick=()=>{changingMockup=true;pendingDesignType='mockup';$$('.product-template-choice').forEach(button=>button.hidden=false);$$('.design-template-card:not(.product-template-choice)').forEach(button=>button.hidden=true);$('#design-template-dialog').showModal();};
+    $('#mockup-preview').onclick=()=>{state.mockupPreview=state.mockupPreview===false;render();autosave();};
+    $('#export-vector').onclick=()=>exportPanelSvg();
     $$('#template-dialog .template-card').forEach(button => button.onclick = () => { $('#template-dialog').close(); createProjectFromTemplate(button.dataset.template); });
     $('#import-project').onclick = () => $('#project-file').click();
     $('#project-file').onchange = event => importProjectFile(event.target.files[0]);

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mandarinita-editor-v35';
+const CACHE_NAME = 'mandarinita-editor-v36';
 const APP_SHELL = [
   '/editor.css',
   '/editor.js',
@@ -8,6 +8,11 @@ const APP_SHELL = [
   '/assets/mandarinita-pwa-192.png',
   '/assets/mandarinita-pwa-512.png',
   '/assets/mandarinita-pwa-180.png',
+  '/assets/fonts/baloo-2-latin.woff2',
+  '/assets/fonts/bangers-latin.woff2',
+  '/assets/fonts/lilita-one-latin.woff2',
+  '/assets/fonts/fredoka-latin.woff2',
+  '/assets/fonts/work-sans-latin.woff2',
   '/assets/characters/mando-transparent.webp',
   '/assets/characters/mando-episodio-82-3.png',
   '/assets/characters/mandy-transparent.webp',
