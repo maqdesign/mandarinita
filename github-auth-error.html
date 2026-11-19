@@ -27,7 +27,7 @@
     document.querySelector('#retry').href = `/login.html?area=${area}`;
     if (reason === 'not-authorized') document.querySelector('#message').textContent = 'La cuenta de GitHub no tiene verificado el correo autorizado para este taller. Añádelo y verifícalo en GitHub, o cambia a la cuenta que ya lo tenga verificado, y vuelve a intentarlo.';
     if (reason === 'cancelled') document.querySelector('#message').textContent = 'Cancelaste el acceso de GitHub. Puedes intentarlo otra vez cuando quieras.';
-    if (reason === 'cookies') document.querySelector('#message').textContent = 'El navegador no conservó la verificación temporal de este acceso. Abre el enlace en Safari o en el mismo navegador donde empezaste, permite las cookies para mandarinita.art y vuelve a intentarlo desde aquí.';
+    if (reason === 'cookies') document.querySelector('#message').textContent = `El navegador no conservó la verificación temporal de este acceso. Abre el enlace en Safari o en el mismo navegador donde empezaste, permite las cookies para ${location.hostname} y vuelve a intentarlo desde aquí.`;
     if (reason === 'expired') document.querySelector('#message').textContent = 'El enlace de acceso venció o ya se usó. Inicia un intento nuevo desde el botón de abajo.';
     if (reason === 'missing-code') document.querySelector('#message').textContent = 'GitHub no terminó el acceso. Inicia un intento nuevo desde el botón de abajo.';
     if (reason === 'network' || reason === 'verify') document.querySelector('#message').textContent = 'No pudimos verificar la sesión con GitHub. Comprueba tu conexión y vuelve a intentarlo.';
