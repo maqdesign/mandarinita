@@ -14,7 +14,10 @@
   const timing = document.querySelector('#hero-carousel-timing');
   const hero = document.querySelector('.hero');
   const previewMode = new URLSearchParams(location.search).has('admin-banner-preview');
-  if (previewMode) document.body.classList.add('hero-only-preview');
+  if (previewMode) {
+    document.body.classList.add('hero-only-preview');
+    document.querySelectorAll('#main > :not(.hero)').forEach(section => { section.hidden = true; });
+  }
   const language = () => document.documentElement.dataset.lang === 'en' ? 'en' : 'es';
   const safeImage = path => {
     if (typeof path !== 'string' || !(path.startsWith('assets/') || path.startsWith('/api/site-content/image/'))) return null;
@@ -191,6 +194,7 @@
   }
   function initializeCarousel(items, initialIndex = 0) {
     banners = items;
+    document.body.classList.toggle('hero-preview-single', previewMode && banners.length < 2);
     current = Math.max(0, Math.min(initialIndex, banners.length - 1));
     if (!controls) { applyBanner(current); return; }
     const showControls = banners.length >= 2 || previewMode;
@@ -229,6 +233,7 @@
     const items = Array.isArray(event.data.banners) ? event.data.banners.filter(item => item?.fields) : (event.data.banner?.fields ? [event.data.banner] : []);
     if (!items.length) return;
     document.body.classList.toggle('hero-preview-horizontal', event.data.layout === 'horizontal');
+    document.body.classList.toggle('hero-preview-vertical', event.data.layout === 'vertical');
     initializeCarousel(items, Number.isInteger(event.data.selectedIndex) ? event.data.selectedIndex : 0);
   });
   if (previewMode) {

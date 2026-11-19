@@ -126,7 +126,8 @@
       analyticsDays.replaceChildren();
     } finally { refreshAnalytics.disabled = false; }
   }
-  const setBannerStatus = message => { bannerManagerStatus.textContent = message; };
+  const setBannerStatus = message => { if (bannerManagerStatus) bannerManagerStatus.textContent = message; };
+  const setSiteContentStatus = message => { if (siteContentStatus) siteContentStatus.textContent = message; };
   const selectedBanner = () => bannerItems.find(item => item.id === selectedBannerId);
   function captureBannerForm() {
     const banner = selectedBanner();
@@ -319,7 +320,7 @@
       renderBannerList();
       fillBannerForm();
       setBannerStatus(bannerItems.length ? `${bannerItems.length} ${bannerItems.length === 1 ? 'banner' : 'banners'} en la portada.` : 'Aún no hay banners.');
-      siteContentStatus.textContent = 'Edita este banner; los cambios se guardan directamente en Preview.';
+      setSiteContentStatus('Edita este banner; los cambios se guardan directamente en Preview.');
     } catch (error) { setBannerStatus(error.message); }
   }
   async function createBanner() {
@@ -342,7 +343,7 @@
     captureBannerForm();
     const submit = siteContentForm.querySelector('[type="submit"]');
     submit.disabled = true;
-    siteContentStatus.textContent = 'Guardando banners en Preview…';
+    setSiteContentStatus('Guardando banners en Preview…');
     try {
       const response = await fetch('/api/admin/banners', { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ banners: bannerItems }) });
       const result = await response.json();
@@ -352,9 +353,9 @@
       renderBannerList();
       fillBannerForm();
       setBannerStatus('Cambios publicados en Preview.');
-      siteContentStatus.textContent = 'Listo: los banners ya aparecen en Preview. Recarga la portada para verlos.';
+      setSiteContentStatus('Listo: los banners ya aparecen en Preview. Recarga la portada para verlos.');
     } catch (error) {
-      siteContentStatus.textContent = error.message;
+      setSiteContentStatus(error.message);
       setBannerStatus(error.message);
     } finally { submit.disabled = false; deleteBannerButton.disabled = bannerDirty || bannerItems.length <= 1; }
   }
