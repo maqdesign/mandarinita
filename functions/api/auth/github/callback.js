@@ -4,9 +4,10 @@ function cookie(request, name) {
   return (request.headers.get('Cookie') || '').split(';').map(part => part.trim()).find(part => part.startsWith(`${name}=`))?.slice(name.length + 1) || '';
 }
 
-function authError(request, reason, clearStateCookie = '') {
+function authError(request, reason, clearStateCookie = '', area = '') {
   const url = new URL('/github-auth-error.html', request.url);
   url.searchParams.set('reason', reason);
+  if (area === 'admin' || area === 'editor') url.searchParams.set('area', area);
   const headers = new Headers({ Location: url.toString(), 'Cache-Control': 'no-store' });
   if (clearStateCookie) headers.append('Set-Cookie', clearStateCookie);
   return new Response(null, { status: 303, headers });
@@ -28,13 +29,10 @@ export async function onRequestGet({ request, env }) {
     });
     return authError(request, validStateShape ? 'cookies' : 'expired', clearStateCookie);
   }
-  if (url.searchParams.has('error')) return new Response(null, { status: 303, headers: {
-    Location: new URL('/github-auth-error.html?reason=cancelled', request.url).toString(),
-    'Set-Cookie': clearStateCookie, 'Cache-Control': 'no-store'
-  } });
+  if (url.searchParams.has('error')) return authError(request, 'cancelled', clearStateCookie, area);
 
   const code = url.searchParams.get('code');
-  if (!code) return authError(request, 'missing-code', clearStateCookie);
+  if (!code) return authError(request, 'missing-code', clearStateCookie, area);
   const callback = new URL('/api/auth/github/callback', request.url).toString();
   let tokenResponse;
   try {
@@ -45,7 +43,7 @@ export async function onRequestGet({ request, env }) {
     });
   } catch (error) {
     console.error('GitHub OAuth token exchange request failed', { name: error?.name || 'Error' });
-    return authError(request, 'network', clearStateCookie);
+    return authError(request, 'network', clearStateCookie, area);
   }
   const token = await tokenResponse.json().catch(() => ({}));
   if (!tokenResponse.ok || !token.access_token) {
@@ -54,24 +52,18 @@ export async function onRequestGet({ request, env }) {
       requestId: tokenResponse.headers.get('x-github-request-id') || undefined
     });
     const reason = token.error === 'incorrect_client_credentials' ? 'oauth-config' : 'oauth-exchange';
-    return new Response(null, { status: 303, headers: {
-      Location: new URL(`/github-auth-error.html?reason=${reason}`, request.url).toString(),
-      'Set-Cookie': clearStateCookie, 'Cache-Control': 'no-store'
-    } });
+    return authError(request, reason, clearStateCookie, area);
   }
 
   const headers = { Authorization: `Bearer ${token.access_token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'Mandarinita-Editor' };
   const [userResponse, emailsResponse] = await Promise.all([
     fetch('https://api.github.com/user', { headers }), fetch('https://api.github.com/user/emails', { headers })
   ]);
-  if (!userResponse.ok || !emailsResponse.ok) return authError(request, 'verify', clearStateCookie);
+  if (!userResponse.ok || !emailsResponse.ok) return authError(request, 'verify', clearStateCookie, area);
   const [user, emails] = await Promise.all([userResponse.json(), emailsResponse.json()]);
   const permittedEmails = allowedEmails(env);
   const verified = emails.find(entry => entry.verified && permittedEmails.includes(entry.email.trim().toLowerCase()));
-  if (!verified) return new Response(null, { status: 303, headers: {
-    Location: new URL('/github-auth-error.html?reason=not-authorized', request.url).toString(),
-    'Set-Cookie': clearStateCookie, 'Cache-Control': 'no-store'
-  } });
+  if (!verified) return authError(request, 'not-authorized', clearStateCookie, area);
 
   const sessionCookie = await makeSessionCookie({ login: user.login, email: verified.email.trim().toLowerCase() }, env.SESSION_SECRET);
   const destination = area === 'admin' ? '/admin.html' : '/editor.html?github=connected';
