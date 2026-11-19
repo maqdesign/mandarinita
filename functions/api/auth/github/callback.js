@@ -12,7 +12,7 @@ export async function onRequestGet({ request, env }) {
   const stateCookieName = validStateShape ? `mandarinita_oauth_${state}` : '';
   const area = stateCookieName ? cookie(request, stateCookieName) : '';
   const clearStateCookie = stateCookieName
-    ? `${stateCookieName}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`
+    ? `${stateCookieName}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`
     : '';
   if (!stateCookieName || !['admin', 'editor'].includes(area)) {
     console.warn('GitHub OAuth state validation failed', {
@@ -21,7 +21,10 @@ export async function onRequestGet({ request, env }) {
       matchingCookiePresent: Boolean(area),
       host: url.hostname
     });
-    const response = json({ error: 'No se pudo validar el inicio de sesión. Vuelve a intentarlo desde el panel.' }, 400);
+    const errorMessage = validStateShape
+      ? 'El navegador no devolvió la cookie de este inicio de sesión. Permite cookies para la vista previa e inténtalo de nuevo desde este mismo enlace.'
+      : 'El enlace de inicio de sesión venció o cambió. Vuelve a iniciar sesión desde el panel.';
+    const response = json({ error: errorMessage }, 400);
     if (clearStateCookie) response.headers.append('Set-Cookie', clearStateCookie);
     return response;
   }

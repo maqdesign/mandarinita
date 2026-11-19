@@ -8,6 +8,11 @@
   const previous = document.querySelector('#hero-carousel-previous');
   const next = document.querySelector('#hero-carousel-next');
   const toggle = document.querySelector('#hero-carousel-toggle');
+  const toggleLabel = document.querySelector('#hero-carousel-toggle-label');
+  const progress = document.querySelector('#hero-carousel-progress');
+  const progressFill = document.querySelector('#hero-carousel-progress-fill');
+  const timing = document.querySelector('#hero-carousel-timing');
+  const hero = document.querySelector('.hero');
   const previewMode = new URLSearchParams(location.search).has('admin-banner-preview');
   if (previewMode) document.body.classList.add('hero-only-preview');
   const language = () => document.documentElement.dataset.lang === 'en' ? 'en' : 'es';
@@ -17,22 +22,62 @@
     return url.origin === location.origin ? url.href : null;
   };
   let banners = [];
-  let current = 0;
+  let current = -1;
   let autoPlay = false;
-  let interactionPaused = false;
-  let pointerPaused = false;
-  let focusPaused = false;
-  let timer = 0;
+  let progressElapsed = 0;
+  let progressStartedAt = 0;
+  let progressFrame = 0;
+  let lastProgressAnnouncement = -1;
+  let transitionSequence = 0;
+  let hasDisplayedBanner = false;
+  const BANNER_DURATION = 8000;
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
-  function stopTimer() {
-    if (timer) clearTimeout(timer);
-    timer = 0;
+  function stopProgress(preserve = true) {
+    if (progressFrame) cancelAnimationFrame(progressFrame);
+    progressFrame = 0;
+    if (preserve && progressStartedAt) progressElapsed = Math.min(BANNER_DURATION, progressElapsed + performance.now() - progressStartedAt);
+    progressStartedAt = 0;
+    renderProgress(progressElapsed);
   }
-  function scheduleTimer() {
-    stopTimer();
-    if (banners.length < 2 || !autoPlay || interactionPaused || document.visibilityState !== 'visible') return;
-    timer = setTimeout(() => applyBanner((current + 1) % banners.length), 8000);
+  function renderProgress(elapsed) {
+    const fraction = Math.max(0, Math.min(1, elapsed / BANNER_DURATION));
+    if (progressFill) progressFill.style.transform = `scaleX(${fraction})`;
+    const value = Math.floor(fraction * 100);
+    if (progress && value !== lastProgressAnnouncement) {
+      progress.setAttribute('aria-valuenow', String(value));
+      const seconds = Math.max(0, Math.ceil((BANNER_DURATION - elapsed) / 1000));
+      progress.setAttribute('aria-valuetext', language() === 'en' ? `${seconds} seconds remaining` : `Quedan ${seconds} segundos`);
+      lastProgressAnnouncement = value;
+    }
+  }
+  function progressTick(now) {
+    if (!autoPlay || banners.length < 2 || document.visibilityState !== 'visible') {
+      stopProgress(true);
+      return;
+    }
+    const elapsed = Math.min(BANNER_DURATION, progressElapsed + now - progressStartedAt);
+    renderProgress(elapsed);
+    if (elapsed >= BANNER_DURATION) {
+      progressElapsed = 0;
+      progressStartedAt = 0;
+      progressFrame = 0;
+      renderProgress(0);
+      void applyBanner(current + 1);
+      return;
+    }
+    progressFrame = requestAnimationFrame(progressTick);
+  }
+  function resumeProgress() {
+    if (!autoPlay || banners.length < 2 || document.visibilityState !== 'visible' || progressFrame || progressStartedAt) return;
+    progressStartedAt = performance.now();
+    progressFrame = requestAnimationFrame(progressTick);
+  }
+  function resetProgress() {
+    stopProgress(false);
+    progressElapsed = 0;
+    renderProgress(0);
+    resumeProgress();
   }
   function updateToggle() {
     if (!toggle) return;
@@ -41,10 +86,13 @@
     const active = autoPlay;
     if (playIcon) playIcon.hidden = active;
     if (pauseIcon) pauseIcon.hidden = !active;
+    if (toggleLabel) toggleLabel.textContent = active ? (language() === 'en' ? 'Pause' : 'Pausar') : (language() === 'en' ? 'Resume' : 'Reanudar');
+    toggle.setAttribute('aria-pressed', String(active));
     toggle.setAttribute('aria-label', active
       ? (language() === 'en' ? 'Pause automatic rotation' : 'Pausar rotación automática')
       : (language() === 'en' ? 'Resume automatic rotation' : 'Reanudar rotación automática'));
     if (status) status.setAttribute('aria-live', active ? 'off' : 'polite');
+    if (timing) timing.textContent = active ? (language() === 'en' ? '8 s per banner' : '8 s por banner') : (language() === 'en' ? 'Paused' : 'En pausa');
   }
   function updateControlLabels() {
     if (!controls) return;
@@ -58,17 +106,34 @@
       dot.setAttribute('aria-label', lang === 'en' ? `Show banner ${index + 1}: ${title}` : `Mostrar banner ${index + 1}: ${title}`);
     });
   }
-  function updateInteractionPause() {
-    interactionPaused = pointerPaused || focusPaused;
-    if (interactionPaused) stopTimer();
-    else scheduleTimer();
+  async function preloadImage(url) {
+    if (!url) return;
+    const image = new Image();
+    image.src = url;
+    if (!image.decode) return;
+    await new Promise(resolve => {
+      const timeout = setTimeout(resolve, 1200);
+      image.decode().catch(() => {}).then(() => { clearTimeout(timeout); resolve(); });
+    });
   }
-  function applyBanner(index) {
+  async function applyBanner(index, { animate = true } = {}) {
     if (!banners.length) return;
-    current = (index + banners.length) % banners.length;
-    const banner = banners[current];
+    const nextIndex = (index + banners.length) % banners.length;
+    const changing = hasDisplayedBanner && nextIndex !== current;
+    const sequence = ++transitionSequence;
+    stopProgress(false);
+    const banner = banners[nextIndex];
     const lang = language();
     const fields = banner.fields || {};
+    const shouldAnimate = changing && animate && !reduceMotion.matches && !previewMode;
+    if (shouldAnimate) {
+      await preloadImage(safeImage(fields['hero.image']?.es));
+      if (sequence !== transitionSequence) return;
+      hero?.classList.add('is-banner-transitioning');
+      await new Promise(resolve => setTimeout(resolve, 150));
+      if (sequence !== transitionSequence) return;
+    }
+    current = nextIndex;
     for (const target of textTargets) {
       const value = fields[target.dataset.liveContent];
       if (typeof value?.[lang] !== 'string') continue;
@@ -97,8 +162,16 @@
     if (dots) [...dots.children].forEach((dot, dotIndex) => {
       dot.setAttribute('aria-current', dotIndex === current ? 'true' : 'false');
     });
+    hasDisplayedBanner = true;
+    if (shouldAnimate) {
+      requestAnimationFrame(() => {
+        if (sequence === transitionSequence) hero?.classList.remove('is-banner-transitioning');
+      });
+    } else {
+      hero?.classList.remove('is-banner-transitioning');
+    }
     updateToggle();
-    scheduleTimer();
+    resetProgress();
   }
   function buildDots() {
     if (!dots) return;
@@ -134,20 +207,13 @@
   toggle?.addEventListener('click', () => {
     autoPlay = !autoPlay;
     updateToggle();
-    scheduleTimer();
+    if (autoPlay) resumeProgress();
+    else stopProgress(true);
   });
-  controls?.addEventListener('pointerenter', () => { pointerPaused = true; updateInteractionPause(); });
-  controls?.addEventListener('pointerleave', () => { pointerPaused = false; updateInteractionPause(); });
-  controls?.addEventListener('focusin', () => { focusPaused = true; updateInteractionPause(); });
-  controls?.addEventListener('focusout', event => {
-    if (!controls.contains(event.relatedTarget)) { focusPaused = false; updateInteractionPause(); }
-  });
-  document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' ? scheduleTimer() : stopTimer());
+  document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' ? resumeProgress() : stopProgress(true));
   reduceMotion.addEventListener?.('change', () => {
-    if (reduceMotion.matches) { autoPlay = false; stopTimer(); }
-    else if (banners.length > 1) autoPlay = true;
+    if (reduceMotion.matches) { autoPlay = false; stopProgress(true); }
     updateToggle();
-    scheduleTimer();
   });
   document.querySelector('.language-toggle')?.addEventListener('click', () => {
     if (banners.length) applyBanner(current);
