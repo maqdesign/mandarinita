@@ -251,15 +251,19 @@
       if (label) label.textContent = saving ? (savingDraft ? 'Guardando borrador…' : 'Guardando…') : bannerDirty ? 'Cambios sin guardar' : selectedIsDraft ? 'Borrador guardado en la nube' : 'Todo guardado';
       siteContentSaveState.setAttribute('aria-label', saving ? (savingDraft ? 'Guardando borrador en la nube' : 'Guardando cambios') : bannerDirty ? 'Hay cambios sin guardar' : selectedIsDraft ? 'Borrador guardado en la nube' : 'Todos los cambios están guardados');
     }
-    if (submit && !saving) submit.disabled = !bannerDirty;
+    if (submit && !saving) {
+      submit.disabled = !bannerDirty;
+      const submitLabel = submit.querySelector('span');
+      if (submitLabel) submitLabel.textContent = selectedBanner()?.enabled ? 'Guardar cambios' : 'Guardar borrador';
+    }
     if (publishBannerButton) {
       const banner = selectedBanner();
       const label = publishBannerButton.querySelector('span');
-      if (label) label.textContent = banner?.enabled ? 'Publicar cambios' : `Publicar en ${contentEnvironmentLabel}`;
+      if (label) label.textContent = banner?.enabled ? 'Publicar cambios' : 'Publicar este banner';
       publishBannerButton.disabled = saving || !banner || (banner.enabled && !bannerDirty);
       publishBannerButton.title = banner?.enabled
         ? 'Guarda y publica los cambios pendientes del carrusel en Producción.'
-        : `Activa el banner seleccionado y publícalo en ${contentEnvironmentLabel}.`;
+        : `Publica únicamente este banner en ${contentEnvironmentLabel}. Los demás borradores seguirán sin publicarse.`;
     }
     updateDeleteBannerState();
   }
@@ -939,7 +943,7 @@
       renderBannerList();
       fillBannerForm();
       updateBannerSaveState();
-      setBannerStatus(`Cambios publicados en ${contentEnvironmentLabel}.`);
+      setBannerStatus(`Cambios guardados en ${contentEnvironmentLabel}. Solo los banners marcados Activo se muestran en la portada.`);
       const publishedBanner = bannerItems.find(item => item.id === selectedBannerId);
       const startsAt = Date.parse(publishedBanner?.fields['hero.startAt']?.es || '');
       const endsAt = Date.parse(publishedBanner?.fields['hero.endAt']?.es || '');
