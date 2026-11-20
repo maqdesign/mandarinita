@@ -12,15 +12,21 @@ La autenticación limita el acceso a los correos de GitHub verificados configura
 - Al iniciar sesión o reintentar, se reparan los IDs heredados o inconsistentes en el índice local antes de subirlos. El contenido se escribe bajo un ID nuevo antes de retirar la clave local anterior.
 - Si la sincronización inicial aún está comparando la nube y se edita un borrador, la subida espera a que termine esa comparación y luego envía la versión más reciente.
 - Si R2 devuelve el error de ID inválido, el editor conserva el proyecto, lo reidentifica localmente y reintenta la subida una vez.
-- Al conectar un dispositivo, el editor compara la copia local con la versión de R2. Los proyectos que faltan se descargan; los cambios locales pendientes se suben con una condición de versión.
+- Al conectar un dispositivo, el editor consulta un índice pequeño de metadatos en R2. Los proyectos que no están en el dispositivo aparecen como “En la nube” y se descargan solo al abrirlos; así Safari no intenta duplicar de golpe todos los archivos en `localStorage`. Los proyectos locales modificados se suben con una condición de versión.
 - Con el taller abierto y visible, cada dispositivo consulta cambios de la nube cada 30 segundos; al volver a la pestaña también comprueba si hay cambios.
 - Las escrituras usan ETags de R2 (`If-Match` para actualizar y `If-None-Match: *` para crear). Si la versión remota cambió desde la última sincronización, R2 rechaza la escritura y el editor conserva la copia local.
 - El editor ofrece descargar la copia local, reemplazarla con la versión de la nube o reemplazar la nube con la copia local. La última opción requiere una acción explícita.
 - No hay edición simultánea en tiempo real ni bloqueo del archivo. Si Mauricio edita un proyecto desde dos dispositivos, la otra pantalla recoge cambios en la siguiente consulta; los cambios concurrentes producen un conflicto visible en lugar de reemplazarse en silencio.
-- La detección de conflictos compara el ETag con la última versión sincronizada en cada dispositivo. En la primera conexión de una instalación antigua que no tenga esa marca, cualquier diferencia entre la copia local y la remota requiere elección explícita.
-- Un rechazo HTTP 400 muestra ahora el motivo de validación que devuelve Pages Functions, en vez de ocultarlo tras el número de error. Cada dispositivo conserva su copia local hasta que una escritura o descarga a R2 termine correctamente.
+- La detección de conflictos compara el ETag con la última versión sincronizada en cada dispositivo. Si la nube avanzó y el dispositivo solo conservaba una copia local ya sincronizada, se retira esa copia local y se deja el registro como “En la nube”; si hay cambios locales pendientes, se requiere elección explícita. En la primera conexión de una instalación antigua sin marca de sincronización, cualquier diferencia entre la copia local y la remota requiere elección explícita.
+- Un rechazo HTTP 400 muestra ahora el motivo de validación que devuelve Pages Functions, en vez de ocultarlo tras el número de error. Cada dispositivo conserva sus cambios locales pendientes hasta que la escritura a R2 termine correctamente. Si Safari no puede guardar una copia local completa, el editor mantiene el documento abierto y envía el estado a la nube.
 
 Los proyectos no se borran de `episodes.json` ni se publican en la web. La programación automática de Instagram sigue pendiente. Los paquetes exportados siguen en revisión hasta que Mauricio los apruebe.
+
+## Límites actuales
+
+- La sincronización carga la versión completa del proyecto al abrirlo, no en tiempo real mientras está abierta en otro dispositivo. La comprobación periódica detecta el cambio y conserva ambas versiones si se editó en paralelo.
+- Los archivos “En la nube” necesitan conexión para abrirse. La vista previa de tarjeta se omite deliberadamente para no bajar las imágenes y capas del proyecto entero.
+- No existe historial navegable de versiones ni restauración de una fecha anterior; antes de una reescritura en conflicto se puede descargar el archivo editable.
 
 ## Validación de lanzamiento
 

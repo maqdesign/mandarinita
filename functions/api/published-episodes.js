@@ -128,7 +128,7 @@ export async function onRequestPost(context) {
   if (!Number.isInteger(episodeNumber) || episodeNumber < 1 || episodeNumber > 9999) return json({ error: 'El número de episodio no es válido.' }, 400);
   if (!title.es || title.es.length > 180 || !title.en || title.en.length > 180) return json({ error: 'Escribe el título del episodio en español e inglés (máximo 180 caracteres).' }, 400);
   if (!validDate(publishedAt)) return json({ error: 'Elige una fecha de publicación válida.' }, 400);
-  if (unpublishAt && (!validDate(unpublishAt) || unpublishAt < publishedAt)) return json({ error: 'La fecha para dejar de publicar debe ser igual o posterior a la publicación.' }, 400);
+  if (unpublishAt && (!validDate(unpublishAt) || unpublishAt <= publishedAt)) return json({ error: 'La fecha para retirar el episodio debe ser posterior a la fecha de publicación.' }, 400);
   if (!Array.isArray(panels) || panels.length < 1 || panels.length > MAX_PANELS) return json({ error: `El episodio debe tener entre 1 y ${MAX_PANELS} viñetas.` }, 400);
 
   const checkedPanels = [];

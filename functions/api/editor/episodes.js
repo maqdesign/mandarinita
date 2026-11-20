@@ -156,7 +156,7 @@ export async function onRequestPatch(context) {
   if (!target) return json({ error: 'No encontramos el episodio en el catálogo actual.' }, 404);
   const publishedAt = requestedPublishedAt || target.publishedAt || '';
   if (status === 'scheduled' && (!validDate(publishedAt) || publishedAt <= todayInSantoDomingo())) return json({ error: 'Para programarlo, elige una fecha futura.' }, 400);
-  if (unpublishAt && (!validDate(unpublishAt) || (publishedAt && unpublishAt < publishedAt))) return json({ error: 'Revisa las fechas de publicación y retiro.' }, 400);
+  if (unpublishAt && (!validDate(unpublishAt) || (publishedAt && unpublishAt <= publishedAt))) return json({ error: 'La fecha para retirar el episodio debe ser posterior a la fecha de publicación.' }, 400);
   const duplicate = data.entries.find(entry => entry.id !== id && Number(entry.episodeNumber) === episodeNumber);
   if (duplicate) return json({ error: `El episodio ${episodeNumber} ya está asignado a «${duplicate.title.es}».` }, 409);
 

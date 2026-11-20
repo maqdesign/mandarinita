@@ -223,7 +223,7 @@
     if (!validProjectId(normalized.projectId)) normalized.projectId = id();
     normalized.contentType ||= 'episode';
     normalized.format = FORMAT[normalized.format] ? normalized.format : 'web';
-    normalized.exportStyle = ['classic','cream','footer'].includes(normalized.exportStyle) ? normalized.exportStyle : 'classic';
+    normalized.exportStyle = ['classic','cream','footer','bleed'].includes(normalized.exportStyle) ? normalized.exportStyle : 'classic';
     normalized.pageHeight = normalized.pageHeight || FORMAT[normalized.format].logicalHeight;
     normalized.panels = Array.isArray(normalized.panels) && normalized.panels.length ? normalized.panels : [{ id: id(), items: [] }, { id: id(), items: [] }];
     normalized.panels.forEach(p => { p.id ||= id(); p.items ||= []; });
@@ -264,6 +264,7 @@
     const banner=$('#cloud-sync-banner');
     if(banner){
       const key=`${syncState}:${text}`;
+      if(syncState==='busy')cloudBannerDismissed=false;
       if((syncState==='error'||syncState==='conflict')&&key!==cloudBannerKey){cloudBannerDismissed=false;cloudBannerKey=key;}
       if(syncState==='ready'){cloudBannerKey='';cloudBannerDismissed=false;}
       banner.dataset.state=syncState;
@@ -450,7 +451,7 @@
     validateEditableProject(project);
     const record = { id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: Number(project.updatedAt) || Date.now(), panels: project.panels.length };
     const index = listProjects().filter(entry => entry.id !== project.projectId);
-    const hasLocal=Boolean(localProject(project.projectId));
+    const hasLocal=localStorage.getItem(PROJECT_KEY(project.projectId))!==null;
     index.push({...record,cloudOnly:!persistLocal&&!hasLocal}); index.sort((a, b) => b.updatedAt - a.updatedAt);
     if(persistLocal)localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
     localStorage.setItem(PROJECTS_KEY, JSON.stringify(index));
@@ -473,7 +474,9 @@
       for (const remote of remoteProjects) {
         try {
           let local=localProject(remote.id);
-          const metadata={id:remote.id,title:remote.title||'Episodio sin título',contentType:remote.contentType||'episode',status:remote.status||'draft',createdAt:Number(remote.createdAt)||Number(remote.updatedAt)||Date.now(),updatedAt:Number(remote.updatedAt)||Date.now(),panels:Number(remote.panels)||0,cloudOnly:!local};
+          const priorRecord=localProjects.find(record=>record.id===remote.id);
+          const remoteTitle=remote.title&&remote.title!=='Episodio sin título'?remote.title:(local?.title||priorRecord?.title||'Episodio sin título');
+          const metadata={id:remote.id,title:remoteTitle,contentType:remote.contentType||'episode',status:remote.status||'draft',createdAt:Number(remote.createdAt)||Number(remote.updatedAt)||Date.now(),updatedAt:Number(remote.updatedAt)||Date.now(),panels:Number(remote.panels)||0,cloudOnly:!local};
           const indexPos=nextIndex.findIndex(record=>record.id===remote.id);
           if(indexPos>=0)nextIndex[indexPos]={...nextIndex[indexPos],...metadata,cloudOnly:!local};else nextIndex.push(metadata);
           if(!remote.etag){syncStep=`actualizar el índice de «${String(remote.title||remote.id||'borrador').slice(0,80)}»`;continue;}
@@ -535,6 +538,7 @@
     try{
       const latest=await readRemoteProject(projectId);
       if(action==='cloud'){
+        localStorage.removeItem(PROJECT_KEY(projectId));
         storeRemoteProject(latest.project,latest.etag);
         cloudConflicts.delete(projectId);pendingCloudConflict=null;$('#cloud-conflict-dialog').close();
         if(state?.projectId===projectId){state=normalizeProject(latest.project);showEditor();}else renderProjectList();
@@ -725,6 +729,7 @@
   function showEditor() {
     $('#project-home').hidden = true; $('#editor-view').hidden = false;
     $('#export-preset').value = state.format;
+    $('#export-style').value = state.exportStyle || 'classic';
     render();
   }
   function renderProjectList() {
@@ -764,8 +769,9 @@
       const publicationClass = record.status === 'published' ? 'published' : record.status === 'scheduled' ? 'scheduled' : reviewState ? 'ready' : '';
       const kindLabels = {episode:'Episodio',copy:'Texto / copy',banner:'Banner',section:'Sección web',design:'Diseño gráfico',mockup:'Diseño de producto'};
       const isEpisode = (project.contentType || record.contentType || 'episode') === 'episode';
-      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${publicationClass}">${publicationLabel}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || record.panels || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
-      const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${record.title}`); open.append(preview,main); open.onclick = () => openProject(record.id);
+      const displayTitle=project.title&&project.title!=='Episodio sin título'?project.title:record.title;
+      main.innerHTML = `<strong>${escapeHTML(displayTitle)}</strong><span class="status-pill ${publicationClass}">${publicationLabel}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || record.panels || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
+      const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${displayTitle}`); open.append(preview,main); open.onclick = () => openProject(record.id);
       const menu = document.createElement('details'); menu.className = 'project-card-menu';
       menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
       menu.addEventListener('click', event => event.stopPropagation());
@@ -2193,6 +2199,14 @@
     const entries = await getEditorCharacterCatalog();
     return (ids || []).map(value => entries.find(entry => entry.id === value)?.name || value);
   }
+  function updateRetirementDateMinimum(startSelector, endSelector) {
+    const start=$(startSelector),end=$(endSelector);
+    if(!start||!end)return;
+    const parts=String(start.value||'').split('-').map(Number);
+    if(parts.length!==3||parts.some(value=>!value)){end.removeAttribute('min');return;}
+    const nextDay=new Date(Date.UTC(parts[0],parts[1]-1,parts[2]+1)).toISOString().slice(0,10);
+    end.min=nextDay;
+  }
 
   async function openPublishEpisodeDialog() {
     if (state.contentType !== 'episode') {
@@ -2210,6 +2224,7 @@
     const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     $('#publish-episode-date').value = state.publishedAt || localToday;
     $('#publish-episode-unpublish-date').value = state.unpublishAt || '';
+    updateRetirementDateMinimum('#publish-episode-date','#publish-episode-unpublish-date');
     let catalog = { episodes: [] };
     try {
       const response = await fetch('/api/editor/episodes', { credentials: 'same-origin', cache: 'no-store' });
@@ -2397,6 +2412,7 @@
     $('#manage-episode-title-en').value = entry.title?.en || '';
     $('#manage-episode-date').value = entry.publishedAt || '';
     $('#manage-episode-unpublish-date').value = entry.unpublishAt || '';
+    updateRetirementDateMinimum('#manage-episode-date','#manage-episode-unpublish-date');
     $('#manage-episode-characters').value = (await characterNamesFromIds(entry.characters || [])).join(', ');
     $('#manage-episode-objects').value = (entry.objects || []).join(', ');
     $('#manage-episode-themes').value = (entry.themes || []).join(', ');
@@ -2623,7 +2639,9 @@
     $('#publish-episode-close').onclick = () => $('#publish-episode-dialog').close();
     $('#publish-episode-cancel').onclick = () => $('#publish-episode-dialog').close();
     $('#publish-episode-form').addEventListener('submit', submitEpisodePublication);
+    $('#publish-episode-date').addEventListener('change',()=>updateRetirementDateMinimum('#publish-episode-date','#publish-episode-unpublish-date'));
     $('#publish-episode-dialog').addEventListener('cancel', event => { if ($('#publish-episode-form').dataset.pending === 'true') event.preventDefault(); });
+    $('#manage-episode-date').addEventListener('change',()=>updateRetirementDateMinimum('#manage-episode-date','#manage-episode-unpublish-date'));
     $('#export-preview-dialog').addEventListener('close',closeExportPreview);
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;
