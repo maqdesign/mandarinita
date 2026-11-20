@@ -40,6 +40,7 @@
   const createBannerButton = document.querySelector('#create-banner');
   const duplicateBannerButton = document.querySelector('#duplicate-banner');
   const deleteBannerButton = document.querySelector('#delete-banner');
+  const publishBannerButton = document.querySelector('#publish-banner');
   const deleteBannerDialog = document.querySelector('#delete-banner-dialog');
   const confirmDeleteBanner = document.querySelector('#confirm-delete-banner');
   const heroPreviewToast = document.querySelector('#hero-preview-toast');
@@ -251,6 +252,15 @@
       siteContentSaveState.setAttribute('aria-label', saving ? (savingDraft ? 'Guardando borrador en la nube' : 'Guardando cambios') : bannerDirty ? 'Hay cambios sin guardar' : selectedIsDraft ? 'Borrador guardado en la nube' : 'Todos los cambios están guardados');
     }
     if (submit && !saving) submit.disabled = !bannerDirty;
+    if (publishBannerButton) {
+      const banner = selectedBanner();
+      const label = publishBannerButton.querySelector('span');
+      if (label) label.textContent = banner?.enabled ? 'Publicar cambios' : `Publicar en ${contentEnvironmentLabel}`;
+      publishBannerButton.disabled = saving || !banner || (banner.enabled && !bannerDirty);
+      publishBannerButton.title = banner?.enabled
+        ? 'Guarda y publica los cambios pendientes del carrusel en Producción.'
+        : `Activa el banner seleccionado y publícalo en ${contentEnvironmentLabel}.`;
+    }
     updateDeleteBannerState();
   }
   function hasPendingChangesExcept(id) {
@@ -894,7 +904,7 @@
       duplicateBannerButton.disabled = bannerItems.length >= 8;
     }
   }
-  async function saveBanners() {
+  async function saveBanners({ publishSelected = false } = {}) {
     captureBannerForm();
     for (const timer of draftAutosaveTimers.values()) window.clearTimeout(timer);
     draftAutosaveTimers.clear();
@@ -902,6 +912,14 @@
     captureBannerForm();
     for (const timer of draftAutosaveTimers.values()) window.clearTimeout(timer);
     draftAutosaveTimers.clear();
+    if (publishSelected) {
+      const banner = selectedBanner();
+      if (!banner) { setSiteContentStatus('Selecciona un banner para publicarlo.'); return; }
+      banner.enabled = true;
+      renderBannerList();
+      updateBannerPreview();
+      updateBannerSaveState();
+    }
     if (!bannerDirty) { setSiteContentStatus('No hay cambios pendientes.'); return; }
     const submit = siteContentForm.querySelector('[type="submit"]');
     if (submit.dataset.busy === 'true') return;
@@ -922,7 +940,18 @@
       fillBannerForm();
       updateBannerSaveState();
       setBannerStatus(`Cambios publicados en ${contentEnvironmentLabel}.`);
-      setSiteContentStatus(`Listo: los banners ya aparecen en ${contentEnvironmentLabel}. Recarga la portada para verlos.`);
+      const publishedBanner = bannerItems.find(item => item.id === selectedBannerId);
+      const startsAt = Date.parse(publishedBanner?.fields['hero.startAt']?.es || '');
+      const endsAt = Date.parse(publishedBanner?.fields['hero.endAt']?.es || '');
+      const scheduled = Number.isFinite(startsAt) && startsAt > Date.now();
+      const expired = Number.isFinite(endsAt) && endsAt <= Date.now();
+      setSiteContentStatus(publishedBanner?.enabled && scheduled
+        ? `Banner publicado y programado para aparecer en ${contentEnvironmentLabel} a la hora indicada.`
+        : publishedBanner?.enabled && expired
+          ? `Banner publicado en ${contentEnvironmentLabel}, pero su fecha de vencimiento ya pasó.`
+          : publishedBanner?.enabled
+            ? `Banner publicado en ${contentEnvironmentLabel}. Ya puede aparecer en la portada.`
+            : `Cambios guardados en ${contentEnvironmentLabel}. Este banner sigue como borrador; usa Publicar para mostrarlo en la portada.`);
     } catch (error) {
       setSiteContentStatus(error.message);
       setBannerStatus(error.message);
@@ -981,6 +1010,7 @@
     event.preventDefault();
     await saveBanners();
   });
+  publishBannerButton?.addEventListener('click', () => { void saveBanners({ publishSelected: true }); });
   document.addEventListener('keydown', event => {
     if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 's' || currentView !== 'sitio' || !bannerDirty) return;
     event.preventDefault();
