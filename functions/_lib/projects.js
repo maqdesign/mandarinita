@@ -12,6 +12,16 @@ export function projectObjectKey(id) {
   return `${PROJECT_PREFIX}${id}.mandarinita`;
 }
 
+export async function pruneProjectVersions(env, id, keep = 30) {
+  const prefix = `users/mauricio/project-versions/${id}/`;
+  const listed = await env.MANDARINITA_PROJECTS.list({ prefix, limit: 1000, include: ['customMetadata'] });
+  const sorted = (listed.objects || []).sort((a, b) =>
+    (Number(b.customMetadata?.snapshotAt) || b.uploaded?.getTime?.() || 0) -
+    (Number(a.customMetadata?.snapshotAt) || a.uploaded?.getTime?.() || 0)
+  );
+  for (const object of sorted.slice(Math.max(0, keep))) await env.MANDARINITA_PROJECTS.delete(object.key);
+}
+
 export async function authorizeProjectRequest(context, write = false) {
   const { request, env } = context;
   if (!isConfigured(env)) return { response: json({ error: 'La sincronización no está configurada.' }, 503) };

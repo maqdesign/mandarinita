@@ -1,4 +1,4 @@
-import { authorizeProjectRequest, isValidProjectId, projectObjectKey, PROJECT_MAX_BYTES } from '../../_lib/projects.js';
+import { authorizeProjectRequest, isValidProjectId, projectObjectKey, pruneProjectVersions, PROJECT_MAX_BYTES } from '../../_lib/projects.js';
 import { json } from '../../_lib/session.js';
 
 export async function onRequestGet(context) {
@@ -42,7 +42,34 @@ export async function onRequestPut(context) {
     return json({ error: 'Falta la versión esperada del proyecto. Vuelve a sincronizar antes de guardar.', code: 'precondition_required' }, 428);
   }
 
-  const saved = await env.MANDARINITA_PROJECTS.put(projectObjectKey(id), JSON.stringify(project), {
+  // Keep a sparse, recoverable history in the same private R2 bucket. Snapshot
+  // only when content changed and at most once every five minutes.
+  const key = projectObjectKey(id);
+  const previous = await env.MANDARINITA_PROJECTS.get(key);
+  let snapshotKey = null;
+  if (previous) {
+    if (ifMatch && previous.httpEtag !== ifMatch) {
+      return json({ error: 'Este proyecto cambió en otro dispositivo. Vuelve a sincronizar antes de guardar.', code: 'version_conflict' }, 412);
+    }
+    const previousText = await previous.text();
+    const nextText = JSON.stringify(project);
+    if (previousText !== nextText) {
+      const list = await env.MANDARINITA_PROJECTS.list({ prefix: `users/mauricio/project-versions/${id}/`, limit: 1000, include: ['customMetadata'] });
+      const latestAt = Math.max(0, ...(list.objects || []).map(object => Number(object.customMetadata?.snapshotAt) || 0));
+      if (Date.now() - latestAt >= 5 * 60 * 1000) {
+        const versionId = crypto.randomUUID();
+        snapshotKey = `users/mauricio/project-versions/${id}/${versionId}.mandarinita`;
+        let previousProject = {};
+        try { previousProject = JSON.parse(previousText); } catch { /* Keep the snapshot even if legacy metadata is incomplete. */ }
+        await env.MANDARINITA_PROJECTS.put(snapshotKey, previousText, {
+          httpMetadata: { contentType: 'application/vnd.mandarinita+json; charset=utf-8' },
+          customMetadata: { versionId, projectId: id, title: String(previousProject.title || previous.customMetadata?.title || 'Episodio sin título').slice(0, 180), updatedAt: String(Number(previousProject.updatedAt) || Number(previous.customMetadata?.updatedAt) || 0), snapshotAt: String(Date.now()), sourceEtag: previous.httpEtag }
+        });
+      }
+    }
+  }
+
+  const saved = await env.MANDARINITA_PROJECTS.put(key, JSON.stringify(project), {
     onlyIf: request.headers,
     httpMetadata: { contentType: 'application/vnd.mandarinita+json; charset=utf-8' },
     customMetadata: {
@@ -54,7 +81,11 @@ export async function onRequestPut(context) {
       updatedAt: String(updatedAt)
     }
   });
-  if (!saved) return json({ error: 'Este proyecto cambió en otro dispositivo. Tu copia local se conservó; compara las dos versiones antes de continuar.', code: 'version_conflict' }, 412);
+  if (!saved) {
+    if (snapshotKey) await env.MANDARINITA_PROJECTS.delete(snapshotKey);
+    return json({ error: 'Este proyecto cambió en otro dispositivo. Tu copia local se conservó; compara las dos versiones antes de continuar.', code: 'version_conflict' }, 412);
+  }
+  if (snapshotKey) await pruneProjectVersions(env, id);
   return json({ ok: true, id, title: String(project.title || 'Episodio sin título'), updatedAt, etag: saved.httpEtag }, 200, { ETag: saved.httpEtag });
 }
 

@@ -130,6 +130,7 @@
   // Small inline subset of the open-source Lucide icon set (ISC) keeps controls crisp offline.
   const ICON = {
     more: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
     eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
     eyeOff: '<path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a15 15 0 0 1-3.2 4.1M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7a10 10 0 0 0 4-.8"/>',
@@ -773,13 +774,67 @@
       main.innerHTML = `<strong>${escapeHTML(displayTitle)}</strong><span class="status-pill ${publicationClass}">${publicationLabel}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || record.panels || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
       const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${displayTitle}`); open.append(preview,main); open.onclick = () => openProject(record.id);
       const menu = document.createElement('details'); menu.className = 'project-card-menu';
-      menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
+      menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="history">${svgIcon('clock')}<span>Historial de versiones</span></button><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
       menu.addEventListener('click', event => event.stopPropagation());
+      menu.querySelector('[data-action="history"]').onclick = () => { menu.open = false; openVersionHistory(record.id); };
       menu.querySelector('[data-action="duplicate"]').onclick = () => { menu.open = false; duplicateProject(record.id); };
       menu.querySelector('[data-action="delete"]').onclick = () => { menu.open = false; requestDeleteProject(record.id); };
       card.append(open,menu);
       list.append(card);
     });
+  }
+  let historyProjectId = null, historyEtag = '';
+  async function openVersionHistory(projectId) {
+    historyProjectId = projectId; historyEtag = '';
+    $('#version-history-list').replaceChildren();
+    $('#version-history-status').textContent = 'Cargando versiones…';
+    $('#version-history-dialog').showModal();
+    await refreshVersionHistory();
+  }
+  async function refreshVersionHistory() {
+    const status = $('#version-history-status'), list = $('#version-history-list');
+    if (!historyProjectId) return;
+    status.textContent = 'Consultando el historial privado…'; list.replaceChildren();
+    try {
+      const result = await cloudFetch(`/api/projects/${encodeURIComponent(historyProjectId)}/versions`);
+      historyEtag = result.etag || '';
+      const versions = Array.isArray(result.versions) ? result.versions : [];
+      if (!versions.length) { status.textContent = 'Aún no hay puntos de recuperación. Se crearán automáticamente cuando el borrador cambie.'; return; }
+      status.textContent = `${versions.length} punto${versions.length === 1 ? '' : 's'} de recuperación · Se conservan hasta 30 versiones recientes.`;
+      versions.forEach(version => {
+        const row = document.createElement('li'); row.className = 'version-history-item';
+        const copy = document.createElement('div');
+        const title = document.createElement('strong'); title.textContent = version.title || 'Versión anterior';
+        const date = document.createElement('small'); date.textContent = version.snapshotAt ? new Date(version.snapshotAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' }) : 'Fecha no disponible';
+        copy.append(title, date);
+        const restore = document.createElement('button'); restore.type = 'button'; restore.className = 'button'; restore.textContent = 'Restaurar'; restore.setAttribute('aria-label', `Restaurar ${title.textContent}, ${date.textContent}`);
+        restore.onclick = () => restoreProjectVersion(version.id, restore);
+        row.append(copy, restore); list.append(row);
+      });
+    } catch (error) { status.textContent = error.message || 'No se pudo cargar el historial.'; }
+  }
+  async function restoreProjectVersion(versionId, button) {
+    const id = historyProjectId;
+    if (!id || !historyEtag) { toast('Actualiza el historial antes de restaurar.'); return; }
+    if (cloudConflicts.has(id)) { toast('Resuelve primero el conflicto de sincronización de este borrador.'); return; }
+    const local = localProject(id), base = cloudBases.get(id);
+    if (local && (!base || Number(local.updatedAt) > Number(base.localUpdatedAt || 0))) {
+      toast('Hay cambios locales pendientes. Sincronízalos antes de restaurar una versión.'); return;
+    }
+    if (!window.confirm('¿Restaurar esta versión? La versión actual se guardará primero en el historial para que puedas recuperarla.')) return;
+    button.disabled = true; $('#version-history-status').textContent = 'Restaurando…';
+    try {
+      await cloudFetch(`/api/projects/${encodeURIComponent(id)}/versions/${encodeURIComponent(versionId)}`, { method: 'POST', headers: { 'If-Match': historyEtag } });
+      const latest = await readRemoteProject(id);
+      storeRemoteProject(latest.project, latest.etag, { persistLocal: true });
+      if (state?.projectId === id) { state = normalizeProject(latest.project); undoStack = []; redoStack = []; showEditor(); }
+      else renderProjectList();
+      toast('Versión restaurada. La versión anterior también quedó guardada en el historial.');
+      await refreshVersionHistory();
+    } catch (error) {
+      $('#version-history-status').textContent = error.message || 'No se pudo restaurar esa versión.';
+      if (error.status === 412) await refreshVersionHistory();
+    } finally { button.disabled = false; }
   }
   async function openProject(projectId) {
     try {
@@ -2619,6 +2674,9 @@
     $('#manage-published-episode-close').onclick = () => $('#manage-published-episode-dialog').close();
     $('#manage-published-episode-cancel').onclick = () => $('#manage-published-episode-dialog').close();
     $('#manage-published-episode-dialog').addEventListener('cancel', event => { if ($('#manage-published-episode-form').dataset.pending === 'true') event.preventDefault(); });
+    $('#version-history-refresh').onclick = refreshVersionHistory;
+    $('#version-history-close').onclick = () => $('#version-history-dialog').close();
+    $('#version-history-dialog').addEventListener('close', () => { historyProjectId = null; historyEtag = ''; });
     $$('.content-type-card').forEach(button=>button.onclick=()=>{$('#new-content-dialog').close();createContentDraft(button.dataset.contentType);});
     $$('.design-template-card').forEach(button=>button.onclick=()=>{$('#design-template-dialog').close();if(changingMockup)changeProductMockup(button.dataset.designTemplate);else createDesignProject(button.dataset.designTemplate);changingMockup=false;});
     $$('.text-style-card').forEach(button=>button.onclick=()=>{$('#text-style-dialog').close();addTextBlock('Escribe aquí…',button.dataset.textStyle);});
