@@ -547,3 +547,6 @@ dialog.publish-episode-dialog::backdrop{background:#171411a8;backdrop-filter:blu
  .cloud-sync-banner .cloud-retry{grid-column:2;grid-row:2;justify-self:start;margin-top:5px}
  .cloud-banner-dismiss{grid-column:3;grid-row:1}
 }
+
+.publish-readiness-note{margin:14px 0;padding:11px 13px;border-left:3px solid var(--orange);border-radius:0 9px 9px 0;background:var(--surface-soft);color:var(--ink);font-size:12px;line-height:1.5}
+.publish-readiness-note strong{color:var(--orange)}
