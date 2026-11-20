@@ -10,6 +10,16 @@ window.mandarinitaEpisodesCatalogPromise ||= fetch('episodes.json', { cache: 'no
     const published = await fetch('/api/published-episodes', { cache: 'no-store' });
     if (published.ok) {
       const result = await published.json();
+      const values = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date()).map(part => [part.type, part.value]));
+      const today = `${values.year}-${values.month}-${values.day}`;
+      const overrides = new Map((Array.isArray(result.overrides) ? result.overrides : []).map(item => [item.id, item]));
+      catalog.episodes = catalog.episodes.map(entry => {
+        const override = overrides.get(entry.id);
+        if (!override) return entry;
+        const status = override.status === 'scheduled' && override.publishedAt <= today ? 'published'
+          : override.unpublishAt && override.unpublishAt <= today ? 'unpublished' : override.status;
+        return { ...entry, ...override.metadata, title: override.title || entry.title, episodeNumber: override.episodeNumber ?? entry.episodeNumber, publishedAt: override.publishedAt || entry.publishedAt, status };
+      });
       const currentIds = new Set(catalog.episodes.map(entry => entry.id));
       catalog.episodes.push(...(Array.isArray(result.episodes) ? result.episodes.filter(entry => !currentIds.has(entry.id)) : []));
     }

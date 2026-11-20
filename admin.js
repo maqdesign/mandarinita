@@ -17,7 +17,7 @@
   const refreshAnalytics = document.querySelector('#refresh-analytics');
   const analyticsStatus = document.querySelector('#analytics-status');
   const analyticsVisits = document.querySelector('#analytics-visits');
-  const analyticsRequests = document.querySelector('#analytics-requests');
+  const analyticsInquiryCount = document.querySelector('#analytics-requests');
   const analyticsDays = document.querySelector('#analytics-days');
   const siteContentForm = document.querySelector('#site-content-form');
   const siteContentStatus = document.querySelector('#site-content-status');
@@ -195,11 +195,13 @@
   heroImagePreview?.addEventListener('load', updateEpisodeImageFrame);
   async function loadInquiries() {
     refreshInbox.disabled = true;
+    inboxStatus.textContent = 'Consultando el buzón…';
     try {
       const response = await fetch('/api/admin/inquiries?limit=50', { credentials: 'same-origin', cache: 'no-store' });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'No se pudo abrir el buzón.');
-      const inquiries = result.inquiries || [];
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || `El servidor no pudo abrir el buzón (${response.status}).`);
+      if (!Array.isArray(result.inquiries)) throw new Error('El buzón respondió con un formato inesperado. Actualiza para volver a intentarlo.');
+      const inquiries = result.inquiries;
       const newCount = inquiries.filter(item => item.status === 'new').length;
       inboxCount.textContent = newCount ? `${newCount} nuevas` : 'Al día';
       inboxStatus.textContent = inquiries.length ? `${inquiries.length} consultas recientes.` : 'Todavía no han llegado consultas.';
@@ -239,10 +241,11 @@
     analyticsStatus.textContent = 'Consultando las visitas de los últimos siete días…';
     try {
       const response = await fetch('/api/admin/analytics', { credentials: 'same-origin', cache: 'no-store' });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'No se pudieron consultar las visitas.');
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || `No se pudieron consultar las estadísticas (${response.status}).`);
+      if (!Array.isArray(result.days)) throw new Error('Las estadísticas respondieron con un formato inesperado. Actualiza para volver a intentarlo.');
       analyticsVisits.textContent = new Intl.NumberFormat('es-DO').format(result.visits || 0);
-      analyticsRequests.textContent = new Intl.NumberFormat('es-DO').format(result.requests || 0);
+      analyticsInquiryCount.textContent = new Intl.NumberFormat('es-DO').format(result.inquiries || 0);
       const max = Math.max(1, ...result.days.map(day => Number(day.visits) || 0));
       analyticsDays.replaceChildren();
       for (const day of result.days) {
@@ -264,12 +267,12 @@
         item.append(track, label, value);
         analyticsDays.append(item);
       }
-      analyticsStatus.textContent = `Datos del ${new Date(`${result.period.start}T12:00:00Z`).toLocaleDateString('es-DO')} al ${new Date(`${result.period.end}T12:00:00Z`).toLocaleDateString('es-DO')}.`;
+      analyticsStatus.textContent = `Datos desde el ${new Date(`${result.period.start}T12:00:00Z`).toLocaleDateString('es-DO')}; las visitas se cuentan desde que se activa esta versión.`;
     } catch (error) {
       analyticsStatus.textContent = error.message;
       showAdminAlert(`No se pudieron cargar las métricas: ${error.message}`);
       analyticsVisits.textContent = '—';
-      analyticsRequests.textContent = '—';
+      analyticsInquiryCount.textContent = '—';
       analyticsDays.replaceChildren();
     } finally { refreshAnalytics.disabled = false; }
   }

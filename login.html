@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fffaf3">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Iniciar sesión · Taller Mandarinita</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root{color-scheme:light dark}
+    body{min-height:100svh;display:grid;place-items:center;margin:0;padding:24px;box-sizing:border-box;background:var(--paper,#fffaf3);color:var(--ink,#302d2a);font:16px/1.55 'Work Sans',system-ui,sans-serif}
+    .login-card{width:min(100%,510px);padding:clamp(24px,6vw,42px);box-sizing:border-box;border:1px solid var(--line,#e9e2da);border-radius:24px;background:var(--surface,#fff);box-shadow:0 22px 70px #302d2a12}
+    .login-brand{display:block;width:154px;height:auto;margin-bottom:32px}.eyebrow{letter-spacing:.14em;font-size:11px;font-weight:750;color:var(--muted,#817970)}
+    h1{margin:8px 0 10px;font:650 clamp(28px,7vw,36px)/1.12 Fredoka,system-ui,sans-serif;letter-spacing:-.025em}
+    .intro{margin:0 0 24px;color:var(--muted,#6f6962)}
+    .login-action{display:flex;justify-content:center;align-items:center;gap:11px;min-height:50px;padding:0 20px;border:0;border-radius:11px;background:var(--orange,#f87209);color:white;text-decoration:none;font-weight:700;box-shadow:0 4px 0 #c34c00}
+    .login-action:hover{filter:brightness(.96)}.login-action:focus-visible,.back-link:focus-visible{outline:3px solid #2878ff;outline-offset:3px}
+    .github-mark{width:21px;height:21px;fill:currentColor}.login-note{margin:24px 0 0;padding:14px 15px;border-radius:12px;background:color-mix(in srgb,var(--paper,#fffaf3),var(--ink,#302d2a) 4%);color:var(--muted,#6f6962);font-size:14px}
+    .login-note strong{color:var(--ink,#302d2a)}.back-link{display:inline-block;margin-top:20px;color:var(--ink,#302d2a);font-size:14px;font-weight:650;text-decoration-thickness:1px;text-underline-offset:3px}
+    @media(prefers-color-scheme:dark){body{background:#211f1d;color:#f8f2eb}.login-card{background:#2b2926;border-color:#46423e;box-shadow:0 22px 70px #0005}.eyebrow,.intro,.login-note{color:#bdb5ab}.login-note{background:#211f1d}.login-note strong,.back-link{color:#f8f2eb}}
+    @media(max-width:420px){body{padding:16px}.login-card{border-radius:18px}.login-brand{margin-bottom:26px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="login-card" aria-labelledby="login-title">
+    <a href="/" aria-label="Mandarinita, volver al sitio"><img class="login-brand" src="/assets/mandarinita-logo.svg" alt="Mandarinita"></a>
+    <span class="eyebrow">TALLER PERSONAL</span>
+    <h1 id="login-title">Inicia sesión para continuar</h1>
+    <p class="intro">El editor y el administrador son espacios privados. Usa la cuenta de GitHub autorizada para abrirlos.</p>
+    <a id="login-action" class="login-action" href="/api/auth/github" aria-label="Continuar con GitHub">
+      <svg class="github-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.23-1.62-1.23-1.62-1.01-.7.08-.69.08-.69 1.12.08 1.7 1.15 1.7 1.15.99 1.69 2.6 1.2 3.23.92.1-.72.39-1.2.7-1.48-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.05 1.15a10.6 10.6 0 0 1 5.55 0c2.12-1.44 3.05-1.15 3.05-1.15.61 1.54.23 2.68.11 2.96.72.78 1.15 1.78 1.15 3 0 4.29-2.61 5.23-5.1 5.51.4.35.75 1.02.75 2.06V22c0 .29.2.63.77.53A11.1 11.1 0 0 0 12 .9Z"/></svg>
+      <span>Continuar con GitHub</span>
+    </a>
+    <p class="login-note"><strong>Consejo para iPhone y iPad:</strong> completa el acceso en el mismo navegador donde abriste esta página. Si se abre dentro de otra app, usa “Abrir en Safari” para que la verificación de seguridad pueda volver al sitio.</p>
+    <a class="back-link" href="/">Volver a Mandarinita.art</a>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const area = params.get('area') === 'admin' ? 'admin' : 'editor';
+    document.querySelector('#login-action').href = `/api/auth/github?area=${area}`;
+    if (area === 'admin') {
+      document.querySelector('#login-title').textContent = 'Inicia sesión en el administrador';
+      document.querySelector('.intro').textContent = 'El administrador es un espacio privado. Usa la cuenta de GitHub autorizada para continuar.';
+    }
+    if (params.get('error') === 'not-configured') {
+      const note = document.querySelector('.login-note');
+      note.textContent = 'El acceso todavía no está configurado para este entorno. Vuelve al sitio o contacta al administrador del taller.';
+    }
+  </script>
+</body>
+</html>

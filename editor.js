@@ -261,13 +261,15 @@
     ['#retry-cloud','#editor-retry-cloud'].forEach(selector => { const retry=$(selector); if(retry){retry.hidden=!(signedIn&&(syncState==='error'||cloudConflicts.size));const label=cloudConflicts.size?'Resolver conflicto':'Reintentar sincronización';retry.classList.add('has-icon');retry.innerHTML=`${svgIcon(cloudConflicts.size?'users':'refresh')}<span class="button-label">${label}</span>`;retry.title=label;retry.setAttribute('aria-label',label);} });
     const footnote = $('#home-footnote');
     const storageLabel = $('#project-storage-label');
-    if (storageLabel) storageLabel.textContent = signedIn ? 'CENTRO DE CONTENIDO · NUBE SINCRONIZADA' : 'CENTRO DE CONTENIDO · BORRADORES';
+    if (storageLabel) storageLabel.textContent = signedIn ? syncState==='error'?'CENTRO DE CONTENIDO · SINCRONIZACIÓN PENDIENTE':syncState==='busy'?'CENTRO DE CONTENIDO · SINCRONIZANDO':syncState==='conflict'?'CENTRO DE CONTENIDO · CONFLICTO POR REVISAR':'CENTRO DE CONTENIDO · NUBE SINCRONIZADA' : 'CENTRO DE CONTENIDO · BORRADORES';
     if (footnote) footnote.textContent = signedIn
-      ? 'Tus borradores y lienzos se sincronizan en la nube privada. Inicia sesión con la misma cuenta autorizada en tus dispositivos para verlos allí.'
+      ? syncState==='error'?'Los cambios recientes siguen guardados en este dispositivo. Revisa el mensaje de sincronización y vuelve a intentarlo.':'Tus borradores y lienzos se sincronizan en la nube privada. Inicia sesión con la misma cuenta autorizada en tus dispositivos para verlos allí.'
       : 'Tus borradores se guardan en este navegador. El archivo .mandarinita sirve para moverlos a otro dispositivo.';
   }
   async function cloudFetch(path, options = {}) {
-    const response = await fetch(path, { cache:'no-store', ...options, credentials: 'same-origin', headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) } });
+    let response;
+    try { response = await fetch(path, { cache:'no-store', ...options, credentials: 'same-origin', headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) } }); }
+    catch (cause) { const error = new Error('El navegador no logró completar la solicitud.'); error.code = 'cloud_network_error'; error.syncPath = path; error.cause = cause; throw error; }
     let body = {};
     try { body = await response.json(); } catch { /* Surface status when a proxy returned a non-JSON response. */ }
     if (!response.ok) { const error=new Error(body.error || `Sincronización: ${response.status}`);error.status=response.status;error.code=body.code||'';throw error; }
@@ -317,9 +319,18 @@
     catch { /* The remote copy is still authoritative even if this tiny cache cannot persist. */ }
   }
   async function readRemoteProject(projectId) {
-    const response=await fetch(`/api/projects/${encodeURIComponent(projectId)}`,{credentials:'same-origin',cache:'no-store'});
+    const path=`/api/projects/${encodeURIComponent(projectId)}`;
+    let response;
+    try { response=await fetch(path,{credentials:'same-origin',cache:'no-store'}); }
+    catch (cause) { const error=new Error('El navegador no logró descargar el borrador.');error.code='cloud_network_error';error.syncPath=path;error.cause=cause;throw error; }
     let project;try{project=await response.json();}catch{project=null;}
     if (!response.ok) { const error=new Error(project?.error||`No se pudo descargar la versión de la nube (error ${response.status}).`);error.status=response.status;error.code=project?.code||'';throw error; }
+    if (!project || typeof project !== 'object' || Array.isArray(project)) { const error=new Error('La nube devolvió un archivo que no es un borrador editable.');error.status=422;error.code='incompatible_remote_project';throw error; }
+    const storedId=project.projectId;
+    project.projectId=projectId;
+    try { validateEditableProject(project); }
+    catch (cause) { const error=new Error(cause instanceof Error?cause.message:'El borrador de la nube usa un formato no compatible.');error.status=422;error.code='incompatible_remote_project';error.cause=cause;throw error; }
+    if (storedId !== projectId) console.warn('Cloud project ID repaired from its storage key', { projectId, hadStoredId: Boolean(storedId) });
     return {project,etag:response.headers.get('ETag')};
   }
   function repairCloudProjectId(project) {
@@ -370,17 +381,20 @@
       }
     }
   }
-  function setSyncFailure(error) {
+  function setSyncFailure(error, step = 'guardar el borrador') {
     if(error?.status===401)cloudAuthExpired=true;
     const message=error?.status===401?'La sesión venció. Vuelve a conectar GitHub para sincronizar.'
       :error?.status===403?'Cloudflare rechazó la solicitud (403). Abre el taller desde mandarinita.art y vuelve a intentar.'
       :error?.status===413?'El archivo supera el límite de 25 MB; descarga el .mandarinita como respaldo.'
+      :error?.name==='QuotaExceededError'?'Este navegador se quedó sin espacio para la copia local. Tus archivos de la nube siguen intactos; libera espacio y vuelve a sincronizar.'
       :error?.status===428?'Esta versión del taller está desactualizada (428). Recarga la página para actualizarla; tu borrador local sigue guardado.'
       :error?.status>=500?`Cloudflare no pudo guardar el borrador (error ${error.status}). Sigue guardado en este dispositivo.`
       :error?.code==='invalid_project_id'?'La nube no aceptó el identificador de este borrador. Se conservó localmente; pulsa “Reintentar sincronización” para volver a intentarlo.'
       :error?.status===400?`La nube rechazó el borrador: ${(error.message||'la solicitud no es válida').replace(/[.!?]+$/,'')}. El borrador local sigue guardado.`
       :Number.isInteger(error?.status)?`No se pudo sincronizar (error ${error.status}). ${error.message&&error.message!==`Sincronización: ${error.status}`?`${error.message} `:''}El borrador sigue guardado en este dispositivo.`
-      :'No se pudo conectar con la nube. El borrador sigue guardado en este dispositivo.';
+      :error?.code==='cloud_network_error'?`El navegador no pudo conectar con Cloudflare${error.syncPath?` al solicitar ${error.syncPath.startsWith('/api/projects/')?'/api/projects/[id]':error.syncPath}`:''}. Comprueba la conexión y reintenta; el borrador sigue guardado en este dispositivo.`
+      :`Falló ${step}${error?.message?`: ${String(error.message).slice(0,180)}`:''}. El borrador sigue guardado en este dispositivo.`;
+    console.error('Cloud synchronization failed', { step, name: error?.name||'Error', code: error?.code||'', status: error?.status||0, endpoint: error?.syncPath||'', message: error?.message||'' });
     setCloudStatus(message,'error');
     if(state)$('#save-state').textContent='Guardado local · sincronización pendiente';
     toast(message);
@@ -436,38 +450,51 @@
     if (!cloudUser || cloudReady || cloudSyncInProgress) return;
     cloudSyncInProgress = true;
     setCloudStatus('Sincronizando borradores…','busy');
+    let syncStep='preparar borradores locales';
     try {
       migrateInvalidLocalProjectIds();
+      syncStep='consultar la lista de la nube';
       const { projects: remoteProjects } = await cloudFetch('/api/projects');
-      const localProjects = listProjects();
+      if(!Array.isArray(remoteProjects)){const error=new Error('La respuesta del servidor no contiene una lista de borradores válida.');error.code='invalid_cloud_project_list';throw error;}
+      const localProjects = listProjects().filter(record=>record&&typeof record==='object'&&!Array.isArray(record));
       const remoteById = new Map(remoteProjects.map(project => [project.id, project]));
+      const skippedRemoteProjects = [];
       for (const remote of remoteProjects) {
-        let local;try { local=JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id))||'null'); } catch { local=null; }
-        if(!local){const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag||remote.etag);continue;}
-        const base=cloudBases.get(remote.id);
-        if(!base){
-          const latest=await readRemoteProject(remote.id);
-          if(JSON.stringify(local)===JSON.stringify(latest.project))saveCloudBase(remote.id,latest.etag,local.updatedAt);
-          else markCloudConflict(remote.id);
-        }else if(base.etag!==remote.etag){
-          if(Number(local.updatedAt)>Number(base.localUpdatedAt))markCloudConflict(remote.id);
-          else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);if(state?.projectId===remote.id){state=normalizeProject(latest.project);render();}}
-        }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
-          cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
-          try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
-        }else saveCloudBase(remote.id,remote.etag,local.updatedAt);
+        try {
+          syncStep=`leer «${String(remote.title||remote.id||'borrador').slice(0,80)}» desde la nube`;
+          let local;try { local=JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id))||'null'); } catch { local=null; }
+          if(!local){const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag||remote.etag);continue;}
+          const base=cloudBases.get(remote.id);
+          if(!base){
+            const latest=await readRemoteProject(remote.id);
+            if(JSON.stringify(local)===JSON.stringify(latest.project))saveCloudBase(remote.id,latest.etag,local.updatedAt);
+            else markCloudConflict(remote.id);
+          }else if(base.etag!==remote.etag){
+            if(Number(local.updatedAt)>Number(base.localUpdatedAt))markCloudConflict(remote.id);
+            else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);if(state?.projectId===remote.id){state=normalizeProject(latest.project);render();}}
+          }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
+            syncStep=`guardar «${String(local.title||remote.id||'borrador').slice(0,80)}» en la nube`;
+            cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
+            try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
+          }else saveCloudBase(remote.id,remote.etag,local.updatedAt);
+        } catch (error) {
+          if(error?.code==='incompatible_remote_project'||error?.status===404){skippedRemoteProjects.push(remote);console.warn('A remote draft could not be imported', { id: remote.id, code: error.code||'project_not_found' });continue;}
+          throw error;
+        }
       }
       for (const record of localProjects) {
         if (!remoteById.has(record.id)) {
+          syncStep=`subir «${String(record.title||record.id||'borrador').slice(0,80)}» a la nube`;
           const local=localProject(record.id);
           if(local)try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(record.id);else throw error;}
         }
       }
       cloudReady = true;
-      setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':'Sincronización al día',cloudConflicts.size?'conflict':'ready');
+      const skippedMessage=skippedRemoteProjects.length?`${skippedRemoteProjects.length} borrador${skippedRemoteProjects.length===1?'':'es'} de la nube tiene${skippedRemoteProjects.length===1?'':'n'} un formato que esta versión no puede abrir. El resto sí se sincronizó; esos archivos no se modificaron.`:'';
+      setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':skippedMessage||'Sincronización al día',cloudConflicts.size?'conflict':skippedMessage?'error':'ready');
       renderProjectList();
     } catch (error) {
-      cloudReady=false;setSyncFailure(error);
+      cloudReady=false;setSyncFailure(error,syncStep);
     } finally { cloudSyncInProgress = false; }
   }
   function openCloudConflictDialog() {
@@ -539,7 +566,7 @@
   async function setupCloudSync() {
     const button = $('#github-sync');
     button.onclick = async () => {
-      if (cloudAuthExpired) { window.location.assign('/api/auth/github'); return; }
+      if (cloudAuthExpired) { window.location.assign('/login.html?area=editor'); return; }
       if (cloudUser) {
         try {
           await cloudFetch('/api/auth/logout', { method: 'POST' });
@@ -554,7 +581,7 @@
         return;
       }
       if (!cloudConfigured) { toast('La sincronización requiere configurar OAuth de GitHub y almacenamiento R2 en Cloudflare.'); return; }
-      window.location.assign('/api/auth/github');
+      window.location.assign('/login.html?area=editor');
     };
     $('#retry-cloud').onclick=retryCloudSync;$('#editor-retry-cloud').onclick=retryCloudSync;
     window.addEventListener('focus',scheduleCloudRefresh);
@@ -669,7 +696,7 @@
     return groups.length > 0 && groups.every(group => group.some(term => text.includes(term)));
   }
   function showHome() {
-    $('#editor-view').hidden = true; $('#project-home').hidden = false; renderProjectList();
+    $('#editor-view').hidden = true; $('#project-home').hidden = false; renderProjectList(); showHomeSection('drafts');
   }
   function showEditor() {
     $('#project-home').hidden = true; $('#editor-view').hidden = false;
@@ -2083,6 +2110,51 @@
     return value.slice(0, 300);
   }
 
+  let publishedEpisodeRecords = [];
+  let editorCharacterCatalog = null;
+  async function getEditorCharacterCatalog() {
+    if (!editorCharacterCatalog) editorCharacterCatalog = fetch('/characters.json', { cache: 'no-cache' }).then(response => response.ok ? response.json() : { characters: [] }).then(data => data.characters || []).catch(() => []);
+    return editorCharacterCatalog;
+  }
+  const splitEditorialList = value => [...new Set(String(value || '').split(/[\n,;]+/).map(item => item.trim()).filter(Boolean))].slice(0, 24);
+  function episodeCanvasMetadata() {
+    const imageItems = state.panels.flatMap(panel => panel.items.filter(item => item.type === 'image'));
+    const characters = [...new Set(imageItems.flatMap(item => {
+      const person = people.find(candidate => candidate.name === item.name || candidate.variants?.some(variant => variant.name === item.name || variant.src === item.src));
+      return person ? [person.name] : [];
+    }))];
+    const objects = [...new Set(imageItems.filter(item => item.category === 'object').map(item => item.name).filter(Boolean))];
+    const swatches = [...new Set(state.panels.map(panel => panel.backgroundColor).concat(state.panels.flatMap(panel => panel.items.flatMap(item => [item.color, item.fillColor]))).filter(value => typeof value === 'string' && /^#[\da-f]{6}$/i.test(value)))];
+    const knownColorNames = { '#f87209': 'naranja Mandarinita', '#607d3b': 'verde Mandarinita', '#fac421': 'amarillo Mandarinita', '#ffc928': 'amarillo sol', '#fff8ec': 'crema Mandarinita', '#282522': 'tinta oscura', '#ffffff': 'blanco' };
+    const colors = [...new Set(swatches.flatMap(color => [color.toUpperCase(), knownColorNames[color.toLowerCase()]].filter(Boolean)))];
+    const spokenText = state.panels.flatMap(panel => panel.items.filter(item => item.type === 'text' || item.type === 'bubble').map(item => String(item.text || '').trim())).filter(Boolean).join('\n');
+    return { characters, objects, themes: [], colors, searchTerms: [...new Set(imageItems.map(item => item.name).filter(Boolean))], spokenText, externalLinks: [] };
+  }
+  function parseExternalLinks(value) {
+    return String(value || '').split('\n').map(line => line.trim()).filter(Boolean).slice(0, 12).flatMap(line => {
+      const [rawLabel, ...parts] = line.split('|');
+      const url = (parts.length ? parts.join('|') : rawLabel).trim();
+      const label = (parts.length ? rawLabel : (() => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return 'Enlace'; } })()).trim();
+      try { return /^https:$/.test(new URL(url).protocol) && label ? [{ label: label.slice(0, 60), url: new URL(url).href }] : []; } catch { return []; }
+    });
+  }
+  function externalLinksText(links) { return (links || []).map(link => `${link.label} | ${link.url}`).join('\n'); }
+  async function characterIdsFromNames(value) {
+    const entries = await getEditorCharacterCatalog();
+    const normalize = text => String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim();
+    const tokens = splitEditorialList(value);
+    const ids = [], unknown = [];
+    for (const token of tokens) {
+      const match = entries.find(entry => entry.id === token || normalize(entry.name) === normalize(token) || (entry.aliases || []).some(alias => normalize(alias) === normalize(token)));
+      if (match) ids.push(match.id); else unknown.push(token);
+    }
+    return { ids: [...new Set(ids)], unknown };
+  }
+  async function characterNamesFromIds(ids) {
+    const entries = await getEditorCharacterCatalog();
+    return (ids || []).map(value => entries.find(entry => entry.id === value)?.name || value);
+  }
+
   async function openPublishEpisodeDialog() {
     if (state.contentType !== 'episode') {
       const previousType = state.contentType || 'diseño';
@@ -2098,20 +2170,26 @@
     $('#publish-episode-title-en').value = state.episodeTitleEn || state.title || '';
     const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     $('#publish-episode-date').value = state.publishedAt || localToday;
-    const catalogPromise = window.mandarinitaEpisodesCatalogPromise || fetch('/episodes.json', { cache: 'no-cache' }).then(response => response.ok ? response.json() : { episodes: [] }).then(async catalog => {
-      try {
-        const response = await fetch('/api/published-episodes', { cache: 'no-store' });
-        if (response.ok) {
-          const published = await response.json();
-          const ids = new Set((catalog.episodes || []).map(entry => entry.id));
-          catalog.episodes.push(...(published.episodes || []).filter(entry => !ids.has(entry.id)));
-        }
-      } catch { /* The server validates episode numbers again before publishing. */ }
-      return catalog;
-    });
-    const catalog = await catalogPromise.catch(() => ({ episodes: [] }));
+    $('#publish-episode-unpublish-date').value = state.unpublishAt || '';
+    let catalog = { episodes: [] };
+    try {
+      const response = await fetch('/api/editor/episodes', { credentials: 'same-origin', cache: 'no-store' });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Inicia sesión para consultar el catálogo y publicar.');
+      catalog.episodes = result.episodes || [];
+    } catch (error) { toast(error instanceof Error ? error.message : 'No pude consultar el catálogo de episodios.'); return; }
     const maxEpisode = Math.max(0, ...(catalog.episodes || []).map(entry => Number(entry.episodeNumber) || 0));
     $('#publish-episode-number').value = state.episodeNumber || maxEpisode + 1;
+    const inferred = episodeCanvasMetadata();
+    const saved = state.editorialMetadata || {};
+    const characterNames = saved.characters ? await characterNamesFromIds(saved.characters) : inferred.characters;
+    $('#publish-characters').value = characterNames.join(', ');
+    $('#publish-objects').value = (saved.objects || inferred.objects).join(', ');
+    $('#publish-themes').value = (saved.themes || []).join(', ');
+    $('#publish-colors').value = (saved.colors || inferred.colors).join(', ');
+    $('#publish-search-terms').value = (saved.searchTerms || inferred.searchTerms).join(', ');
+    $('#publish-spoken-text').value = saved.spokenText || inferred.spokenText;
+    $('#publish-external-links').value = externalLinksText(saved.externalLinks || []);
     const descriptions = $('#publish-panel-descriptions');
     descriptions.replaceChildren();
     state.panels.forEach((panel, index) => {
@@ -2155,8 +2233,19 @@
     try {
       const episodeNumber = Number($('#publish-episode-number').value);
       const publishedAt = $('#publish-episode-date').value;
+      const unpublishAt = $('#publish-episode-unpublish-date').value || null;
       const title = { es: String(state.title || '').trim(), en: $('#publish-episode-title-en').value.trim() };
       const idValue = state.publishedEpisodeId || `ep-${String(state.projectId || '').replace(/[^a-zA-Z0-9_-]/g, '')}`;
+      const resolvedCharacters = await characterIdsFromNames($('#publish-characters').value);
+      const editorialMetadata = {
+        characters: resolvedCharacters.ids,
+        objects: splitEditorialList($('#publish-objects').value),
+        themes: splitEditorialList($('#publish-themes').value),
+        colors: splitEditorialList($('#publish-colors').value),
+        searchTerms: [...new Set(splitEditorialList($('#publish-search-terms').value).concat(resolvedCharacters.unknown))],
+        spokenText: $('#publish-spoken-text').value.trim(),
+        externalLinks: parseExternalLinks($('#publish-external-links').value)
+      };
       const panels = state.panels.map((panel, index) => ({
         order: index + 1,
         alt: {
@@ -2165,7 +2254,7 @@
         }
       }));
       const payload = new FormData();
-      payload.append('metadata', JSON.stringify({ id: idValue, projectId: state.projectId, episodeNumber, publishedAt, title, exportTemplate: state.exportStyle || 'classic', panels }));
+      payload.append('metadata', JSON.stringify({ id: idValue, projectId: state.projectId, episodeNumber, publishedAt, unpublishAt, title, exportTemplate: state.exportStyle || 'classic', metadata: editorialMetadata, panels }));
       for (let index = 0; index < state.panels.length; index++) {
         const image = await renderPanelPng(state.panels[index], index);
         payload.append(`panel-${index + 1}`, image, `episodio-${episodeNumber}-vineta-${index + 1}.png`);
@@ -2177,6 +2266,8 @@
       state.publishedEpisodeId = idValue;
       state.episodeNumber = episodeNumber;
       state.publishedAt = publishedAt;
+      state.unpublishAt = unpublishAt;
+      state.editorialMetadata = editorialMetadata;
       state.episodeTitleEn = title.en;
       state.status = result.scheduled ? 'scheduled' : 'published';
       autosave();
@@ -2185,6 +2276,7 @@
       $('#publish-episode-cancel').disabled = false;
       const archiveUrl = `${location.origin}/episodios.html`;
       toast(result.scheduled ? `Episodio ${episodeNumber} programado para ${publishedAt}. Se mostrará en ${archiveUrl}.` : `Episodio ${episodeNumber} publicado en ${archiveUrl}.`);
+      if (!$('#published-episodes-section').hidden) loadPublishedEpisodes();
     } catch (error) {
       status.textContent = error instanceof Error ? error.message : 'No se pudo publicar. El borrador sigue guardado.';
       form.dataset.pending = 'false';
@@ -2192,6 +2284,128 @@
       $('#publish-episode-close').disabled = false;
       $('#publish-episode-cancel').disabled = false;
       submit.textContent = state.publishedEpisodeId ? 'Actualizar publicación' : 'Publicar episodio';
+    }
+  }
+
+  function showHomeSection(section) {
+    const published = section === 'published';
+    $('#home-heading').hidden = published;
+    $('#project-list').hidden = published;
+    $('#home-footnote').hidden = published;
+    $('#published-episodes-section').hidden = !published;
+    $('#show-drafts').classList.toggle('active', !published);
+    $('#show-published-episodes').classList.toggle('active', published);
+    if (published) { $('#show-published-episodes').setAttribute('aria-current', 'page'); $('#show-drafts').removeAttribute('aria-current'); }
+    else { $('#show-drafts').setAttribute('aria-current', 'page'); $('#show-published-episodes').removeAttribute('aria-current'); }
+    $('.home-actions').hidden = published;
+    if (published) loadPublishedEpisodes();
+  }
+
+  async function loadPublishedEpisodes() {
+    const status = $('#published-episode-list-status');
+    status.textContent = 'Cargando catálogo…';
+    try {
+      const response = await fetch('/api/editor/episodes', { credentials: 'same-origin', cache: 'no-store' });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No pude cargar los episodios.');
+      publishedEpisodeRecords = Array.isArray(result.episodes) ? result.episodes : [];
+      renderPublishedEpisodes();
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'No pude cargar el catálogo. Vuelve a intentarlo.';
+    }
+  }
+
+  function renderPublishedEpisodes() {
+    const list = $('#published-episode-list');
+    const query = String($('#published-episode-search').value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim();
+    const selectedStatus = $('#published-episode-status-filter').value;
+    const filtered = publishedEpisodeRecords.filter(entry => {
+      if (selectedStatus !== 'all' && entry.status !== selectedStatus) return false;
+      const search = [entry.episodeNumber, entry.title?.es, entry.title?.en, entry.status, entry.publishedAt, entry.unpublishAt, entry.characters, entry.objects, entry.themes, entry.colors, entry.searchTerms, entry.spokenText, entry.externalLinks?.map(link => `${link.label} ${link.url}`)].flat(2).join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');
+      return !query || search.includes(query);
+    });
+    list.replaceChildren();
+    $('#published-episode-list-status').textContent = `${filtered.length} de ${publishedEpisodeRecords.length} episodios · Puedes buscar por personaje, color, tema, frase o número.`;
+    if (!filtered.length) {
+      const empty = document.createElement('div'); empty.className = 'published-episode-empty';
+      empty.textContent = publishedEpisodeRecords.length ? 'No encontré episodios con esa búsqueda.' : 'No hay episodios en el catálogo. Comprueba la sesión y actualiza.';
+      list.append(empty); return;
+    }
+    for (const entry of filtered) {
+      const card = document.createElement('article'); card.className = 'published-episode-card';
+      const thumb = document.createElement('div'); thumb.className = 'published-episode-thumb';
+      if (entry.thumbnail) { const image = document.createElement('img'); image.src = entry.thumbnail; image.alt = ''; image.loading = 'lazy'; image.onerror = () => image.remove(); thumb.append(image); }
+      const copy = document.createElement('div'); copy.className = 'published-episode-copy';
+      const title = document.createElement('strong'); title.textContent = `#${entry.episodeNumber || '—'} · ${entry.title?.es || 'Episodio sin título'}`;
+      const status = document.createElement('small');
+      const labels = { published: 'Publicado', scheduled: 'Programado', unpublished: 'No publicado' };
+      status.textContent = `${labels[entry.status] || entry.status} · ${entry.panelCount} viñetas${entry.publishedAt ? ` · ${entry.publishedAt}` : ''}${entry.unpublishAt ? ` → ${entry.unpublishAt}` : ''} · ${entry.sourceType === 'editor' ? 'Del editor' : 'Catálogo existente'}`;
+      const tags = document.createElement('div'); tags.className = 'published-episode-meta';
+      for (const value of [...(entry.characters || []), ...(entry.themes || []), ...(entry.colors || [])].slice(0, 6)) { const tag = document.createElement('span'); tag.textContent = value; tags.append(tag); }
+      copy.append(title, status); if (tags.childElementCount) copy.append(tags);
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'button'; button.textContent = 'Administrar'; button.onclick = () => openManagePublishedEpisode(entry);
+      card.append(thumb, copy, button); list.append(card);
+    }
+  }
+
+  async function openManagePublishedEpisode(entry) {
+    const form = $('#manage-published-episode-form');
+    $('#manage-published-episode-id').value = entry.id;
+    $('#manage-published-episode-title').textContent = `Episodio ${entry.episodeNumber || ''}`;
+    $('#manage-episode-number').value = entry.episodeNumber || '';
+    $('#manage-episode-status').value = entry.status || 'published';
+    $('#manage-episode-title-es').value = entry.title?.es || '';
+    $('#manage-episode-title-en').value = entry.title?.en || '';
+    $('#manage-episode-date').value = entry.publishedAt || '';
+    $('#manage-episode-unpublish-date').value = entry.unpublishAt || '';
+    $('#manage-episode-characters').value = (await characterNamesFromIds(entry.characters || [])).join(', ');
+    $('#manage-episode-objects').value = (entry.objects || []).join(', ');
+    $('#manage-episode-themes').value = (entry.themes || []).join(', ');
+    $('#manage-episode-colors').value = (entry.colors || []).join(', ');
+    $('#manage-episode-search-terms').value = (entry.searchTerms || []).join(', ');
+    $('#manage-episode-spoken-text').value = entry.spokenText || '';
+    $('#manage-episode-external-links').value = externalLinksText(entry.externalLinks || []);
+    $('#manage-published-episode-status').textContent = '';
+    form.dataset.pending = 'false';
+    $('#manage-published-episode-save').disabled = false;
+    $('#manage-published-episode-close').disabled = false;
+    $('#manage-published-episode-cancel').disabled = false;
+    $('#manage-published-episode-dialog').showModal();
+  }
+
+  async function saveManagedEpisode(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.dataset.pending === 'true' || !form.reportValidity()) return;
+    form.dataset.pending = 'true';
+    const button = $('#manage-published-episode-save');
+    const status = $('#manage-published-episode-status');
+    button.disabled = true; $('#manage-published-episode-close').disabled = true; $('#manage-published-episode-cancel').disabled = true; status.textContent = 'Guardando…';
+    try {
+      const characters = await characterIdsFromNames($('#manage-episode-characters').value);
+      const payload = {
+        id: $('#manage-published-episode-id').value,
+        episodeNumber: Number($('#manage-episode-number').value),
+        title: { es: $('#manage-episode-title-es').value.trim(), en: $('#manage-episode-title-en').value.trim() },
+        status: $('#manage-episode-status').value,
+        publishedAt: $('#manage-episode-date').value,
+        unpublishAt: $('#manage-episode-unpublish-date').value || null,
+        metadata: {
+          characters: characters.ids, objects: splitEditorialList($('#manage-episode-objects').value),
+          themes: splitEditorialList($('#manage-episode-themes').value), colors: splitEditorialList($('#manage-episode-colors').value),
+          searchTerms: [...new Set(splitEditorialList($('#manage-episode-search-terms').value).concat(characters.unknown))],
+          spokenText: $('#manage-episode-spoken-text').value.trim(), externalLinks: parseExternalLinks($('#manage-episode-external-links').value)
+        }
+      };
+      const response = await fetch('/api/editor/episodes', { method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No se pudieron guardar los cambios.');
+      $('#manage-published-episode-dialog').close();
+      await loadPublishedEpisodes();
+      toast(payload.status === 'unpublished' ? `Episodio ${payload.episodeNumber} marcado como no publicado.` : `Cambios guardados para el episodio ${payload.episodeNumber}.`);
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'No se pudieron guardar los cambios.';
+      form.dataset.pending = 'false'; button.disabled = false; $('#manage-published-episode-close').disabled = false; $('#manage-published-episode-cancel').disabled = false;
     }
   }
 
@@ -2341,6 +2555,15 @@
     labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías'); labeledIcon('#add-cta-panel','message','Añadir cierre');
     $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
     $('#new-project').onclick = newProject;
+    $('#show-drafts').onclick = () => showHomeSection('drafts');
+    $('#show-published-episodes').onclick = () => showHomeSection('published');
+    $('#refresh-published-episodes').onclick = loadPublishedEpisodes;
+    $('#published-episode-search').addEventListener('input', renderPublishedEpisodes);
+    $('#published-episode-status-filter').addEventListener('change', renderPublishedEpisodes);
+    $('#manage-published-episode-form').addEventListener('submit', saveManagedEpisode);
+    $('#manage-published-episode-close').onclick = () => $('#manage-published-episode-dialog').close();
+    $('#manage-published-episode-cancel').onclick = () => $('#manage-published-episode-dialog').close();
+    $('#manage-published-episode-dialog').addEventListener('cancel', event => { if ($('#manage-published-episode-form').dataset.pending === 'true') event.preventDefault(); });
     $$('.content-type-card').forEach(button=>button.onclick=()=>{$('#new-content-dialog').close();createContentDraft(button.dataset.contentType);});
     $$('.design-template-card').forEach(button=>button.onclick=()=>{$('#design-template-dialog').close();if(changingMockup)changeProductMockup(button.dataset.designTemplate);else createDesignProject(button.dataset.designTemplate);changingMockup=false;});
     $$('.text-style-card').forEach(button=>button.onclick=()=>{$('#text-style-dialog').close();addTextBlock('Escribe aquí…',button.dataset.textStyle);});

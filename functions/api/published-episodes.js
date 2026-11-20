@@ -2,6 +2,7 @@ import { authorizeProjectRequest, isValidProjectId } from '../_lib/projects.js';
 import { json } from '../_lib/session.js';
 
 const PREFIX = 'published/episodes/';
+const OVERRIDES_PREFIX = `${PREFIX}overrides/`;
 const MAX_PANELS = 20;
 const MAX_PANEL_BYTES = 16 * 1024 * 1024;
 const MAX_TOTAL_BYTES = 80 * 1024 * 1024;
@@ -22,7 +23,25 @@ function santoDomingoToday() {
 }
 
 function visible(manifest, today) {
-  return manifest?.complete === true && (manifest.status === 'published' || manifest.status === 'scheduled' && manifest.publishedAt <= today);
+  return manifest?.complete === true && (manifest.status === 'published' || manifest.status === 'scheduled' && manifest.publishedAt <= today)
+    && (!manifest.unpublishAt || manifest.unpublishAt > today);
+}
+
+async function listOverrides(bucket) {
+  const overrides = [];
+  let cursor;
+  do {
+    const page = await bucket.list({ prefix: OVERRIDES_PREFIX, cursor, limit: 1000 });
+    for (const object of page.objects) {
+      try {
+        const data = await bucket.get(object.key);
+        const value = data && await data.json();
+        if (value && PUBLIC_ID.test(value.id || '')) overrides.push(value);
+      } catch { /* Ignore broken editorial notes and keep the public catalog usable. */ }
+    }
+    cursor = page.truncated ? page.cursor : undefined;
+  } while (cursor);
+  return overrides;
 }
 
 async function listManifests(bucket) {
@@ -49,10 +68,19 @@ function publicEpisode(record) {
     episodeNumber: record.episodeNumber,
     title: record.title,
     publishedAt: record.publishedAt,
+    unpublishAt: record.unpublishAt || null,
     status: 'published',
     type: 'comic',
     complete: true,
     exportTemplate: record.exportTemplate,
+    characters: record.metadata?.characters || [],
+    objects: record.metadata?.objects || [],
+    themes: record.metadata?.themes || [],
+    colors: record.metadata?.colors || [],
+    searchTerms: record.metadata?.searchTerms || [],
+    spokenText: record.metadata?.spokenText || '',
+    externalLinks: record.metadata?.externalLinks || record.source?.externalLinks || [],
+    source: { ...(record.source || {}), externalLinks: record.metadata?.externalLinks || record.source?.externalLinks || [] },
     panels: record.panels.map(panel => ({
       order: panel.order,
       src: `/api/published-episodes/${record.id}/${panel.order}.png?v=${record.revision}`,
@@ -65,11 +93,11 @@ export async function onRequestGet({ env }) {
   if (!env.MANDARINITA_PROJECTS) return json({ episodes: [] });
   try {
     const today = santoDomingoToday();
-    const records = await listManifests(env.MANDARINITA_PROJECTS);
+    const [records, overrides] = await Promise.all([listManifests(env.MANDARINITA_PROJECTS), listOverrides(env.MANDARINITA_PROJECTS)]);
     const episodes = records.filter(record => visible(record, today) && Number.isInteger(record.episodeNumber) && Array.isArray(record.panels))
       .map(publicEpisode)
       .sort((a, b) => (b.publishedAt || '').localeCompare(a.publishedAt || '') || b.episodeNumber - a.episodeNumber);
-    return json({ schemaVersion: 1, episodes }, 200, { 'Cache-Control': 'public, max-age=30, s-maxage=60' });
+    return json({ schemaVersion: 1, episodes, overrides }, 200, { 'Cache-Control': 'public, max-age=30, s-maxage=60' });
   } catch (error) {
     console.error('Published episodes could not be read', { name: error?.name || 'Error' });
     return json({ episodes: [] }, 200, { 'Cache-Control': 'no-store' });
@@ -94,10 +122,13 @@ export async function onRequestPost(context) {
   const title = { es: String(input?.title?.es || '').trim(), en: String(input?.title?.en || '').trim() };
   const publishedAt = input?.publishedAt;
   const panels = input?.panels;
+  const metadata = normalizeMetadata(input?.metadata);
+  const unpublishAt = input?.unpublishAt || null;
   if (!PUBLIC_ID.test(id || '') || !isValidProjectId(projectId) || id !== `ep-${projectId}`) return json({ error: 'El identificador del episodio no es válido.' }, 400);
   if (!Number.isInteger(episodeNumber) || episodeNumber < 1 || episodeNumber > 9999) return json({ error: 'El número de episodio no es válido.' }, 400);
   if (!title.es || title.es.length > 180 || !title.en || title.en.length > 180) return json({ error: 'Escribe el título del episodio en español e inglés (máximo 180 caracteres).' }, 400);
   if (!validDate(publishedAt)) return json({ error: 'Elige una fecha de publicación válida.' }, 400);
+  if (unpublishAt && (!validDate(unpublishAt) || unpublishAt < publishedAt)) return json({ error: 'La fecha para dejar de publicar debe ser igual o posterior a la publicación.' }, 400);
   if (!Array.isArray(panels) || panels.length < 1 || panels.length > MAX_PANELS) return json({ error: `El episodio debe tener entre 1 y ${MAX_PANELS} viñetas.` }, 400);
 
   const checkedPanels = [];
@@ -159,9 +190,11 @@ export async function onRequestPost(context) {
     title,
     publishedAt,
     status,
+    unpublishAt,
     type: 'comic',
     complete: true,
     exportTemplate,
+    metadata,
     source: { kind: 'editor-publish', instagramMediaId: null, instagramPermalink: null },
     panels: checkedPanels.map(({ order, alt }) => ({ order, alt }))
   };
@@ -184,4 +217,23 @@ export async function onRequestPost(context) {
   }
 
   return json({ ok: true, episode: { ...publicEpisode(next), status }, scheduled: status === 'scheduled' }, 200);
+}
+
+function normalizeMetadata(input = {}) {
+  const list = (value, max = 24) => Array.isArray(value)
+    ? [...new Set(value.map(item => String(item || '').trim()).filter(Boolean))].slice(0, max)
+    : [];
+  const externalLinks = Array.isArray(input.externalLinks) ? input.externalLinks.slice(0, 12).flatMap(link => {
+    const label = String(link?.label || '').trim().slice(0, 60);
+    const url = String(link?.url || '').trim();
+    try {
+      const parsed = new URL(url);
+      return label && parsed.protocol === 'https:' ? [{ label, url: parsed.href.slice(0, 500) }] : [];
+    } catch { return []; }
+  }) : [];
+  return {
+    characters: list(input.characters), objects: list(input.objects), themes: list(input.themes),
+    colors: list(input.colors), searchTerms: list(input.searchTerms),
+    spokenText: String(input.spokenText || '').trim().slice(0, 8000), externalLinks
+  };
 }

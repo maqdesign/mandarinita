@@ -15,8 +15,13 @@ export async function onRequestGet(context) {
   const auth = await authorize(context);
   if (auth.response) return auth.response;
   const limit = Math.max(1, Math.min(100, Number(new URL(context.request.url).searchParams.get('limit')) || 50));
-  const result = await auth.db.prepare(`SELECT id, name, email, project, message, status, created_at, updated_at FROM inquiries ORDER BY created_at DESC LIMIT ?`).bind(limit).all();
-  return json({ inquiries: result.results || [] });
+  try {
+    const result = await auth.db.prepare(`SELECT id, name, email, project, message, status, created_at, updated_at FROM inquiries ORDER BY created_at DESC LIMIT ?`).bind(limit).all();
+    return json({ inquiries: result.results || [] });
+  } catch (error) {
+    console.error('Admin inbox query failed', { name: error?.name || 'Error' });
+    return json({ error: 'No se pudo consultar el buzón. Actualiza la sección para volver a intentarlo.' }, 503);
+  }
 }
 
 export async function onRequestPatch(context) {

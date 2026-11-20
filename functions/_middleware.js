@@ -5,6 +5,7 @@ const PRIVATE_EDITOR_PATHS = new Set([
   '/editor.webmanifest', '/editor-service-worker.js', '/editor-art-catalog.json',
   '/admin', '/admin/', '/admin.html', '/admin.css', '/admin.js'
 ]);
+const NON_PUBLIC_PAGE_PATHS = new Set([...PRIVATE_EDITOR_PATHS, '/acceso.html', '/login.html', '/github-auth-error.html']);
 const HERO_IMAGE_PATH = /^(?:assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)|\/api\/site-content\/image\/(?:site-content\/hero\/)?[0-9a-f-]{36}\.(?:png|webp|jpg))$/i;
 
 async function updateHomeShareImage(request, env, next) {
@@ -56,6 +57,26 @@ async function updateHomeShareImage(request, env, next) {
   }
 }
 
+function recordPublicPageView(context, response) {
+  const { request, env } = context;
+  if (!env.MANDARINITA_INBOX || request.method !== 'GET' || !response.ok) return;
+  if (!(response.headers.get('content-type') || '').toLowerCase().includes('text/html')) return;
+
+  const url = new URL(request.url);
+  if (NON_PUBLIC_PAGE_PATHS.has(url.pathname) || url.pathname.startsWith('/api/')) return;
+  const day = new Date().toISOString().slice(0, 10);
+  const path = url.pathname === '/index.html' ? '/' : url.pathname;
+  const write = env.MANDARINITA_INBOX.prepare(`
+    INSERT INTO public_page_views_daily (day, path, views) VALUES (?, ?, 1)
+    ON CONFLICT(day, path) DO UPDATE SET views = views + 1
+  `).bind(day, path).run().catch(error => {
+    console.error('Could not record public page view', { name: error?.name || 'Error' });
+  });
+
+  if (typeof context.waitUntil === 'function') context.waitUntil(write);
+  else return write;
+}
+
 function unavailablePage(env) {
   const missing = missingAuthSettings(env);
   const details = missing.length
@@ -67,13 +88,16 @@ function unavailablePage(env) {
   });
 }
 
-export async function onRequest({ request, env, next }) {
+export async function onRequest(context) {
+  const { request, env, next } = context;
   const url = new URL(request.url);
   if (!PRIVATE_EDITOR_PATHS.has(url.pathname)) {
+    let response;
     if ((url.pathname === '/' || url.pathname === '/index.html') && request.method === 'GET') {
-      return updateHomeShareImage(request, env, next);
-    }
-    return next();
+      response = await updateHomeShareImage(request, env, next);
+    } else response = await next();
+    await recordPublicPageView(context, response);
+    return response;
   }
   if (!isAuthConfigured(env)) return unavailablePage(env);
   const session = await readSession(request, env.SESSION_SECRET);
@@ -87,6 +111,6 @@ export async function onRequest({ request, env, next }) {
     }
     return response;
   }
-  const area = url.pathname.startsWith('/admin') ? 'admin' : 'editor';
-  return new Response(null, { status: 302, headers: { Location: `/acceso.html?area=${area}`, 'Cache-Control': 'no-store' } });
+  const target = url.pathname.startsWith('/admin') ? 'admin' : 'editor';
+  return new Response(null, { status: 302, headers: { Location: `/login.html?area=${target}`, 'Cache-Control': 'no-store' } });
 }
