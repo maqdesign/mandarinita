@@ -861,3 +861,10 @@ body.hero-only-preview.hero-preview-single .hero-carousel-arrow,body.hero-only-p
 .hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="none"] { box-shadow: none; }
 .hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="soft"] { box-shadow: 0 10px 18px rgba(48,34,27,.18),0 2px 4px rgba(48,34,27,.1); }
 .hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="lifted"] { box-shadow: 0 22px 30px rgba(48,34,27,.27),0 5px 10px rgba(48,34,27,.16); }
+
+/* Discreet private sign-in action in the shared public header. */
+.admin-login-trigger{display:inline-grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border:1px solid transparent;border-radius:50%;color:var(--muted);transition:color .18s ease,background .18s ease,border-color .18s ease}
+.admin-login-trigger .ui-icon{width:20px;height:20px}
+.admin-login-trigger:hover,.admin-login-trigger:focus-visible{color:var(--ink);background:#fff6e8;border-color:var(--line)}
+.admin-login-trigger:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+@media(prefers-color-scheme:dark){.admin-login-trigger:hover,.admin-login-trigger:focus-visible{background:var(--soft)}}
