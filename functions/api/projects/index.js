@@ -15,6 +15,10 @@ export async function onRequestGet(context) {
       projects.push({
         id,
         title: item.customMetadata?.title || 'Episodio sin título',
+        contentType: item.customMetadata?.contentType || 'episode',
+        status: item.customMetadata?.status || 'draft',
+        createdAt: Number(item.customMetadata?.createdAt) || item.uploaded.getTime(),
+        panels: Number(item.customMetadata?.panels) || 0,
         updatedAt: Number(item.customMetadata?.updatedAt) || item.uploaded.getTime(),
         bytes: item.size,
         etag: item.httpEtag

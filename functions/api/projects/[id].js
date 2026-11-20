@@ -45,7 +45,14 @@ export async function onRequestPut(context) {
   const saved = await env.MANDARINITA_PROJECTS.put(projectObjectKey(id), JSON.stringify(project), {
     onlyIf: request.headers,
     httpMetadata: { contentType: 'application/vnd.mandarinita+json; charset=utf-8' },
-    customMetadata: { title: String(project.title || 'Episodio sin título').slice(0, 180), updatedAt: String(updatedAt) }
+    customMetadata: {
+      title: String(project.title || 'Episodio sin título').slice(0, 180),
+      contentType: String(project.contentType || 'episode').slice(0, 40),
+      status: String(project.status || 'draft').slice(0, 40),
+      createdAt: String(Number(project.createdAt) || updatedAt),
+      panels: String(Array.isArray(project.panels) ? project.panels.length : 0),
+      updatedAt: String(updatedAt)
+    }
   });
   if (!saved) return json({ error: 'Este proyecto cambió en otro dispositivo. Tu copia local se conservó; compara las dos versiones antes de continuar.', code: 'version_conflict' }, 412);
   return json({ ok: true, id, title: String(project.title || 'Episodio sin título'), updatedAt, etag: saved.httpEtag }, 200, { ETag: saved.httpEtag });

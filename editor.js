@@ -120,6 +120,8 @@
   let cloudRefreshTimer = null;
   let cloudPollTimer = null;
   let cloudAuthExpired = false;
+  let cloudBannerDismissed = false;
+  let cloudBannerKey = '';
   const cloudTimers = new Map();
   const cloudBases = new Map();
   const cloudConflicts = new Set();
@@ -259,6 +261,14 @@
     const text = message || (signedIn ? 'Sincronización al día' : 'Los borradores se guardan en este dispositivo.');
     ['#cloud-status','#editor-cloud-status'].forEach(selector => { const region=$(selector); if(region){region.textContent=text;region.dataset.state=syncState;} });
     ['#retry-cloud','#editor-retry-cloud'].forEach(selector => { const retry=$(selector); if(retry){retry.hidden=!(signedIn&&(syncState==='error'||cloudConflicts.size));const label=cloudConflicts.size?'Resolver conflicto':'Reintentar sincronización';retry.classList.add('has-icon');retry.innerHTML=`${svgIcon(cloudConflicts.size?'users':'refresh')}<span class="button-label">${label}</span>`;retry.title=label;retry.setAttribute('aria-label',label);} });
+    const banner=$('#cloud-sync-banner');
+    if(banner){
+      const key=`${syncState}:${text}`;
+      if((syncState==='error'||syncState==='conflict')&&key!==cloudBannerKey){cloudBannerDismissed=false;cloudBannerKey=key;}
+      if(syncState==='ready'){cloudBannerKey='';cloudBannerDismissed=false;}
+      banner.dataset.state=syncState;
+      banner.hidden=!signedIn||!['error','conflict'].includes(syncState)||cloudBannerDismissed;
+    }
     const footnote = $('#home-footnote');
     const storageLabel = $('#project-storage-label');
     if (storageLabel) storageLabel.textContent = signedIn ? syncState==='error'?'CENTRO DE CONTENIDO · SINCRONIZACIÓN PENDIENTE':syncState==='busy'?'CENTRO DE CONTENIDO · SINCRONIZANDO':syncState==='conflict'?'CENTRO DE CONTENIDO · CONFLICTO POR REVISAR':'CENTRO DE CONTENIDO · NUBE SINCRONIZADA' : 'CENTRO DE CONTENIDO · BORRADORES';
@@ -397,7 +407,6 @@
     console.error('Cloud synchronization failed', { step, name: error?.name||'Error', code: error?.code||'', status: error?.status||0, endpoint: error?.syncPath||'', message: error?.message||'' });
     setCloudStatus(message,'error');
     if(state)$('#save-state').textContent='Guardado local · sincronización pendiente';
-    toast(message);
   }
   function localProject(projectId) {
     if (state?.projectId===projectId) return captureState();
@@ -437,12 +446,13 @@
     timer = setTimeout(sync,900);
     cloudTimers.set(scheduledId, timer);
   }
-  function storeRemoteProject(project,etag) {
+  function storeRemoteProject(project,etag,{persistLocal=false}={}) {
     validateEditableProject(project);
-    const record = { id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: Number(project.updatedAt) || Date.now() };
+    const record = { id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: Number(project.updatedAt) || Date.now(), panels: project.panels.length };
     const index = listProjects().filter(entry => entry.id !== project.projectId);
-    index.push(record); index.sort((a, b) => b.updatedAt - a.updatedAt);
-    localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
+    const hasLocal=Boolean(localProject(project.projectId));
+    index.push({...record,cloudOnly:!persistLocal&&!hasLocal}); index.sort((a, b) => b.updatedAt - a.updatedAt);
+    if(persistLocal)localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
     localStorage.setItem(PROJECTS_KEY, JSON.stringify(index));
     saveCloudBase(project.projectId,etag,project.updatedAt);
   }
@@ -459,19 +469,30 @@
       const localProjects = listProjects().filter(record=>record&&typeof record==='object'&&!Array.isArray(record));
       const remoteById = new Map(remoteProjects.map(project => [project.id, project]));
       const skippedRemoteProjects = [];
+      const nextIndex=localProjects.filter(record=>!record.cloudOnly||remoteById.has(record.id));
       for (const remote of remoteProjects) {
         try {
-          syncStep=`leer «${String(remote.title||remote.id||'borrador').slice(0,80)}» desde la nube`;
-          let local;try { local=JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id))||'null'); } catch { local=null; }
-          if(!local){const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag||remote.etag);continue;}
+          let local=localProject(remote.id);
+          const metadata={id:remote.id,title:remote.title||'Episodio sin título',contentType:remote.contentType||'episode',status:remote.status||'draft',createdAt:Number(remote.createdAt)||Number(remote.updatedAt)||Date.now(),updatedAt:Number(remote.updatedAt)||Date.now(),panels:Number(remote.panels)||0,cloudOnly:!local};
+          const indexPos=nextIndex.findIndex(record=>record.id===remote.id);
+          if(indexPos>=0)nextIndex[indexPos]={...nextIndex[indexPos],...metadata,cloudOnly:!local};else nextIndex.push(metadata);
+          if(!remote.etag){syncStep=`actualizar el índice de «${String(remote.title||remote.id||'borrador').slice(0,80)}»`;continue;}
+          if(!local){saveCloudBase(remote.id,remote.etag,0);continue;}
           const base=cloudBases.get(remote.id);
           if(!base){
-            const latest=await readRemoteProject(remote.id);
-            if(JSON.stringify(local)===JSON.stringify(latest.project))saveCloudBase(remote.id,latest.etag,local.updatedAt);
-            else markCloudConflict(remote.id);
+            if(Number(local.updatedAt)===Number(remote.updatedAt))saveCloudBase(remote.id,remote.etag,local.updatedAt);
+            else if(Number(local.updatedAt)>Number(remote.updatedAt)){
+              saveCloudBase(remote.id,remote.etag,local.updatedAt);
+              syncStep=`guardar «${String(local.title||remote.id||'borrador').slice(0,80)}» en la nube`;
+              try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
+            } else markCloudConflict(remote.id);
           }else if(base.etag!==remote.etag){
-            if(Number(local.updatedAt)>Number(base.localUpdatedAt))markCloudConflict(remote.id);
-            else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);if(state?.projectId===remote.id){state=normalizeProject(latest.project);render();}}
+            if(Number(local.updatedAt)>Number(base.localUpdatedAt)||state?.projectId===remote.id)markCloudConflict(remote.id);
+            else{
+              localStorage.removeItem(PROJECT_KEY(remote.id));
+              metadata.cloudOnly=true;
+              saveCloudBase(remote.id,remote.etag,0);
+            }
           }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
             syncStep=`guardar «${String(local.title||remote.id||'borrador').slice(0,80)}» en la nube`;
             cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
@@ -483,13 +504,15 @@
         }
       }
       for (const record of localProjects) {
-        if (!remoteById.has(record.id)) {
+        if (!record.cloudOnly&&!remoteById.has(record.id)) {
           syncStep=`subir «${String(record.title||record.id||'borrador').slice(0,80)}» a la nube`;
           const local=localProject(record.id);
           if(local)try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(record.id);else throw error;}
         }
       }
       cloudReady = true;
+      nextIndex.sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));
+      try{localStorage.setItem(PROJECTS_KEY,JSON.stringify(nextIndex));}catch(error){console.warn('Could not save the small project index locally',error);}
       const skippedMessage=skippedRemoteProjects.length?`${skippedRemoteProjects.length} borrador${skippedRemoteProjects.length===1?'':'es'} de la nube tiene${skippedRemoteProjects.length===1?'':'n'} un formato que esta versión no puede abrir. El resto sí se sincronizó; esos archivos no se modificaron.`:'';
       setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':skippedMessage||'Sincronización al día',cloudConflicts.size?'conflict':skippedMessage?'error':'ready');
       renderProjectList();
@@ -565,6 +588,7 @@
   }
   async function setupCloudSync() {
     const button = $('#github-sync');
+    $('#dismiss-cloud-banner').onclick=()=>{cloudBannerDismissed=true;$('#cloud-sync-banner').hidden=true;};
     button.onclick = async () => {
       if (cloudAuthExpired) { window.location.assign('/login.html?area=editor'); return; }
       if (cloudUser) {
@@ -715,10 +739,14 @@
       let project; try { project = JSON.parse(localStorage.getItem(PROJECT_KEY(record.id)) || '{}'); } catch { project = {}; }
       const card = document.createElement('article'); card.className = 'project-card';
       const preview = document.createElement('div'); preview.className = 'project-card-preview'; preview.setAttribute('aria-hidden','true');
+      if(record.cloudOnly){
+        preview.classList.add('project-card-cloud-only');
+        preview.innerHTML=`<div class="cloud-only-preview">${svgIcon('cloud')}<span>En la nube</span><small>La vista previa se carga al abrir</small></div>`;
+      }
       const pageHeight = Number(project.pageHeight) || 400;
       const previewCanvas = document.createElement('div'); previewCanvas.className = 'project-preview-canvas';
       previewCanvas.style.aspectRatio = `${LOGICAL_WIDTH} / ${pageHeight}`;
-      const firstPanel = project.panels?.[0];
+      const firstPanel = record.cloudOnly ? null : project.panels?.[0];
       (firstPanel?.items || []).slice(0,8).forEach(item => {
         const layer = document.createElement('div'); layer.className = `project-preview-item ${item.type === 'bubble' ? `preview-${item.kind}` : ''}`;
         layer.style.left = `${item.x/LOGICAL_WIDTH*100}%`; layer.style.top = `${item.y/pageHeight*100}%`;
@@ -729,14 +757,14 @@
         else { const stroke = document.createElement('span'); stroke.style.cssText = `position:absolute;inset:0;background:linear-gradient(135deg,transparent 46%,${item.color || '#282522'} 48%,${item.color || '#282522'} 52%,transparent 54%)`; layer.append(stroke); }
         previewCanvas.append(layer);
       });
-      preview.append(previewCanvas);
+      if(!record.cloudOnly)preview.append(previewCanvas);
       const main = document.createElement('div'); main.className = 'project-card-main';
       const reviewState = record.status === 'review';
       const publicationLabel = record.status === 'published' ? 'Publicado en la web' : record.status === 'scheduled' ? `Programado · ${project.publishedAt || ''}` : reviewState ? 'En revisión' : 'Borrador';
       const publicationClass = record.status === 'published' ? 'published' : record.status === 'scheduled' ? 'scheduled' : reviewState ? 'ready' : '';
       const kindLabels = {episode:'Episodio',copy:'Texto / copy',banner:'Banner',section:'Sección web',design:'Diseño gráfico',mockup:'Diseño de producto'};
       const isEpisode = (project.contentType || record.contentType || 'episode') === 'episode';
-      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${publicationClass}">${publicationLabel}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
+      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${publicationClass}">${publicationLabel}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || record.panels || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
       const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${record.title}`); open.append(preview,main); open.onclick = () => openProject(record.id);
       const menu = document.createElement('details'); menu.className = 'project-card-menu';
       menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
@@ -747,11 +775,21 @@
       list.append(card);
     });
   }
-  function openProject(projectId) {
+  async function openProject(projectId) {
     try {
-      state = normalizeProject(JSON.parse(localStorage.getItem(PROJECT_KEY(projectId))));
+      let project=null;
+      try{project=JSON.parse(localStorage.getItem(PROJECT_KEY(projectId))||'null');}catch{}
+      if(!project){
+        if(!cloudUser)throw new Error('Este proyecto solo está en la nube. Conéctate a internet para abrirlo.');
+        setCloudStatus('Cargando el proyecto desde la nube…','busy');
+        const latest=await readRemoteProject(projectId);
+        storeRemoteProject(latest.project,latest.etag);
+        project=latest.project;
+        setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':'Sincronización al día',cloudConflicts.size?'conflict':'ready');
+      }
+      state = normalizeProject(project);
       undoStack = []; redoStack = []; showEditor();
-    } catch { toast('No pude abrir ese proyecto local. Prueba importar su archivo .mandarinita.'); }
+    } catch (error) { setCloudStatus(error.message||'No pude abrir ese proyecto.','error');toast(error.message||'No pude abrir ese proyecto.'); }
   }
   function newProject() {
     $('#new-content-dialog').showModal();
@@ -771,9 +809,10 @@
     const item={id:id(),type:'text',name:preset.title,text:preset.label,x:80,y:105,w:440,h:150,fontSize:32,fontWeight:600,align:'center',color:'#292725',rotation:0,locked:false};state.panels[0].items.push(item);state.selected=item.id;
     try{saveProject();showEditor();}catch{showEditor();toast('Este navegador no permitió guardar automáticamente. Descarga el archivo editable.');}
   }
-  function duplicateProject(projectId) {
+  async function duplicateProject(projectId) {
     try {
-      const source = JSON.parse(localStorage.getItem(PROJECT_KEY(projectId)));
+      let source=null;try{source=JSON.parse(localStorage.getItem(PROJECT_KEY(projectId))||'null');}catch{}
+      if(!source){const latest=await readRemoteProject(projectId);source=latest.project;}
       const copy = normalizeProject({ ...source, projectId: id(), title: `${source.title} · copia`, createdAt: Date.now(), updatedAt: Date.now() });
       saveProject(copy); renderProjectList();
     } catch { toast('No pude duplicar ese proyecto.'); }
