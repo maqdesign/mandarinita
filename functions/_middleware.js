@@ -3,7 +3,8 @@ import { isAllowedEmail, isAuthConfigured, missingAuthSettings, readSession } fr
 const PRIVATE_EDITOR_PATHS = new Set([
   '/editor', '/editor/', '/editor.html', '/editor.css', '/editor.js',
   '/editor.webmanifest', '/editor-service-worker.js', '/editor-art-catalog.json',
-  '/admin', '/admin/', '/admin.html', '/admin.css', '/admin.js'
+  '/admin', '/admin/', '/admin.html', '/admin.css', '/admin.js',
+  '/admin-buzon.html', '/admin-rendimiento.html', '/admin-data.js'
 ]);
 const NON_PUBLIC_PAGE_PATHS = new Set([...PRIVATE_EDITOR_PATHS, '/acceso.html', '/login.html', '/github-auth-error.html']);
 const HERO_IMAGE_PATH = /^(?:assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)|\/api\/site-content\/image\/(?:site-content\/hero\/)?[0-9a-f-]{36}\.(?:png|webp|jpg))$/i;
