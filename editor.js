@@ -261,9 +261,9 @@
     ['#retry-cloud','#editor-retry-cloud'].forEach(selector => { const retry=$(selector); if(retry){retry.hidden=!(signedIn&&(syncState==='error'||cloudConflicts.size));const label=cloudConflicts.size?'Resolver conflicto':'Reintentar sincronización';retry.classList.add('has-icon');retry.innerHTML=`${svgIcon(cloudConflicts.size?'users':'refresh')}<span class="button-label">${label}</span>`;retry.title=label;retry.setAttribute('aria-label',label);} });
     const footnote = $('#home-footnote');
     const storageLabel = $('#project-storage-label');
-    if (storageLabel) storageLabel.textContent = signedIn ? 'CENTRO DE CONTENIDO · NUBE SINCRONIZADA' : 'CENTRO DE CONTENIDO · BORRADORES';
+    if (storageLabel) storageLabel.textContent = signedIn ? syncState==='error'?'CENTRO DE CONTENIDO · SINCRONIZACIÓN PENDIENTE':syncState==='busy'?'CENTRO DE CONTENIDO · SINCRONIZANDO':syncState==='conflict'?'CENTRO DE CONTENIDO · CONFLICTO POR REVISAR':'CENTRO DE CONTENIDO · NUBE SINCRONIZADA' : 'CENTRO DE CONTENIDO · BORRADORES';
     if (footnote) footnote.textContent = signedIn
-      ? 'Tus borradores y lienzos se sincronizan en la nube privada. Inicia sesión con la misma cuenta autorizada en tus dispositivos para verlos allí.'
+      ? syncState==='error'?'Los cambios recientes siguen guardados en este dispositivo. Revisa el mensaje de sincronización y vuelve a intentarlo.':'Tus borradores y lienzos se sincronizan en la nube privada. Inicia sesión con la misma cuenta autorizada en tus dispositivos para verlos allí.'
       : 'Tus borradores se guardan en este navegador. El archivo .mandarinita sirve para moverlos a otro dispositivo.';
   }
   async function cloudFetch(path, options = {}) {
@@ -381,19 +381,20 @@
       }
     }
   }
-  function setSyncFailure(error) {
+  function setSyncFailure(error, step = 'guardar el borrador') {
     if(error?.status===401)cloudAuthExpired=true;
     const message=error?.status===401?'La sesión venció. Vuelve a conectar GitHub para sincronizar.'
       :error?.status===403?'Cloudflare rechazó la solicitud (403). Abre el taller desde mandarinita.art y vuelve a intentar.'
       :error?.status===413?'El archivo supera el límite de 25 MB; descarga el .mandarinita como respaldo.'
+      :error?.name==='QuotaExceededError'?'Este navegador se quedó sin espacio para la copia local. Tus archivos de la nube siguen intactos; libera espacio y vuelve a sincronizar.'
       :error?.status===428?'Esta versión del taller está desactualizada (428). Recarga la página para actualizarla; tu borrador local sigue guardado.'
       :error?.status>=500?`Cloudflare no pudo guardar el borrador (error ${error.status}). Sigue guardado en este dispositivo.`
       :error?.code==='invalid_project_id'?'La nube no aceptó el identificador de este borrador. Se conservó localmente; pulsa “Reintentar sincronización” para volver a intentarlo.'
       :error?.status===400?`La nube rechazó el borrador: ${(error.message||'la solicitud no es válida').replace(/[.!?]+$/,'')}. El borrador local sigue guardado.`
       :Number.isInteger(error?.status)?`No se pudo sincronizar (error ${error.status}). ${error.message&&error.message!==`Sincronización: ${error.status}`?`${error.message} `:''}El borrador sigue guardado en este dispositivo.`
       :error?.code==='cloud_network_error'?`El navegador no pudo conectar con Cloudflare${error.syncPath?` al solicitar ${error.syncPath.startsWith('/api/projects/')?'/api/projects/[id]':error.syncPath}`:''}. Comprueba la conexión y reintenta; el borrador sigue guardado en este dispositivo.`
-      :'No se pudo completar la sincronización. El borrador sigue guardado en este dispositivo.';
-    console.error('Cloud synchronization failed', { name: error?.name||'Error', code: error?.code||'', status: error?.status||0, endpoint: error?.syncPath||'', message: error?.message||'' });
+      :`Falló ${step}${error?.message?`: ${String(error.message).slice(0,180)}`:''}. El borrador sigue guardado en este dispositivo.`;
+    console.error('Cloud synchronization failed', { step, name: error?.name||'Error', code: error?.code||'', status: error?.status||0, endpoint: error?.syncPath||'', message: error?.message||'' });
     setCloudStatus(message,'error');
     if(state)$('#save-state').textContent='Guardado local · sincronización pendiente';
     toast(message);
@@ -449,14 +450,18 @@
     if (!cloudUser || cloudReady || cloudSyncInProgress) return;
     cloudSyncInProgress = true;
     setCloudStatus('Sincronizando borradores…','busy');
+    let syncStep='preparar borradores locales';
     try {
       migrateInvalidLocalProjectIds();
+      syncStep='consultar la lista de la nube';
       const { projects: remoteProjects } = await cloudFetch('/api/projects');
-      const localProjects = listProjects();
+      if(!Array.isArray(remoteProjects)){const error=new Error('La respuesta del servidor no contiene una lista de borradores válida.');error.code='invalid_cloud_project_list';throw error;}
+      const localProjects = listProjects().filter(record=>record&&typeof record==='object'&&!Array.isArray(record));
       const remoteById = new Map(remoteProjects.map(project => [project.id, project]));
       const skippedRemoteProjects = [];
       for (const remote of remoteProjects) {
         try {
+          syncStep=`leer «${String(remote.title||remote.id||'borrador').slice(0,80)}» desde la nube`;
           let local;try { local=JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id))||'null'); } catch { local=null; }
           if(!local){const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag||remote.etag);continue;}
           const base=cloudBases.get(remote.id);
@@ -468,6 +473,7 @@
             if(Number(local.updatedAt)>Number(base.localUpdatedAt))markCloudConflict(remote.id);
             else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);if(state?.projectId===remote.id){state=normalizeProject(latest.project);render();}}
           }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
+            syncStep=`guardar «${String(local.title||remote.id||'borrador').slice(0,80)}» en la nube`;
             cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
             try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
           }else saveCloudBase(remote.id,remote.etag,local.updatedAt);
@@ -478,6 +484,7 @@
       }
       for (const record of localProjects) {
         if (!remoteById.has(record.id)) {
+          syncStep=`subir «${String(record.title||record.id||'borrador').slice(0,80)}» a la nube`;
           const local=localProject(record.id);
           if(local)try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(record.id);else throw error;}
         }
@@ -487,7 +494,7 @@
       setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':skippedMessage||'Sincronización al día',cloudConflicts.size?'conflict':skippedMessage?'error':'ready');
       renderProjectList();
     } catch (error) {
-      cloudReady=false;setSyncFailure(error);
+      cloudReady=false;setSyncFailure(error,syncStep);
     } finally { cloudSyncInProgress = false; }
   }
   function openCloudConflictDialog() {
