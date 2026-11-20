@@ -1081,9 +1081,13 @@
   confirmDeleteBanner.addEventListener('click', deleteBanner);
   function showAdminView(id, { updateHistory = true, focusHeading = false } = {}) {
     const view = adminViews.find(item => item.id === id) || adminViews[0];
-    if (!view || (currentView === view.id && !focusHeading)) return;
+    if (!view || (currentView === view.id && !focusHeading && !view.hidden)) return;
     currentView = view.id;
-    for (const item of adminViews) item.hidden = item !== view;
+    for (const item of adminViews) {
+      const active = item === view;
+      item.hidden = !active;
+      item.classList.toggle('is-active', active);
+    }
     for (const link of document.querySelectorAll('.admin-sidebar nav a')) {
       const active = link.hash === `#${view.id}`;
       link.classList.toggle('active', active);
