@@ -26,7 +26,7 @@ Los proyectos no se borran de `episodes.json` ni se publican en la web. La progr
 
 - La sincronización carga la versión completa del proyecto al abrirlo, no en tiempo real mientras está abierta en otro dispositivo. La comprobación periódica detecta el cambio y conserva ambas versiones si se editó en paralelo.
 - Los archivos “En la nube” necesitan conexión para abrirse. La vista previa de tarjeta se omite deliberadamente para no bajar las imágenes y capas del proyecto entero.
-- No existe historial navegable de versiones ni restauración de una fecha anterior; antes de una reescritura en conflicto se puede descargar el archivo editable.
+- Cada borrador tiene un historial privado de hasta 30 puntos de recuperación. Se crea una instantánea cuando el contenido cambia y han pasado cinco minutos desde la anterior; restaurar primero guarda la versión actual y exige que el ETag no haya cambiado. No es un historial por cada pulsación ni una fusión automática de ediciones.
 
 ## Validación de lanzamiento
 

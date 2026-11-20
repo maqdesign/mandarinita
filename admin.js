@@ -15,8 +15,6 @@
   const analyticsDays = document.querySelector('#analytics-days');
   const siteContentForm = document.querySelector('#site-content-form');
   const siteContentStatus = document.querySelector('#site-content-status');
-  const siteContentFootnote = document.querySelector('.site-content-footnote');
-  const siteContentSaveState = document.querySelector('#site-content-save-state');
   const heroImageFile = document.querySelector('#hero-image-file');
   const heroImagePreview = document.querySelector('#hero-image-preview');
   const heroImageStatus = document.querySelector('#hero-image-status');
@@ -40,7 +38,6 @@
   const createBannerButton = document.querySelector('#create-banner');
   const duplicateBannerButton = document.querySelector('#duplicate-banner');
   const deleteBannerButton = document.querySelector('#delete-banner');
-  const publishBannerButton = document.querySelector('#publish-banner');
   const deleteBannerDialog = document.querySelector('#delete-banner-dialog');
   const confirmDeleteBanner = document.querySelector('#confirm-delete-banner');
   const heroPreviewToast = document.querySelector('#hero-preview-toast');
@@ -48,8 +45,6 @@
   const episodeEditorStatus = document.querySelector('#episode-editor-status');
   let bannerItems = [];
   let bannerBaseline = new Map();
-  let bannerBaselineEnabled = new Map();
-  let bannerBaselineOrder = [];
   let selectedBannerId = '';
   let bannersLoaded = false;
   let bannerDirty = false;
@@ -61,9 +56,6 @@
   let episodeCatalogLoaded = false;
   let pendingEpisodeCopy = null;
   let highlightedEpisodeIndex = -1;
-  const draftAutosaveTimers = new Map();
-  const draftAutosaveInFlight = new Map();
-  const draftAutosaveRequested = new Set();
   siteContentForm.elements.hero_effect_es.addEventListener('change', () => {
     siteContentForm.elements.hero_effect_en.value = siteContentForm.elements.hero_effect_es.value;
   });
@@ -85,18 +77,7 @@
     ['hero.endAt', 'hero_end_at', 'hero_end_at']
   ];
   const adminViews = [...document.querySelectorAll('[data-admin-view]')];
-  const isProductionHost = ['mandarinita.art', 'www.mandarinita.art'].includes(location.hostname);
-  const contentEnvironmentLabel = isProductionHost ? 'Producción' : 'Preview';
-  if (siteContentFootnote) {
-    siteContentFootnote.textContent = isProductionHost
-      ? 'Estás editando los banners de Producción. Los cambios guardados se verán en el sitio público.'
-      : 'Estás en Preview. Los cambios guardados aquí no modifican la portada de Producción.';
-  }
   const sectionLinks = [...document.querySelectorAll('.admin-sidebar nav a, .admin-quick-link')];
-  for (const link of document.querySelectorAll('.admin-sidebar nav a')) {
-    const label = link.querySelector('span:not(.admin-nav-icon)')?.textContent?.trim();
-    if (label) { link.title = label; link.setAttribute('aria-label', label); }
-  }
   let currentView = '';
   const escape = value => String(value || '').replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]);
   function showRuntimeError(message) {
@@ -232,105 +213,8 @@
   const setSiteContentStatus = message => { if (siteContentStatus) siteContentStatus.textContent = message; };
   const selectedBanner = () => bannerItems.find(item => item.id === selectedBannerId);
   const bannerSignature = banner => JSON.stringify({ position: banner.position, enabled: banner.enabled, ctaHref: banner.ctaHref, fields: banner.fields });
-  function hasPendingBannerChanges() {
-    return bannerItems.some(item => !bannerBaseline.has(item.id) || bannerBaseline.get(item.id) !== bannerSignature(item))
-      || bannerItems.some((item, index) => bannerBaselineOrder[index] !== item.id)
-      || bannerItems.length !== bannerBaselineOrder.length;
-  }
-  function updateBannerSaveState() {
-    bannerDirty = hasPendingBannerChanges();
-    const submit = siteContentForm.querySelector('[type="submit"]');
-    const savingDraft = draftAutosaveInFlight.has(selectedBannerId);
-    const saving = submit?.dataset.busy === 'true' || savingDraft;
-    const selectedIsDraft = selectedBanner()?.enabled === false && bannerBaselineEnabled.get(selectedBannerId) === false;
-    if (siteContentSaveState) {
-      const state = saving ? 'saving' : bannerDirty ? 'dirty' : 'saved';
-      siteContentSaveState.dataset.state = state;
-      siteContentSaveState.querySelectorAll('[data-save-icon]').forEach(icon => { icon.hidden = icon.dataset.saveIcon !== state; });
-      const label = siteContentSaveState.querySelector('span');
-      if (label) label.textContent = saving ? (savingDraft ? 'Guardando borrador…' : 'Guardando…') : bannerDirty ? 'Cambios sin guardar' : selectedIsDraft ? 'Borrador guardado en la nube' : 'Todo guardado';
-      siteContentSaveState.setAttribute('aria-label', saving ? (savingDraft ? 'Guardando borrador en la nube' : 'Guardando cambios') : bannerDirty ? 'Hay cambios sin guardar' : selectedIsDraft ? 'Borrador guardado en la nube' : 'Todos los cambios están guardados');
-    }
-    if (submit && !saving) {
-      submit.disabled = !bannerDirty;
-      const submitLabel = submit.querySelector('span');
-      if (submitLabel) submitLabel.textContent = selectedBanner()?.enabled ? 'Guardar cambios' : 'Guardar borrador';
-    }
-    if (publishBannerButton) {
-      const banner = selectedBanner();
-      const label = publishBannerButton.querySelector('span');
-      if (label) label.textContent = banner?.enabled ? 'Publicar cambios' : 'Publicar este banner';
-      publishBannerButton.disabled = saving || !banner || (banner.enabled && !bannerDirty);
-      publishBannerButton.title = banner?.enabled
-        ? 'Guarda y publica los cambios pendientes del carrusel en Producción.'
-        : `Publica únicamente este banner en ${contentEnvironmentLabel}. Los demás borradores seguirán sin publicarse.`;
-    }
-    updateDeleteBannerState();
-  }
   function hasPendingChangesExcept(id) {
     return bannerItems.some(item => item.id !== id && bannerBaseline.get(item.id) !== bannerSignature(item));
-  }
-  function scheduleDraftAutosave(id, delay = 700) {
-    const banner = bannerItems.find(item => item.id === id);
-    if (!banner || banner.enabled || bannerBaselineEnabled.get(id) !== false) return;
-    window.clearTimeout(draftAutosaveTimers.get(id));
-    const timer = window.setTimeout(() => {
-      draftAutosaveTimers.delete(id);
-      void saveDraftToCloud(id);
-    }, delay);
-    draftAutosaveTimers.set(id, timer);
-  }
-  async function saveDraftToCloud(id) {
-    const pending = draftAutosaveInFlight.get(id);
-    if (pending) {
-      draftAutosaveRequested.add(id);
-      await pending;
-      return;
-    }
-    const banner = bannerItems.find(item => item.id === id);
-    if (!banner || banner.enabled || bannerBaselineEnabled.get(id) !== false) return;
-    const snapshot = JSON.parse(JSON.stringify(banner));
-    const snapshotSignature = bannerSignature(snapshot);
-    if (bannerBaseline.get(id) === snapshotSignature) return;
-    const task = (async () => {
-      if (id === selectedBannerId) {
-        updateBannerSaveState();
-        setSiteContentStatus('Guardando el borrador en la nube…');
-      }
-      const response = await fetch('/api/admin/banners', {
-        method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ banner: snapshot })
-      });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'No se pudo guardar el borrador en la nube.');
-      const index = bannerItems.findIndex(item => item.id === id);
-      if (index < 0) return;
-      const currentSignature = bannerSignature(bannerItems[index]);
-      bannerBaseline.set(id, bannerSignature(result.banner));
-      bannerBaselineEnabled.set(id, false);
-      if (currentSignature === snapshotSignature) bannerItems[index] = result.banner;
-      updateBannerSaveState();
-      renderBannerList();
-      if (id === selectedBannerId && currentSignature === snapshotSignature) {
-        setBannerStatus('Borrador guardado en la nube. Sigue inactivo hasta que lo actives.');
-        setSiteContentStatus('Borrador guardado en la nube. Para mostrarlo en la portada, actívalo y guarda los cambios.');
-      }
-      if (bannerSignature(bannerItems[index]) !== bannerBaseline.get(id)) scheduleDraftAutosave(id);
-    })();
-    draftAutosaveInFlight.set(id, task);
-    updateBannerSaveState();
-    try {
-      await task;
-    } catch (error) {
-      if (id === selectedBannerId) {
-        setBannerStatus(error.message);
-        setSiteContentStatus(`${error.message} Este cambio aún no está guardado; reintenta antes de recargar.`);
-      }
-    } finally {
-      draftAutosaveInFlight.delete(id);
-      updateBannerSaveState();
-      if (draftAutosaveRequested.delete(id)) scheduleDraftAutosave(id, 0);
-    }
   }
   function updateDeleteBannerState() {
     const isNewDraft = Boolean(selectedBannerId) && !bannerBaseline.has(selectedBannerId);
@@ -606,17 +490,10 @@
       };
     }
     banner.fields['hero.effect'].en = banner.fields['hero.effect'].es;
-    banner.ctaHref = banner.fields['hero.mediaType'].es === 'episode'
-      ? `/?episode=${encodeURIComponent(banner.fields['hero.episode'].es)}`
-      : '#historietas';
-    updateBannerSaveState();
     if (changed) {
-      if (!banner.enabled && bannerBaselineEnabled.get(banner.id) === false) {
-        setBannerStatus('Guardando el borrador en la nube…');
-        scheduleDraftAutosave(banner.id);
-      } else {
-        setBannerStatus(`Hay cambios pendientes. Guárdalos para publicarlos en ${contentEnvironmentLabel}.`);
-      }
+      bannerDirty = true;
+      updateDeleteBannerState();
+      setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
     }
     updateBannerPreview();
   }
@@ -791,13 +668,14 @@
           return;
         }
         banner.enabled = enabled.checked;
-        updateBannerSaveState();
+        bannerDirty = true;
         updateBannerPreview();
-        setBannerStatus(`Hay cambios pendientes. Guárdalos para publicarlos en ${contentEnvironmentLabel}.`);
+        updateDeleteBannerState();
+        setBannerStatus('Hay cambios pendientes. Guárdalos para publicarlos en Preview.');
       });
       const startsAt = Date.parse(banner.fields['hero.startAt']?.es || '');
       const endsAt = Date.parse(banner.fields['hero.endAt']?.es || '');
-      const availability = !banner.enabled ? 'Borrador'
+      const availability = !banner.enabled ? 'Inactivo'
         : Number.isFinite(endsAt) && endsAt <= Date.now() ? 'Vencido'
           : Number.isFinite(startsAt) && startsAt > Date.now() ? 'Programado' : 'Activo';
       enabledLabel.append(enabled, document.createTextNode(availability));
@@ -815,9 +693,10 @@
         move.addEventListener('click', () => {
           const offset = direction === 'up' ? -1 : 1;
           [bannerItems[index], bannerItems[index + offset]] = [bannerItems[index + offset], bannerItems[index]];
-          updateBannerSaveState();
+          bannerDirty = true;
+          updateDeleteBannerState();
           updateBannerPreview();
-          setBannerStatus(`Orden pendiente. Guarda los cambios para publicarlos en ${contentEnvironmentLabel}.`);
+          setBannerStatus('Orden pendiente. Guarda los cambios para publicarlos en Preview.');
           renderBannerList(direction);
         });
         moveGroup.append(move);
@@ -841,16 +720,13 @@
       if (!response.ok) throw new Error(result.error || 'No se pudieron cargar los banners.');
       bannerItems = result.banners || [];
       bannerBaseline = new Map(bannerItems.map(item => [item.id, bannerSignature(item)]));
-      bannerBaselineEnabled = new Map(bannerItems.map(item => [item.id, item.enabled]));
-      bannerBaselineOrder = bannerItems.map(item => item.id);
       selectedBannerId = bannerItems.find(item => item.enabled)?.id || bannerItems[0]?.id || '';
       bannersLoaded = true;
-      updateBannerSaveState();
+      bannerDirty = false;
       renderBannerList();
       fillBannerForm();
       setBannerStatus(bannerItems.length ? `${bannerItems.length} ${bannerItems.length === 1 ? 'banner' : 'banners'} en la portada.` : 'Aún no hay banners.');
-      updateBannerSaveState();
-      setSiteContentStatus(`Edita el banner. Usa Guardar cambios o Ctrl/Cmd+S para publicarlo en ${contentEnvironmentLabel}.`);
+      setSiteContentStatus('Edita este banner; los cambios se guardan directamente en Preview.');
     } catch (error) { setBannerStatus(error.message); }
   }
   async function createBanner() {
@@ -861,14 +737,10 @@
       if (!response.ok) throw new Error(result.error || 'No se pudo crear el banner.');
       bannerItems.push(result.banner);
       selectedBannerId = result.banner.id;
-      bannerBaseline.set(result.banner.id, bannerSignature(result.banner));
-      bannerBaselineEnabled.set(result.banner.id, false);
-      bannerBaselineOrder.push(result.banner.id);
-      updateBannerSaveState();
+      bannerDirty = true;
       renderBannerList();
       fillBannerForm();
-      setBannerStatus('Borrador creado y guardado en la nube. Sigue inactivo hasta que lo actives.');
-      setSiteContentStatus('Este borrador ya está guardado en la nube. Sus cambios se guardan automáticamente mientras permanece inactivo.');
+      setBannerStatus('Banner nuevo, todavía en borrador. Cámbialo y guarda para publicarlo.');
       siteContentForm.elements.hero_title_first_es.focus();
     } catch (error) { setBannerStatus(error.message); }
     finally { createBannerButton.disabled = bannerItems.length >= 8; }
@@ -891,15 +763,11 @@
       const sourceIndex = bannerItems.findIndex(item => item.id === source.id);
       bannerItems.splice(sourceIndex + 1, 0, clone);
       selectedBannerId = clone.id;
-      bannerBaseline.set(clone.id, bannerSignature(result.banner));
-      bannerBaselineEnabled.set(clone.id, false);
-      bannerBaselineOrder.push(clone.id);
-      updateBannerSaveState();
+      bannerDirty = true;
       renderBannerList();
       fillBannerForm();
-      setBannerStatus('Copia creada como borrador en la nube. Sigue inactiva hasta que la actives.');
-      setSiteContentStatus('Los cambios del borrador se guardan automáticamente en la nube. Actívalo y guarda cuando quieras mostrarlo.');
-      scheduleDraftAutosave(clone.id);
+      setBannerStatus('Copia creada como borrador inactivo. Ajusta el contenido y guarda para publicarla en Preview.');
+      setSiteContentStatus('Edita la copia. Se mantiene inactiva hasta que la actives y guardes los cambios.');
       siteContentForm.elements.hero_title_first_es.focus();
     } catch (error) {
       setSiteContentStatus(error.message);
@@ -908,29 +776,11 @@
       duplicateBannerButton.disabled = bannerItems.length >= 8;
     }
   }
-  async function saveBanners({ publishSelected = false } = {}) {
+  async function saveBanners() {
     captureBannerForm();
-    for (const timer of draftAutosaveTimers.values()) window.clearTimeout(timer);
-    draftAutosaveTimers.clear();
-    if (draftAutosaveInFlight.size) await Promise.all([...draftAutosaveInFlight.values()]);
-    captureBannerForm();
-    for (const timer of draftAutosaveTimers.values()) window.clearTimeout(timer);
-    draftAutosaveTimers.clear();
-    if (publishSelected) {
-      const banner = selectedBanner();
-      if (!banner) { setSiteContentStatus('Selecciona un banner para publicarlo.'); return; }
-      banner.enabled = true;
-      renderBannerList();
-      updateBannerPreview();
-      updateBannerSaveState();
-    }
-    if (!bannerDirty) { setSiteContentStatus('No hay cambios pendientes.'); return; }
     const submit = siteContentForm.querySelector('[type="submit"]');
-    if (submit.dataset.busy === 'true') return;
-    submit.dataset.busy = 'true';
     submit.disabled = true;
-    updateBannerSaveState();
-    setSiteContentStatus(`Guardando banners en ${contentEnvironmentLabel}…`);
+    setSiteContentStatus('Guardando banners en Preview…');
     try {
       const response = await fetch('/api/admin/banners', { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ banners: bannerItems }) });
       const result = await response.json();
@@ -938,31 +788,17 @@
       bannerItems = result.banners;
       bannerDirty = false;
       bannerBaseline = new Map(bannerItems.map(item => [item.id, bannerSignature(item)]));
-      bannerBaselineEnabled = new Map(bannerItems.map(item => [item.id, item.enabled]));
-      bannerBaselineOrder = bannerItems.map(item => item.id);
       renderBannerList();
       fillBannerForm();
-      updateBannerSaveState();
-      setBannerStatus(`Cambios guardados en ${contentEnvironmentLabel}. Solo los banners marcados Activo se muestran en la portada.`);
-      const publishedBanner = bannerItems.find(item => item.id === selectedBannerId);
-      const startsAt = Date.parse(publishedBanner?.fields['hero.startAt']?.es || '');
-      const endsAt = Date.parse(publishedBanner?.fields['hero.endAt']?.es || '');
-      const scheduled = Number.isFinite(startsAt) && startsAt > Date.now();
-      const expired = Number.isFinite(endsAt) && endsAt <= Date.now();
-      setSiteContentStatus(publishedBanner?.enabled && scheduled
-        ? `Banner publicado y programado para aparecer en ${contentEnvironmentLabel} a la hora indicada.`
-        : publishedBanner?.enabled && expired
-          ? `Banner publicado en ${contentEnvironmentLabel}, pero su fecha de vencimiento ya pasó.`
-          : publishedBanner?.enabled
-            ? `Banner publicado en ${contentEnvironmentLabel}. Ya puede aparecer en la portada.`
-            : `Cambios guardados en ${contentEnvironmentLabel}. Este banner sigue como borrador; usa Publicar para mostrarlo en la portada.`);
+      setBannerStatus('Cambios publicados en Preview.');
+      setSiteContentStatus('Listo: los banners ya aparecen en Preview. Recarga la portada para verlos.');
     } catch (error) {
       setSiteContentStatus(error.message);
       setBannerStatus(error.message);
-    } finally { submit.dataset.busy = 'false'; updateBannerSaveState(); }
+    } finally { submit.disabled = false; updateDeleteBannerState(); }
   }
   async function deleteBanner() {
-    const deletingDraft = selectedBanner()?.enabled === false;
+    const deletingDraft = !bannerBaseline.has(selectedBannerId);
     if (hasPendingChangesExcept(selectedBannerId)) {
       setBannerStatus('Guarda los cambios de los otros banners antes de descartar este borrador.');
       return;
@@ -974,13 +810,11 @@
       if (!response.ok) throw new Error(result.error || 'No se pudo quitar el banner.');
       bannerItems = result.banners;
       bannerBaseline = new Map(bannerItems.map(item => [item.id, bannerSignature(item)]));
-      bannerBaselineEnabled = new Map(bannerItems.map(item => [item.id, item.enabled]));
-      bannerBaselineOrder = bannerItems.map(item => item.id);
       selectedBannerId = bannerItems.find(item => item.enabled)?.id || bannerItems[0]?.id || '';
-      updateBannerSaveState();
+      bannerDirty = false;
       renderBannerList();
       fillBannerForm();
-      setBannerStatus(deletingDraft ? 'Borrador descartado sin publicarlo.' : `Banner quitado del carrusel de ${contentEnvironmentLabel}.`);
+      setBannerStatus(deletingDraft ? 'Borrador descartado sin publicarlo.' : 'Banner quitado del carrusel de Preview.');
       deleteBannerDialog.close();
     } catch (error) { setBannerStatus(error.message); }
     finally { confirmDeleteBanner.disabled = false; }
@@ -991,7 +825,7 @@
     const submit = siteContentForm.querySelector('[type="submit"]');
     heroImageFile.disabled = true;
     submit.disabled = true;
-    heroImageStatus.textContent = `Subiendo imagen a ${contentEnvironmentLabel}…`;
+    heroImageStatus.textContent = 'Subiendo imagen a Preview…';
     const form = new FormData();
     form.append('image', file);
     try {
@@ -1007,30 +841,14 @@
       heroImageStatus.textContent = error.message;
     } finally {
       heroImageFile.disabled = false;
-      updateBannerSaveState();
+      submit.disabled = false;
     }
   });
   siteContentForm.addEventListener('submit', async event => {
     event.preventDefault();
+    const submit = siteContentForm.querySelector('[type="submit"]');
+    submit.disabled = true;
     await saveBanners();
-  });
-  publishBannerButton?.addEventListener('click', () => { void saveBanners({ publishSelected: true }); });
-  document.addEventListener('keydown', event => {
-    if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 's' || currentView !== 'sitio' || !bannerDirty) return;
-    event.preventDefault();
-    void saveBanners();
-  });
-  window.addEventListener('beforeunload', event => {
-    if (!bannerDirty) return;
-    event.preventDefault();
-    event.returnValue = '';
-  });
-  window.addEventListener('online', () => {
-    for (const banner of bannerItems) {
-      if (!banner.enabled && bannerBaselineEnabled.get(banner.id) === false && bannerBaseline.get(banner.id) !== bannerSignature(banner)) {
-        scheduleDraftAutosave(banner.id, 0);
-      }
-    }
   });
   siteContentForm.addEventListener('input', event => {
     if (event.target !== heroImageFile && event.target !== siteContentForm.elements.hero_is_new) captureBannerForm();
@@ -1045,13 +863,13 @@
   duplicateBannerButton.addEventListener('click', duplicateBanner);
   deleteBannerButton.addEventListener('click', () => {
     if (hasPendingChangesExcept(selectedBannerId)) { setBannerStatus('Guarda los cambios de los otros banners antes de quitar este banner.'); return; }
-    const isNewDraft = selectedBanner()?.enabled === false;
+    const isNewDraft = !bannerBaseline.has(selectedBannerId);
     if (bannerDirty && !isNewDraft) { setBannerStatus('Guarda los cambios pendientes antes de quitar un banner.'); return; }
     if (bannerItems.length <= 1) { setBannerStatus('Debe quedar al menos un banner en la portada.'); return; }
     document.querySelector('#delete-banner-title').textContent = isNewDraft ? '¿Descartar este borrador?' : '¿Quitar este banner?';
     document.querySelector('#delete-banner-description').textContent = isNewDraft
       ? 'Este banner todavía no se ha publicado. Se descartará sin cambiar los banners guardados.'
-      : `Dejará de aparecer en el carrusel de ${contentEnvironmentLabel}. La imagen subida se conserva en el almacén.`;
+      : 'Dejará de aparecer en el carrusel de Preview. La imagen subida se conserva en el almacén.';
     document.querySelector('#confirm-delete-banner').textContent = isNewDraft ? 'Descartar borrador' : 'Quitar banner';
     deleteBannerDialog.showModal();
   });
@@ -1125,11 +943,4 @@
       episodeEditorStatus.textContent = 'El editor requiere la sesión de GitHub. Ábrelo en otra pestaña si no aparece en este panel.';
     }
   });
-  if (episodeEditorFrame) {
-    window.setTimeout(() => {
-      if (episodeEditorFrame.dataset.loaded === 'true' && episodeEditorStatus.textContent === 'Cargando el editor de episodios…') {
-        episodeEditorStatus.textContent = 'El editor está tardando en responder. Puedes continuar desde el editor independiente mientras revisamos esta integración.';
-      }
-    }, 12000);
-  }
 })();

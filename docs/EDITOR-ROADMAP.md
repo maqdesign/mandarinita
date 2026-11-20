@@ -33,7 +33,7 @@ La biblioteca reconoce Mando y Señor Mandarino como una sola identidad con alia
 
 Pages Functions, GitHub OAuth y R2 privado ya están configurados y desplegados. La sesión se limita al correo autorizado y los secretos permanecen en Pages. La sincronización y sus límites están documentados en [EDITOR-CLOUD-SYNC.md](EDITOR-CLOUD-SYNC.md).
 
-La prioridad pendiente es añadir historial restaurable y hacer una revisión manual del flujo entre dispositivos, incluida la recuperación tras uso offline. No hay edición simultánea en vivo: las escrituras concurrentes quedan protegidas por ETags y requieren elegir qué versión conservar. R2 sigue siendo suficiente para el taller personal; una base relacional no aportaría valor claro mientras no haya flujos de equipo y consultas más complejas.
+El historial privado y restaurable ya está implementado para borradores en la nube. La prioridad pendiente es revisar manualmente el flujo entre dispositivos, incluida la recuperación tras uso offline. No hay edición simultánea en vivo: las escrituras concurrentes quedan protegidas por ETags y requieren elegir qué versión conservar. R2 sigue siendo suficiente para el taller personal; una base relacional no aportaría valor claro mientras no haya flujos de equipo y consultas más complejas.
 
 ## Progreso del atlas piloto
 
@@ -46,7 +46,6 @@ La última validación local confirmó la reapertura de un `.mandarinita` de dos
 ## Próximos hitos
 
 1. Verificar el flujo real entre iPhone, iPad y escritorio: abrir proyectos “En la nube”, editarlos, trabajar sin conexión y resolver cambios simultáneos sin perder trabajo.
-2. Añadir historial de versiones con restauración y un indicador de guardado remoto persistente por proyecto.
-3. Integrar publicación y programación de Instagram solo después de configurar una Meta App, permisos de Instagram Graph API y una cuenta profesional autorizada. Mientras tanto, exportar y publicar en la web funciona sin esa integración.
+2. Conectar y autorizar una Meta App para Instagram Graph API; después implementar el Worker programado y el calendario. Hasta contar con permisos y credenciales de Meta, la interfaz no debe indicar que una publicación de Instagram está en cola o publicada. La publicación web funciona de forma independiente.
 4. Seguir aprobando recortes de personajes, objetos y fondos a partir de fuentes originales; las referencias pendientes no deben habilitarse como piezas insertables sin revisión.
 5. Evaluar una interfaz de revisión previa al estreno que reúna títulos, textos alternativos, numeración, fechas, firma de marca y vista previa en una sola lista de comprobación.
