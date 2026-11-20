@@ -324,6 +324,7 @@
 .site-content-editor-heading { padding-bottom: 8px; }
 .site-content-action-bar { position: sticky; top: calc(var(--admin-header-height) + 58px); z-index: 50; grid-column: 1 / -1; display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 7px; margin: -10px -14px 0; padding: 9px 14px; border-bottom: 1px solid var(--line); background: rgba(255,254,250,.97); box-shadow: 0 5px 12px rgba(48,34,27,.06); backdrop-filter: blur(12px); }
 .site-content-action-bar .admin-refresh,.site-content-action-bar .admin-danger,.site-content-action-bar .admin-primary { min-height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 7px 11px; font-size: .72rem; }
+.site-content-action-bar #publish-banner[hidden] { display: none; }
 .site-content-action-bar .admin-primary { border: 0; }
 .site-content-action-bar .ui-icon { width: 16px; height: 16px; flex: none; }
 .site-content-fields { gap: 8px; }

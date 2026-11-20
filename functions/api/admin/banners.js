@@ -60,23 +60,24 @@ function normalizeBanner(banner, { allowIncomplete = false } = {}) {
     const es = value.es.trim();
     const en = value.en.trim();
     const optionalSchedule = type === 'schedule';
-    if ((!allowIncomplete && !optionalSchedule && (!es || !en)) || es.length > maxLength || en.length > maxLength || CONTROL_CHARACTERS.test(es) || CONTROL_CHARACTERS.test(en)) {
+    const optionalEpisodeForImage = type === 'episode' && row.media_type === 'image';
+    if ((!allowIncomplete && !optionalSchedule && !optionalEpisodeForImage && (!es || !en)) || es.length > maxLength || en.length > maxLength || CONTROL_CHARACTERS.test(es) || CONTROL_CHARACTERS.test(en)) {
       return { error: `Revisa el contenido de “${key}”: no puede estar vacío ni superar ${maxLength} caracteres.` };
     }
     // Localized text has separate database columns and may differ by language.
     // Only fields stored in one shared column must match between the form values.
-    if (esColumn === enColumn && es !== en) return { error: `Los valores de “${key}” deben coincidir.` };
+    if (esColumn === enColumn && !optionalEpisodeForImage && es !== en) return { error: `Los valores de “${key}” deben coincidir.` };
     if (type === 'image' && (es !== en || (!allowIncomplete || es) && (!IMAGE_PATH.test(es) || es.split('/').includes('..')))) return { error: 'Sube una imagen válida para este banner antes de guardar.' };
     if (type === 'effect' && (es !== en || !['orbit', 'still'].includes(es))) return { error: 'Elige un movimiento disponible para cada banner.' };
     if (type === 'media-type' && !['image', 'episode'].includes(es)) return { error: 'Elige si el banner muestra una imagen o un episodio.' };
-    if (type === 'episode' && es && !/^[a-z0-9-]{1,100}$/i.test(es)) return { error: 'El episodio seleccionado no tiene un identificador válido.' };
+    if (type === 'episode' && row.media_type === 'episode' && es && !/^[a-z0-9-]{1,100}$/i.test(es)) return { error: 'El episodio seleccionado no tiene un identificador válido.' };
     if (type === 'media-style' && !['straight', 'tilt-left', 'tilt-right'].includes(es)) return { error: 'Elige una inclinación disponible.' };
     if (type === 'media-shadow' && !['none', 'soft', 'lifted'].includes(es)) return { error: 'Elige una sombra disponible.' };
     if (type === 'boolean' && !['true', 'false'].includes(es)) return { error: 'Revisa si el banner debe anunciarse como episodio nuevo.' };
     if (type === 'schedule' && es && (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(es)
       || !Number.isFinite(Date.parse(es)) || new Date(es).toISOString() !== es)) return { error: 'Revisa la fecha programada del banner.' };
-    row[esColumn] = es;
-    row[enColumn] = en;
+    row[esColumn] = optionalEpisodeForImage ? '' : es;
+    row[enColumn] = optionalEpisodeForImage ? '' : en;
   }
   if (!allowIncomplete && row.media_type === 'episode' && !row.episode_id) return { error: 'Selecciona el episodio que quieres destacar.' };
   if (!allowIncomplete && row.starts_at && row.ends_at && Date.parse(row.ends_at) <= Date.parse(row.starts_at)) return { error: 'La fecha de fin debe ser posterior a la fecha de inicio.' };
@@ -147,9 +148,12 @@ export async function onRequestPut(context) {
   let body;
   try { body = await context.request.json(); } catch { return json({ error: 'No pudimos leer los cambios.' }, 400); }
   if (!Array.isArray(body?.banners) || body.banners.length < 1 || body.banners.length > 8) return json({ error: 'Mantén entre 1 y 8 banners.' }, 400);
-  const normalized = body.banners.map(normalizeBanner);
-  const invalid = normalized.find(item => item.error);
-  if (invalid) return json({ error: invalid.error }, 400);
+  // A publish operation updates the selected active banner plus the full ordered list.
+  // Keep inactive drafts eligible for incomplete content so one unfinished draft cannot
+  // block publishing a different, complete banner.
+  const normalized = body.banners.map(banner => normalizeBanner(banner, { allowIncomplete: banner?.enabled === false }));
+  const invalidIndex = normalized.findIndex(item => item.error);
+  if (invalidIndex >= 0) return json({ error: `Banner ${invalidIndex + 1}: ${normalized[invalidIndex].error}` }, 400);
   const rows = normalized.map(item => item.row);
   const ids = rows.map(row => row.id);
   if (new Set(ids).size !== ids.length) return json({ error: 'Hay banners repetidos en la lista.' }, 400);

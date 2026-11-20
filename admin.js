@@ -46,6 +46,7 @@
   const createBannerButton = document.querySelector('#create-banner');
   const duplicateBannerButton = document.querySelector('#duplicate-banner');
   const deleteBannerButton = document.querySelector('#delete-banner');
+  const publishBannerButton = document.querySelector('#publish-banner');
   const deleteBannerDialog = document.querySelector('#delete-banner-dialog');
   const confirmDeleteBanner = document.querySelector('#confirm-delete-banner');
   const heroPreviewToast = document.querySelector('#hero-preview-toast');
@@ -299,7 +300,21 @@
       if (label) label.textContent = saving ? (savingDraft ? 'Guardando borrador…' : 'Guardando…') : bannerDirty ? 'Cambios sin guardar' : selectedIsDraft ? 'Borrador guardado en la nube' : 'Todo guardado';
       siteContentSaveState.setAttribute('aria-label', saving ? (savingDraft ? 'Guardando borrador en la nube' : 'Guardando cambios') : bannerDirty ? 'Hay cambios sin guardar' : selectedIsDraft ? 'Borrador guardado en la nube' : 'Todos los cambios están guardados');
     }
-    if (submit && !saving) submit.disabled = !bannerDirty;
+    if (submit && !saving) {
+      submit.disabled = !bannerDirty;
+      const submitLabel = submit.querySelector('span');
+      if (submitLabel) submitLabel.textContent = selectedBanner()?.enabled ? 'Guardar y publicar cambios' : 'Guardar borrador';
+    }
+    if (publishBannerButton) {
+      const banner = selectedBanner();
+      const label = publishBannerButton.querySelector('span');
+      if (label) label.textContent = banner?.enabled ? 'Publicar cambios' : 'Publicar este banner';
+      publishBannerButton.hidden = !banner || banner.enabled;
+      publishBannerButton.disabled = saving || !banner || (banner.enabled && !bannerDirty);
+      publishBannerButton.title = banner?.enabled
+        ? `Publica los cambios del banner seleccionado en ${contentEnvironmentLabel}.`
+        : `Publica únicamente este banner en ${contentEnvironmentLabel}; los otros borradores seguirán sin publicarse.`;
+    }
     updateDeleteBannerState();
   }
   function hasPendingChangesExcept(id) {
@@ -947,7 +962,7 @@
       duplicateBannerButton.disabled = bannerItems.length >= 8;
     }
   }
-  async function saveBanners() {
+  async function saveBanners({ publishSelected = false } = {}) {
     captureBannerForm();
     for (const timer of draftAutosaveTimers.values()) window.clearTimeout(timer);
     draftAutosaveTimers.clear();
@@ -955,6 +970,14 @@
     captureBannerForm();
     for (const timer of draftAutosaveTimers.values()) window.clearTimeout(timer);
     draftAutosaveTimers.clear();
+    if (publishSelected) {
+      const banner = selectedBanner();
+      if (!banner) { setSiteContentStatus('Selecciona un banner para publicarlo.'); return; }
+      banner.enabled = true;
+      renderBannerList();
+      updateBannerPreview();
+      updateBannerSaveState();
+    }
     if (!bannerDirty) { setSiteContentStatus('No hay cambios pendientes.'); return; }
     const submit = siteContentForm.querySelector('[type="submit"]');
     if (submit.dataset.busy === 'true') return;
@@ -974,7 +997,7 @@
       renderBannerList();
       fillBannerForm();
       updateBannerSaveState();
-      setBannerStatus(`Cambios publicados en ${contentEnvironmentLabel}.`);
+      setBannerStatus(`Cambios guardados en ${contentEnvironmentLabel}. Solo los banners marcados Activo aparecen en la portada.`);
       const activeCount = bannerItems.filter(item => item.enabled).length;
       setSiteContentStatus(activeCount ? `Listo: ${activeCount} ${activeCount === 1 ? 'banner activo' : 'banners activos'} publicado${activeCount === 1 ? '' : 's'} en ${contentEnvironmentLabel}. Recarga la portada para verlos.` : 'Los cambios se guardaron, pero no se publicaron banners: activa al menos uno para que aparezca en la portada.');
     } catch (error) {
@@ -1037,6 +1060,7 @@
     event.preventDefault();
     await saveBanners();
   });
+  publishBannerButton?.addEventListener('click', () => { void saveBanners({ publishSelected: true }); });
   document.addEventListener('keydown', event => {
     if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 's' || currentView !== 'sitio' || !bannerDirty) return;
     event.preventDefault();
