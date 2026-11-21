@@ -6,7 +6,15 @@
   startedAt.value = String(Date.now());
   form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (!form.reportValidity()) return;
+    const invalid = [...form.elements].filter(field => field.willValidate && !field.validity.valid);
+    form.querySelectorAll('[aria-invalid="true"]').forEach(field => field.removeAttribute('aria-invalid'));
+    if (invalid.length) {
+      invalid.forEach(field => field.setAttribute('aria-invalid', 'true'));
+      status.textContent = document.documentElement.dataset.lang === 'en' ? 'Please check the highlighted fields.' : 'Revisa los campos marcados antes de enviar.';
+      invalid[0].focus();
+      invalid[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return;
+    }
     const submit = form.querySelector('[type="submit"]');
     const english = document.documentElement.dataset.lang === 'en';
     submit.disabled = true;

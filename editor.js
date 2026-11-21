@@ -673,6 +673,47 @@
     const box = $('#toast'); box.textContent = message; box.classList.add('show');
     clearTimeout(toast.timer); toast.timer = setTimeout(() => box.classList.remove('show'), 3000);
   }
+  function confirmWithBrand({ title, message, confirmLabel = 'Continuar', cancelLabel = 'Cancelar', destructive = false }) {
+    const dialog = $('#brand-confirm-dialog');
+    const accept = $('#brand-confirm-accept');
+    $('#brand-confirm-title').textContent = title;
+    $('#brand-confirm-message').textContent = message;
+    $('#brand-confirm-cancel').textContent = cancelLabel;
+    accept.textContent = confirmLabel;
+    accept.classList.toggle('danger', destructive);
+    return new Promise(resolve => {
+      let settled = false;
+      const finish = value => {
+        if (settled) return;
+        settled = true;
+        dialog.removeEventListener('close', onClose);
+        $('#brand-confirm-cancel').removeEventListener('click', onCancel);
+        accept.removeEventListener('click', onAccept);
+        dialog.removeEventListener('click', onBackdrop);
+        resolve(value);
+      };
+      const onClose = () => finish(dialog.returnValue === 'confirm');
+      const onCancel = () => dialog.close('cancel');
+      const onAccept = () => dialog.close('confirm');
+      const onBackdrop = event => { if (event.target === dialog) dialog.close('cancel'); };
+      dialog.addEventListener('close', onClose, { once: true });
+      $('#brand-confirm-cancel').addEventListener('click', onCancel, { once: true });
+      accept.addEventListener('click', onAccept, { once: true });
+      dialog.addEventListener('click', onBackdrop);
+      dialog.showModal();
+      accept.focus();
+    });
+  }
+  function validateFormInline(form, status, message = 'Revisa los campos marcados antes de continuar.') {
+    const invalid = [...form.elements].filter(field => field.willValidate && !field.validity.valid);
+    form.querySelectorAll('[aria-invalid="true"]').forEach(field => field.removeAttribute('aria-invalid'));
+    if (!invalid.length) return true;
+    invalid.forEach(field => field.setAttribute('aria-invalid', 'true'));
+    status.textContent = message;
+    invalid[0].focus({ preventScroll: false });
+    invalid[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    return false;
+  }
   function currentPanel() { return state.panels[state.active]; }
   function currentItem() { return currentPanel()?.items.find(item => item.id === state.selected); }
   function activeCanvas() { return $('#stage .artboard-canvas[data-panel-index="' + state.active + '"]'); }
@@ -825,7 +866,7 @@
     if (local && (!base || Number(local.updatedAt) > Number(base.localUpdatedAt || 0))) {
       toast('Hay cambios locales pendientes. Sincronízalos antes de restaurar una versión.'); return;
     }
-    if (!window.confirm('¿Restaurar esta versión? La versión actual se guardará primero en el historial para que puedas recuperarla.')) return;
+    if (!await confirmWithBrand({ title: '¿Restaurar esta versión?', message: 'La versión actual se guardará primero en el historial para que puedas recuperarla.', confirmLabel: 'Restaurar versión' })) return;
     button.disabled = true; $('#version-history-status').textContent = 'Restaurando…';
     try {
       await cloudFetch(`/api/projects/${encodeURIComponent(id)}/versions/${encodeURIComponent(versionId)}`, { method: 'POST', headers: { 'If-Match': historyEtag } });
@@ -2374,7 +2415,7 @@
   async function openPublishEpisodeDialog() {
     if (state.contentType !== 'episode') {
       const previousType = state.contentType || 'diseño';
-      if (!window.confirm(`Este borrador está clasificado como «${previousType}». ¿Quieres publicarlo como episodio? Se conservarán las viñetas y sus capas.`)) return;
+      if (!await confirmWithBrand({ title: 'Publicar como episodio', message: `Este borrador está clasificado como «${previousType}». ¿Quieres publicarlo como episodio? Se conservarán las viñetas y sus capas.`, confirmLabel: 'Continuar a publicación' })) return;
       state.contentType = 'episode';
       autosave();
       render();
@@ -2441,7 +2482,7 @@
   async function submitEpisodePublication(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    if (form.dataset.pending === 'true' || !form.reportValidity()) return;
+    if (form.dataset.pending === 'true' || !validateFormInline(form, $('#publish-episode-status'))) return;
     form.dataset.pending = 'true';
     const submit = $('#publish-episode-submit');
     const status = $('#publish-episode-status');
@@ -2598,7 +2639,7 @@
   async function saveManagedEpisode(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    if (form.dataset.pending === 'true' || !form.reportValidity()) return;
+    if (form.dataset.pending === 'true' || !validateFormInline(form, $('#manage-published-episode-status'))) return;
     form.dataset.pending = 'true';
     const button = $('#manage-published-episode-save');
     const status = $('#manage-published-episode-status');

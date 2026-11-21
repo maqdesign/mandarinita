@@ -571,3 +571,50 @@ dialog.publish-episode-dialog::backdrop{background:#171411a8;backdrop-filter:blu
 .publish-review-panel img{display:block;width:100%;aspect-ratio:3/2;object-fit:contain;border:1px solid var(--line);border-radius:9px;background:#fff}
 .publish-episode-footer .primary:disabled{cursor:not-allowed;opacity:.48;filter:saturate(.45)}
 @media(max-width:620px){.publish-readiness-list{grid-template-columns:1fr}.publish-review-panel{flex-basis:78vw;max-width:330px}.publish-review{padding:11px}.publish-review-heading h3{font-size:15px}}
+
+/* Branded confirmation and predictable contrast for every primary action. */
+.primary,
+dialog.export-preview-dialog button.primary,
+.publish-episode-footer .primary,
+.export-preview-actions .primary {
+  color: #302d2a !important;
+  background-color: var(--orange) !important;
+  border-color: var(--orange) !important;
+}
+.primary:disabled,
+.publish-episode-footer .primary:disabled {
+  color: #302d2a !important;
+  background-color: #e8b27f !important;
+  border-color: #e8b27f !important;
+  opacity: 1;
+  filter: none;
+}
+button[aria-invalid="true"], input[aria-invalid="true"], textarea[aria-invalid="true"], select[aria-invalid="true"] {
+  border-color: #a92e20 !important;
+  box-shadow: 0 0 0 2px #a92e2029;
+}
+.brand-confirm-dialog {
+  width: min(480px, calc(100vw - 28px));
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 24px 80px #17141155;
+}
+.brand-confirm-dialog::backdrop { background: #171411a8; backdrop-filter: blur(3px); }
+.brand-confirm-mark { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 14px; border-radius: 14px; background: #fff0df; color: #9b3f00; font-size: 23px; }
+.brand-confirm-dialog h2 { margin: 5px 0 8px; font: 600 24px Fredoka, sans-serif; }
+.brand-confirm-dialog p { margin: 0; color: var(--muted); line-height: 1.6; }
+.brand-confirm-dialog footer { display: flex; justify-content: flex-end; gap: 9px; margin-top: 24px; }
+.brand-confirm-dialog footer button { min-height: 44px; padding: 10px 15px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-weight: 650; }
+.brand-confirm-dialog footer button.primary { color: #302d2a !important; }
+.brand-confirm-dialog footer button:focus-visible { outline: 3px solid #9b3f00; outline-offset: 3px; }
+.theme-dark .brand-confirm-dialog { background: var(--paper); color: var(--ink); }
+.theme-dark .brand-confirm-mark { background: #493421; color: #ffd09f; }
+@media (max-width: 540px) {
+  .brand-confirm-dialog { padding: 23px 19px 18px; border-radius: 18px; }
+  .brand-confirm-dialog h2 { font-size: 21px; }
+  .brand-confirm-dialog footer { flex-direction: column-reverse; }
+  .brand-confirm-dialog footer button { width: 100%; }
+}
