@@ -1,6 +1,12 @@
 # Cola de componentes reutilizables
 
-Actualizado el 11 de noviembre de 2026. Este documento prioriza escenas de los episodios para encontrar dibujos originales que Mauricio pueda separar. Las fuentes están aplanadas: estos resultados no son componentes limpios ni aprobaciones para reconstruir partes ocultas.
+Actualizado el 21 de noviembre de 2026. Este documento prioriza escenas de los episodios para encontrar dibujos originales que Mauricio pueda separar. Las fuentes están aplanadas: estos resultados no son componentes limpios ni aprobaciones para reconstruir partes ocultas.
+
+## Revisión de calidad del 21 de noviembre
+
+La inspección del resultado insertable detectó fondos de escena todavía visibles en los recortes del sobre (85.1), clip (85.3) e inodoro (77.3), y fondo amarillo en las dos poses de carrera de Morita (59.3 y 59.4). Se retiraron de la biblioteca insertable y del índice pasaron a revisión. Los PNG originales se conservaron sin cambios. El cielo y las nubes del episodio 85.1 sigue disponible como fondo, y el logotipo vectorial oficial quedó disponible como sticker en color y blanco.
+
+La biblioteca de objetos queda sin recortes aprobados por ahora. Es preferible mostrar esa categoría vacía con una explicación útil a insertar piezas que tapen los dibujos con rectángulos de color. Los paneles originales siguen localizables desde **Componentes → Referencias**. Para ampliar los recursos que sí se pueden usar se añadieron a la biblioteca dos stickers hechos con retratos transparentes ya existentes: el rostro sonriente de Mandy y el rostro neutral de Mando, además de los dos logotipos vectoriales. Son stickers de rostro, no variantes de cuerpo completo.
 
 La hoja visual [reusable-assets-inventory-review.webp](art-review/reusable-assets-inventory-review.webp) compara tres paneles originales por grupo. Sirve para localizar las referencias; no son recortes ni composiciones nuevas.
 

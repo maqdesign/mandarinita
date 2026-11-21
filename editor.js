@@ -4,6 +4,10 @@
   const LEGACY_KEY = 'mandarinita-editor-project';
   const LOGICAL_WIDTH = 600;
   let exportPreviewUrls = [];
+  let publishReviewUrls = [];
+  let publishPreviewReady = false;
+  let publishPreviewError = '';
+  let publishKnownNumbers = [];
   const FORMAT = {
     web: { width: 1200, height: 800, logicalHeight: 400, label: 'Web 3:2' },
     square: { width: 1080, height: 1080, logicalHeight: 600, label: 'Instagram 1:1' },
@@ -27,8 +31,6 @@
     { name: 'Aguacatelo', aliases: ['aguacate'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/aguacatelo-transparent.png' }] },
     { name: 'Morita', aliases: ['mora'], variants: [
       { name: 'Pose del catálogo', src: 'assets/characters/morita.png' },
-      { name: 'Corriendo · episodio 59.3', src: 'assets/characters/morita-carrera-episodio-59-3.png' },
-      { name: 'Corriendo · episodio 59.4', src: 'assets/characters/morita-carrera-episodio-59-4.png' }
     ] },
     { name: 'Sra. Pera', aliases: ['pera', 'señora pera'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/sra-pera-transparent.webp' }] },
     { name: 'Champi Ñón', aliases: ['champi', 'champiñón', 'champi ñon', 'hongo'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/champi-transparent.webp' }] },
@@ -40,17 +42,19 @@
     { name: 'Superfreso', aliases: ['superfreso', 'freso', 'fresa'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/superfreso-transparent.webp' }] }
   ].map(x => ({ ...x, category: 'character', approvedCutout: true }));
   const stickers = [
+    { name: 'Logotipo Mandarinita', aliases: ['logo', 'marca', 'mandarinita', 'sello'], variants: [
+      { name: 'Color oficial', src: 'assets/mandarinita-logo.svg' },
+      { name: 'Blanco para fondos oscuros', src: 'assets/mandarinita-logo-white.svg' }
+    ], category: 'sticker', approvedCutout: true },
+    { name: 'Rostro sonriente de Mandy', aliases: ['mandy', 'mandarinita', 'cara sonriente', 'sticker mandy'], variants: [{ name: 'Retrato transparente', src: 'assets/mandarinita-smile.png' }], category: 'sticker', approvedCutout: true },
+    { name: 'Rostro neutral de Mando', aliases: ['mando', 'mandarino', 'cara neutral', 'sticker mando'], variants: [{ name: 'Retrato transparente', src: 'assets/sr-mandarino-neutral.png' }], category: 'sticker', approvedCutout: true },
     { name: 'Sticker frutal · 02', aliases: ['sticker 2', 'pack 2'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-02.webp' }], category: 'sticker', approvedCutout: true },
     { name: 'Sticker zanahoria · 03', aliases: ['sticker 3', 'pack 3'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-03.webp' }], category: 'sticker', approvedCutout: true },
     { name: 'Sticker frutal · 04', aliases: ['sticker 4', 'pack 4'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-04.webp' }], category: 'sticker', approvedCutout: true },
     { name: 'Sticker frutal · 06', aliases: ['sticker 6', 'pack 6', 'expresión frutal'], variants: [{ name: 'Sticker existente', src: 'assets/stickers/sticker-pack-06.webp' }], category: 'sticker', approvedCutout: true },
     { name: 'Sticker frutal · 07', aliases: ['sticker 7', 'pack 7'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-07.webp' }], category: 'sticker', approvedCutout: true }
   ];
-  const objects = [
-    { name: 'Sobre personificado · episodio 85.1', aliases: ['sobre', 'carta', 'episodio 85'], src: 'assets/objects/review/envelope-episode-85-1-review.png', category: 'object', approvedCutout: true },
-    { name: 'Clip de papel · episodio 85.3', aliases: ['clip', 'paperclip', 'sujetapapeles', 'episodio 85'], src: 'assets/objects/review/paperclip-episode-85-3-review.png', category: 'object', approvedCutout: true },
-    { name: 'Inodoro y portarrollos · episodio 77.3', aliases: ['inodoro', 'baño', 'toilet', 'rollo de papel', 'episodio 77'], src: 'assets/objects/review/toilet-episode-77-3-review.png', category: 'object', approvedCutout: true }
-  ];
+  const objects = [];
   const backgrounds = [
     { name: 'Cielo y nubes · episodio 85.1', aliases: ['cielo', 'nubes', 'fondo celeste', 'episodio 85'], src: 'assets/backgrounds/review/sky-clouds-episode-85-1.png', category: 'background', approvedCutout: true }
   ];
@@ -913,8 +917,9 @@
     if (!resource.approvedCutout) { toast(resource.note || 'Este archivo es una referencia de escena, no un componente aislado.'); return; }
     const variant = resource.variants?.[variantIndex] || resource;
     const isSticker = variant.src.includes('sticker-pack');
-    const width = isSticker ? 130 : 150;
-    const height = isSticker ? 130 : 160;
+    const isLogo = resource.name === 'Logotipo Mandarinita';
+    const width = isLogo ? 180 : isSticker ? 130 : 150;
+    const height = isLogo ? 68 : isSticker ? 130 : 160;
     const pos = position || placeWithoutOverlap(width, height);
     snapshot();
     const item = { id: id(), type: 'image', name: resource.name, resourceId: resource.name, category: resource.category, aliases: resource.aliases || [], src: variant.src, variants: resource.variants || null, variantIndex, x: pos.x, y: pos.y, w: width, h: height, rotation: 0, locked: false };
@@ -923,7 +928,10 @@
   function dropResourceAt(resource, panelIndex, boardCanvas, clientX, clientY) {
     const rect = boardCanvas.getBoundingClientRect(); const scale = rect.width / LOGICAL_WIDTH;
     setActivePanel(panelIndex, true);
-    addResource(resource, 0, { x: (clientX - rect.left) / scale - 75, y: (clientY - rect.top) / scale - 80 });
+    const isLogo = resource.name === 'Logotipo Mandarinita';
+    const width = isLogo ? 180 : resource.category === 'sticker' ? 130 : 150;
+    const height = isLogo ? 68 : resource.category === 'sticker' ? 130 : 160;
+    addResource(resource, 0, { x: (clientX - rect.left) / scale - width / 2, y: (clientY - rect.top) / scale - height / 2 });
   }
   function addBubble(kind = 'dialogue') {
     const size = kind === 'sfx' ? { w: 210, h: 110 } : kind === 'narration' ? { w: 230, h: 105 } : { w: 210, h: 105 };
@@ -1573,7 +1581,7 @@
     const isBackground = resourceFilter === 'background'; $('#background-note').hidden = !isBackground;
     if (isBackground) renderBackgroundColors(grid, query);
     if (resourceFilter === 'object' && !candidates.length) {
-      grid.innerHTML = '<div class="resource-note">No encontré objetos con ese nombre. Prueba con sobre, clip o inodoro.</div>'; return;
+      grid.innerHTML = '<div class="resource-note">Todavía no hay objetos aislados con calidad suficiente para insertar. Los sobres, clips e inodoros que aparecen en las escenas conservan partes del fondo; puedes encontrarlos en Referencias.</div>'; return;
     }
     if (!candidates.length) { if (isBackground) return; grid.innerHTML = '<div class="resource-note">No encontré recursos con ese nombre.</div>'; return; }
     candidates.forEach(resource => {
@@ -2263,6 +2271,106 @@
     end.min=nextDay;
   }
 
+  function clearPublishReviewPreview() {
+    publishReviewUrls.forEach(url => URL.revokeObjectURL(url));
+    publishReviewUrls = [];
+    publishPreviewReady = false;
+    publishPreviewError = '';
+    $('#publish-review-preview')?.replaceChildren();
+  }
+
+  function refreshPublishReadiness() {
+    const list = $('#publish-readiness-list');
+    if (!list) return;
+    const number = Number($('#publish-episode-number').value);
+    const titleEs = $('#publish-episode-title-es').value.trim();
+    const titleEn = $('#publish-episode-title-en').value.trim();
+    const isRealTitle = value => Boolean(value) && !/^(episodio nuevo|episodio sin título|nuevo episodio|untitled|new episode)$/i.test(value.trim());
+    const publishDate = $('#publish-episode-date').value;
+    const retireDate = $('#publish-episode-unpublish-date').value;
+    const numberAvailable = !publishKnownNumbers.includes(number);
+    const altFields = [...$('#publish-panel-descriptions').querySelectorAll('textarea')];
+    const altComplete = altFields.length === state.panels.length * 2 && altFields.every(field => field.value.trim().length >= 8);
+    const dateValid = Boolean(publishDate) && (!retireDate || retireDate > publishDate);
+    const checks = [
+      { label: 'Número y títulos en español e inglés', ok: Number.isInteger(number) && number >= 1 && number <= 9999 && numberAvailable && isRealTitle(titleEs) && isRealTitle(titleEn), detail: !numberAvailable ? `El número ${number} ya aparece en el archivo; elige otro.` : !isRealTitle(titleEs) || !isRealTitle(titleEn) ? 'Escribe títulos reales en ambos idiomas.' : undefined },
+      { label: 'Fechas de publicación y retiro', ok: dateValid },
+      { label: 'Vista final de todas las viñetas', ok: publishPreviewReady, pending: !publishPreviewReady && !publishPreviewError, error: publishPreviewError },
+      { label: 'Descripciones accesibles en español e inglés', ok: altComplete, detail: `${altFields.filter(field => field.value.trim().length >= 8).length} de ${state.panels.length * 2} completas` }
+    ];
+    list.replaceChildren();
+    checks.forEach(check => {
+      const item = document.createElement('li');
+      item.dataset.state = check.ok ? 'complete' : check.pending ? 'pending' : 'needs-attention';
+      const icon = document.createElement('span');
+      icon.className = 'publish-check-icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = check.ok ? '✓' : check.pending ? '…' : '!';
+      const text = document.createElement('span');
+      text.className = 'publish-check-copy';
+      const label = document.createElement('strong');
+      label.textContent = check.label;
+      const detail = document.createElement('small');
+      detail.textContent = check.error || check.detail || (check.ok ? 'Listo' : check.pending ? 'Preparando…' : 'Revisa este punto');
+      text.append(label, detail);
+      item.append(icon, text);
+      list.append(item);
+    });
+    const complete = checks.filter(check => check.ok).length;
+    const hasMetadata = ['#publish-characters','#publish-objects','#publish-themes','#publish-colors','#publish-search-terms','#publish-spoken-text','#publish-external-links'].some(selector => $(selector).value.trim());
+    const optionalItem = document.createElement('li'); optionalItem.dataset.state = 'optional';
+    const optionalIcon = document.createElement('span'); optionalIcon.className = 'publish-check-icon'; optionalIcon.setAttribute('aria-hidden','true'); optionalIcon.textContent = '＋';
+    const optionalCopy = document.createElement('span'); optionalCopy.className = 'publish-check-copy';
+    const optionalLabel = document.createElement('strong'); optionalLabel.textContent = 'Metadatos para búsquedas y redes';
+    const optionalDetail = document.createElement('small'); optionalDetail.textContent = hasMetadata ? 'Añadidos · puedes seguir editándolos abajo' : 'Opcionales · ayudan a encontrar y compartir el episodio';
+    optionalCopy.append(optionalLabel, optionalDetail); optionalItem.append(optionalIcon, optionalCopy); list.append(optionalItem);
+    $('#publish-review-count').textContent = `${complete}/${checks.length}`;
+    $('#publish-review-count').setAttribute('aria-label', `${complete} de ${checks.length} requisitos completos`);
+    $('#publish-review-summary').textContent = complete === checks.length ? 'Todo listo para publicar.' : `${complete} de ${checks.length} requisitos listos para publicar.`;
+    $('#publish-episode-submit').disabled = complete !== checks.length;
+  }
+
+  async function preparePublishReviewPreview() {
+    clearPublishReviewPreview();
+    const preview = $('#publish-review-preview');
+    preview.setAttribute('aria-busy', 'true');
+    const styleLabel = $('#export-style').selectedOptions[0]?.textContent.trim() || state.exportStyle || 'Plantilla actual';
+    const templateLabel = $('#export-preset').selectedOptions[0]?.textContent.trim() || FORMAT[state.format]?.label || 'Formato actual';
+    $('#publish-review-template').textContent = `Formato: ${templateLabel} · Plantilla: ${styleLabel} · ${state.panels.length} viñetas`;
+    refreshPublishReadiness();
+    try {
+      for (let index = 0; index < state.panels.length; index++) {
+        const blob = await renderPanelPng(state.panels[index], index);
+        if (!blob) throw new Error(`No se pudo preparar la viñeta ${index + 1}.`);
+        const url = URL.createObjectURL(blob);
+        publishReviewUrls.push(url);
+        const figure = document.createElement('figure');
+        figure.className = 'publish-review-panel';
+        const caption = document.createElement('figcaption');
+        caption.textContent = `Viñeta ${index + 1}`;
+        const image = document.createElement('img');
+        image.src = url;
+        image.alt = `Vista exportada de la viñeta ${index + 1}, formato ${templateLabel}, plantilla ${styleLabel}`;
+        image.addEventListener('load', () => {
+          publishPreviewReady = !publishPreviewError && publishReviewUrls.length === state.panels.length && [...preview.querySelectorAll('img')].every(node => node.complete && node.naturalWidth > 0);
+          refreshPublishReadiness();
+        }, { once: true });
+        image.addEventListener('error', () => {
+          publishPreviewError = `No se pudo mostrar la viñeta ${index + 1}.`;
+          refreshPublishReadiness();
+        }, { once: true });
+        figure.append(caption, image);
+        preview.append(figure);
+      }
+      publishPreviewReady = !publishPreviewError && [...preview.querySelectorAll('img')].length === state.panels.length && [...preview.querySelectorAll('img')].every(node => node.complete && node.naturalWidth > 0);
+    } catch (error) {
+      publishPreviewError = error instanceof Error ? error.message : 'No se pudo preparar la vista final.';
+    } finally {
+      preview.setAttribute('aria-busy', 'false');
+      refreshPublishReadiness();
+    }
+  }
+
   async function openPublishEpisodeDialog() {
     if (state.contentType !== 'episode') {
       const previousType = state.contentType || 'diseño';
@@ -2272,10 +2380,12 @@
       render();
     }
     $('#export-preview-dialog').close();
+    clearPublishReviewPreview();
     const form = $('#publish-episode-form');
     const status = $('#publish-episode-status');
     status.textContent = '';
-    $('#publish-episode-title-en').value = state.episodeTitleEn || state.title || '';
+    $('#publish-episode-title-es').value = state.title || '';
+    $('#publish-episode-title-en').value = state.episodeTitleEn || '';
     const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     $('#publish-episode-date').value = state.publishedAt || localToday;
     $('#publish-episode-unpublish-date').value = state.unpublishAt || '';
@@ -2287,6 +2397,7 @@
       if (!response.ok) throw new Error(result.error || 'Inicia sesión para consultar el catálogo y publicar.');
       catalog.episodes = result.episodes || [];
     } catch (error) { toast(error instanceof Error ? error.message : 'No pude consultar el catálogo de episodios.'); return; }
+    publishKnownNumbers = (catalog.episodes || []).filter(entry => entry.id !== state.publishedEpisodeId).map(entry => Number(entry.episodeNumber)).filter(Number.isFinite);
     const maxEpisode = Math.max(0, ...(catalog.episodes || []).map(entry => Number(entry.episodeNumber) || 0));
     $('#publish-episode-number').value = state.episodeNumber || maxEpisode + 1;
     const inferred = episodeCanvasMetadata();
@@ -2322,9 +2433,9 @@
       descriptions.append(card);
     });
     form.dataset.pending = 'false';
-    $('#publish-episode-submit').disabled = false;
     $('#publish-episode-submit').textContent = state.publishedEpisodeId ? 'Actualizar publicación' : 'Publicar episodio';
     $('#publish-episode-dialog').showModal();
+    await preparePublishReviewPreview();
   }
 
   async function submitEpisodePublication(event) {
@@ -2343,7 +2454,7 @@
       const episodeNumber = Number($('#publish-episode-number').value);
       const publishedAt = $('#publish-episode-date').value;
       const unpublishAt = $('#publish-episode-unpublish-date').value || null;
-      const title = { es: String(state.title || '').trim(), en: $('#publish-episode-title-en').value.trim() };
+      const title = { es: $('#publish-episode-title-es').value.trim(), en: $('#publish-episode-title-en').value.trim() };
       const idValue = state.publishedEpisodeId || `ep-${String(state.projectId || '').replace(/[^a-zA-Z0-9_-]/g, '')}`;
       const resolvedCharacters = await characterIdsFromNames($('#publish-characters').value);
       const editorialMetadata = {
@@ -2374,6 +2485,7 @@
       if (!response.ok) throw new Error(result.error || 'No se pudo publicar el episodio.');
       state.publishedEpisodeId = idValue;
       state.episodeNumber = episodeNumber;
+      state.title = title.es;
       state.publishedAt = publishedAt;
       state.unpublishAt = unpublishAt;
       state.editorialMetadata = editorialMetadata;
@@ -2697,7 +2809,10 @@
     $('#publish-episode-close').onclick = () => $('#publish-episode-dialog').close();
     $('#publish-episode-cancel').onclick = () => $('#publish-episode-dialog').close();
     $('#publish-episode-form').addEventListener('submit', submitEpisodePublication);
+    $('#publish-episode-form').addEventListener('input', refreshPublishReadiness);
+    $('#publish-episode-form').addEventListener('change', refreshPublishReadiness);
     $('#publish-episode-date').addEventListener('change',()=>updateRetirementDateMinimum('#publish-episode-date','#publish-episode-unpublish-date'));
+    $('#publish-episode-dialog').addEventListener('close', clearPublishReviewPreview);
     $('#publish-episode-dialog').addEventListener('cancel', event => { if ($('#publish-episode-form').dataset.pending === 'true') event.preventDefault(); });
     $('#manage-episode-date').addEventListener('change',()=>updateRetirementDateMinimum('#manage-episode-date','#manage-episode-unpublish-date'));
     $('#export-preview-dialog').addEventListener('close',closeExportPreview);

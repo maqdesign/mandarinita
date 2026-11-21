@@ -46,6 +46,6 @@ La última validación local confirmó la reapertura de un `.mandarinita` de dos
 ## Próximos hitos
 
 1. Verificar el flujo real entre iPhone, iPad y escritorio: abrir proyectos “En la nube”, editarlos, trabajar sin conexión y resolver cambios simultáneos sin perder trabajo.
-2. Conectar y autorizar una Meta App para Instagram Graph API; después implementar el Worker programado y el calendario. Hasta contar con permisos y credenciales de Meta, la interfaz no debe indicar que una publicación de Instagram está en cola o publicada. La publicación web funciona de forma independiente.
-4. Seguir aprobando recortes de personajes, objetos y fondos a partir de fuentes originales; las referencias pendientes no deben habilitarse como piezas insertables sin revisión.
-5. Evaluar una interfaz de revisión previa al estreno que reúna títulos, textos alternativos, numeración, fechas, firma de marca y vista previa en una sola lista de comprobación.
+2. Implementar el callback de Instagram Login y guiar la configuración de la Meta App; después implementar el Worker programado y el calendario. La guía [paso a paso de Instagram](INSTAGRAM-PUBLICATION-CALENDAR.md) usa el inicio de sesión directo de Instagram y no requiere Página de Facebook. Hasta contar con permisos y credenciales de Meta, la interfaz no debe indicar que una publicación está en cola o publicada. La publicación web funciona de forma independiente.
+3. Seguir aprobando recortes de personajes, objetos y fondos a partir de fuentes originales; las referencias pendientes no deben habilitarse como piezas insertables sin revisión.
+4. Evaluar una interfaz de revisión previa al estreno que reúna títulos, textos alternativos, numeración, fechas, firma de marca y vista previa en una sola lista de comprobación.
