@@ -491,7 +491,12 @@
     return {
       'hero.eyebrow': { es: isNew ? 'Nuevo episodio' : 'Episodio destacado', en: isNew ? 'New episode' : 'Featured episode' },
       'hero.title.first': { es: `Episodio ${entry.episodeNumber}`, en: `Episode ${entry.episodeNumber}` },
-      'hero.title.second': { es: titleEs, en: titleEn }
+      'hero.title.second': { es: titleEs, en: titleEn },
+      'hero.description': {
+        es: `Lee «${titleEs}», el episodio ${entry.episodeNumber} de Mandarinita.`,
+        en: `Read “${titleEn}”, episode ${entry.episodeNumber} of Mandarinita.`
+      },
+      'hero.cta': { es: `Leer episodio ${entry.episodeNumber}`, en: `Read episode ${entry.episodeNumber}` }
     };
   }
   function episodeCopyIsCustom(banner, entry) {
@@ -500,7 +505,12 @@
     const originals = {
       'hero.eyebrow': ['Humor ilustrado desde República Dominicana', 'Illustrated humor from the Dominican Republic'],
       'hero.title.first': ['La vida tiene', 'Life has'],
-      'hero.title.second': ['sus gajos.', 'its rough edges.']
+      'hero.title.second': ['sus gajos.', 'its rough edges.'],
+      'hero.description': [
+        'Historietas de esas cosas que nos pasan a todos, pero que nadie cuenta igual. Humor cotidiano, con sabor dominicano y mucha pulpa.',
+        'Comics about those everyday moments we all go through, but nobody tells quite the same way. Everyday humor, with Dominican flavor and plenty of pulp.'
+      ],
+      'hero.cta': ['Leer historietas', 'Read the comics']
     };
     return Object.entries(generated).some(([key, value]) => {
       const saved = banner.fields[key];
@@ -618,7 +628,7 @@
     if (pendingEpisodeCopy) applyEpisodeCopy(pendingEpisodeCopy);
     pendingEpisodeCopy = null;
     heroEpisodeCustomDialog.close();
-    setSiteContentStatus('Texto actualizado con el título y el anuncio del episodio.');
+    setSiteContentStatus('Rótulo, título, descripción y botón se completaron con los datos del episodio.');
   });
   document.querySelector('#hero-episode-keep-copy').addEventListener('click', () => {
     pendingEpisodeCopy = null;

@@ -868,3 +868,7 @@ body.hero-only-preview.hero-preview-single .hero-carousel-arrow,body.hero-only-p
 .admin-login-trigger:hover,.admin-login-trigger:focus-visible{color:var(--ink);background:#fff6e8;border-color:var(--line)}
 .admin-login-trigger:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 @media(prefers-color-scheme:dark){.admin-login-trigger:hover,.admin-login-trigger:focus-visible{background:var(--soft)}}
+
+/* Feature the selected episode artwork more clearly in the home banner. */
+.hero-art.hero-art-family .hero-family-image { inset: 12%; width: 76%; height: 76%; }
+@media(max-width:680px){.hero-art.hero-art-family .hero-family-image{inset:10%;width:80%;height:80%}}
