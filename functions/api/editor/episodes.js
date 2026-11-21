@@ -1,23 +1,11 @@
 import { authorizeProjectRequest } from '../../_lib/projects.js';
 import { json } from '../../_lib/session.js';
+import { scheduleHasStarted, scheduleIsAfter, validScheduleDate } from '../../_lib/schedule.js';
 
 const ROOT = 'published/episodes/';
 const OVERRIDES = `${ROOT}overrides/`;
 const ID_PATTERN = /^ep-[a-zA-Z0-9_-]{1,96}$/;
 const STATUSES = new Set(['published', 'scheduled', 'unpublished']);
-
-function todayInSantoDomingo() {
-  const values = Object.fromEntries(new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit'
-  }).formatToParts(new Date()).map(part => [part.type, part.value]));
-  return `${values.year}-${values.month}-${values.day}`;
-}
-
-function validDate(value) {
-  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const date = new Date(`${value}T00:00:00.000Z`);
-  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
 
 function normalizeMetadata(input = {}) {
   const list = value => Array.isArray(value)
@@ -68,11 +56,10 @@ async function staticCatalog(request) {
 
 function editableRecord(record, override = null, source = 'catalog') {
   const metadata = { ...(record.metadata || {}), ...(override?.metadata || {}) };
-  const today = todayInSantoDomingo();
   const baseStatus = override?.status || record.status || 'unpublished';
-  const publishedAt = override?.publishedAt || record.publishedAt || '';
-  const unpublishAt = override?.unpublishAt || record.unpublishAt || '';
-  const status = unpublishAt && unpublishAt <= today ? 'unpublished' : baseStatus === 'scheduled' && publishedAt <= today ? 'published' : baseStatus;
+  const publishedAt = override && Object.hasOwn(override, 'publishedAt') ? override.publishedAt || '' : record.publishedAt || '';
+  const unpublishAt = override && Object.hasOwn(override, 'unpublishAt') ? override.unpublishAt || '' : record.unpublishAt || '';
+  const status = unpublishAt && scheduleHasStarted(unpublishAt) ? 'unpublished' : baseStatus === 'scheduled' && scheduleHasStarted(publishedAt) ? 'published' : baseStatus;
   return {
     id: record.id,
     episodeNumber: override?.episodeNumber ?? record.episodeNumber ?? null,
@@ -148,20 +135,19 @@ export async function onRequestPatch(context) {
   if (!STATUSES.has(status)) return json({ error: 'Elige Publicado, Programado o No publicado.' }, 400);
   if (!Number.isInteger(episodeNumber) || episodeNumber < 1 || episodeNumber > 9999) return json({ error: 'El número debe estar entre 1 y 9999.' }, 400);
   if (!title.es || title.es.length > 180 || title.en.length > 180) return json({ error: 'El título en español es obligatorio; ambos títulos admiten hasta 180 caracteres.' }, 400);
-  if (requestedPublishedAt && !validDate(requestedPublishedAt)) return json({ error: 'Revisa la fecha de publicación.' }, 400);
+  if (requestedPublishedAt && !validScheduleDate(requestedPublishedAt)) return json({ error: 'Revisa la fecha y hora de publicación.' }, 400);
 
   const data = await readAll(context);
   if (data.response) return data.response;
   const target = data.entries.find(entry => entry.id === id);
   if (!target) return json({ error: 'No encontramos el episodio en el catálogo actual.' }, 404);
   const publishedAt = requestedPublishedAt || target.publishedAt || '';
-  if (status === 'scheduled' && (!validDate(publishedAt) || publishedAt <= todayInSantoDomingo())) return json({ error: 'Para programarlo, elige una fecha futura.' }, 400);
-  if (unpublishAt && (!validDate(unpublishAt) || (publishedAt && unpublishAt <= publishedAt))) return json({ error: 'La fecha para retirar el episodio debe ser posterior a la fecha de publicación.' }, 400);
+  if (status === 'scheduled' && (!validScheduleDate(publishedAt) || scheduleHasStarted(publishedAt))) return json({ error: 'Para programarlo, elige una fecha y hora futuras.' }, 400);
+  if (unpublishAt && (!validScheduleDate(unpublishAt) || (publishedAt && !scheduleIsAfter(unpublishAt, publishedAt)))) return json({ error: 'La fecha y hora para retirar el episodio deben ser posteriores a las de publicación.' }, 400);
   const duplicate = data.entries.find(entry => entry.id !== id && Number(entry.episodeNumber) === episodeNumber);
   if (duplicate) return json({ error: `El episodio ${episodeNumber} ya está asignado a «${duplicate.title.es}».` }, 409);
 
-  const today = todayInSantoDomingo();
-  const effectiveStatus = status === 'scheduled' && publishedAt <= today ? 'published' : status;
+  const effectiveStatus = status === 'scheduled' && scheduleHasStarted(publishedAt) ? 'published' : status;
   const update = {
     id, episodeNumber, title, status: effectiveStatus, publishedAt, unpublishAt,
     metadata: normalizeMetadata(input?.metadata), updatedAt: new Date().toISOString()

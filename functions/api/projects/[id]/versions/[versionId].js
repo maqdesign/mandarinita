@@ -10,33 +10,62 @@ export async function onRequestPost(context) {
   const expectedEtag = request.headers.get('If-Match');
   if (!expectedEtag) return json({ error: 'Actualiza la lista antes de restaurar la versión.' }, 428);
   const currentKey = projectObjectKey(id);
-  const current = await env.MANDARINITA_PROJECTS.get(currentKey);
+  let current;
+  try { current = await env.MANDARINITA_PROJECTS.get(currentKey); }
+  catch (error) {
+    console.error('Project version restore could not read current project', { name: error?.name || 'Error', projectId: id });
+    return json({ error: 'No se pudo leer la versión actual del borrador. No se hizo ningún cambio.' }, 503);
+  }
   if (!current) return json({ error: 'No se encontró el proyecto.' }, 404);
   if (current.httpEtag !== expectedEtag) return json({ error: 'El borrador cambió desde que abriste el historial. Actualiza el historial y revisa la versión actual antes de restaurar.', code: 'version_conflict' }, 412);
   const versionKey = `users/mauricio/project-versions/${id}/${versionId}.mandarinita`;
-  const archived = await env.MANDARINITA_PROJECTS.get(versionKey);
+  let archived;
+  try { archived = await env.MANDARINITA_PROJECTS.get(versionKey); }
+  catch (error) {
+    console.error('Project version restore could not read snapshot', { name: error?.name || 'Error', projectId: id, versionId });
+    return json({ error: 'No se pudo leer la copia histórica. La versión actual sigue intacta.' }, 503);
+  }
   if (!archived) return json({ error: 'Esta versión ya no está disponible.' }, 404);
   let project;
-  try { project = JSON.parse(await archived.text()); } catch { return json({ error: 'La versión guardada está dañada.' }, 422); }
+  let archivedText;
+  try { archivedText = await archived.text(); }
+  catch (error) {
+    console.error('Project version restore could not read snapshot body', { name: error?.name || 'Error', projectId: id, versionId });
+    return json({ error: 'No se pudo leer el contenido de la copia histórica. La versión actual sigue intacta.' }, 503);
+  }
+  try { project = JSON.parse(archivedText); }
+  catch { return json({ error: 'La copia histórica está dañada. La versión actual sigue intacta.' }, 422); }
   if (!project || project.projectId !== id || !Array.isArray(project.panels)) return json({ error: 'La versión no pertenece a este proyecto.' }, 422);
 
   const now = Date.now();
   const backupId = crypto.randomUUID();
-  await env.MANDARINITA_PROJECTS.put(`users/mauricio/project-versions/${id}/${backupId}.mandarinita`, await current.text(), {
-    httpMetadata: { contentType: 'application/vnd.mandarinita+json; charset=utf-8' },
-    customMetadata: { versionId: backupId, projectId: id, title: String(current.customMetadata?.title || 'Versión anterior').slice(0, 180), updatedAt: String(Number(current.customMetadata?.updatedAt) || 0), snapshotAt: String(now), sourceEtag: current.httpEtag }
-  });
+  try {
+    await env.MANDARINITA_PROJECTS.put(`users/mauricio/project-versions/${id}/${backupId}.mandarinita`, await current.text(), {
+      httpMetadata: { contentType: 'application/vnd.mandarinita+json; charset=utf-8' },
+      customMetadata: { versionId: backupId, projectId: id, title: String(current.customMetadata?.title || 'Versión anterior').slice(0, 180), updatedAt: String(Number(current.customMetadata?.updatedAt) || 0), snapshotAt: String(now), sourceEtag: current.httpEtag }
+    });
+  } catch (error) {
+    console.error('Project version restore could not preserve current project', { name: error?.name || 'Error', projectId: id, versionId });
+    return json({ error: 'No se pudo crear una copia de seguridad previa. La versión actual sigue intacta; vuelve a intentarlo.' }, 503);
+  }
   project.updatedAt = now;
-  const saved = await env.MANDARINITA_PROJECTS.put(currentKey, JSON.stringify(project), {
-    onlyIf: { etagMatches: expectedEtag },
-    httpMetadata: { contentType: 'application/vnd.mandarinita+json; charset=utf-8' },
-    customMetadata: {
-      title: String(project.title || 'Episodio sin título').slice(0, 180), contentType: String(project.contentType || 'episode').slice(0, 40),
-      status: String(project.status || 'draft').slice(0, 40), createdAt: String(Number(project.createdAt) || now),
-      panels: String(project.panels.length), updatedAt: String(now)
-    }
-  });
+  let saved;
+  try {
+    saved = await env.MANDARINITA_PROJECTS.put(currentKey, JSON.stringify(project), {
+      onlyIf: { etagMatches: expectedEtag },
+      httpMetadata: { contentType: 'application/vnd.mandarinita+json; charset=utf-8' },
+      customMetadata: {
+        title: String(project.title || 'Episodio sin título').slice(0, 180), contentType: String(project.contentType || 'episode').slice(0, 40),
+        status: String(project.status || 'draft').slice(0, 40), createdAt: String(Number(project.createdAt) || now),
+        panels: String(project.panels.length), updatedAt: String(now)
+      }
+    });
+  } catch (error) {
+    console.error('Project version restore could not write restored project', { name: error?.name || 'Error', projectId: id, versionId });
+    return json({ error: 'No se pudo aplicar la copia histórica. La versión actual no se reemplazó; vuelve a intentarlo.' }, 503);
+  }
   if (!saved) return json({ error: 'El proyecto cambió mientras se restauraba. No se reemplazó la versión actual.', code: 'version_conflict' }, 412);
-  await pruneProjectVersions(env, id);
+  try { await pruneProjectVersions(env, id); }
+  catch (error) { console.error('Project restored but old snapshots could not be pruned', { name: error?.name || 'Error', projectId: id }); }
   return json({ ok: true, id, title: project.title || 'Episodio sin título', updatedAt: now, etag: saved.httpEtag }, 200, { ETag: saved.httpEtag });
 }

@@ -870,14 +870,22 @@
     button.disabled = true; $('#version-history-status').textContent = 'Restaurando…';
     try {
       await cloudFetch(`/api/projects/${encodeURIComponent(id)}/versions/${encodeURIComponent(versionId)}`, { method: 'POST', headers: { 'If-Match': historyEtag } });
-      const latest = await readRemoteProject(id);
+      let latest;
+      try { latest = await readRemoteProject(id); }
+      catch (error) {
+        $('#version-history-status').textContent = 'La nube confirmó la restauración, pero el editor no pudo volver a cargar el borrador. Pulsa “Actualizar historial” y abre el proyecto de nuevo.';
+        console.error('Restored project could not be reloaded', { status: error?.status || 0, projectId: id });
+        return;
+      }
       storeRemoteProject(latest.project, latest.etag, { persistLocal: true });
       if (state?.projectId === id) { state = normalizeProject(latest.project); undoStack = []; redoStack = []; showEditor(); }
       else renderProjectList();
       toast('Versión restaurada. La versión anterior también quedó guardada en el historial.');
       await refreshVersionHistory();
     } catch (error) {
-      $('#version-history-status').textContent = error.message || 'No se pudo restaurar esa versión.';
+      $('#version-history-status').textContent = error.status === 500
+        ? 'La nube respondió con un error interno (500). No se confirmó la restauración; tu copia local sigue intacta. Actualiza el historial y vuelve a intentarlo.'
+        : error.message || 'No se pudo restaurar esa versión.';
       if (error.status === 412) await refreshVersionHistory();
     } finally { button.disabled = false; }
   }
@@ -2306,10 +2314,34 @@
   function updateRetirementDateMinimum(startSelector, endSelector) {
     const start=$(startSelector),end=$(endSelector);
     if(!start||!end)return;
-    const parts=String(start.value||'').split('-').map(Number);
-    if(parts.length!==3||parts.some(value=>!value)){end.removeAttribute('min');return;}
-    const nextDay=new Date(Date.UTC(parts[0],parts[1]-1,parts[2]+1)).toISOString().slice(0,10);
-    end.min=nextDay;
+    if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(start.value)){end.removeAttribute('min');return;}
+    end.min=new Date(Date.parse(`${start.value}:00Z`)+60_000).toISOString().slice(0,16);
+  }
+  const publicationTimeZone='America/Santo_Domingo';
+  function dateTimeInputValue(value) {
+    if(!value)return '';
+    const raw=String(value);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(raw))return `${raw}T00:00`;
+    const date=new Date(raw);
+    if(!Number.isFinite(date.getTime()))return '';
+    const parts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:publicationTimeZone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date).map(part=>[part.type,part.value]));
+    return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
+  }
+  function publicationDateTimeIso(value) {
+    if(!value)return null;
+    if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value))return null;
+    const naive=new Date(`${value}:00Z`);
+    if(!Number.isFinite(naive.getTime()))return null;
+    const parts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:publicationTimeZone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(naive).map(part=>[part.type,part.value]));
+    const zonedAsUtc=Date.UTC(Number(parts.year),Number(parts.month)-1,Number(parts.day),Number(parts.hour),Number(parts.minute),Number(parts.second));
+    return new Date(naive.getTime()-(zonedAsUtc-naive.getTime())).toISOString();
+  }
+  function scheduleLabel(value) {
+    if(!value)return '';
+    const dateOnly=/^\d{4}-\d{2}-\d{2}$/.test(value);
+    const date=dateOnly?new Date(`${value}T12:00:00-04:00`):new Date(value);
+    if(!Number.isFinite(date.getTime()))return String(value);
+    return new Intl.DateTimeFormat('es-DO',{timeZone:publicationTimeZone,day:'numeric',month:'short',year:'numeric',...(dateOnly?{}:{hour:'numeric',minute:'2-digit'})}).format(date);
   }
 
   function clearPublishReviewPreview() {
@@ -2427,9 +2459,8 @@
     status.textContent = '';
     $('#publish-episode-title-es').value = state.title || '';
     $('#publish-episode-title-en').value = state.episodeTitleEn || '';
-    const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-    $('#publish-episode-date').value = state.publishedAt || localToday;
-    $('#publish-episode-unpublish-date').value = state.unpublishAt || '';
+    $('#publish-episode-date').value = dateTimeInputValue(state.publishedAt) || dateTimeInputValue(new Date().toISOString());
+    $('#publish-episode-unpublish-date').value = dateTimeInputValue(state.unpublishAt);
     updateRetirementDateMinimum('#publish-episode-date','#publish-episode-unpublish-date');
     let catalog = { episodes: [] };
     try {
@@ -2493,8 +2524,9 @@
     status.textContent = 'Subiendo el episodio al sitio. No cierres esta ventana todavía.';
     try {
       const episodeNumber = Number($('#publish-episode-number').value);
-      const publishedAt = $('#publish-episode-date').value;
-      const unpublishAt = $('#publish-episode-unpublish-date').value || null;
+      const publishedAt = publicationDateTimeIso($('#publish-episode-date').value);
+      const unpublishAt = publicationDateTimeIso($('#publish-episode-unpublish-date').value);
+      if (!publishedAt || ($('#publish-episode-unpublish-date').value && !unpublishAt)) throw new Error('Elige una fecha y hora válidas para publicar y retirar el episodio.');
       const title = { es: $('#publish-episode-title-es').value.trim(), en: $('#publish-episode-title-en').value.trim() };
       const idValue = state.publishedEpisodeId || `ep-${String(state.projectId || '').replace(/[^a-zA-Z0-9_-]/g, '')}`;
       const resolvedCharacters = await characterIdsFromNames($('#publish-characters').value);
@@ -2537,7 +2569,7 @@
       $('#publish-episode-close').disabled = false;
       $('#publish-episode-cancel').disabled = false;
       const archiveUrl = `${location.origin}/episodios.html`;
-      toast(result.scheduled ? `Episodio ${episodeNumber} programado para ${publishedAt}. Se mostrará en ${archiveUrl}.` : `Episodio ${episodeNumber} publicado en ${archiveUrl}.`);
+      toast(result.scheduled ? `Episodio ${episodeNumber} programado para ${scheduleLabel(publishedAt)}. Se mostrará en ${archiveUrl}.` : `Episodio ${episodeNumber} publicado en ${archiveUrl}.`);
       if (!$('#published-episodes-section').hidden) loadPublishedEpisodes();
     } catch (error) {
       status.textContent = error instanceof Error ? error.message : 'No se pudo publicar. El borrador sigue guardado.';
@@ -2601,7 +2633,7 @@
       const title = document.createElement('strong'); title.textContent = `#${entry.episodeNumber || '—'} · ${entry.title?.es || 'Episodio sin título'}`;
       const status = document.createElement('small');
       const labels = { published: 'Publicado', scheduled: 'Programado', unpublished: 'No publicado' };
-      status.textContent = `${labels[entry.status] || entry.status} · ${entry.panelCount} viñetas${entry.publishedAt ? ` · ${entry.publishedAt}` : ''}${entry.unpublishAt ? ` → ${entry.unpublishAt}` : ''} · ${entry.sourceType === 'editor' ? 'Del editor' : 'Catálogo existente'}`;
+      status.textContent = `${labels[entry.status] || entry.status} · ${entry.panelCount} viñetas${entry.publishedAt ? ` · ${scheduleLabel(entry.publishedAt)}` : ''}${entry.unpublishAt ? ` → ${scheduleLabel(entry.unpublishAt)}` : ''} · ${entry.sourceType === 'editor' ? 'Del editor' : 'Catálogo existente'}`;
       const tags = document.createElement('div'); tags.className = 'published-episode-meta';
       for (const value of [...(entry.characters || []), ...(entry.themes || []), ...(entry.colors || [])].slice(0, 6)) { const tag = document.createElement('span'); tag.textContent = value; tags.append(tag); }
       copy.append(title, status); if (tags.childElementCount) copy.append(tags);
@@ -2618,8 +2650,8 @@
     $('#manage-episode-status').value = entry.status || 'published';
     $('#manage-episode-title-es').value = entry.title?.es || '';
     $('#manage-episode-title-en').value = entry.title?.en || '';
-    $('#manage-episode-date').value = entry.publishedAt || '';
-    $('#manage-episode-unpublish-date').value = entry.unpublishAt || '';
+    $('#manage-episode-date').value = dateTimeInputValue(entry.publishedAt);
+    $('#manage-episode-unpublish-date').value = dateTimeInputValue(entry.unpublishAt);
     updateRetirementDateMinimum('#manage-episode-date','#manage-episode-unpublish-date');
     $('#manage-episode-characters').value = (await characterNamesFromIds(entry.characters || [])).join(', ');
     $('#manage-episode-objects').value = (entry.objects || []).join(', ');
@@ -2651,8 +2683,8 @@
         episodeNumber: Number($('#manage-episode-number').value),
         title: { es: $('#manage-episode-title-es').value.trim(), en: $('#manage-episode-title-en').value.trim() },
         status: $('#manage-episode-status').value,
-        publishedAt: $('#manage-episode-date').value,
-        unpublishAt: $('#manage-episode-unpublish-date').value || null,
+        publishedAt: publicationDateTimeIso($('#manage-episode-date').value),
+        unpublishAt: publicationDateTimeIso($('#manage-episode-unpublish-date').value),
         metadata: {
           characters: characters.ids, objects: splitEditorialList($('#manage-episode-objects').value),
           themes: splitEditorialList($('#manage-episode-themes').value), colors: splitEditorialList($('#manage-episode-colors').value),

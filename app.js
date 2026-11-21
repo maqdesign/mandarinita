@@ -1,6 +1,11 @@
 const languageButton = document.querySelector('.language-toggle');
 const menuButton = document.querySelector('.menu-button');
 const navigation = document.querySelector('.main-nav');
+function scheduleHasStarted(value) {
+  if (!value) return false;
+  const instant=/^\d{4}-\d{2}-\d{2}$/.test(value)?Date.parse(`${value}T00:00:00-04:00`):Date.parse(value);
+  return Number.isFinite(instant)&&instant<=Date.now();
+}
 // Share the same in-flight catalog request between the home cards, character
 // appearances, archive and global search instead of downloading it repeatedly.
 window.mandarinitaEpisodesCatalogPromise ||= fetch('episodes.json', { cache: 'no-cache' }).then(async response => {
@@ -10,15 +15,13 @@ window.mandarinitaEpisodesCatalogPromise ||= fetch('episodes.json', { cache: 'no
     const published = await fetch('/api/published-episodes', { cache: 'no-store' });
     if (published.ok) {
       const result = await published.json();
-      const values = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date()).map(part => [part.type, part.value]));
-      const today = `${values.year}-${values.month}-${values.day}`;
       const overrides = new Map((Array.isArray(result.overrides) ? result.overrides : []).map(item => [item.id, item]));
       catalog.episodes = catalog.episodes.map(entry => {
         const override = overrides.get(entry.id);
         if (!override) return entry;
-        const status = override.status === 'scheduled' && override.publishedAt <= today ? 'published'
-          : override.unpublishAt && override.unpublishAt <= today ? 'unpublished' : override.status;
-        return { ...entry, ...override.metadata, title: override.title || entry.title, episodeNumber: override.episodeNumber ?? entry.episodeNumber, publishedAt: override.publishedAt || entry.publishedAt, status };
+        const status = override.unpublishAt && scheduleHasStarted(override.unpublishAt) ? 'unpublished'
+          : override.status === 'scheduled' && scheduleHasStarted(override.publishedAt) ? 'published' : override.status;
+        return { ...entry, ...override.metadata, title: override.title || entry.title, episodeNumber: override.episodeNumber ?? entry.episodeNumber, publishedAt: Object.hasOwn(override, 'publishedAt') ? override.publishedAt : entry.publishedAt, unpublishAt: Object.hasOwn(override, 'unpublishAt') ? override.unpublishAt : entry.unpublishAt, status };
       });
       const currentIds = new Set(catalog.episodes.map(entry => entry.id));
       catalog.episodes.push(...(Array.isArray(result.episodes) ? result.episodes.filter(entry => !currentIds.has(entry.id)) : []));
@@ -182,7 +185,13 @@ function syncInternalLanguageLinks() {
 }
 function formatCatalogDate(value) {
   const locale = language === 'en' ? 'en-US' : 'es-DO';
-  return new Intl.DateTimeFormat(locale, { day:'numeric', month:'short', year:'numeric' }).format(new Date(`${value}T12:00:00`));
+  const dateOnly=/^\d{4}-\d{2}-\d{2}$/.test(value);
+  const date=dateOnly?new Date(`${value}T12:00:00-04:00`):new Date(value);
+  if(!Number.isFinite(date.getTime()))return '';
+  return new Intl.DateTimeFormat(locale, { timeZone:'America/Santo_Domingo', day:'numeric', month:'short', year:'numeric', ...(dateOnly?{}:{hour:'numeric',minute:'2-digit'}) }).format(date);
+}
+function catalogTimestamp(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? Date.parse(`${value}T12:00:00-04:00`) : Date.parse(value);
 }
 function catalogTitle(entry, lang = language) {
   const translated = entry.title?.[lang];
@@ -262,8 +271,8 @@ async function loadApprovedEpisodes() {
     approvedEpisodeKeys=approved
       .map(({entry,key})=>({id:entry.id,key,entry}))
       .sort((a,b)=>{
-        const dateA=a.entry.publishedAt?Date.parse(`${a.entry.publishedAt}T12:00:00`):NaN;
-        const dateB=b.entry.publishedAt?Date.parse(`${b.entry.publishedAt}T12:00:00`):NaN;
+        const dateA=a.entry.publishedAt?catalogTimestamp(a.entry.publishedAt):NaN;
+        const dateB=b.entry.publishedAt?catalogTimestamp(b.entry.publishedAt):NaN;
         if(Number.isFinite(dateA)&&Number.isFinite(dateB)&&dateA!==dateB)return dateB-dateA;
         return (b.entry.episodeNumber||0)-(a.entry.episodeNumber||0);
       })

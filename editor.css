@@ -618,3 +618,35 @@ button[aria-invalid="true"], input[aria-invalid="true"], textarea[aria-invalid="
   .brand-confirm-dialog footer { flex-direction: column-reverse; }
   .brand-confirm-dialog footer button { width: 100%; }
 }
+
+/* White lettering is reserved for an orange with accessible contrast. */
+.primary,
+dialog.export-preview-dialog button.primary,
+.publish-episode-footer .primary,
+.export-preview-actions .primary,
+.brand-confirm-dialog footer button.primary {
+  color: #fff !important;
+  background-color: #c44400 !important;
+  border-color: #c44400 !important;
+}
+.primary:disabled,
+.publish-episode-footer .primary:disabled {
+  color: #fff !important;
+  background-color: #71665e !important;
+  border-color: #71665e !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+.publish-episode-fields label { min-width: 0; }
+.publish-episode-fields input[type="datetime-local"] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 16px;
+}
+@media (max-width: 760px) {
+  .publish-episode-fields { grid-template-columns: minmax(0, 1fr); }
+  .publish-episode-fields label:first-child { grid-column: auto; }
+  dialog.publish-episode-dialog { width: calc(100vw - 20px); max-height: 96dvh; }
+}
