@@ -112,6 +112,10 @@
   let erasing = null;
   let lasso = null;
   let recentDrawingGroup = null;
+  let componentDraft = null;
+  let componentLayerId = null;
+  let componentStroke = null;
+  let componentColor = '#302D2A';
   let pendingDeleteId = null;
   let panelDrag = null;
   let layerDragId = null;
@@ -210,7 +214,7 @@
     return candidate;
   }
   function makeProject(title = 'Episodio nuevo', contentType = 'episode') {
-    return { schemaVersion: 1, projectId: id(), title, contentType, status: 'draft', format: 'web', exportStyle: 'classic', pageHeight: 400, active: 0, selected: null, zoom: 1, grid: true, panels: [{ id: id(), items: [] }, { id: id(), items: [] }], createdAt: Date.now(), updatedAt: Date.now() };
+    return { schemaVersion: 1, projectId: id(), title, contentType, status: 'draft', format: 'web', exportStyle: 'classic', pageHeight: 400, active: 0, selected: null, zoom: 1, grid: true, panels: [{ id: id(), items: [] }, { id: id(), items: [] }], customComponents: [], createdAt: Date.now(), updatedAt: Date.now() };
   }
   function listProjects() {
     try { return JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]'); } catch { return []; }
@@ -234,6 +238,7 @@
     normalized.pageHeight = normalized.pageHeight || FORMAT[normalized.format].logicalHeight;
     normalized.panels = Array.isArray(normalized.panels) && normalized.panels.length ? normalized.panels : [{ id: id(), items: [] }, { id: id(), items: [] }];
     normalized.panels.forEach(p => { p.id ||= id(); p.items ||= []; });
+    normalized.customComponents = Array.isArray(normalized.customComponents) ? normalized.customComponents.filter(component => component && typeof component.id === 'string' && Array.isArray(component.layers)) : [];
     normalized.active = Math.max(0, Math.min(Number(normalized.active) || 0, normalized.panels.length - 1));
     normalized.selected = null;
     return normalized;
@@ -670,7 +675,7 @@
     if (undoStack.length > 80) undoStack.shift();
     redoStack = [];
   }
-  function commit() { autosave(); render(); }
+  function commit() { const saved=autosave(); render(); return saved; }
   function toast(message) {
     const box = $('#toast'); box.textContent = message; box.classList.add('show');
     clearTimeout(toast.timer); toast.timer = setTimeout(() => box.classList.remove('show'), 3000);
@@ -778,6 +783,7 @@
     $('#project-home').hidden = true; $('#editor-view').hidden = false;
     $('#export-preset').value = state.format;
     $('#export-style').value = state.exportStyle || 'classic';
+    renderResources();
     render();
   }
   function renderProjectList() {
@@ -1598,6 +1604,111 @@
     if (outside) toast(`${outside} elemento(s) quedarán fuera al cambiar de ${previous}px a ${state.pageHeight}px de alto. Recupéralos en la lista de capas.`);
   }
 
+  const componentStudioPalette = ['#302D2A','#F87209','#F5B6A8','#F6CC63','#AFCB9B','#A9D6D5','#B7B2E7','#F2E7D7'];
+  function componentThumbnail(component) {
+    const paths=[];
+    for(const layer of component.layers||[]) if(layer.visible!==false) for(const stroke of layer.strokes||[]) {
+      const points=stroke.points||[]; if(!points.length)continue;
+      const d=points.map((point,index)=>`${index?'L':'M'}${Number(point.x)+Number(layer.offsetX||0)},${Number(point.y)+Number(layer.offsetY||0)}`).join(' ')+(stroke.closed?' Z':'');
+      paths.push(`<path d="${d}" fill="none" stroke="${/^#[0-9a-f]{6}$/i.test(stroke.color)?stroke.color:'#302d2a'}" stroke-width="${Math.max(1,Math.min(32,Number(stroke.strokeWidth)||5))}" stroke-linecap="round" stroke-linejoin="round" opacity="${Math.max(.1,Math.min(1,Number(stroke.opacity)||1))}"/>`);
+    }
+    return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 360">${paths.join('')}</svg>`)}`;
+  }
+  function componentAsResource(component) {
+    const category=['character','object','background','sticker'].includes(component.category)?component.category:'sticker';
+    const src=componentThumbnail(component);
+    return {name:component.name,aliases:[...(component.aliases||[]),...(component.layers||[]).map(layer=>layer.name)],category,approvedCutout:true,customTemplate:true,templateId:component.id,src,variants:[{name:'Plantilla por capas',src}]};
+  }
+  function openComponentStudio(templateId='') {
+    const existing=state.customComponents.find(component=>component.id===templateId);
+    componentDraft=existing?JSON.parse(JSON.stringify(existing)):{id:id(),name:'',category:'character',width:400,height:360,layers:[{id:id(),name:'Cuerpo',visible:true,offsetX:0,offsetY:0,strokes:[]}],createdAt:Date.now()};
+    componentLayerId=componentDraft.layers[0]?.id||null;componentStroke=null;
+    $('#component-studio-temp').setAttribute('d','');
+    $('#component-studio-name').value=componentDraft.name||'';$('#component-studio-category').value=componentDraft.category||'character';
+    renderComponentStudio();$('#component-studio-dialog').showModal();
+  }
+  function renderComponentStudio() {
+    if(!componentDraft)return;
+    const selector=$('#component-studio-existing'),selected=componentDraft.id;
+    selector.innerHTML='<option value="">Nueva plantilla</option>';
+    (state.customComponents||[]).forEach(component=>{const option=document.createElement('option');option.value=component.id;option.textContent=component.name;selector.append(option);});
+    selector.value=(state.customComponents||[]).some(component=>component.id===selected)?selected:'';
+    const list=$('#component-studio-layer-list');list.innerHTML='';
+    componentDraft.layers.forEach(layer=>{
+      const row=document.createElement('div');row.className=`component-layer-row${layer.id===componentLayerId?' active':''}`;
+      const pick=document.createElement('button');pick.type='button';pick.className='component-layer-select';pick.textContent=layer.name;pick.onclick=()=>{componentLayerId=layer.id;renderComponentStudio();};
+      const visibility=document.createElement('button');visibility.type='button';visibility.textContent=layer.visible===false?'◌':'◉';visibility.setAttribute('aria-label',`${layer.visible===false?'Mostrar':'Ocultar'} ${layer.name}`);visibility.onclick=()=>{layer.visible=layer.visible===false;renderComponentStudio();};
+      const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label',`Eliminar capa ${layer.name}`);remove.onclick=()=>{componentDraft.layers=componentDraft.layers.filter(entry=>entry.id!==layer.id);if(componentLayerId===layer.id)componentLayerId=componentDraft.layers[0]?.id||null;renderComponentStudio();};
+      const detail=document.createElement('small');detail.textContent=`${layer.strokes.length} ${layer.strokes.length===1?'trazo':'trazos'}${layer.visible===false?' · oculta':''}`;
+      row.append(pick,visibility,remove,detail);list.append(row);
+    });
+    const stack=$('#component-studio-layer-stack');stack.innerHTML='';
+    componentDraft.layers.forEach(layer=>{
+      const group=document.createElementNS('http://www.w3.org/2000/svg','g');group.dataset.layerId=layer.id;group.setAttribute('transform',`translate(${Number(layer.offsetX)||0} ${Number(layer.offsetY)||0})`);group.style.display=layer.visible===false?'none':'';
+      (layer.strokes||[]).forEach(stroke=>{const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',stroke.points.map((point,index)=>`${index?'L':'M'}${point.x},${point.y}`).join(' ')+(stroke.closed?' Z':''));path.setAttribute('fill','none');path.setAttribute('stroke',stroke.color);path.setAttribute('stroke-width',stroke.strokeWidth);path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');path.setAttribute('opacity',stroke.opacity??1);group.append(path);});stack.append(group);
+    });
+    const palette=$('#component-studio-palette');palette.innerHTML='';
+    componentStudioPalette.forEach(color=>{const button=document.createElement('button');button.type='button';button.className='component-studio-color';button.style.backgroundColor=color;button.setAttribute('aria-label',`Color ${color}`);button.setAttribute('aria-pressed',String(componentColor===color));button.onclick=()=>{componentColor=color;renderComponentStudio();};palette.append(button);});
+    const custom=document.createElement('input');custom.type='color';custom.value=componentColor;custom.setAttribute('aria-label','Elegir otro color');palette.append(custom);
+    $('#component-studio-temp').setAttribute('stroke',componentColor);$('#component-studio-temp').setAttribute('stroke-width',$('#component-studio-width').value);
+  }
+  function componentCanvasPoint(event) {
+    const rect=$('#component-studio-canvas').getBoundingClientRect();
+    return {x:Math.max(0,Math.min(400,(event.clientX-rect.left)/rect.width*400)),y:Math.max(0,Math.min(360,(event.clientY-rect.top)/rect.height*360))};
+  }
+  function componentStrokePath(points) { return points.map((point,index)=>`${index?'L':'M'}${point.x},${point.y}`).join(' '); }
+  function insertCustomComponent(component) {
+    const layers=(component.layers||[]).filter(layer=>layer.visible!==false&&layer.strokes?.length);if(!layers.length){toast('Esta plantilla todavía no tiene trazos visibles.');return;}
+    const points=layers.flatMap(layer=>layer.strokes.flatMap(stroke=>(stroke.points||[]).map(point=>({x:point.x+Number(layer.offsetX||0),y:point.y+Number(layer.offsetY||0)}))));
+    const minX=Math.min(...points.map(point=>point.x)),maxX=Math.max(...points.map(point=>point.x)),minY=Math.min(...points.map(point=>point.y)),maxY=Math.max(...points.map(point=>point.y));
+    const sourceW=Math.max(1,maxX-minX),sourceH=Math.max(1,maxY-minY),scale=Math.min(190/sourceW,190/sourceH,1);
+    const width=sourceW*scale,height=sourceH*scale,origin=placeWithoutOverlap(width,height);
+    snapshot();
+    for(const layer of layers){
+      const strokes=layer.strokes.map(stroke=>({...stroke,points:stroke.points.map(point=>({x:origin.x+(point.x+Number(layer.offsetX||0)-minX)*scale,y:origin.y+(point.y+Number(layer.offsetY||0)-minY)*scale})),strokeWidth:(Number(stroke.strokeWidth)||5)*scale}));
+      const item={id:id(),type:'drawing',name:`${component.name} · ${layer.name}`,resourceId:component.id,category:component.category,templateLayer:layer.name,x:origin.x,y:origin.y,w:width,h:height,path:'',strokes,color:strokes[0].color,strokeWidth:strokes[0].strokeWidth,fillEnabled:false,fillColor:'#F87209',locked:false,rotation:0};updateDrawingBounds(item);currentPanel().items.push(item);
+    }
+    state.selected=currentPanel().items.at(-1)?.id||null;commit();toast(`“${component.name}” se insertó en ${layers.length} capas editables.`);
+  }
+  function saveComponentStudio(insert=false) {
+    if(!componentDraft)return;
+    const name=$('#component-studio-name').value.trim();
+    if(!name){$('#component-studio-status').textContent='Escribe un nombre para guardar esta plantilla.';$('#component-studio-name').focus();return;}
+    if(!componentDraft.layers.some(layer=>layer.strokes.length)){ $('#component-studio-status').textContent='Dibuja al menos un trazo antes de guardar.';return; }
+    componentDraft.name=name;componentDraft.category=$('#component-studio-category').value;componentDraft.updatedAt=Date.now();
+    const index=state.customComponents.findIndex(component=>component.id===componentDraft.id);
+    const previousComponents=JSON.stringify(state.customComponents);snapshot();if(index>=0)state.customComponents[index]=JSON.parse(JSON.stringify(componentDraft));else state.customComponents.push(JSON.parse(JSON.stringify(componentDraft)));
+    const saved=JSON.parse(JSON.stringify(componentDraft)),persisted=commit();renderResources();renderComponentStudio();
+    if(!persisted&&!(cloudUser&&cloudReady)){state.customComponents=JSON.parse(previousComponents);undoStack.pop();render();renderResources();renderComponentStudio();$('#component-studio-status').textContent='No cupo en este dispositivo, así que la plantilla no se guardó. Descarga el proyecto o libera espacio y vuelve a intentarlo.';return;}
+    $('#component-studio-status').textContent=persisted?'Plantilla guardada en este proyecto. Al sincronizar el proyecto, estará en tus otros dispositivos.':'Almacenamiento local lleno; la copia del proyecto quedó pendiente de sincronización con la nube.';
+    if(insert){$('#component-studio-dialog').close();insertCustomComponent(saved);}
+    else toast('Plantilla guardada en la biblioteca de este proyecto.');
+  }
+  function setupComponentStudio() {
+    $('#open-component-studio').onclick=()=>openComponentStudio();
+    $('#component-studio-close').onclick=()=>$('#component-studio-dialog').close();
+    $('#component-studio-dialog').addEventListener('close',()=>{componentDraft=null;componentStroke=null;$('#component-studio-temp').setAttribute('d','');});
+    $('#component-studio-add-layer').onclick=()=>{const name=$('#component-studio-part-type').value;const same=componentDraft.layers.filter(layer=>layer.name.startsWith(name)).length;const layer={id:id(),name:same?`${name} ${same+1}`:name,visible:true,offsetX:0,offsetY:0,strokes:[]};componentDraft.layers.push(layer);componentLayerId=layer.id;renderComponentStudio();};
+    $('#component-studio-edit').onclick=()=>{const template=state.customComponents.find(item=>item.id===$('#component-studio-existing').value);if(template)openComponentStudio(template.id);};
+    $('#component-studio-save').onclick=()=>saveComponentStudio(false);$('#component-studio-save-insert').onclick=()=>saveComponentStudio(true);
+    $('#component-studio-undo-stroke').onclick=()=>{const layer=componentDraft?.layers.find(item=>item.id===componentLayerId);if(layer?.strokes.length){layer.strokes.pop();renderComponentStudio();}};
+    $('#component-studio-width').addEventListener('input',()=>$('#component-studio-temp').setAttribute('stroke-width',$('#component-studio-width').value));
+    $('#component-studio-touch-draw').onchange=event=>$('#component-studio-canvas').classList.toggle('touch-draw',event.target.checked);
+    $('#component-studio-palette').addEventListener('input',event=>{if(event.target.type==='color'){componentColor=event.target.value;$('#component-studio-temp').setAttribute('stroke',componentColor);}});
+    $('#component-studio-canvas').addEventListener('pointerdown',event=>{
+      if(!componentDraft||!componentLayerId||(event.pointerType==='touch'&&!$('#component-studio-touch-draw').checked))return;
+      event.preventDefault();event.stopPropagation();componentStroke={pointerId:event.pointerId,layerId:componentLayerId,points:[componentCanvasPoint(event)],color:componentColor,width:Number($('#component-studio-width').value)};
+      try{event.currentTarget.setPointerCapture(event.pointerId);}catch{}
+    });
+    $('#component-studio-canvas').addEventListener('pointermove',event=>{
+      if(!componentStroke||componentStroke.pointerId!==event.pointerId)return;const point=componentCanvasPoint(event),last=componentStroke.points.at(-1);if(Math.hypot(point.x-last.x,point.y-last.y)<1)return;componentStroke.points.push(point);const path=$('#component-studio-temp');path.setAttribute('d',componentStrokePath(componentStroke.points));path.setAttribute('stroke',componentStroke.color);path.setAttribute('stroke-width',componentStroke.width);
+    });
+    const finish=event=>{if(!componentStroke||componentStroke.pointerId!==event.pointerId)return;const stroke=componentStroke;componentStroke=null;try{event.currentTarget.releasePointerCapture(event.pointerId);}catch{};if(stroke.points.length===1)stroke.points.push({x:stroke.points[0].x+.1,y:stroke.points[0].y+.1});componentDraft.layers.find(layer=>layer.id===stroke.layerId)?.strokes.push({points:stroke.points,color:stroke.color,strokeWidth:stroke.width,opacity:1,brush:'pen',closed:false});$('#component-studio-temp').setAttribute('d','');renderComponentStudio();};
+    $('#component-studio-canvas').addEventListener('pointerup',finish);$('#component-studio-canvas').addEventListener('pointercancel',event=>{componentStroke=null;$('#component-studio-temp').setAttribute('d','');});
+    $$('.component-studio-position button').forEach(button=>button.onclick=event=>{const layer=componentDraft?.layers.find(item=>item.id===componentLayerId);if(!layer)return;const step=event.shiftKey?10:2;const direction=button.dataset.layerMove;layer.offsetX+=direction==='left'?-step:direction==='right'?step:0;layer.offsetY+=direction==='up'?-step:direction==='down'?step:0;renderComponentStudio();});
+    $('#component-studio-dialog').addEventListener('keydown',event=>{if(!componentDraft||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)||event.target.matches('input,select,button'))return;event.preventDefault();const layer=componentDraft.layers.find(item=>item.id===componentLayerId);if(!layer)return;const step=event.shiftKey?10:2;layer.offsetX+=event.key==='ArrowLeft'?-step:event.key==='ArrowRight'?step:0;layer.offsetY+=event.key==='ArrowUp'?-step:event.key==='ArrowDown'?step:0;renderComponentStudio();});
+  }
+
   function renderResources() {
     const grid = $('#asset-grid'); const query = $('#asset-search').value.trim().toLocaleLowerCase('es');
     if (resourceFilter === 'reference') {
@@ -1628,7 +1739,8 @@
       renderReferenceCards(candidates, grid);
       return;
     }
-    const candidates = resources.filter(resource => (resourceFilter === 'all' || resource.category === resourceFilter) && `${resource.name} ${(resource.aliases || []).join(' ')}`.toLocaleLowerCase('es').includes(query));
+    const customResources=(state?.customComponents||[]).map(componentAsResource);
+    const candidates = [...resources,...customResources].filter(resource => (resourceFilter === 'all' || resource.category === resourceFilter) && `${resource.name} ${(resource.aliases || []).join(' ')}`.toLocaleLowerCase('es').includes(query));
     grid.innerHTML = '';
     const isBackground = resourceFilter === 'background'; $('#background-note').hidden = !isBackground;
     if (isBackground) renderBackgroundColors(grid, query);
@@ -1639,11 +1751,14 @@
     candidates.forEach(resource => {
       const card = document.createElement('button'); card.className = `asset-card${resource.approvedCutout ? '' : ' reference-card'}`;
       const thumb = resource.variants?.[0]?.src || resource.src;
-      card.innerHTML = `<img src="${thumb}" alt="" loading="lazy"><span>${escapeHTML(resource.name)}</span><small>${resource.approvedCutout ? 'Componente aprobado' : resource.reviewKind === 'existing-sticker' ? 'Sticker existente · referencia no insertable' : resource.reviewOnly ? 'Recorte en revisión · no insertable' : resource.category === 'background' ? 'Referencia · lámina completa' : resource.note}</small>`;
+      card.innerHTML = `<img src="${thumb}" alt="" loading="lazy"><span>${escapeHTML(resource.name)}</span><small>${resource.customTemplate ? 'Plantilla por capas · toca para insertar' : resource.approvedCutout ? 'Componente aprobado' : resource.reviewKind === 'existing-sticker' ? 'Sticker existente · referencia no insertable' : resource.reviewOnly ? 'Recorte en revisión · no insertable' : resource.category === 'background' ? 'Referencia · lámina completa' : resource.note}</small>`;
       card.disabled = !resource.approvedCutout && !resource.reviewOnly;
       if (resource.reviewOnly) {
         card.setAttribute('aria-label', `Revisar ${resource.name}. No se puede insertar todavía.`);
         card.onclick = () => openCutoutReview(resource);
+      } else if (resource.customTemplate) {
+        card.setAttribute('aria-label',`Insertar ${resource.name}, plantilla con capas editables`);
+        card.onclick=()=>insertCustomComponent(state.customComponents.find(component=>component.id===resource.templateId));
       } else if (resource.approvedCutout) {
         // Mouse and Apple Pencil can drag directly. On touch screens, keep the
         // vertical gesture for scrolling and start a drag only after a long press.
@@ -2329,17 +2444,19 @@
   }
   const splitEditorialList = value => [...new Set(String(value || '').split(/[\n,;]+/).map(item => item.trim()).filter(Boolean))].slice(0, 24);
   function episodeCanvasMetadata() {
-    const imageItems = state.panels.flatMap(panel => panel.items.filter(item => item.type === 'image'));
-    const characters = [...new Set(imageItems.flatMap(item => {
+    const allItems = state.panels.flatMap(panel => panel.items);
+    const imageItems = allItems.filter(item => item.type === 'image');
+    const reusableById = new Map((state.customComponents||[]).map(component=>[component.id,component]));
+    const characters = [...new Set([...imageItems.flatMap(item => {
       const person = people.find(candidate => candidate.name === item.name || candidate.variants?.some(variant => variant.name === item.name || variant.src === item.src));
       return person ? [person.name] : [];
-    }))];
-    const objects = [...new Set(imageItems.filter(item => item.category === 'object').map(item => item.name).filter(Boolean))];
+    }),...allItems.filter(item=>item.category==='character'&&reusableById.has(item.resourceId)).map(item=>reusableById.get(item.resourceId).name)])];
+    const objects = [...new Set(allItems.filter(item => item.category === 'object').map(item => reusableById.get(item.resourceId)?.name||item.name).filter(Boolean))];
     const swatches = [...new Set(state.panels.map(panel => panel.backgroundColor).concat(state.panels.flatMap(panel => panel.items.flatMap(item => [item.color, item.fillColor]))).filter(value => typeof value === 'string' && /^#[\da-f]{6}$/i.test(value)))];
     const knownColorNames = { '#f87209': 'naranja Mandarinita', '#607d3b': 'verde Mandarinita', '#fac421': 'amarillo Mandarinita', '#ffc928': 'amarillo sol', '#fff8ec': 'crema Mandarinita', '#282522': 'tinta oscura', '#ffffff': 'blanco' };
     const colors = [...new Set(swatches.flatMap(color => [color.toUpperCase(), knownColorNames[color.toLowerCase()]].filter(Boolean)))];
     const spokenText = state.panels.flatMap(panel => panel.items.filter(item => item.type === 'text' || item.type === 'bubble').map(item => String(item.text || '').trim())).filter(Boolean).join('\n');
-    return { characters, objects, themes: [], colors, searchTerms: [...new Set(imageItems.map(item => item.name).filter(Boolean))], spokenText, externalLinks: [] };
+    return { characters, objects, themes: [], colors, searchTerms: [...new Set(allItems.map(item => reusableById.get(item.resourceId)?.name||item.name).filter(Boolean))], spokenText, externalLinks: [] };
   }
   function parseExternalLinks(value) {
     return String(value || '').split('\n').map(line => line.trim()).filter(Boolean).slice(0, 12).flatMap(line => {
@@ -3131,7 +3248,7 @@
   migrateLegacyProject();
   applyTheme();
   matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (getThemeChoice() === 'system') applyTheme('system'); });
-  installEvents(); setupResourceFilters(); installPalette(); loadCloudBases(); const migratedIds=migrateInvalidLocalProjectIds(); renderProjectList(); setupCloudSync();
+  installEvents(); setupResourceFilters(); setupComponentStudio(); installPalette(); loadCloudBases(); const migratedIds=migrateInvalidLocalProjectIds(); renderProjectList(); setupCloudSync();
   if(migratedIds)toast('Se corrigió el identificador de un borrador antiguo. Su contenido quedó guardado en este dispositivo.');
   if ('serviceWorker' in navigator && window.isSecureContext) navigator.serviceWorker.register('/editor-service-worker.js', { scope:'/' }).catch(() => {});
 })();
