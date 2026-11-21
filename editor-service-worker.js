@@ -1,10 +1,13 @@
-const CACHE_NAME = 'mandarinita-editor-v41';
+const CACHE_NAME = 'mandarinita-editor-v51';
 const APP_SHELL = [
   '/editor.css',
   '/editor.js',
   '/editor-art-catalog.json',
   '/editor.webmanifest',
   '/assets/mandarinita-logo.svg',
+  '/assets/mandarinita-logo-white.svg',
+  '/assets/mandarinita-smile.png',
+  '/assets/sr-mandarino-neutral.png',
   '/assets/mandarinita-pwa-192.png',
   '/assets/mandarinita-pwa-512.png',
   '/assets/mandarinita-pwa-180.png',

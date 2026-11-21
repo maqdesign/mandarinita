@@ -1,9 +1,9 @@
-import { isConfigured, json, readSession } from '../../_lib/session.js';
+import { isAuthConfigured, json, readSession } from '../../_lib/session.js';
 
 const ZONE_TAG = 'fc0889e2ab8fcbf1aa741fd075565f9b';
 
 export async function onRequestGet({ request, env }) {
-  if (!isConfigured(env)) return json({ error: 'La administración privada no está configurada.' }, 503);
+  if (!isAuthConfigured(env)) return json({ error: 'La administración privada no está configurada.' }, 503);
   const session = await readSession(request, env.SESSION_SECRET);
   if (!session || session.email !== env.MANDARINITA_SYNC_EMAIL.trim().toLowerCase()) {
     return json({ error: 'Inicia sesión con tu cuenta autorizada de GitHub.' }, 401);

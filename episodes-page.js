@@ -52,11 +52,17 @@ function formatEpisodeDate(value) {
   return new Intl.DateTimeFormat(locale, { day:'numeric', month:'short', year:'numeric' }).format(date);
 }
 
+function validEpisodePanelSource(entry, panel) {
+  const id = /^[a-zA-Z0-9_-]{1,100}$/.test(entry.id || '') ? entry.id : '';
+  return (/^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && !panel.src.includes('..'))
+    || Boolean(id && panel.src.startsWith(`/api/published-episodes/${id}/${panel.order}.png?v=`) && /^[a-f0-9-]{36}$/i.test(panel.src.split('?v=')[1] || ''));
+}
+
 function approvedEpisodes(catalog) {
   if (catalog.schemaVersion !== 1 || catalog.editorialPolicy !== 'manual-approval' || !Array.isArray(catalog.episodes)) return [];
   return catalog.episodes.filter(entry => entry.status === 'published' && entry.type === 'comic' && entry.complete === true && Array.isArray(entry.panels) && entry.panels.length)
     .map(entry => ({...entry, panels:[...entry.panels].sort((a,b)=>a.order-b.order)}))
-    .filter(entry => entry.panels.every((panel,i) => panel.order === i+1 && /^assets\/[a-zA-Z0-9/_.-]+\.(png|jpg|jpeg|webp)$/i.test(panel.src) && !panel.src.includes('..') && panel.alt?.es && panel.alt?.en));
+    .filter(entry => entry.panels.every((panel,i) => panel.order === i+1 && validEpisodePanelSource(entry,panel) && panel.alt?.es && panel.alt?.en));
 }
 
 function renderBatch() {
@@ -77,6 +83,10 @@ function renderBatch() {
       const instagram=document.createElement('a');instagram.className='episode-instagram';instagram.href=instagramUrl;instagram.target='_blank';instagram.rel='noopener noreferrer';instagram.setAttribute('aria-label',lang==='en'?'View this episode on Instagram':'Ver este episodio en Instagram');
       instagram.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r=".7"></circle></svg>';meta.append(instagram);
     }
+    (entry.externalLinks||entry.source?.externalLinks||[]).filter(link=>link?.label&&/^https:\/\//i.test(link.url||'')).slice(0,3).forEach(link=>{
+      if(link.url===instagramUrl)return;
+      const external=document.createElement('a');external.className='episode-external-link';external.href=link.url;external.target='_blank';external.rel='noopener noreferrer';external.textContent=link.label;external.setAttribute('aria-label',`${link.label} · ${lang==='en'?'opens in a new tab':'abre en otra pestaña'}`);meta.append(external);
+    });
     const action=document.createElement('button');action.type='button';action.className='text-button';action.dataset.es='Leer episodio';action.dataset.en='Read episode';action.textContent=action.dataset[lang];action.addEventListener('click',()=>openEpisodeFromArchive(entry.id));copy.append(meta,heading,summary);
     if(entry.publishedAt){const date=document.createElement('time');date.className='episode-date';date.dateTime=entry.publishedAt;date.dataset.iso=entry.publishedAt;date.textContent=formatEpisodeDate(entry.publishedAt);copy.append(date);}
     copy.append(action);article.append(link,copy);grid.append(article);

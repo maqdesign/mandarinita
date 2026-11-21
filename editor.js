@@ -4,6 +4,10 @@
   const LEGACY_KEY = 'mandarinita-editor-project';
   const LOGICAL_WIDTH = 600;
   let exportPreviewUrls = [];
+  let publishReviewUrls = [];
+  let publishPreviewReady = false;
+  let publishPreviewError = '';
+  let publishKnownNumbers = [];
   const FORMAT = {
     web: { width: 1200, height: 800, logicalHeight: 400, label: 'Web 3:2' },
     square: { width: 1080, height: 1080, logicalHeight: 600, label: 'Instagram 1:1' },
@@ -27,8 +31,6 @@
     { name: 'Aguacatelo', aliases: ['aguacate'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/aguacatelo-transparent.png' }] },
     { name: 'Morita', aliases: ['mora'], variants: [
       { name: 'Pose del catálogo', src: 'assets/characters/morita.png' },
-      { name: 'Corriendo · episodio 59.3', src: 'assets/characters/morita-carrera-episodio-59-3.png' },
-      { name: 'Corriendo · episodio 59.4', src: 'assets/characters/morita-carrera-episodio-59-4.png' }
     ] },
     { name: 'Sra. Pera', aliases: ['pera', 'señora pera'], variants: [{ name: 'Recorte transparente', src: 'assets/characters/sra-pera-transparent.webp' }] },
     { name: 'Champi Ñón', aliases: ['champi', 'champiñón', 'champi ñon', 'hongo'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/champi-transparent.webp' }] },
@@ -40,17 +42,19 @@
     { name: 'Superfreso', aliases: ['superfreso', 'freso', 'fresa'], variants: [{ name: 'Pose aprobada', src: 'assets/characters/superfreso-transparent.webp' }] }
   ].map(x => ({ ...x, category: 'character', approvedCutout: true }));
   const stickers = [
+    { name: 'Logotipo Mandarinita', aliases: ['logo', 'marca', 'mandarinita', 'sello'], variants: [
+      { name: 'Color oficial', src: 'assets/mandarinita-logo.svg' },
+      { name: 'Blanco para fondos oscuros', src: 'assets/mandarinita-logo-white.svg' }
+    ], category: 'sticker', approvedCutout: true },
+    { name: 'Rostro sonriente de Mandy', aliases: ['mandy', 'mandarinita', 'cara sonriente', 'sticker mandy'], variants: [{ name: 'Retrato transparente', src: 'assets/mandarinita-smile.png' }], category: 'sticker', approvedCutout: true },
+    { name: 'Rostro neutral de Mando', aliases: ['mando', 'mandarino', 'cara neutral', 'sticker mando'], variants: [{ name: 'Retrato transparente', src: 'assets/sr-mandarino-neutral.png' }], category: 'sticker', approvedCutout: true },
     { name: 'Sticker frutal · 02', aliases: ['sticker 2', 'pack 2'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-02.webp' }], category: 'sticker', approvedCutout: true },
     { name: 'Sticker zanahoria · 03', aliases: ['sticker 3', 'pack 3'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-03.webp' }], category: 'sticker', approvedCutout: true },
     { name: 'Sticker frutal · 04', aliases: ['sticker 4', 'pack 4'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-04.webp' }], category: 'sticker', approvedCutout: true },
     { name: 'Sticker frutal · 06', aliases: ['sticker 6', 'pack 6', 'expresión frutal'], variants: [{ name: 'Sticker existente', src: 'assets/stickers/sticker-pack-06.webp' }], category: 'sticker', approvedCutout: true },
     { name: 'Sticker frutal · 07', aliases: ['sticker 7', 'pack 7'], variants: [{ name: 'Sticker aprobado', src: 'assets/stickers/sticker-pack-07.webp' }], category: 'sticker', approvedCutout: true }
   ];
-  const objects = [
-    { name: 'Sobre personificado · episodio 85.1', aliases: ['sobre', 'carta', 'episodio 85'], src: 'assets/objects/review/envelope-episode-85-1-review.png', category: 'object', approvedCutout: true },
-    { name: 'Clip de papel · episodio 85.3', aliases: ['clip', 'paperclip', 'sujetapapeles', 'episodio 85'], src: 'assets/objects/review/paperclip-episode-85-3-review.png', category: 'object', approvedCutout: true },
-    { name: 'Inodoro y portarrollos · episodio 77.3', aliases: ['inodoro', 'baño', 'toilet', 'rollo de papel', 'episodio 77'], src: 'assets/objects/review/toilet-episode-77-3-review.png', category: 'object', approvedCutout: true }
-  ];
+  const objects = [];
   const backgrounds = [
     { name: 'Cielo y nubes · episodio 85.1', aliases: ['cielo', 'nubes', 'fondo celeste', 'episodio 85'], src: 'assets/backgrounds/review/sky-clouds-episode-85-1.png', category: 'background', approvedCutout: true }
   ];
@@ -120,6 +124,8 @@
   let cloudRefreshTimer = null;
   let cloudPollTimer = null;
   let cloudAuthExpired = false;
+  let cloudBannerDismissed = false;
+  let cloudBannerKey = '';
   const cloudTimers = new Map();
   const cloudBases = new Map();
   const cloudConflicts = new Set();
@@ -128,6 +134,7 @@
   // Small inline subset of the open-source Lucide icon set (ISC) keeps controls crisp offline.
   const ICON = {
     more: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
     eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
     eyeOff: '<path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a15 15 0 0 1-3.2 4.1M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7a10 10 0 0 0 4-.8"/>',
@@ -221,7 +228,7 @@
     if (!validProjectId(normalized.projectId)) normalized.projectId = id();
     normalized.contentType ||= 'episode';
     normalized.format = FORMAT[normalized.format] ? normalized.format : 'web';
-    normalized.exportStyle = ['classic','cream','footer'].includes(normalized.exportStyle) ? normalized.exportStyle : 'classic';
+    normalized.exportStyle = ['classic','cream','footer','bleed'].includes(normalized.exportStyle) ? normalized.exportStyle : 'classic';
     normalized.pageHeight = normalized.pageHeight || FORMAT[normalized.format].logicalHeight;
     normalized.panels = Array.isArray(normalized.panels) && normalized.panels.length ? normalized.panels : [{ id: id(), items: [] }, { id: id(), items: [] }];
     normalized.panels.forEach(p => { p.id ||= id(); p.items ||= []; });
@@ -259,15 +266,26 @@
     const text = message || (signedIn ? 'Sincronización al día' : 'Los borradores se guardan en este dispositivo.');
     ['#cloud-status','#editor-cloud-status'].forEach(selector => { const region=$(selector); if(region){region.textContent=text;region.dataset.state=syncState;} });
     ['#retry-cloud','#editor-retry-cloud'].forEach(selector => { const retry=$(selector); if(retry){retry.hidden=!(signedIn&&(syncState==='error'||cloudConflicts.size));const label=cloudConflicts.size?'Resolver conflicto':'Reintentar sincronización';retry.classList.add('has-icon');retry.innerHTML=`${svgIcon(cloudConflicts.size?'users':'refresh')}<span class="button-label">${label}</span>`;retry.title=label;retry.setAttribute('aria-label',label);} });
+    const banner=$('#cloud-sync-banner');
+    if(banner){
+      const key=`${syncState}:${text}`;
+      if(syncState==='busy')cloudBannerDismissed=false;
+      if((syncState==='error'||syncState==='conflict')&&key!==cloudBannerKey){cloudBannerDismissed=false;cloudBannerKey=key;}
+      if(syncState==='ready'){cloudBannerKey='';cloudBannerDismissed=false;}
+      banner.dataset.state=syncState;
+      banner.hidden=!signedIn||!['error','conflict'].includes(syncState)||cloudBannerDismissed;
+    }
     const footnote = $('#home-footnote');
     const storageLabel = $('#project-storage-label');
-    if (storageLabel) storageLabel.textContent = signedIn ? 'CENTRO DE CONTENIDO · NUBE SINCRONIZADA' : 'CENTRO DE CONTENIDO · BORRADORES';
+    if (storageLabel) storageLabel.textContent = signedIn ? syncState==='error'?'CENTRO DE CONTENIDO · SINCRONIZACIÓN PENDIENTE':syncState==='busy'?'CENTRO DE CONTENIDO · SINCRONIZANDO':syncState==='conflict'?'CENTRO DE CONTENIDO · CONFLICTO POR REVISAR':'CENTRO DE CONTENIDO · NUBE SINCRONIZADA' : 'CENTRO DE CONTENIDO · BORRADORES';
     if (footnote) footnote.textContent = signedIn
-      ? 'Tus borradores y lienzos se sincronizan en la nube privada. Inicia sesión con la misma cuenta autorizada en tus dispositivos para verlos allí.'
+      ? syncState==='error'?'Los cambios recientes siguen guardados en este dispositivo. Revisa el mensaje de sincronización y vuelve a intentarlo.':'Tus borradores y lienzos se sincronizan en la nube privada. Inicia sesión con la misma cuenta autorizada en tus dispositivos para verlos allí.'
       : 'Tus borradores se guardan en este navegador. El archivo .mandarinita sirve para moverlos a otro dispositivo.';
   }
   async function cloudFetch(path, options = {}) {
-    const response = await fetch(path, { cache:'no-store', ...options, credentials: 'same-origin', headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) } });
+    let response;
+    try { response = await fetch(path, { cache:'no-store', ...options, credentials: 'same-origin', headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) } }); }
+    catch (cause) { const error = new Error('El navegador no logró completar la solicitud.'); error.code = 'cloud_network_error'; error.syncPath = path; error.cause = cause; throw error; }
     let body = {};
     try { body = await response.json(); } catch { /* Surface status when a proxy returned a non-JSON response. */ }
     if (!response.ok) { const error=new Error(body.error || `Sincronización: ${response.status}`);error.status=response.status;error.code=body.code||'';throw error; }
@@ -317,9 +335,18 @@
     catch { /* The remote copy is still authoritative even if this tiny cache cannot persist. */ }
   }
   async function readRemoteProject(projectId) {
-    const response=await fetch(`/api/projects/${encodeURIComponent(projectId)}`,{credentials:'same-origin',cache:'no-store'});
+    const path=`/api/projects/${encodeURIComponent(projectId)}`;
+    let response;
+    try { response=await fetch(path,{credentials:'same-origin',cache:'no-store'}); }
+    catch (cause) { const error=new Error('El navegador no logró descargar el borrador.');error.code='cloud_network_error';error.syncPath=path;error.cause=cause;throw error; }
     let project;try{project=await response.json();}catch{project=null;}
     if (!response.ok) { const error=new Error(project?.error||`No se pudo descargar la versión de la nube (error ${response.status}).`);error.status=response.status;error.code=project?.code||'';throw error; }
+    if (!project || typeof project !== 'object' || Array.isArray(project)) { const error=new Error('La nube devolvió un archivo que no es un borrador editable.');error.status=422;error.code='incompatible_remote_project';throw error; }
+    const storedId=project.projectId;
+    project.projectId=projectId;
+    try { validateEditableProject(project); }
+    catch (cause) { const error=new Error(cause instanceof Error?cause.message:'El borrador de la nube usa un formato no compatible.');error.status=422;error.code='incompatible_remote_project';error.cause=cause;throw error; }
+    if (storedId !== projectId) console.warn('Cloud project ID repaired from its storage key', { projectId, hadStoredId: Boolean(storedId) });
     return {project,etag:response.headers.get('ETag')};
   }
   function repairCloudProjectId(project) {
@@ -370,20 +397,22 @@
       }
     }
   }
-  function setSyncFailure(error) {
+  function setSyncFailure(error, step = 'guardar el borrador') {
     if(error?.status===401)cloudAuthExpired=true;
     const message=error?.status===401?'La sesión venció. Vuelve a conectar GitHub para sincronizar.'
       :error?.status===403?'Cloudflare rechazó la solicitud (403). Abre el taller desde mandarinita.art y vuelve a intentar.'
       :error?.status===413?'El archivo supera el límite de 25 MB; descarga el .mandarinita como respaldo.'
+      :error?.name==='QuotaExceededError'?'Este navegador se quedó sin espacio para la copia local. Tus archivos de la nube siguen intactos; libera espacio y vuelve a sincronizar.'
       :error?.status===428?'Esta versión del taller está desactualizada (428). Recarga la página para actualizarla; tu borrador local sigue guardado.'
       :error?.status>=500?`Cloudflare no pudo guardar el borrador (error ${error.status}). Sigue guardado en este dispositivo.`
       :error?.code==='invalid_project_id'?'La nube no aceptó el identificador de este borrador. Se conservó localmente; pulsa “Reintentar sincronización” para volver a intentarlo.'
       :error?.status===400?`La nube rechazó el borrador: ${(error.message||'la solicitud no es válida').replace(/[.!?]+$/,'')}. El borrador local sigue guardado.`
       :Number.isInteger(error?.status)?`No se pudo sincronizar (error ${error.status}). ${error.message&&error.message!==`Sincronización: ${error.status}`?`${error.message} `:''}El borrador sigue guardado en este dispositivo.`
-      :'No se pudo conectar con la nube. El borrador sigue guardado en este dispositivo.';
+      :error?.code==='cloud_network_error'?`El navegador no pudo conectar con Cloudflare${error.syncPath?` al solicitar ${error.syncPath.startsWith('/api/projects/')?'/api/projects/[id]':error.syncPath}`:''}. Comprueba la conexión y reintenta; el borrador sigue guardado en este dispositivo.`
+      :`Falló ${step}${error?.message?`: ${String(error.message).slice(0,180)}`:''}. El borrador sigue guardado en este dispositivo.`;
+    console.error('Cloud synchronization failed', { step, name: error?.name||'Error', code: error?.code||'', status: error?.status||0, endpoint: error?.syncPath||'', message: error?.message||'' });
     setCloudStatus(message,'error');
     if(state)$('#save-state').textContent='Guardado local · sincronización pendiente';
-    toast(message);
   }
   function localProject(projectId) {
     if (state?.projectId===projectId) return captureState();
@@ -423,12 +452,13 @@
     timer = setTimeout(sync,900);
     cloudTimers.set(scheduledId, timer);
   }
-  function storeRemoteProject(project,etag) {
+  function storeRemoteProject(project,etag,{persistLocal=false}={}) {
     validateEditableProject(project);
-    const record = { id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: Number(project.updatedAt) || Date.now() };
+    const record = { id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: Number(project.updatedAt) || Date.now(), panels: project.panels.length };
     const index = listProjects().filter(entry => entry.id !== project.projectId);
-    index.push(record); index.sort((a, b) => b.updatedAt - a.updatedAt);
-    localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
+    const hasLocal=localStorage.getItem(PROJECT_KEY(project.projectId))!==null;
+    index.push({...record,cloudOnly:!persistLocal&&!hasLocal}); index.sort((a, b) => b.updatedAt - a.updatedAt);
+    if(persistLocal)localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
     localStorage.setItem(PROJECTS_KEY, JSON.stringify(index));
     saveCloudBase(project.projectId,etag,project.updatedAt);
   }
@@ -436,38 +466,66 @@
     if (!cloudUser || cloudReady || cloudSyncInProgress) return;
     cloudSyncInProgress = true;
     setCloudStatus('Sincronizando borradores…','busy');
+    let syncStep='preparar borradores locales';
     try {
       migrateInvalidLocalProjectIds();
+      syncStep='consultar la lista de la nube';
       const { projects: remoteProjects } = await cloudFetch('/api/projects');
-      const localProjects = listProjects();
+      if(!Array.isArray(remoteProjects)){const error=new Error('La respuesta del servidor no contiene una lista de borradores válida.');error.code='invalid_cloud_project_list';throw error;}
+      const localProjects = listProjects().filter(record=>record&&typeof record==='object'&&!Array.isArray(record));
       const remoteById = new Map(remoteProjects.map(project => [project.id, project]));
+      const skippedRemoteProjects = [];
+      const nextIndex=localProjects.filter(record=>!record.cloudOnly||remoteById.has(record.id));
       for (const remote of remoteProjects) {
-        let local;try { local=JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id))||'null'); } catch { local=null; }
-        if(!local){const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag||remote.etag);continue;}
-        const base=cloudBases.get(remote.id);
-        if(!base){
-          const latest=await readRemoteProject(remote.id);
-          if(JSON.stringify(local)===JSON.stringify(latest.project))saveCloudBase(remote.id,latest.etag,local.updatedAt);
-          else markCloudConflict(remote.id);
-        }else if(base.etag!==remote.etag){
-          if(Number(local.updatedAt)>Number(base.localUpdatedAt))markCloudConflict(remote.id);
-          else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);if(state?.projectId===remote.id){state=normalizeProject(latest.project);render();}}
-        }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
-          cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
-          try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
-        }else saveCloudBase(remote.id,remote.etag,local.updatedAt);
+        try {
+          let local=localProject(remote.id);
+          const priorRecord=localProjects.find(record=>record.id===remote.id);
+          const remoteTitle=remote.title&&remote.title!=='Episodio sin título'?remote.title:(local?.title||priorRecord?.title||'Episodio sin título');
+          const metadata={id:remote.id,title:remoteTitle,contentType:remote.contentType||'episode',status:remote.status||'draft',createdAt:Number(remote.createdAt)||Number(remote.updatedAt)||Date.now(),updatedAt:Number(remote.updatedAt)||Date.now(),panels:Number(remote.panels)||0,cloudOnly:!local};
+          const indexPos=nextIndex.findIndex(record=>record.id===remote.id);
+          if(indexPos>=0)nextIndex[indexPos]={...nextIndex[indexPos],...metadata,cloudOnly:!local};else nextIndex.push(metadata);
+          if(!remote.etag){syncStep=`actualizar el índice de «${String(remote.title||remote.id||'borrador').slice(0,80)}»`;continue;}
+          if(!local){saveCloudBase(remote.id,remote.etag,0);continue;}
+          const base=cloudBases.get(remote.id);
+          if(!base){
+            if(Number(local.updatedAt)===Number(remote.updatedAt))saveCloudBase(remote.id,remote.etag,local.updatedAt);
+            else if(Number(local.updatedAt)>Number(remote.updatedAt)){
+              saveCloudBase(remote.id,remote.etag,local.updatedAt);
+              syncStep=`guardar «${String(local.title||remote.id||'borrador').slice(0,80)}» en la nube`;
+              try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
+            } else markCloudConflict(remote.id);
+          }else if(base.etag!==remote.etag){
+            if(Number(local.updatedAt)>Number(base.localUpdatedAt)||state?.projectId===remote.id)markCloudConflict(remote.id);
+            else{
+              localStorage.removeItem(PROJECT_KEY(remote.id));
+              metadata.cloudOnly=true;
+              saveCloudBase(remote.id,remote.etag,0);
+            }
+          }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
+            syncStep=`guardar «${String(local.title||remote.id||'borrador').slice(0,80)}» en la nube`;
+            cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
+            try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
+          }else saveCloudBase(remote.id,remote.etag,local.updatedAt);
+        } catch (error) {
+          if(error?.code==='incompatible_remote_project'||error?.status===404){skippedRemoteProjects.push(remote);console.warn('A remote draft could not be imported', { id: remote.id, code: error.code||'project_not_found' });continue;}
+          throw error;
+        }
       }
       for (const record of localProjects) {
-        if (!remoteById.has(record.id)) {
+        if (!record.cloudOnly&&!remoteById.has(record.id)) {
+          syncStep=`subir «${String(record.title||record.id||'borrador').slice(0,80)}» a la nube`;
           const local=localProject(record.id);
           if(local)try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(record.id);else throw error;}
         }
       }
       cloudReady = true;
-      setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':'Sincronización al día',cloudConflicts.size?'conflict':'ready');
+      nextIndex.sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));
+      try{localStorage.setItem(PROJECTS_KEY,JSON.stringify(nextIndex));}catch(error){console.warn('Could not save the small project index locally',error);}
+      const skippedMessage=skippedRemoteProjects.length?`${skippedRemoteProjects.length} borrador${skippedRemoteProjects.length===1?'':'es'} de la nube tiene${skippedRemoteProjects.length===1?'':'n'} un formato que esta versión no puede abrir. El resto sí se sincronizó; esos archivos no se modificaron.`:'';
+      setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':skippedMessage||'Sincronización al día',cloudConflicts.size?'conflict':skippedMessage?'error':'ready');
       renderProjectList();
     } catch (error) {
-      cloudReady=false;setSyncFailure(error);
+      cloudReady=false;setSyncFailure(error,syncStep);
     } finally { cloudSyncInProgress = false; }
   }
   function openCloudConflictDialog() {
@@ -485,6 +543,7 @@
     try{
       const latest=await readRemoteProject(projectId);
       if(action==='cloud'){
+        localStorage.removeItem(PROJECT_KEY(projectId));
         storeRemoteProject(latest.project,latest.etag);
         cloudConflicts.delete(projectId);pendingCloudConflict=null;$('#cloud-conflict-dialog').close();
         if(state?.projectId===projectId){state=normalizeProject(latest.project);showEditor();}else renderProjectList();
@@ -538,8 +597,9 @@
   }
   async function setupCloudSync() {
     const button = $('#github-sync');
+    $('#dismiss-cloud-banner').onclick=()=>{cloudBannerDismissed=true;$('#cloud-sync-banner').hidden=true;};
     button.onclick = async () => {
-      if (cloudAuthExpired) { window.location.assign('/api/auth/github'); return; }
+      if (cloudAuthExpired) { window.location.assign('/login.html?area=editor'); return; }
       if (cloudUser) {
         try {
           await cloudFetch('/api/auth/logout', { method: 'POST' });
@@ -554,7 +614,7 @@
         return;
       }
       if (!cloudConfigured) { toast('La sincronización requiere configurar OAuth de GitHub y almacenamiento R2 en Cloudflare.'); return; }
-      window.location.assign('/api/auth/github');
+      window.location.assign('/login.html?area=editor');
     };
     $('#retry-cloud').onclick=retryCloudSync;$('#editor-retry-cloud').onclick=retryCloudSync;
     window.addEventListener('focus',scheduleCloudRefresh);
@@ -669,11 +729,12 @@
     return groups.length > 0 && groups.every(group => group.some(term => text.includes(term)));
   }
   function showHome() {
-    $('#editor-view').hidden = true; $('#project-home').hidden = false; renderProjectList();
+    $('#editor-view').hidden = true; $('#project-home').hidden = false; renderProjectList(); showHomeSection('drafts');
   }
   function showEditor() {
     $('#project-home').hidden = true; $('#editor-view').hidden = false;
     $('#export-preset').value = state.format;
+    $('#export-style').value = state.exportStyle || 'classic';
     render();
   }
   function renderProjectList() {
@@ -688,10 +749,14 @@
       let project; try { project = JSON.parse(localStorage.getItem(PROJECT_KEY(record.id)) || '{}'); } catch { project = {}; }
       const card = document.createElement('article'); card.className = 'project-card';
       const preview = document.createElement('div'); preview.className = 'project-card-preview'; preview.setAttribute('aria-hidden','true');
+      if(record.cloudOnly){
+        preview.classList.add('project-card-cloud-only');
+        preview.innerHTML=`<div class="cloud-only-preview">${svgIcon('cloud')}<span>En la nube</span><small>La vista previa se carga al abrir</small></div>`;
+      }
       const pageHeight = Number(project.pageHeight) || 400;
       const previewCanvas = document.createElement('div'); previewCanvas.className = 'project-preview-canvas';
       previewCanvas.style.aspectRatio = `${LOGICAL_WIDTH} / ${pageHeight}`;
-      const firstPanel = project.panels?.[0];
+      const firstPanel = record.cloudOnly ? null : project.panels?.[0];
       (firstPanel?.items || []).slice(0,8).forEach(item => {
         const layer = document.createElement('div'); layer.className = `project-preview-item ${item.type === 'bubble' ? `preview-${item.kind}` : ''}`;
         layer.style.left = `${item.x/LOGICAL_WIDTH*100}%`; layer.style.top = `${item.y/pageHeight*100}%`;
@@ -702,27 +767,94 @@
         else { const stroke = document.createElement('span'); stroke.style.cssText = `position:absolute;inset:0;background:linear-gradient(135deg,transparent 46%,${item.color || '#282522'} 48%,${item.color || '#282522'} 52%,transparent 54%)`; layer.append(stroke); }
         previewCanvas.append(layer);
       });
-      preview.append(previewCanvas);
+      if(!record.cloudOnly)preview.append(previewCanvas);
       const main = document.createElement('div'); main.className = 'project-card-main';
       const reviewState = record.status === 'review';
+      const publicationLabel = record.status === 'published' ? 'Publicado en la web' : record.status === 'scheduled' ? `Programado · ${project.publishedAt || ''}` : reviewState ? 'En revisión' : 'Borrador';
+      const publicationClass = record.status === 'published' ? 'published' : record.status === 'scheduled' ? 'scheduled' : reviewState ? 'ready' : '';
       const kindLabels = {episode:'Episodio',copy:'Texto / copy',banner:'Banner',section:'Sección web',design:'Diseño gráfico',mockup:'Diseño de producto'};
       const isEpisode = (project.contentType || record.contentType || 'episode') === 'episode';
-      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${reviewState ? 'ready' : ''}">${reviewState ? 'En revisión' : 'Borrador'}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
-      const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${record.title}`); open.append(preview,main); open.onclick = () => openProject(record.id);
+      const displayTitle=project.title&&project.title!=='Episodio sin título'?project.title:record.title;
+      main.innerHTML = `<strong>${escapeHTML(displayTitle)}</strong><span class="status-pill ${publicationClass}">${publicationLabel}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || record.panels || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
+      const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${displayTitle}`); open.append(preview,main); open.onclick = () => openProject(record.id);
       const menu = document.createElement('details'); menu.className = 'project-card-menu';
-      menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
+      menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="history">${svgIcon('clock')}<span>Historial de versiones</span></button><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
       menu.addEventListener('click', event => event.stopPropagation());
+      menu.querySelector('[data-action="history"]').onclick = () => { menu.open = false; openVersionHistory(record.id); };
       menu.querySelector('[data-action="duplicate"]').onclick = () => { menu.open = false; duplicateProject(record.id); };
       menu.querySelector('[data-action="delete"]').onclick = () => { menu.open = false; requestDeleteProject(record.id); };
       card.append(open,menu);
       list.append(card);
     });
   }
-  function openProject(projectId) {
+  let historyProjectId = null, historyEtag = '';
+  async function openVersionHistory(projectId) {
+    historyProjectId = projectId; historyEtag = '';
+    $('#version-history-list').replaceChildren();
+    $('#version-history-status').textContent = 'Cargando versiones…';
+    $('#version-history-dialog').showModal();
+    await refreshVersionHistory();
+  }
+  async function refreshVersionHistory() {
+    const status = $('#version-history-status'), list = $('#version-history-list');
+    if (!historyProjectId) return;
+    status.textContent = 'Consultando el historial privado…'; list.replaceChildren();
     try {
-      state = normalizeProject(JSON.parse(localStorage.getItem(PROJECT_KEY(projectId))));
+      const result = await cloudFetch(`/api/projects/${encodeURIComponent(historyProjectId)}/versions`);
+      historyEtag = result.etag || '';
+      const versions = Array.isArray(result.versions) ? result.versions : [];
+      if (!versions.length) { status.textContent = 'Aún no hay puntos de recuperación. Se crearán automáticamente cuando el borrador cambie.'; return; }
+      status.textContent = `${versions.length} punto${versions.length === 1 ? '' : 's'} de recuperación · Se conservan hasta 30 versiones recientes.`;
+      versions.forEach(version => {
+        const row = document.createElement('li'); row.className = 'version-history-item';
+        const copy = document.createElement('div');
+        const title = document.createElement('strong'); title.textContent = version.title || 'Versión anterior';
+        const date = document.createElement('small'); date.textContent = version.snapshotAt ? new Date(version.snapshotAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' }) : 'Fecha no disponible';
+        copy.append(title, date);
+        const restore = document.createElement('button'); restore.type = 'button'; restore.className = 'button'; restore.textContent = 'Restaurar'; restore.setAttribute('aria-label', `Restaurar ${title.textContent}, ${date.textContent}`);
+        restore.onclick = () => restoreProjectVersion(version.id, restore);
+        row.append(copy, restore); list.append(row);
+      });
+    } catch (error) { status.textContent = error.message || 'No se pudo cargar el historial.'; }
+  }
+  async function restoreProjectVersion(versionId, button) {
+    const id = historyProjectId;
+    if (!id || !historyEtag) { toast('Actualiza el historial antes de restaurar.'); return; }
+    if (cloudConflicts.has(id)) { toast('Resuelve primero el conflicto de sincronización de este borrador.'); return; }
+    const local = localProject(id), base = cloudBases.get(id);
+    if (local && (!base || Number(local.updatedAt) > Number(base.localUpdatedAt || 0))) {
+      toast('Hay cambios locales pendientes. Sincronízalos antes de restaurar una versión.'); return;
+    }
+    if (!window.confirm('¿Restaurar esta versión? La versión actual se guardará primero en el historial para que puedas recuperarla.')) return;
+    button.disabled = true; $('#version-history-status').textContent = 'Restaurando…';
+    try {
+      await cloudFetch(`/api/projects/${encodeURIComponent(id)}/versions/${encodeURIComponent(versionId)}`, { method: 'POST', headers: { 'If-Match': historyEtag } });
+      const latest = await readRemoteProject(id);
+      storeRemoteProject(latest.project, latest.etag, { persistLocal: true });
+      if (state?.projectId === id) { state = normalizeProject(latest.project); undoStack = []; redoStack = []; showEditor(); }
+      else renderProjectList();
+      toast('Versión restaurada. La versión anterior también quedó guardada en el historial.');
+      await refreshVersionHistory();
+    } catch (error) {
+      $('#version-history-status').textContent = error.message || 'No se pudo restaurar esa versión.';
+      if (error.status === 412) await refreshVersionHistory();
+    } finally { button.disabled = false; }
+  }
+  async function openProject(projectId) {
+    try {
+      let project=null;
+      try{project=JSON.parse(localStorage.getItem(PROJECT_KEY(projectId))||'null');}catch{}
+      if(!project){
+        if(!cloudUser)throw new Error('Este proyecto solo está en la nube. Conéctate a internet para abrirlo.');
+        setCloudStatus('Cargando el proyecto desde la nube…','busy');
+        const latest=await readRemoteProject(projectId);
+        storeRemoteProject(latest.project,latest.etag);
+        project=latest.project;
+        setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':'Sincronización al día',cloudConflicts.size?'conflict':'ready');
+      }
+      state = normalizeProject(project);
       undoStack = []; redoStack = []; showEditor();
-    } catch { toast('No pude abrir ese proyecto local. Prueba importar su archivo .mandarinita.'); }
+    } catch (error) { setCloudStatus(error.message||'No pude abrir ese proyecto.','error');toast(error.message||'No pude abrir ese proyecto.'); }
   }
   function newProject() {
     $('#new-content-dialog').showModal();
@@ -742,9 +874,10 @@
     const item={id:id(),type:'text',name:preset.title,text:preset.label,x:80,y:105,w:440,h:150,fontSize:32,fontWeight:600,align:'center',color:'#292725',rotation:0,locked:false};state.panels[0].items.push(item);state.selected=item.id;
     try{saveProject();showEditor();}catch{showEditor();toast('Este navegador no permitió guardar automáticamente. Descarga el archivo editable.');}
   }
-  function duplicateProject(projectId) {
+  async function duplicateProject(projectId) {
     try {
-      const source = JSON.parse(localStorage.getItem(PROJECT_KEY(projectId)));
+      let source=null;try{source=JSON.parse(localStorage.getItem(PROJECT_KEY(projectId))||'null');}catch{}
+      if(!source){const latest=await readRemoteProject(projectId);source=latest.project;}
       const copy = normalizeProject({ ...source, projectId: id(), title: `${source.title} · copia`, createdAt: Date.now(), updatedAt: Date.now() });
       saveProject(copy); renderProjectList();
     } catch { toast('No pude duplicar ese proyecto.'); }
@@ -784,8 +917,9 @@
     if (!resource.approvedCutout) { toast(resource.note || 'Este archivo es una referencia de escena, no un componente aislado.'); return; }
     const variant = resource.variants?.[variantIndex] || resource;
     const isSticker = variant.src.includes('sticker-pack');
-    const width = isSticker ? 130 : 150;
-    const height = isSticker ? 130 : 160;
+    const isLogo = resource.name === 'Logotipo Mandarinita';
+    const width = isLogo ? 180 : isSticker ? 130 : 150;
+    const height = isLogo ? 68 : isSticker ? 130 : 160;
     const pos = position || placeWithoutOverlap(width, height);
     snapshot();
     const item = { id: id(), type: 'image', name: resource.name, resourceId: resource.name, category: resource.category, aliases: resource.aliases || [], src: variant.src, variants: resource.variants || null, variantIndex, x: pos.x, y: pos.y, w: width, h: height, rotation: 0, locked: false };
@@ -794,7 +928,10 @@
   function dropResourceAt(resource, panelIndex, boardCanvas, clientX, clientY) {
     const rect = boardCanvas.getBoundingClientRect(); const scale = rect.width / LOGICAL_WIDTH;
     setActivePanel(panelIndex, true);
-    addResource(resource, 0, { x: (clientX - rect.left) / scale - 75, y: (clientY - rect.top) / scale - 80 });
+    const isLogo = resource.name === 'Logotipo Mandarinita';
+    const width = isLogo ? 180 : resource.category === 'sticker' ? 130 : 150;
+    const height = isLogo ? 68 : resource.category === 'sticker' ? 130 : 160;
+    addResource(resource, 0, { x: (clientX - rect.left) / scale - width / 2, y: (clientY - rect.top) / scale - height / 2 });
   }
   function addBubble(kind = 'dialogue') {
     const size = kind === 'sfx' ? { w: 210, h: 110 } : kind === 'narration' ? { w: 230, h: 105 } : { w: 210, h: 105 };
@@ -988,6 +1125,7 @@
     $('#export-preset').value = state.format;
     $('#export-style').value = state.exportStyle || 'classic';
     $('#add-cta-panel').hidden = state.contentType !== 'episode';
+    $('#publish-episode').hidden = false;
     $('#mockup-preview').hidden=state.contentType!=='mockup';$('#change-mockup').hidden=state.contentType!=='mockup';$('#mockup-preview').setAttribute('aria-pressed',String(state.mockupPreview!==false));$('#mockup-preview').setAttribute('aria-label',state.mockupPreview===false?'Ver producto':'Ocultar simulación');$('#mockup-preview').title=state.mockupPreview===false?'Ver producto':'Ocultar simulación';$('#mockup-preview').innerHTML=`${svgIcon(state.mockupPreview===false?'eye':'eyeOff')}<span class="button-label">${state.mockupPreview===false?'Ver producto':'Ocultar simulación'}</span>`;
     $('#export-vector').hidden=!['design','mockup'].includes(state.contentType);
     renderPanels();
@@ -1443,7 +1581,7 @@
     const isBackground = resourceFilter === 'background'; $('#background-note').hidden = !isBackground;
     if (isBackground) renderBackgroundColors(grid, query);
     if (resourceFilter === 'object' && !candidates.length) {
-      grid.innerHTML = '<div class="resource-note">No encontré objetos con ese nombre. Prueba con sobre, clip o inodoro.</div>'; return;
+      grid.innerHTML = '<div class="resource-note">Todavía no hay objetos aislados con calidad suficiente para insertar. Los sobres, clips e inodoros que aparecen en las escenas conservan partes del fondo; puedes encontrarlos en Referencias.</div>'; return;
     }
     if (!candidates.length) { if (isBackground) return; grid.innerHTML = '<div class="resource-note">No encontré recursos con ese nombre.</div>'; return; }
     candidates.forEach(resource => {
@@ -2067,6 +2205,432 @@
     for (let index = 0; index < state.panels.length; index++) { const image = await renderPanelPng(state.panels[index],index); const path=isEpisode?`assets/episodes/drafts/${slug}/vineta-${String(index+1).padStart(2,'0')}.png`:`assets/content/drafts/${state.contentType}/${slug}/frame-${String(index+1).padStart(2,'0')}.png`; files.push({ name:path, data: new Uint8Array(await image.arrayBuffer()) }); }
     download(zipStore(files), `${slug}-revision.zip`); toast(savedLocally ? 'Paquete de revisión listo. No se publica automáticamente.' : 'Paquete listo; conserva el ZIP porque el borrador no cupo en este dispositivo.');
   }
+
+  function suggestedPanelAlt(panel, index, language, episodeNumber, title) {
+    const images = panel.items.filter(item => item.type === 'image').map(item => item.name).filter(Boolean);
+    const texts = panel.items.filter(item => item.type === 'text' || item.type === 'bubble').map(item => String(item.text || '').trim()).filter(Boolean);
+    const names = [...new Set(images)].slice(0, 5);
+    const esParts = [`Viñeta ${index + 1} del episodio ${episodeNumber}: ${title}.`];
+    const enParts = [`Panel ${index + 1} of episode ${episodeNumber}: ${title}.`];
+    if (names.length) { esParts.push(`Aparecen ${names.join(', ')}.`); enParts.push(`Featuring ${names.join(', ')}.`); }
+    if (texts.length) { esParts.push(`Texto visible: ${texts.join('; ')}.`); enParts.push(`Visible text: ${texts.join('; ')}.`); }
+    const value = language === 'en' ? enParts.join(' ') : esParts.join(' ');
+    return value.slice(0, 300);
+  }
+
+  let publishedEpisodeRecords = [];
+  let editorCharacterCatalog = null;
+  async function getEditorCharacterCatalog() {
+    if (!editorCharacterCatalog) editorCharacterCatalog = fetch('/characters.json', { cache: 'no-cache' }).then(response => response.ok ? response.json() : { characters: [] }).then(data => data.characters || []).catch(() => []);
+    return editorCharacterCatalog;
+  }
+  const splitEditorialList = value => [...new Set(String(value || '').split(/[\n,;]+/).map(item => item.trim()).filter(Boolean))].slice(0, 24);
+  function episodeCanvasMetadata() {
+    const imageItems = state.panels.flatMap(panel => panel.items.filter(item => item.type === 'image'));
+    const characters = [...new Set(imageItems.flatMap(item => {
+      const person = people.find(candidate => candidate.name === item.name || candidate.variants?.some(variant => variant.name === item.name || variant.src === item.src));
+      return person ? [person.name] : [];
+    }))];
+    const objects = [...new Set(imageItems.filter(item => item.category === 'object').map(item => item.name).filter(Boolean))];
+    const swatches = [...new Set(state.panels.map(panel => panel.backgroundColor).concat(state.panels.flatMap(panel => panel.items.flatMap(item => [item.color, item.fillColor]))).filter(value => typeof value === 'string' && /^#[\da-f]{6}$/i.test(value)))];
+    const knownColorNames = { '#f87209': 'naranja Mandarinita', '#607d3b': 'verde Mandarinita', '#fac421': 'amarillo Mandarinita', '#ffc928': 'amarillo sol', '#fff8ec': 'crema Mandarinita', '#282522': 'tinta oscura', '#ffffff': 'blanco' };
+    const colors = [...new Set(swatches.flatMap(color => [color.toUpperCase(), knownColorNames[color.toLowerCase()]].filter(Boolean)))];
+    const spokenText = state.panels.flatMap(panel => panel.items.filter(item => item.type === 'text' || item.type === 'bubble').map(item => String(item.text || '').trim())).filter(Boolean).join('\n');
+    return { characters, objects, themes: [], colors, searchTerms: [...new Set(imageItems.map(item => item.name).filter(Boolean))], spokenText, externalLinks: [] };
+  }
+  function parseExternalLinks(value) {
+    return String(value || '').split('\n').map(line => line.trim()).filter(Boolean).slice(0, 12).flatMap(line => {
+      const [rawLabel, ...parts] = line.split('|');
+      const url = (parts.length ? parts.join('|') : rawLabel).trim();
+      const label = (parts.length ? rawLabel : (() => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return 'Enlace'; } })()).trim();
+      try { return /^https:$/.test(new URL(url).protocol) && label ? [{ label: label.slice(0, 60), url: new URL(url).href }] : []; } catch { return []; }
+    });
+  }
+  function externalLinksText(links) { return (links || []).map(link => `${link.label} | ${link.url}`).join('\n'); }
+  async function characterIdsFromNames(value) {
+    const entries = await getEditorCharacterCatalog();
+    const normalize = text => String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim();
+    const tokens = splitEditorialList(value);
+    const ids = [], unknown = [];
+    for (const token of tokens) {
+      const match = entries.find(entry => entry.id === token || normalize(entry.name) === normalize(token) || (entry.aliases || []).some(alias => normalize(alias) === normalize(token)));
+      if (match) ids.push(match.id); else unknown.push(token);
+    }
+    return { ids: [...new Set(ids)], unknown };
+  }
+  async function characterNamesFromIds(ids) {
+    const entries = await getEditorCharacterCatalog();
+    return (ids || []).map(value => entries.find(entry => entry.id === value)?.name || value);
+  }
+  function updateRetirementDateMinimum(startSelector, endSelector) {
+    const start=$(startSelector),end=$(endSelector);
+    if(!start||!end)return;
+    const parts=String(start.value||'').split('-').map(Number);
+    if(parts.length!==3||parts.some(value=>!value)){end.removeAttribute('min');return;}
+    const nextDay=new Date(Date.UTC(parts[0],parts[1]-1,parts[2]+1)).toISOString().slice(0,10);
+    end.min=nextDay;
+  }
+
+  function clearPublishReviewPreview() {
+    publishReviewUrls.forEach(url => URL.revokeObjectURL(url));
+    publishReviewUrls = [];
+    publishPreviewReady = false;
+    publishPreviewError = '';
+    $('#publish-review-preview')?.replaceChildren();
+  }
+
+  function refreshPublishReadiness() {
+    const list = $('#publish-readiness-list');
+    if (!list) return;
+    const number = Number($('#publish-episode-number').value);
+    const titleEs = $('#publish-episode-title-es').value.trim();
+    const titleEn = $('#publish-episode-title-en').value.trim();
+    const isRealTitle = value => Boolean(value) && !/^(episodio nuevo|episodio sin título|nuevo episodio|untitled|new episode)$/i.test(value.trim());
+    const publishDate = $('#publish-episode-date').value;
+    const retireDate = $('#publish-episode-unpublish-date').value;
+    const numberAvailable = !publishKnownNumbers.includes(number);
+    const altFields = [...$('#publish-panel-descriptions').querySelectorAll('textarea')];
+    const altComplete = altFields.length === state.panels.length * 2 && altFields.every(field => field.value.trim().length >= 8);
+    const dateValid = Boolean(publishDate) && (!retireDate || retireDate > publishDate);
+    const checks = [
+      { label: 'Número y títulos en español e inglés', ok: Number.isInteger(number) && number >= 1 && number <= 9999 && numberAvailable && isRealTitle(titleEs) && isRealTitle(titleEn), detail: !numberAvailable ? `El número ${number} ya aparece en el archivo; elige otro.` : !isRealTitle(titleEs) || !isRealTitle(titleEn) ? 'Escribe títulos reales en ambos idiomas.' : undefined },
+      { label: 'Fechas de publicación y retiro', ok: dateValid },
+      { label: 'Vista final de todas las viñetas', ok: publishPreviewReady, pending: !publishPreviewReady && !publishPreviewError, error: publishPreviewError },
+      { label: 'Descripciones accesibles en español e inglés', ok: altComplete, detail: `${altFields.filter(field => field.value.trim().length >= 8).length} de ${state.panels.length * 2} completas` }
+    ];
+    list.replaceChildren();
+    checks.forEach(check => {
+      const item = document.createElement('li');
+      item.dataset.state = check.ok ? 'complete' : check.pending ? 'pending' : 'needs-attention';
+      const icon = document.createElement('span');
+      icon.className = 'publish-check-icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = check.ok ? '✓' : check.pending ? '…' : '!';
+      const text = document.createElement('span');
+      text.className = 'publish-check-copy';
+      const label = document.createElement('strong');
+      label.textContent = check.label;
+      const detail = document.createElement('small');
+      detail.textContent = check.error || check.detail || (check.ok ? 'Listo' : check.pending ? 'Preparando…' : 'Revisa este punto');
+      text.append(label, detail);
+      item.append(icon, text);
+      list.append(item);
+    });
+    const complete = checks.filter(check => check.ok).length;
+    const hasMetadata = ['#publish-characters','#publish-objects','#publish-themes','#publish-colors','#publish-search-terms','#publish-spoken-text','#publish-external-links'].some(selector => $(selector).value.trim());
+    const optionalItem = document.createElement('li'); optionalItem.dataset.state = 'optional';
+    const optionalIcon = document.createElement('span'); optionalIcon.className = 'publish-check-icon'; optionalIcon.setAttribute('aria-hidden','true'); optionalIcon.textContent = '＋';
+    const optionalCopy = document.createElement('span'); optionalCopy.className = 'publish-check-copy';
+    const optionalLabel = document.createElement('strong'); optionalLabel.textContent = 'Metadatos para búsquedas y redes';
+    const optionalDetail = document.createElement('small'); optionalDetail.textContent = hasMetadata ? 'Añadidos · puedes seguir editándolos abajo' : 'Opcionales · ayudan a encontrar y compartir el episodio';
+    optionalCopy.append(optionalLabel, optionalDetail); optionalItem.append(optionalIcon, optionalCopy); list.append(optionalItem);
+    $('#publish-review-count').textContent = `${complete}/${checks.length}`;
+    $('#publish-review-count').setAttribute('aria-label', `${complete} de ${checks.length} requisitos completos`);
+    $('#publish-review-summary').textContent = complete === checks.length ? 'Todo listo para publicar.' : `${complete} de ${checks.length} requisitos listos para publicar.`;
+    $('#publish-episode-submit').disabled = complete !== checks.length;
+  }
+
+  async function preparePublishReviewPreview() {
+    clearPublishReviewPreview();
+    const preview = $('#publish-review-preview');
+    preview.setAttribute('aria-busy', 'true');
+    const styleLabel = $('#export-style').selectedOptions[0]?.textContent.trim() || state.exportStyle || 'Plantilla actual';
+    const templateLabel = $('#export-preset').selectedOptions[0]?.textContent.trim() || FORMAT[state.format]?.label || 'Formato actual';
+    $('#publish-review-template').textContent = `Formato: ${templateLabel} · Plantilla: ${styleLabel} · ${state.panels.length} viñetas`;
+    refreshPublishReadiness();
+    try {
+      for (let index = 0; index < state.panels.length; index++) {
+        const blob = await renderPanelPng(state.panels[index], index);
+        if (!blob) throw new Error(`No se pudo preparar la viñeta ${index + 1}.`);
+        const url = URL.createObjectURL(blob);
+        publishReviewUrls.push(url);
+        const figure = document.createElement('figure');
+        figure.className = 'publish-review-panel';
+        const caption = document.createElement('figcaption');
+        caption.textContent = `Viñeta ${index + 1}`;
+        const image = document.createElement('img');
+        image.src = url;
+        image.alt = `Vista exportada de la viñeta ${index + 1}, formato ${templateLabel}, plantilla ${styleLabel}`;
+        image.addEventListener('load', () => {
+          publishPreviewReady = !publishPreviewError && publishReviewUrls.length === state.panels.length && [...preview.querySelectorAll('img')].every(node => node.complete && node.naturalWidth > 0);
+          refreshPublishReadiness();
+        }, { once: true });
+        image.addEventListener('error', () => {
+          publishPreviewError = `No se pudo mostrar la viñeta ${index + 1}.`;
+          refreshPublishReadiness();
+        }, { once: true });
+        figure.append(caption, image);
+        preview.append(figure);
+      }
+      publishPreviewReady = !publishPreviewError && [...preview.querySelectorAll('img')].length === state.panels.length && [...preview.querySelectorAll('img')].every(node => node.complete && node.naturalWidth > 0);
+    } catch (error) {
+      publishPreviewError = error instanceof Error ? error.message : 'No se pudo preparar la vista final.';
+    } finally {
+      preview.setAttribute('aria-busy', 'false');
+      refreshPublishReadiness();
+    }
+  }
+
+  async function openPublishEpisodeDialog() {
+    if (state.contentType !== 'episode') {
+      const previousType = state.contentType || 'diseño';
+      if (!window.confirm(`Este borrador está clasificado como «${previousType}». ¿Quieres publicarlo como episodio? Se conservarán las viñetas y sus capas.`)) return;
+      state.contentType = 'episode';
+      autosave();
+      render();
+    }
+    $('#export-preview-dialog').close();
+    clearPublishReviewPreview();
+    const form = $('#publish-episode-form');
+    const status = $('#publish-episode-status');
+    status.textContent = '';
+    $('#publish-episode-title-es').value = state.title || '';
+    $('#publish-episode-title-en').value = state.episodeTitleEn || '';
+    const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    $('#publish-episode-date').value = state.publishedAt || localToday;
+    $('#publish-episode-unpublish-date').value = state.unpublishAt || '';
+    updateRetirementDateMinimum('#publish-episode-date','#publish-episode-unpublish-date');
+    let catalog = { episodes: [] };
+    try {
+      const response = await fetch('/api/editor/episodes', { credentials: 'same-origin', cache: 'no-store' });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Inicia sesión para consultar el catálogo y publicar.');
+      catalog.episodes = result.episodes || [];
+    } catch (error) { toast(error instanceof Error ? error.message : 'No pude consultar el catálogo de episodios.'); return; }
+    publishKnownNumbers = (catalog.episodes || []).filter(entry => entry.id !== state.publishedEpisodeId).map(entry => Number(entry.episodeNumber)).filter(Number.isFinite);
+    const maxEpisode = Math.max(0, ...(catalog.episodes || []).map(entry => Number(entry.episodeNumber) || 0));
+    $('#publish-episode-number').value = state.episodeNumber || maxEpisode + 1;
+    const inferred = episodeCanvasMetadata();
+    const saved = state.editorialMetadata || {};
+    const characterNames = saved.characters ? await characterNamesFromIds(saved.characters) : inferred.characters;
+    $('#publish-characters').value = characterNames.join(', ');
+    $('#publish-objects').value = (saved.objects || inferred.objects).join(', ');
+    $('#publish-themes').value = (saved.themes || []).join(', ');
+    $('#publish-colors').value = (saved.colors || inferred.colors).join(', ');
+    $('#publish-search-terms').value = (saved.searchTerms || inferred.searchTerms).join(', ');
+    $('#publish-spoken-text').value = saved.spokenText || inferred.spokenText;
+    $('#publish-external-links').value = externalLinksText(saved.externalLinks || []);
+    const descriptions = $('#publish-panel-descriptions');
+    descriptions.replaceChildren();
+    state.panels.forEach((panel, index) => {
+      const card = document.createElement('section');
+      card.className = 'publish-panel-description';
+      const heading = document.createElement('h3');
+      heading.textContent = `Viñeta ${index + 1}`;
+      card.append(heading);
+      for (const [language, label] of [['es', 'Descripción en español'], ['en', 'Description in English']]) {
+        const fieldLabel = document.createElement('label');
+        fieldLabel.textContent = label;
+        const textarea = document.createElement('textarea');
+        textarea.name = `alt-${language}-${index + 1}`;
+        textarea.required = true;
+        textarea.minLength = 8;
+        textarea.maxLength = 300;
+        textarea.value = panel.alt?.[language] || suggestedPanelAlt(panel, index, language, state.episodeNumber || maxEpisode + 1, state.title || 'Episodio nuevo');
+        fieldLabel.append(textarea);
+        card.append(fieldLabel);
+      }
+      descriptions.append(card);
+    });
+    form.dataset.pending = 'false';
+    $('#publish-episode-submit').textContent = state.publishedEpisodeId ? 'Actualizar publicación' : 'Publicar episodio';
+    $('#publish-episode-dialog').showModal();
+    await preparePublishReviewPreview();
+  }
+
+  async function submitEpisodePublication(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.dataset.pending === 'true' || !form.reportValidity()) return;
+    form.dataset.pending = 'true';
+    const submit = $('#publish-episode-submit');
+    const status = $('#publish-episode-status');
+    submit.disabled = true;
+    $('#publish-episode-close').disabled = true;
+    $('#publish-episode-cancel').disabled = true;
+    submit.textContent = 'Preparando viñetas…';
+    status.textContent = 'Subiendo el episodio al sitio. No cierres esta ventana todavía.';
+    try {
+      const episodeNumber = Number($('#publish-episode-number').value);
+      const publishedAt = $('#publish-episode-date').value;
+      const unpublishAt = $('#publish-episode-unpublish-date').value || null;
+      const title = { es: $('#publish-episode-title-es').value.trim(), en: $('#publish-episode-title-en').value.trim() };
+      const idValue = state.publishedEpisodeId || `ep-${String(state.projectId || '').replace(/[^a-zA-Z0-9_-]/g, '')}`;
+      const resolvedCharacters = await characterIdsFromNames($('#publish-characters').value);
+      const editorialMetadata = {
+        characters: resolvedCharacters.ids,
+        objects: splitEditorialList($('#publish-objects').value),
+        themes: splitEditorialList($('#publish-themes').value),
+        colors: splitEditorialList($('#publish-colors').value),
+        searchTerms: [...new Set(splitEditorialList($('#publish-search-terms').value).concat(resolvedCharacters.unknown))],
+        spokenText: $('#publish-spoken-text').value.trim(),
+        externalLinks: parseExternalLinks($('#publish-external-links').value)
+      };
+      const panels = state.panels.map((panel, index) => ({
+        order: index + 1,
+        alt: {
+          es: form.elements.namedItem(`alt-es-${index + 1}`).value.trim(),
+          en: form.elements.namedItem(`alt-en-${index + 1}`).value.trim()
+        }
+      }));
+      const payload = new FormData();
+      payload.append('metadata', JSON.stringify({ id: idValue, projectId: state.projectId, episodeNumber, publishedAt, unpublishAt, title, exportTemplate: state.exportStyle || 'classic', metadata: editorialMetadata, panels }));
+      for (let index = 0; index < state.panels.length; index++) {
+        const image = await renderPanelPng(state.panels[index], index);
+        payload.append(`panel-${index + 1}`, image, `episodio-${episodeNumber}-vineta-${index + 1}.png`);
+        submit.textContent = `Subiendo viñeta ${index + 1} de ${state.panels.length}…`;
+      }
+      const response = await fetch('/api/published-episodes', { method: 'POST', credentials: 'same-origin', body: payload });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No se pudo publicar el episodio.');
+      state.publishedEpisodeId = idValue;
+      state.episodeNumber = episodeNumber;
+      state.title = title.es;
+      state.publishedAt = publishedAt;
+      state.unpublishAt = unpublishAt;
+      state.editorialMetadata = editorialMetadata;
+      state.episodeTitleEn = title.en;
+      state.status = result.scheduled ? 'scheduled' : 'published';
+      autosave();
+      $('#publish-episode-dialog').close();
+      $('#publish-episode-close').disabled = false;
+      $('#publish-episode-cancel').disabled = false;
+      const archiveUrl = `${location.origin}/episodios.html`;
+      toast(result.scheduled ? `Episodio ${episodeNumber} programado para ${publishedAt}. Se mostrará en ${archiveUrl}.` : `Episodio ${episodeNumber} publicado en ${archiveUrl}.`);
+      if (!$('#published-episodes-section').hidden) loadPublishedEpisodes();
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'No se pudo publicar. El borrador sigue guardado.';
+      form.dataset.pending = 'false';
+      submit.disabled = false;
+      $('#publish-episode-close').disabled = false;
+      $('#publish-episode-cancel').disabled = false;
+      submit.textContent = state.publishedEpisodeId ? 'Actualizar publicación' : 'Publicar episodio';
+    }
+  }
+
+  function showHomeSection(section) {
+    const published = section === 'published';
+    $('#home-heading').hidden = published;
+    $('#project-list').hidden = published;
+    $('#home-footnote').hidden = published;
+    $('#published-episodes-section').hidden = !published;
+    $('#show-drafts').classList.toggle('active', !published);
+    $('#show-published-episodes').classList.toggle('active', published);
+    if (published) { $('#show-published-episodes').setAttribute('aria-current', 'page'); $('#show-drafts').removeAttribute('aria-current'); }
+    else { $('#show-drafts').setAttribute('aria-current', 'page'); $('#show-published-episodes').removeAttribute('aria-current'); }
+    $('.home-actions').hidden = published;
+    if (published) loadPublishedEpisodes();
+  }
+
+  async function loadPublishedEpisodes() {
+    const status = $('#published-episode-list-status');
+    status.textContent = 'Cargando catálogo…';
+    try {
+      const response = await fetch('/api/editor/episodes', { credentials: 'same-origin', cache: 'no-store' });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No pude cargar los episodios.');
+      publishedEpisodeRecords = Array.isArray(result.episodes) ? result.episodes : [];
+      renderPublishedEpisodes();
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'No pude cargar el catálogo. Vuelve a intentarlo.';
+    }
+  }
+
+  function renderPublishedEpisodes() {
+    const list = $('#published-episode-list');
+    const query = String($('#published-episode-search').value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim();
+    const selectedStatus = $('#published-episode-status-filter').value;
+    const filtered = publishedEpisodeRecords.filter(entry => {
+      if (selectedStatus !== 'all' && entry.status !== selectedStatus) return false;
+      const search = [entry.episodeNumber, entry.title?.es, entry.title?.en, entry.status, entry.publishedAt, entry.unpublishAt, entry.characters, entry.objects, entry.themes, entry.colors, entry.searchTerms, entry.spokenText, entry.externalLinks?.map(link => `${link.label} ${link.url}`)].flat(2).join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');
+      return !query || search.includes(query);
+    });
+    list.replaceChildren();
+    $('#published-episode-list-status').textContent = `${filtered.length} de ${publishedEpisodeRecords.length} episodios · Puedes buscar por personaje, color, tema, frase o número.`;
+    if (!filtered.length) {
+      const empty = document.createElement('div'); empty.className = 'published-episode-empty';
+      empty.textContent = publishedEpisodeRecords.length ? 'No encontré episodios con esa búsqueda.' : 'No hay episodios en el catálogo. Comprueba la sesión y actualiza.';
+      list.append(empty); return;
+    }
+    for (const entry of filtered) {
+      const card = document.createElement('article'); card.className = 'published-episode-card';
+      const thumb = document.createElement('div'); thumb.className = 'published-episode-thumb';
+      if (entry.thumbnail) { const image = document.createElement('img'); image.src = entry.thumbnail; image.alt = ''; image.loading = 'lazy'; image.onerror = () => image.remove(); thumb.append(image); }
+      const copy = document.createElement('div'); copy.className = 'published-episode-copy';
+      const title = document.createElement('strong'); title.textContent = `#${entry.episodeNumber || '—'} · ${entry.title?.es || 'Episodio sin título'}`;
+      const status = document.createElement('small');
+      const labels = { published: 'Publicado', scheduled: 'Programado', unpublished: 'No publicado' };
+      status.textContent = `${labels[entry.status] || entry.status} · ${entry.panelCount} viñetas${entry.publishedAt ? ` · ${entry.publishedAt}` : ''}${entry.unpublishAt ? ` → ${entry.unpublishAt}` : ''} · ${entry.sourceType === 'editor' ? 'Del editor' : 'Catálogo existente'}`;
+      const tags = document.createElement('div'); tags.className = 'published-episode-meta';
+      for (const value of [...(entry.characters || []), ...(entry.themes || []), ...(entry.colors || [])].slice(0, 6)) { const tag = document.createElement('span'); tag.textContent = value; tags.append(tag); }
+      copy.append(title, status); if (tags.childElementCount) copy.append(tags);
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'button'; button.textContent = 'Administrar'; button.onclick = () => openManagePublishedEpisode(entry);
+      card.append(thumb, copy, button); list.append(card);
+    }
+  }
+
+  async function openManagePublishedEpisode(entry) {
+    const form = $('#manage-published-episode-form');
+    $('#manage-published-episode-id').value = entry.id;
+    $('#manage-published-episode-title').textContent = `Episodio ${entry.episodeNumber || ''}`;
+    $('#manage-episode-number').value = entry.episodeNumber || '';
+    $('#manage-episode-status').value = entry.status || 'published';
+    $('#manage-episode-title-es').value = entry.title?.es || '';
+    $('#manage-episode-title-en').value = entry.title?.en || '';
+    $('#manage-episode-date').value = entry.publishedAt || '';
+    $('#manage-episode-unpublish-date').value = entry.unpublishAt || '';
+    updateRetirementDateMinimum('#manage-episode-date','#manage-episode-unpublish-date');
+    $('#manage-episode-characters').value = (await characterNamesFromIds(entry.characters || [])).join(', ');
+    $('#manage-episode-objects').value = (entry.objects || []).join(', ');
+    $('#manage-episode-themes').value = (entry.themes || []).join(', ');
+    $('#manage-episode-colors').value = (entry.colors || []).join(', ');
+    $('#manage-episode-search-terms').value = (entry.searchTerms || []).join(', ');
+    $('#manage-episode-spoken-text').value = entry.spokenText || '';
+    $('#manage-episode-external-links').value = externalLinksText(entry.externalLinks || []);
+    $('#manage-published-episode-status').textContent = '';
+    form.dataset.pending = 'false';
+    $('#manage-published-episode-save').disabled = false;
+    $('#manage-published-episode-close').disabled = false;
+    $('#manage-published-episode-cancel').disabled = false;
+    $('#manage-published-episode-dialog').showModal();
+  }
+
+  async function saveManagedEpisode(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.dataset.pending === 'true' || !form.reportValidity()) return;
+    form.dataset.pending = 'true';
+    const button = $('#manage-published-episode-save');
+    const status = $('#manage-published-episode-status');
+    button.disabled = true; $('#manage-published-episode-close').disabled = true; $('#manage-published-episode-cancel').disabled = true; status.textContent = 'Guardando…';
+    try {
+      const characters = await characterIdsFromNames($('#manage-episode-characters').value);
+      const payload = {
+        id: $('#manage-published-episode-id').value,
+        episodeNumber: Number($('#manage-episode-number').value),
+        title: { es: $('#manage-episode-title-es').value.trim(), en: $('#manage-episode-title-en').value.trim() },
+        status: $('#manage-episode-status').value,
+        publishedAt: $('#manage-episode-date').value,
+        unpublishAt: $('#manage-episode-unpublish-date').value || null,
+        metadata: {
+          characters: characters.ids, objects: splitEditorialList($('#manage-episode-objects').value),
+          themes: splitEditorialList($('#manage-episode-themes').value), colors: splitEditorialList($('#manage-episode-colors').value),
+          searchTerms: [...new Set(splitEditorialList($('#manage-episode-search-terms').value).concat(characters.unknown))],
+          spokenText: $('#manage-episode-spoken-text').value.trim(), externalLinks: parseExternalLinks($('#manage-episode-external-links').value)
+        }
+      };
+      const response = await fetch('/api/editor/episodes', { method: 'PATCH', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'No se pudieron guardar los cambios.');
+      $('#manage-published-episode-dialog').close();
+      await loadPublishedEpisodes();
+      toast(payload.status === 'unpublished' ? `Episodio ${payload.episodeNumber} marcado como no publicado.` : `Cambios guardados para el episodio ${payload.episodeNumber}.`);
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'No se pudieron guardar los cambios.';
+      form.dataset.pending = 'false'; button.disabled = false; $('#manage-published-episode-close').disabled = false; $('#manage-published-episode-cancel').disabled = false;
+    }
+  }
+
   async function openExportPreview() {
     const button=$('#preview-export');
     button.disabled=true;
@@ -2087,7 +2651,8 @@
         const image=document.createElement('img');image.src=url;image.alt=`Vista previa final de la viñeta ${index+1}, con la plantilla ${styleLabel}`;
         card.append(label,image);pages.append(card);
       }
-      $('#export-preview-dialog').showModal();
+    $('#publish-episode').hidden = false;
+    $('#export-preview-dialog').showModal();
     } catch(error) {toast(error instanceof Error?error.message:'No se pudo preparar la vista previa.');}
     finally {button.disabled=false;}
   }
@@ -2201,7 +2766,7 @@
     labeledIcon('#mobile-library','panelLeft','Componentes'); labeledIcon('#mobile-properties','sliders','Propiedades');
     $('#tab-components').innerHTML=`${svgIcon('box')}<span>Componentes</span>`;
     $('#tab-layers').innerHTML=`${svgIcon('layers')}<span>Capas</span> <span id="layer-count-tab">0</span>`;
-    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#text-style','sparkles','Estilos');labeledIcon('#change-mockup','refresh','Cambiar producto');labeledIcon('#mockup-preview','eyeOff','Ocultar simulación');labeledIcon('#export-vector','fileDown','Arte vectorial SVG');labeledIcon('#add-bubble','bubble','Añadir globo');labeledIcon('#preview-export','eye','Vista previa final');labeledIcon('#export-preview-download','download','Exportar esta revisión');
+    labeledIcon('#add-panel','panelPlus','Viñeta'); labeledIcon('#add-text','text','Texto'); labeledIcon('#text-style','sparkles','Estilos');labeledIcon('#change-mockup','refresh','Cambiar producto');labeledIcon('#mockup-preview','eyeOff','Ocultar simulación');labeledIcon('#export-vector','fileDown','Arte vectorial SVG');labeledIcon('#add-bubble','bubble','Añadir globo');labeledIcon('#preview-export','eye','Vista previa final');labeledIcon('#export-preview-download','download','Exportar esta revisión');labeledIcon('#publish-episode','cloudUpload','Publicar episodio en la web');
     const filterIcons={all:'grid',character:'users',object:'box',background:'image',sticker:'layers',reference:'book'};
     $$('.filters [data-filter]').forEach(button=>{const label=button.textContent.trim();button.classList.add('has-icon');button.innerHTML=`${svgIcon(filterIcons[button.dataset.filter]||'grid')}<span class="button-label">${label}</span>`;button.setAttribute('aria-label',label);button.title=label;});
     const orderToggle = $('#toggle-order-strip');
@@ -2212,6 +2777,18 @@
     labeledIcon('#toggle-draw','pen','Dibujar'); labeledIcon('#toggle-grid','grid','Guías'); labeledIcon('#add-cta-panel','message','Añadir cierre');
     $('#zoom-out').innerHTML = svgIcon('zoomOut'); $('#zoom-in').innerHTML = svgIcon('zoomIn'); $('#fit').innerHTML = `${svgIcon('fit')}<span>Ajustar</span>`;
     $('#new-project').onclick = newProject;
+    $('#show-drafts').onclick = () => showHomeSection('drafts');
+    $('#show-published-episodes').onclick = () => showHomeSection('published');
+    $('#refresh-published-episodes').onclick = loadPublishedEpisodes;
+    $('#published-episode-search').addEventListener('input', renderPublishedEpisodes);
+    $('#published-episode-status-filter').addEventListener('change', renderPublishedEpisodes);
+    $('#manage-published-episode-form').addEventListener('submit', saveManagedEpisode);
+    $('#manage-published-episode-close').onclick = () => $('#manage-published-episode-dialog').close();
+    $('#manage-published-episode-cancel').onclick = () => $('#manage-published-episode-dialog').close();
+    $('#manage-published-episode-dialog').addEventListener('cancel', event => { if ($('#manage-published-episode-form').dataset.pending === 'true') event.preventDefault(); });
+    $('#version-history-refresh').onclick = refreshVersionHistory;
+    $('#version-history-close').onclick = () => $('#version-history-dialog').close();
+    $('#version-history-dialog').addEventListener('close', () => { historyProjectId = null; historyEtag = ''; });
     $$('.content-type-card').forEach(button=>button.onclick=()=>{$('#new-content-dialog').close();createContentDraft(button.dataset.contentType);});
     $$('.design-template-card').forEach(button=>button.onclick=()=>{$('#design-template-dialog').close();if(changingMockup)changeProductMockup(button.dataset.designTemplate);else createDesignProject(button.dataset.designTemplate);changingMockup=false;});
     $$('.text-style-card').forEach(button=>button.onclick=()=>{$('#text-style-dialog').close();addTextBlock('Escribe aquí…',button.dataset.textStyle);});
@@ -2228,6 +2805,16 @@
     $('#preview-export').onclick = openExportPreview;
     $('#export-preview-close').onclick = () => $('#export-preview-dialog').close();
     $('#export-preview-download').onclick = () => { $('#export-preview-dialog').close(); exportReview(); };
+    $('#publish-episode').onclick = openPublishEpisodeDialog;
+    $('#publish-episode-close').onclick = () => $('#publish-episode-dialog').close();
+    $('#publish-episode-cancel').onclick = () => $('#publish-episode-dialog').close();
+    $('#publish-episode-form').addEventListener('submit', submitEpisodePublication);
+    $('#publish-episode-form').addEventListener('input', refreshPublishReadiness);
+    $('#publish-episode-form').addEventListener('change', refreshPublishReadiness);
+    $('#publish-episode-date').addEventListener('change',()=>updateRetirementDateMinimum('#publish-episode-date','#publish-episode-unpublish-date'));
+    $('#publish-episode-dialog').addEventListener('close', clearPublishReviewPreview);
+    $('#publish-episode-dialog').addEventListener('cancel', event => { if ($('#publish-episode-form').dataset.pending === 'true') event.preventDefault(); });
+    $('#manage-episode-date').addEventListener('change',()=>updateRetirementDateMinimum('#manage-episode-date','#manage-episode-unpublish-date'));
     $('#export-preview-dialog').addEventListener('close',closeExportPreview);
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;

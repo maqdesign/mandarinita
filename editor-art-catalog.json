@@ -6175,9 +6175,9 @@
           "source": "assets/characters/morita-carrera-episodio-59-3.png",
           "sourcePanel": "assets/episodes/ep-059-no-juegues-asi/59.3.png",
           "recipe": "docs/art-review/cutouts/build-morita-59-3-review.py",
-          "status": "insertable",
-          "editorCutoutApproved": true,
-          "note": "Pose de carrera recortada de la viñeta publicada; se conservan los píxeles originales y se excluyen las marcas de polvo separadas."
+          "status": "review",
+          "editorCutoutApproved": false,
+          "note": "La pose conserva el fondo amarillo de la escena; queda en revisión y no se ofrece como recorte aislado."
         }
       ]
     },
@@ -6220,9 +6220,9 @@
           "source": "assets/characters/morita-carrera-episodio-59-4.png",
           "sourcePanel": "assets/episodes/ep-059-no-juegues-asi/59.4.png",
           "recipe": "docs/art-review/cutouts/build-morita-59-4-review.py",
-          "status": "insertable",
-          "editorCutoutApproved": true,
-          "note": "Pose de carrera recortada de la viñeta publicada; se conservan los píxeles originales y se excluyen las marcas de polvo separadas."
+          "status": "review",
+          "editorCutoutApproved": false,
+          "note": "La pose conserva el fondo amarillo de la escena; queda en revisión y no se ofrece como recorte aislado."
         }
       ]
     },
@@ -7355,9 +7355,9 @@
           "kind": "object-cutout",
           "source": "assets/objects/review/toilet-episode-77-3-review.png",
           "recipe": "docs/art-review/cutouts/build-toilet-77-3-review.py",
-          "status": "insertable",
-          "note": "Reusable object cutout made from published source pixels; faint contact shadow retained.",
-          "editorCutoutApproved": true
+          "status": "review",
+          "note": "El fondo turquesa continúa opaco alrededor del objeto; no debe ofrecerse como recorte insertable hasta limpiarlo.",
+          "editorCutoutApproved": false
         }
       ]
     },
@@ -8484,9 +8484,9 @@
           "kind": "object-cutout",
           "source": "assets/objects/review/envelope-episode-85-1-review.png",
           "recipe": "docs/art-review/cutouts/build-envelope-85-1-review.py",
-          "status": "insertable",
-          "note": "Personified envelope cutout from published source pixels; usable as an object component.",
-          "editorCutoutApproved": true
+          "status": "review",
+          "note": "Fondo celeste y sombra de escena siguen visibles; no debe ofrecerse como recorte insertable hasta limpiar los bordes.",
+          "editorCutoutApproved": false
         }
       ],
       "editorReusableBackgrounds": [
@@ -8545,9 +8545,9 @@
           "kind": "object-cutout",
           "source": "assets/objects/review/paperclip-episode-85-3-review.png",
           "recipe": "docs/art-review/cutouts/build-paperclip-85-3-review.py",
-          "status": "insertable",
-          "note": "Paperclip cutout from published source pixels; grayscale line art preserved.",
-          "editorCutoutApproved": true
+          "status": "review",
+          "note": "Fondo celeste y sombra de escena siguen visibles; no debe ofrecerse como recorte insertable hasta limpiar los bordes.",
+          "editorCutoutApproved": false
         }
       ]
     },
@@ -11084,14 +11084,16 @@
         {
           "source": "assets/characters/morita-carrera-episodio-59-3.png",
           "sourcePanel": "assets/episodes/ep-059-no-juegues-asi/59.3.png",
-          "status": "insertable",
-          "editorCutoutApproved": true
+          "status": "review",
+          "editorCutoutApproved": false,
+          "note": "La pose conserva el fondo amarillo de la escena; queda en revisión y no se ofrece como recorte aislado."
         },
         {
           "source": "assets/characters/morita-carrera-episodio-59-4.png",
           "sourcePanel": "assets/episodes/ep-059-no-juegues-asi/59.4.png",
-          "status": "insertable",
-          "editorCutoutApproved": true
+          "status": "review",
+          "editorCutoutApproved": false,
+          "note": "La pose conserva el fondo amarillo de la escena; queda en revisión y no se ofrece como recorte aislado."
         }
       ]
     },

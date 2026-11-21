@@ -13,9 +13,80 @@
   const progressFill = document.querySelector('#hero-carousel-progress-fill');
   const timing = document.querySelector('#hero-carousel-timing');
   const hero = document.querySelector('.hero');
+  const heroArt = document.querySelector('.hero-art-family');
   const previewMode = new URLSearchParams(location.search).has('admin-banner-preview');
-  if (previewMode) document.body.classList.add('hero-only-preview');
+  const editLabels = {
+    'hero.eyebrow': { es: 'frase de entrada', en: 'intro line' },
+    'hero.title.first': { es: 'primera línea del título', en: 'first title line' },
+    'hero.title.second': { es: 'segunda línea del título', en: 'second title line' },
+    'hero.description': { es: 'descripción', en: 'description' },
+    'hero.cta': { es: 'texto del botón', en: 'button text' },
+    'hero.episode': { es: 'episodio destacado', en: 'featured episode' }
+  };
+  if (previewMode) {
+    document.body.classList.add('hero-only-preview');
+    document.querySelectorAll('#main > :not(.hero)').forEach(section => { section.hidden = true; });
+  }
   const language = () => document.documentElement.dataset.lang === 'en' ? 'en' : 'es';
+  function dominantImageColor(image) {
+    if (!image?.naturalWidth || !image?.naturalHeight) return '';
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 18;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) return '';
+      context.drawImage(image, 0, 0, 18, 18);
+      const pixels = context.getImageData(0, 0, 18, 18).data;
+      const buckets = new Map();
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] < 96) continue;
+        const rgb = [pixels[i], pixels[i + 1], pixels[i + 2]].map(channel => Math.round(channel / 32) * 32);
+        const key = rgb.join(',');
+        buckets.set(key, (buckets.get(key) || 0) + pixels[i + 3]);
+      }
+      const best = [...buckets].sort((a, b) => b[1] - a[1])[0]?.[0];
+      return best ? `rgb(${best})` : '';
+    } catch { return ''; }
+  }
+  function updateEpisodeFrame() {
+    if (!heroImage || !heroArt) return;
+    if (heroArt.dataset.featured !== 'episode' || !heroImage.naturalWidth || !heroImage.naturalHeight) {
+      heroArt.style.removeProperty('--episode-frame-color');
+      heroImage.style.removeProperty('--episode-aspect-ratio');
+      return;
+    }
+    heroImage.style.setProperty('--episode-aspect-ratio', `${heroImage.naturalWidth} / ${heroImage.naturalHeight}`);
+    const color = dominantImageColor(heroImage);
+    if (color) heroArt.style.setProperty('--episode-frame-color', color);
+  }
+  heroImage?.addEventListener('load', updateEpisodeFrame);
+  if (previewMode) {
+    for (const target of textTargets) {
+      const key = target.dataset.liveContent;
+      if (!editLabels[key]) continue;
+      if (key === 'hero.cta') {
+        target.title = language() === 'en' ? 'Click to edit this button text' : 'Haz clic para editar el texto del botón';
+        continue;
+      }
+      target.tabIndex = 0;
+      target.setAttribute('role', 'button');
+      target.setAttribute('aria-label', language() === 'en' ? `Edit ${editLabels[key].en}` : `Editar ${editLabels[key].es}`);
+      target.title = language() === 'en' ? 'Click to edit this text' : 'Haz clic para editar este texto';
+    }
+    if (heroImage) {
+      heroImage.tabIndex = 0;
+      heroImage.setAttribute('role', 'button');
+      heroImage.setAttribute('aria-label', language() === 'en' ? 'Choose a different banner image' : 'Elegir otra imagen para el banner');
+      heroImage.title = language() === 'en' ? 'Click to change this image' : 'Haz clic para cambiar esta imagen';
+    }
+    document.addEventListener('keydown', event => {
+      if ((event.key !== 'Enter' && event.key !== ' ') || !(event.target instanceof Element)) return;
+      const target = event.target.closest('[data-live-content], .hero-family-image');
+      if (!target) return;
+      event.preventDefault();
+      target.click();
+    });
+  }
   const safeImage = path => {
     if (typeof path !== 'string' || !(path.startsWith('assets/') || path.startsWith('/api/site-content/image/'))) return null;
     const url = new URL(path, location.href);
@@ -30,6 +101,10 @@
   let lastProgressAnnouncement = -1;
   let transitionSequence = 0;
   let hasDisplayedBanner = false;
+  let scheduledBanners = [];
+  let scheduledBannerSignature = '';
+  let scheduledBannerTimer = 0;
+  let hasAppliedSchedule = false;
   const BANNER_DURATION = 8000;
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -147,8 +222,20 @@
     if (heroImage && image) heroImage.src = image;
     const alt = fields['hero.image.alt']?.[lang];
     if (heroImage && typeof alt === 'string') heroImage.alt = alt;
+    const featuredEpisode = fields['hero.mediaType']?.es === 'episode';
+    const isNewEpisode = featuredEpisode && fields['hero.isNew']?.es === 'true';
+    if (heroImage) {
+      heroImage.dataset.tilt = fields['hero.mediaStyle']?.es || 'straight';
+      heroImage.dataset.shadow = fields['hero.mediaShadow']?.es || 'soft';
+    }
+    if (heroArt) {
+      heroArt.dataset.featured = featuredEpisode ? 'episode' : 'image';
+      heroArt.dataset.isNew = String(isNewEpisode);
+      heroArt.dataset.newLabel = lang === 'en' ? 'NEW EPISODE' : 'NUEVO EPISODIO';
+      updateEpisodeFrame();
+    }
     const cta = document.querySelector('.hero-copy .button-dark');
-    if (cta && /^#[A-Za-z0-9_-]+$/.test(banner.ctaHref || '')) cta.href = banner.ctaHref;
+    if (cta && (/^#[A-Za-z0-9_-]+$/.test(banner.ctaHref || '') || /^\/\?episode=[a-z0-9-]{1,100}$/i.test(banner.ctaHref || ''))) cta.href = banner.ctaHref;
     const effect = fields['hero.effect']?.es === 'still' ? 'still' : 'orbit';
     if (orbit) {
       orbit.dataset.effect = effect;
@@ -189,8 +276,10 @@
       dots.append(dot);
     });
   }
-  function initializeCarousel(items, initialIndex = 0) {
+  function initializeCarousel(items, initialIndex = 0, { animate = false } = {}) {
     banners = items;
+    document.body.classList.remove('hero-schedule-empty');
+    document.body.classList.toggle('hero-preview-single', previewMode && banners.length < 2);
     current = Math.max(0, Math.min(initialIndex, banners.length - 1));
     if (!controls) { applyBanner(current); return; }
     const showControls = banners.length >= 2 || previewMode;
@@ -204,7 +293,40 @@
     else dots?.replaceChildren();
     autoPlay = !reduceMotion.matches;
     updateToggle();
-    applyBanner(current, { animate: false });
+    applyBanner(current, { animate });
+  }
+
+  function scheduleIsActive(banner, now) {
+    const start = Date.parse(banner.fields?.['hero.startAt']?.es || '');
+    const end = Date.parse(banner.fields?.['hero.endAt']?.es || '');
+    return (!Number.isFinite(start) || start <= now) && (!Number.isFinite(end) || end > now);
+  }
+  function applyScheduledBanners() {
+    if (previewMode || !scheduledBanners.length) return;
+    const now = Date.now();
+    const active = scheduledBanners.filter(banner => scheduleIsActive(banner, now));
+    const signature = active.map(banner => banner.id).join('|');
+    if (signature !== scheduledBannerSignature) {
+      const currentId = banners[current]?.id;
+      const currentIndex = active.findIndex(banner => banner.id === currentId);
+      scheduledBannerSignature = signature;
+      if (!active.length) {
+        document.body.classList.add('hero-schedule-empty');
+        stopProgress(false);
+        if (controls) controls.hidden = true;
+      } else {
+        initializeCarousel(active, currentIndex >= 0 ? currentIndex : 0, { animate: hasAppliedSchedule });
+      }
+      hasAppliedSchedule = true;
+    }
+    window.clearTimeout(scheduledBannerTimer);
+    const boundaries = scheduledBanners.flatMap(banner => [
+      Date.parse(banner.fields?.['hero.startAt']?.es || ''),
+      Date.parse(banner.fields?.['hero.endAt']?.es || '')
+    ]).filter(time => Number.isFinite(time) && time > now);
+    if (boundaries.length) {
+      scheduledBannerTimer = window.setTimeout(applyScheduledBanners, Math.max(50, Math.min(...boundaries) - now + 80));
+    }
   }
 
   previous?.addEventListener('click', () => applyBanner(current - 1));
@@ -215,7 +337,12 @@
     if (autoPlay) resumeProgress();
     else stopProgress(true);
   });
-  document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' ? resumeProgress() : stopProgress(true));
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      applyScheduledBanners();
+      resumeProgress();
+    } else stopProgress(true);
+  });
   reduceMotion.addEventListener?.('change', () => {
     if (reduceMotion.matches) { autoPlay = false; stopProgress(true); }
     updateToggle();
@@ -229,11 +356,32 @@
     const items = Array.isArray(event.data.banners) ? event.data.banners.filter(item => item?.fields) : (event.data.banner?.fields ? [event.data.banner] : []);
     if (!items.length) return;
     document.body.classList.toggle('hero-preview-horizontal', event.data.layout === 'horizontal');
+    document.body.classList.toggle('hero-preview-vertical', event.data.layout === 'vertical');
     initializeCarousel(items, Number.isInteger(event.data.selectedIndex) ? event.data.selectedIndex : 0);
   });
   if (previewMode) {
     document.addEventListener('click', event => {
-      const link = event.target instanceof Element ? event.target.closest('a') : null;
+      const target = event.target instanceof Element ? event.target : null;
+      const linkTarget = target?.closest('a');
+      const editableText = target?.closest('[data-live-content]') || (event.detail === 0 ? linkTarget?.querySelector('[data-live-content]') : null);
+      const editableImage = target?.closest('.hero-family-image');
+      const editable = editableText || editableImage;
+      if (editable) {
+        const imageEditField = banners[current]?.fields?.['hero.mediaType']?.es === 'episode' ? 'hero.episode' : 'hero.image';
+        const field = editableText?.dataset.liveContent || imageEditField;
+        if (editLabels[field] || field === 'hero.image') {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          window.parent.postMessage({
+            type: 'mandarinita:preview-edit',
+            field,
+            language: language(),
+            bannerId: typeof banners[current]?.id === 'string' ? banners[current].id : ''
+          }, location.origin);
+          return;
+        }
+      }
+      const link = target?.closest('a') || null;
       if (!link) return;
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -248,7 +396,10 @@
   fetch('/api/site-content', { cache: 'no-store' })
     .then(response => response.ok ? response.json() : null)
     .then(result => {
-      if (Array.isArray(result?.banners) && result.banners.length) initializeCarousel(result.banners);
+      if (Array.isArray(result?.banners) && result.banners.length) {
+        scheduledBanners = result.banners.filter(banner => banner?.fields);
+        applyScheduledBanners();
+      }
     })
     .catch(() => { /* Static homepage content remains as the fallback. */ });
 })();

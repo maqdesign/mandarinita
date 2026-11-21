@@ -728,6 +728,7 @@
 
 /* Homepage banners: accessible manual controls with optional reduced-motion autoplay. */
 .hero-carousel-controls{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:22px;color:var(--ink)}
+.hero-carousel-controls{width:min(100%,420px)}
 .hero-carousel-controls[hidden],.hero-carousel-toggle [hidden]{display:none!important}
 .hero-carousel-arrow,.hero-carousel-toggle{display:grid;place-items:center;flex:none;width:38px;height:38px;padding:8px;border:1px solid rgba(48,34,27,.28);border-radius:50%;background:rgba(255,255,255,.2);color:var(--ink);cursor:pointer}
 .hero-carousel-arrow:hover,.hero-carousel-toggle:hover{background:rgba(255,255,255,.48)}
@@ -740,10 +741,13 @@
 @media(max-width:680px){.hero-carousel-controls{gap:7px;margin-top:17px}.hero-carousel-arrow{width:34px;height:34px;padding:7px}.hero-carousel-toggle{width:auto;height:34px;padding:7px 10px}.hero-carousel-status{min-width:72px;font-size:.62rem}.hero-carousel-dots{gap:6px;margin-inline:2px}.hero-carousel-dot{width:7px;height:7px}.hero-carousel-dot[aria-current=true]{width:18px}}
 .hero-carousel-toggle{display:flex;width:auto;min-width:92px;height:38px;align-items:center;justify-content:center;gap:7px;padding:8px 12px;border-radius:999px}
 .hero-carousel-toggle-label{font-size:.68rem;font-weight:700;white-space:nowrap}
-.hero-carousel-progress-wrap{display:flex;flex:0 0 100%;width:100%;min-width:0;align-items:center;gap:10px;margin-top:1px}
+.hero-carousel-progress-wrap{display:flex;flex:0 1 360px;width:100%;max-width:100%;min-width:0;align-items:center;gap:10px;margin-top:1px}
 .hero-carousel-progress{height:5px;flex:1;overflow:hidden;border-radius:99px;background:rgba(48,34,27,.16)}
 .hero-carousel-progress>span{display:block;width:100%;height:100%;transform:scaleX(0);transform-origin:left center;border-radius:inherit;background:var(--ink);will-change:transform}
 .hero-carousel-timing{min-width:84px;color:rgba(48,34,27,.72);font-size:.63rem;font-weight:700;text-align:right}
+.hero-only-preview [data-live-content],.hero-only-preview .hero-family-image{cursor:pointer}
+.hero-only-preview [data-live-content]:hover,.hero-only-preview [data-live-content]:focus-visible{outline:2px solid rgba(48,34,27,.58);outline-offset:3px;border-radius:3px}
+.hero-only-preview .hero-family-image:hover,.hero-only-preview .hero-family-image:focus-visible{outline:3px solid rgba(48,34,27,.6);outline-offset:4px;border-radius:8px}
 .hero-copy,.hero-art-family{transition:opacity .24s ease,transform .24s ease}
 .hero.is-banner-transitioning .hero-copy,.hero.is-banner-transitioning .hero-art-family{opacity:0;transform:translateY(10px) scale(.99)}
 @media(prefers-reduced-motion:reduce){.hero-copy,.hero-art-family{transition:none!important}.hero.is-banner-transitioning .hero-copy,.hero.is-banner-transitioning .hero-art-family{opacity:1;transform:none}}
@@ -779,6 +783,14 @@ body.hero-only-preview .hero-copy{max-width:100%}
 body.hero-only-preview .hero h1{font-size:clamp(2.5rem,4.5vw,4.2rem);margin-bottom:18px}
 body.hero-only-preview .hero-description{font-size:clamp(.88rem,1.3vw,1.05rem);margin-bottom:20px}
 body.hero-only-preview .hero-art.hero-art-family{width:min(100%,520px)}
+body.hero-schedule-empty .hero{display:none!important}
+.hero-art-family[data-featured="episode"] .hero-family-image{padding:clamp(4px,.8vw,10px);border:1px solid rgba(255,255,255,.82);border-radius:12px;background:#fffaf2;box-shadow:0 12px 24px rgba(48,34,27,.19);transition:transform .28s ease,filter .28s ease,box-shadow .28s ease}
+.hero-art-family[data-featured="episode"] .hero-family-image[data-tilt="tilt-left"]{transform:rotate(-3deg) scale(.96)}
+.hero-art-family[data-featured="episode"] .hero-family-image[data-tilt="tilt-right"]{transform:rotate(3deg) scale(.96)}
+.hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="none"]{box-shadow:none}
+.hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="soft"]{box-shadow:0 10px 18px rgba(48,34,27,.18),0 2px 4px rgba(48,34,27,.1)}
+.hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="lifted"]{box-shadow:0 22px 30px rgba(48,34,27,.27),0 5px 10px rgba(48,34,27,.16)}
+.hero-art-family[data-featured="episode"][data-is-new="true"]::before{content:attr(data-new-label);position:absolute;z-index:8;top:5%;right:7%;padding:7px 11px;border:1px solid rgba(255,255,255,.82);border-radius:999px;background:#30221b;color:#fff;font:700 clamp(.48rem,.9vw,.68rem)/1.1 "Work Sans",sans-serif;letter-spacing:.09em;box-shadow:0 5px 14px rgba(48,34,27,.2)}
 @media(max-width:680px){body.hero-only-preview{overflow:auto}body.hero-only-preview .hero{height:auto;min-height:100vh;padding:42px 24px;grid-template-columns:1fr;gap:4px}body.hero-only-preview .hero h1{font-size:clamp(2.8rem,13vw,4.4rem)}body.hero-only-preview .hero-description{font-size:1rem}body.hero-only-preview .hero-art.hero-art-family{width:min(100%,390px)}}
 @media(max-width:680px){body.hero-only-preview.hero-preview-horizontal{overflow:hidden}body.hero-only-preview.hero-preview-horizontal .hero{height:100vh;min-height:440px;padding:22px 12px;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:4px}body.hero-only-preview.hero-preview-horizontal .hero .eyebrow{margin-bottom:12px;font-size:.56rem}body.hero-only-preview.hero-preview-horizontal .hero h1{font-size:clamp(1.38rem,6vw,2.3rem);line-height:1;margin-bottom:12px}body.hero-only-preview.hero-preview-horizontal .hero-description{font-size:clamp(.63rem,2.6vw,.82rem);line-height:1.4;margin-bottom:12px}body.hero-only-preview.hero-preview-horizontal .hero .button{min-height:40px;padding:0 12px;gap:6px;font-size:.67rem}body.hero-only-preview.hero-preview-horizontal .hero-art.hero-art-family{width:100%;min-height:0;margin:0;aspect-ratio:1448/1086}}
 
@@ -805,4 +817,47 @@ body.hero-only-preview .hero-art.hero-art-family{width:min(100%,520px)}
 .hero-carousel-arrow,.hero-carousel-toggle{border-color:rgba(48,34,27,.58)}
 .hero-carousel-dot{background:rgba(48,34,27,.68)}
 /* In an admin preview, even a single selected banner shows its real timer and progress. */
-body.hero-only-preview .hero-carousel-arrow,body.hero-only-preview .hero-carousel-dots{display:none}
+body.hero-only-preview.hero-preview-single .hero-carousel-arrow,body.hero-only-preview.hero-preview-single .hero-carousel-dots{display:none}
+@media(max-width:680px){
+  html:has(body.hero-only-preview.hero-preview-vertical){height:100%;min-height:0;overflow:hidden}
+  body.hero-only-preview.hero-preview-vertical{height:100%;min-height:0;overflow:hidden}
+  body.hero-only-preview.hero-preview-vertical #main{height:100dvh;min-height:0;overflow:hidden}
+  body.hero-only-preview.hero-preview-vertical .hero{width:100%;height:100dvh;min-height:0;padding:clamp(8px,2.5vh,20px) 16px;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0;overflow:hidden}
+  body.hero-only-preview.hero-preview-vertical .hero-copy{min-width:0;align-self:end;overflow:hidden}
+  body.hero-only-preview.hero-preview-vertical .hero .eyebrow{margin-bottom:5px;font-size:clamp(.46rem,1.45vh,.62rem)}
+  body.hero-only-preview.hero-preview-vertical .hero h1{margin-bottom:6px;font-size:clamp(1.25rem,4.8vh,2.25rem);line-height:.98}
+  body.hero-only-preview.hero-preview-vertical .hero-description{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;margin-bottom:7px;font-size:clamp(.58rem,1.7vh,.78rem);line-height:1.25}
+  body.hero-only-preview.hero-preview-vertical .hero .button{min-height:32px;padding:0 10px;font-size:.64rem}
+  body.hero-only-preview.hero-preview-vertical .hero-art.hero-art-family{width:min(100%,390px);height:auto;min-height:0;max-height:100%;aspect-ratio:1448/1086;align-self:start;justify-self:center;margin:0 auto}
+  body.hero-only-preview.hero-preview-vertical .hero-art-family .hero-family-image{inset:15%;width:70%;height:70%;object-fit:contain}
+  body.hero-only-preview.hero-preview-vertical .hero-carousel-controls{position:relative;z-index:5;gap:5px;margin-top:5px}
+  body.hero-only-preview.hero-preview-vertical .hero-carousel-progress-wrap{gap:5px}
+  body.hero-only-preview.hero-preview-vertical .hero-carousel-arrow{width:30px;height:30px;padding:5px}
+  body.hero-only-preview.hero-preview-vertical .hero-carousel-toggle{min-width:0;height:30px;padding:5px 8px}
+  body.hero-only-preview.hero-preview-vertical .hero-carousel-status{min-width:0;font-size:.56rem}
+  body.hero-only-preview.hero-preview-vertical .hero-carousel-timing{min-width:58px;font-size:.52rem}
+}
+@media(max-width:680px) and (max-height:700px){body.hero-only-preview.hero-preview-vertical .hero{padding-block:6px}body.hero-only-preview.hero-preview-vertical .hero h1{font-size:clamp(1.05rem,4.1vh,1.8rem);margin-bottom:4px}body.hero-only-preview.hero-preview-vertical .hero-description{font-size:clamp(.54rem,1.45vh,.68rem);margin-bottom:5px}body.hero-only-preview.hero-preview-vertical .hero .eyebrow{margin-bottom:3px}body.hero-only-preview.hero-preview-vertical .hero .button{min-height:28px}body.hero-only-preview.hero-preview-vertical .hero-carousel-controls{margin-top:2px}}
+
+/* Featured comic art keeps its own aspect ratio and picks a tone from the comic. */
+.hero-art-family[data-featured="episode"] .hero-family-image {
+  inset: auto;
+  width: auto !important;
+  height: auto !important;
+  max-width: 70%;
+  max-height: 70%;
+  aspect-ratio: var(--episode-aspect-ratio, auto);
+  box-sizing: border-box;
+  padding: 0;
+  border: 5px solid var(--episode-frame-color, #d88b18);
+  border-radius: 14px;
+  background: var(--episode-frame-color, #d88b18);
+  object-fit: contain;
+  mix-blend-mode: normal;
+  box-shadow: 0 12px 24px rgba(48,34,27,.2);
+}
+.hero-art-family[data-featured="episode"] .hero-family-image[data-tilt="tilt-left"] { transform: rotate(-3deg) scale(.96); }
+.hero-art-family[data-featured="episode"] .hero-family-image[data-tilt="tilt-right"] { transform: rotate(3deg) scale(.96); }
+.hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="none"] { box-shadow: none; }
+.hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="soft"] { box-shadow: 0 10px 18px rgba(48,34,27,.18),0 2px 4px rgba(48,34,27,.1); }
+.hero-art-family[data-featured="episode"] .hero-family-image[data-shadow="lifted"] { box-shadow: 0 22px 30px rgba(48,34,27,.27),0 5px 10px rgba(48,34,27,.16); }
