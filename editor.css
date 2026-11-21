@@ -425,6 +425,7 @@ dialog.publish-episode-dialog::backdrop{background:#171411a8;backdrop-filter:blu
 .publish-episode-fields label:first-child{grid-column:1 / -1}
 .publish-episode-fields input,.publish-panel-description textarea{width:100%;min-width:0;box-sizing:border-box;border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:450}
 .publish-episode-fields input{min-height:44px}
+.publish-home-banner-option{display:flex;align-items:flex-start;gap:10px;margin:12px 0;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font-size:13px;cursor:pointer}.publish-home-banner-option input{width:18px;height:18px;flex:none;margin:1px 0 0;accent-color:var(--orange)}.publish-home-banner-option span{display:grid;gap:4px}.publish-home-banner-option small{color:var(--muted);font-size:12px;font-weight:450;line-height:1.45}
 .publish-panel-description textarea{min-height:74px;resize:vertical;line-height:1.4}
 .publish-alt-fieldset{margin:20px 0 0;padding:14px;border:1px solid var(--line);border-radius:12px;min-width:0}
 .publish-alt-fieldset legend{padding:0 5px;font-size:14px;font-weight:700}.publish-alt-fieldset>p{margin:0 0 12px}

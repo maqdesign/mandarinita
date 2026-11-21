@@ -115,13 +115,14 @@
     });
   }
   const safeImage = path => {
-    if (typeof path !== 'string' || !(path.startsWith('assets/') || path.startsWith('/api/site-content/image/'))) return null;
+    if (typeof path !== 'string' || !(path.startsWith('assets/') || path.startsWith('/api/site-content/image/') || /^\/api\/published-episodes\/ep-[A-Za-z0-9_-]{1,96}\/[1-9][0-9]?\.png\?v=[0-9a-f-]{36}$/i.test(path))) return null;
     const url = new URL(path, location.href);
     return url.origin === location.origin ? url.href : null;
   };
   let banners = [];
   let current = -1;
   let autoPlay = false;
+  let previewAutoPlayEnabled = false;
   let progressElapsed = 0;
   let progressStartedAt = 0;
   let progressFrame = 0;
@@ -319,7 +320,7 @@
     }
     if (banners.length >= 2) buildDots();
     else dots?.replaceChildren();
-    autoPlay = !reduceMotion.matches;
+    autoPlay = previewMode ? previewAutoPlayEnabled && !reduceMotion.matches : !reduceMotion.matches;
     updateToggle();
     applyBanner(current, { animate });
   }
@@ -361,6 +362,7 @@
   next?.addEventListener('click', () => applyBanner(current + 1));
   toggle?.addEventListener('click', () => {
     autoPlay = !autoPlay;
+    if (previewMode) previewAutoPlayEnabled = autoPlay;
     updateToggle();
     if (autoPlay) resumeProgress();
     else stopProgress(true);

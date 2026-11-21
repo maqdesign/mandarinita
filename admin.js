@@ -546,20 +546,31 @@
     const charactersEn = (metadata?.characterLabelsEn || metadata?.characterLabels || []).slice(0, 2);
     const objectsEn = (metadata?.objectLabelsEn || metadata?.objectLabels || []).slice(0, 2);
     const joinNames = (items, conjunction) => items.length < 2 ? (items[0] || '') : `${items.slice(0, -1).join(', ')} ${conjunction} ${items.at(-1)}`;
+    const objectPhrase = (items, languageCode) => joinNames(items.slice(0, 2).map(name => {
+      const normalized = normalizeSearch(name);
+      if (languageCode === 'es') {
+        if (/^(sofa|sillon|mueble)$/.test(normalized)) return `el ${name}`;
+        if (/^(sandwich|emparedado)$/.test(normalized)) return `el ${name}`;
+        if (/^(plato|tenedor|vaso|libro|papel)$/.test(normalized)) return `el ${name}`;
+        return `un ${name}`;
+      }
+      if (/^(sofa|couch|sandwich|plate|fork|book|paper)$/.test(normalized)) return `a ${name}`;
+      return `a ${name}`;
+    }), languageCode === 'en' ? 'and' : 'y');
     const teaserEs = charactersEs.length && objectsEs.length
-      ? `Con ${joinNames(charactersEs, 'y')} y ${joinNames(objectsEs, 'y')} en escena, una situación cotidiana se convierte en una ocurrencia muy Mandarinita. Descubre la historieta sin spoilers.`
+      ? `${joinNames(charactersEs, 'y')} comparten escena con ${objectPhrase(objectsEs, 'es')} en una situación cotidiana con sabor Mandarinita.`
       : charactersEs.length
-        ? `Acompaña a ${joinNames(charactersEs, 'y')} en una situación cotidiana que toma un giro muy Mandarinita. Descubre la ocurrencia sin spoilers.`
+        ? `${joinNames(charactersEs, 'y')} se encuentran en otra situación cotidiana que termina con una ocurrencia muy Mandarinita.`
         : objectsEs.length
-          ? `${objectsEs[0][0].toLocaleUpperCase('es') + objectsEs[0].slice(1)} aparece en una situación cotidiana que pronto se convierte en una ocurrencia muy Mandarinita. Descubre la historieta sin spoilers.`
-          : 'Acompaña a los personajes de Mandarinita en una ocurrencia cotidiana que toma un giro inesperado. Descubre la historieta sin spoilers.';
+          ? `${objectPhrase(objectsEs, 'es')} dan pie a una situación cotidiana con una vuelta muy Mandarinita.`
+          : 'Una situación cotidiana toma un giro muy Mandarinita en esta nueva historieta.';
     const teaserEn = charactersEn.length && objectsEn.length
-      ? `With ${joinNames(charactersEn, 'and')} and ${joinNames(objectsEn, 'and')} in the mix, an everyday moment turns into a very Mandarinita-style surprise. Discover the comic without spoilers.`
+      ? `${joinNames(charactersEn, 'and')} share the scene with ${objectPhrase(objectsEn, 'en')} in an everyday moment with a Mandarinita twist.`
       : charactersEn.length
-        ? `Join ${joinNames(charactersEn, 'and')} in an everyday situation that takes a very Mandarinita turn. Discover the misadventure without spoilers.`
+        ? `${joinNames(charactersEn, 'and')} find themselves in another everyday moment with a very Mandarinita twist.`
         : objectsEn.length
-          ? `${objectsEn[0][0].toLocaleUpperCase('en') + objectsEn[0].slice(1)} shows up in an everyday situation that soon becomes a Mandarinita-style surprise. Discover the comic without spoilers.`
-          : 'Join the Mandarinita characters in an everyday situation that takes an unexpected turn. Discover the comic without spoilers.';
+          ? `${objectPhrase(objectsEn, 'en')} set the scene for an everyday moment with a Mandarinita twist.`
+          : 'An everyday moment takes a very Mandarinita turn in this new comic.';
     return {
       'hero.eyebrow': { es: isNew ? 'Nuevo episodio' : 'Episodio destacado', en: isNew ? 'New episode' : 'Featured episode' },
       'hero.title.first': { es: `Episodio ${entry.episodeNumber}`, en: `Episode ${entry.episodeNumber}` },
@@ -697,7 +708,11 @@
       const saved = banner.fields[key];
       const matchesGenerated = saved?.es === value.es && saved?.en === value.en;
       const matchesOriginal = originals[key]?.includes(saved?.es) && originals[key]?.includes(saved?.en);
-      const matchesLegacy = key === 'hero.description' && saved?.es === legacyDescription.es && saved?.en === legacyDescription.en;
+      const matchesLegacy = key === 'hero.description' && (
+        saved?.es === legacyDescription.es && saved?.en === legacyDescription.en
+        || /Descubre la historieta sin spoilers\.$/.test(saved?.es || '')
+        && /Discover the comic without spoilers\.$/.test(saved?.en || '')
+      );
       return !matchesGenerated && !matchesOriginal && !matchesLegacy;
     });
   }
@@ -970,7 +985,7 @@
       const artwork = siteContentForm.querySelector('.site-content-artwork');
       artwork?.classList.add('preview-edit-target');
       previewEditField = { element: artwork, timer: window.setTimeout(() => artwork?.classList.remove('preview-edit-target'), 2600) };
-      heroImageFile.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollEditorControlIntoView(heroImageFile);
       heroImageFile.focus({ preventScroll: true });
       setSiteContentStatus(`Banner ${bannerNumber}: imagen seleccionada en la vista previa. Elige el archivo nuevo en “Imagen y movimiento”.`);
       showHeroPreviewToast(`Banner ${bannerNumber}: seleccionaste la imagen. Elige el archivo nuevo en “Imagen y movimiento”.`);
@@ -984,10 +999,19 @@
     if (!control || !group) return;
     group.classList.add('preview-edit-target');
     previewEditField = { element: group, timer: window.setTimeout(() => group.classList.remove('preview-edit-target'), 3000) };
-    control.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    scrollEditorControlIntoView(control);
     control.focus({ preventScroll: true });
     const languageLabel = field === 'hero.episode' ? '' : ` · ${language === 'en' ? 'English' : 'Español'}`;
     setSiteContentStatus(`Banner ${bannerNumber} · ${group.querySelector('legend')?.textContent || 'el campo'}${languageLabel}. Los cambios aparecen en la vista previa.`);
+  }
+  function scrollEditorControlIntoView(control) {
+    const rect = control.getBoundingClientRect();
+    const topInset = document.querySelector('.site-section-heading')?.getBoundingClientRect().bottom || 0;
+    const bottomInset = document.querySelector('.site-content-action-bar')?.getBoundingClientRect().height || 0;
+    const visibleTop = Math.max(16, topInset + 12);
+    const visibleBottom = window.innerHeight - Math.max(24, bottomInset + 12);
+    if (rect.top >= visibleTop && rect.bottom <= visibleBottom) return;
+    control.scrollIntoView({ behavior: mobileNavigation.matches ? 'auto' : 'smooth', block: 'nearest' });
   }
   window.addEventListener('message', event => {
     if (event.origin !== location.origin || event.source !== bannerPreview?.contentWindow) return;

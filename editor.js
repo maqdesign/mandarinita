@@ -2213,6 +2213,7 @@
       descriptions.append(card);
     });
     form.dataset.pending = 'false';
+    $('#publish-episode-create-banner').checked = true;
     $('#publish-episode-submit').disabled = false;
     $('#publish-episode-submit').textContent = state.publishedEpisodeId ? 'Actualizar publicación' : 'Publicar episodio';
     $('#publish-episode-dialog').showModal();
@@ -2275,7 +2276,41 @@
       $('#publish-episode-close').disabled = false;
       $('#publish-episode-cancel').disabled = false;
       const archiveUrl = `${location.origin}/episodios.html`;
-      toast(result.scheduled ? `Episodio ${episodeNumber} programado para ${publishedAt}. Se mostrará en ${archiveUrl}.` : `Episodio ${episodeNumber} publicado en ${archiveUrl}.`);
+      let bannerNotice = '';
+      if ($('#publish-episode-create-banner').checked) {
+        try {
+          const cast = await characterNamesFromIds(resolvedCharacters.ids);
+          const objects = splitEditorialList($('#publish-objects').value).slice(0, 2);
+          const esJoin = values => values.length < 2 ? (values[0] || '') : `${values.slice(0, -1).join(', ')} y ${values.at(-1)}`;
+          const enJoin = values => values.length < 2 ? (values[0] || '') : `${values.slice(0, -1).join(', ')} and ${values.at(-1)}`;
+          const spanishObjects = objects.map(value => {
+            const key = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            if (/^(sofa|sillon|mueble|sandwich|emparedado)$/.test(key)) return `el ${value}`;
+            return value;
+          });
+          const englishObjects = objects.map(value => ({ sofá: 'a sofa', sillón: 'an armchair', mueble: 'a couch', sándwich: 'a sandwich', emparedado: 'a sandwich' }[value.toLowerCase()] || value));
+          const descriptionEs = cast.length && spanishObjects.length
+            ? `${esJoin(cast.slice(0, 2))} comparten escena con ${esJoin(spanishObjects)} en una situación cotidiana con sabor Mandarinita.`
+            : cast.length ? `${esJoin(cast.slice(0, 2))} protagonizan una nueva ocurrencia cotidiana muy Mandarinita.`
+              : spanishObjects.length ? `${esJoin(spanishObjects)} dan pie a una situación cotidiana con una vuelta muy Mandarinita.`
+                : 'Una situación cotidiana toma un giro muy Mandarinita en esta nueva historieta.';
+          const descriptionEn = cast.length && englishObjects.length
+            ? `${enJoin(cast.slice(0, 2))} share the scene with ${enJoin(englishObjects)} in an everyday moment with a Mandarinita twist.`
+            : cast.length ? `${enJoin(cast.slice(0, 2))} star in another everyday moment with a Mandarinita twist.`
+              : englishObjects.length ? `${enJoin(englishObjects)} set the scene for an everyday moment with a Mandarinita twist.`
+                : 'An everyday moment takes a very Mandarinita turn in this new comic.';
+          const bannerResponse = await fetch('/api/admin/banners', {
+            method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ episodeBanner: { episodeId: idValue, descriptionEs, descriptionEn, isNew: !state.publishedEpisodeId } })
+          });
+          const bannerResult = await bannerResponse.json().catch(() => ({}));
+          if (!bannerResponse.ok) throw new Error(bannerResult.error || 'No se pudo crear el banner.');
+          bannerNotice = bannerResult.created ? ' También se publicó su banner en la portada.' : ' Este episodio ya tenía un banner en la portada.';
+        } catch (error) {
+          bannerNotice = ` El episodio sí se publicó, pero no se pudo crear su banner: ${error instanceof Error ? error.message : 'inténtalo desde Sitio web'}`;
+        }
+      }
+      toast((result.scheduled ? `Episodio ${episodeNumber} programado para ${publishedAt}. Se mostrará en ${archiveUrl}.` : `Episodio ${episodeNumber} publicado en ${archiveUrl}.`) + bannerNotice);
       if (!$('#published-episodes-section').hidden) loadPublishedEpisodes();
     } catch (error) {
       status.textContent = error instanceof Error ? error.message : 'No se pudo publicar. El borrador sigue guardado.';

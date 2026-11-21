@@ -874,3 +874,4 @@ body.hero-only-preview.hero-preview-single .hero-carousel-arrow,body.hero-only-p
 @media(max-width:680px){.hero-art.hero-art-family .hero-family-image{inset:10%;width:80%;height:80%}}
 .hero-banner-stickers{position:absolute;z-index:4;inset:0;overflow:visible;pointer-events:none}
 .hero-banner-sticker{position:absolute;display:block;max-height:62%;object-fit:contain;filter:drop-shadow(0 7px 8px rgba(48,34,27,.24));user-select:none}
+.hero-highlight{font-size:.84em;font-weight:500;letter-spacing:-.035em}

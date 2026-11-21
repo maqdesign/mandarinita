@@ -18,7 +18,7 @@ const FIELD_COLUMNS = [
   ['hero.startAt', 'starts_at', 'starts_at', 'schedule', 40],
   ['hero.endAt', 'ends_at', 'ends_at', 'schedule', 40]
 ];
-const IMAGE_PATH = /^(?:assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)|\/api\/site-content\/image\/(?:site-content\/hero\/)?[0-9a-f-]{36}\.(?:png|webp|jpg))$/i;
+const IMAGE_PATH = /^(?:assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)|\/api\/site-content\/image\/(?:site-content\/hero\/)?[0-9a-f-]{36}\.(?:png|webp|jpg)|\/api\/published-episodes\/ep-[A-Za-z0-9_-]{1,96}\/[1-9][0-9]?\.png\?v=[0-9a-f-]{36})$/i;
 const CONTROL_CHARACTERS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/;
 const COLUMNS = [
   'id', 'position', 'enabled', 'eyebrow_es', 'eyebrow_en',
@@ -127,10 +127,12 @@ export async function onRequestPost(context) {
   const auth = await authorize(context, true);
   if (auth.response) return auth.response;
   let sourceId = '';
+  let body = {};
   try {
-    const body = await context.request.json();
+    body = await context.request.json();
     if (typeof body?.sourceId === 'string' && /^[a-z0-9-]{1,50}$/i.test(body.sourceId)) sourceId = body.sourceId;
   } catch { /* An empty body creates a copy of the first banner, preserving the add-banner behavior. */ }
+  if (body?.episodeBanner) return createEpisodeBanner(context, auth.db, body.episodeBanner);
   const result = sourceId
     ? await auth.db.prepare('SELECT * FROM hero_banners WHERE id = ?').bind(sourceId).first()
     : await auth.db.prepare('SELECT * FROM hero_banners ORDER BY position, created_at LIMIT 1').first();
@@ -149,6 +151,67 @@ export async function onRequestPost(context) {
   await auth.db.prepare(`INSERT INTO hero_banners (${COLUMNS.join(', ')}) VALUES (${COLUMNS.map(() => '?').join(', ')})`)
     .bind(...COLUMNS.map(column => row[column])).run();
   return json({ ok: true, banner: { ...clone, id, position: row.position, enabled: false } }, 201);
+}
+
+async function createEpisodeBanner(context, db, input) {
+  const episodeId = String(input?.episodeId || '');
+  if (!/^ep-[A-Za-z0-9_-]{1,96}$/.test(episodeId)) return json({ error: 'El episodio para el banner no tiene un identificador válido.' }, 400);
+  const bucket = context.env.MANDARINITA_PROJECTS;
+  if (!bucket) return json({ error: 'El almacenamiento de episodios no está conectado en este entorno.' }, 503);
+  let manifest;
+  try {
+    const object = await bucket.get(`published/episodes/${episodeId}/manifest.json`);
+    manifest = object ? await object.json() : null;
+  } catch { return json({ error: 'No se pudo comprobar el episodio publicado.' }, 503); }
+  if (!manifest || manifest.id !== episodeId || manifest.complete !== true
+    || !['published', 'scheduled'].includes(manifest.status) || !Array.isArray(manifest.panels) || !manifest.panels.length) {
+    return json({ error: 'Publica primero el episodio antes de crear su banner.' }, 409);
+  }
+  const prior = await db.prepare("SELECT id FROM hero_banners WHERE media_type = 'episode' AND episode_id = ? LIMIT 1").bind(episodeId).first();
+  if (prior) return json({ ok: true, created: false, message: 'Este episodio ya tiene un banner.' });
+  const count = await db.prepare('SELECT COUNT(*) AS total, COALESCE(MAX(position), -1) AS last_position FROM hero_banners').first();
+  if (count.total >= 8) return json({ error: 'El carrusel ya tiene ocho banners. Quita o reutiliza uno antes de publicar otro.' }, 409);
+
+  const episodeNumber = Number(manifest.episodeNumber);
+  const titleEs = typeof manifest.title === 'string' ? manifest.title : String(manifest.title?.es || '').trim();
+  const titleEn = typeof manifest.title === 'string' ? manifest.title : String(manifest.title?.en || titleEs).trim();
+  const firstPanel = manifest.panels[0];
+  const altEs = String(firstPanel?.alt?.es || titleEs || `Episodio ${episodeNumber}`).slice(0, 300);
+  const altEn = String(firstPanel?.alt?.en || titleEn || `Episode ${episodeNumber}`).slice(0, 300);
+  const descriptionEs = String(input.descriptionEs || `Una nueva historieta de Mandarinita, episodio ${episodeNumber}.`).trim().slice(0, 420);
+  const descriptionEn = String(input.descriptionEn || `A new Mandarinita comic, episode ${episodeNumber}.`).trim().slice(0, 420);
+  const startsAt = manifest.publishedAt ? `${manifest.publishedAt}T04:00:00.000Z` : '';
+  const endsAt = manifest.unpublishAt ? `${manifest.unpublishAt}T04:00:00.000Z` : '';
+  const fields = {
+    'hero.eyebrow': { es: input.isNew ? 'Nuevo episodio' : 'Episodio destacado', en: input.isNew ? 'New episode' : 'Featured episode' },
+    'hero.title.first': { es: `Episodio ${episodeNumber}`, en: `Episode ${episodeNumber}` },
+    'hero.title.second': { es: titleEs, en: titleEn },
+    'hero.description': { es: descriptionEs, en: descriptionEn },
+    'hero.cta': { es: `Leer episodio ${episodeNumber}`, en: `Read episode ${episodeNumber}` },
+    'hero.image': { es: `/api/published-episodes/${episodeId}/1.png?v=${manifest.revision}`, en: `/api/published-episodes/${episodeId}/1.png?v=${manifest.revision}` },
+    'hero.effect': { es: 'still', en: 'still' },
+    'hero.image.alt': { es: altEs, en: altEn },
+    'hero.mediaType': { es: 'episode', en: 'episode' },
+    'hero.episode': { es: episodeId, en: episodeId },
+    'hero.mediaStyle': { es: 'tilt-right', en: 'tilt-right' },
+    'hero.mediaShadow': { es: 'lifted', en: 'lifted' },
+    'hero.isNew': { es: String(Boolean(input.isNew)), en: String(Boolean(input.isNew)) },
+    'hero.stickers': { es: '[]', en: '[]' },
+    'hero.startAt': { es: startsAt, en: startsAt },
+    'hero.endAt': { es: endsAt, en: endsAt }
+  };
+  const id = crypto.randomUUID();
+  const normalized = normalizeBanner({ id, enabled: true, position: count.last_position + 1, fields });
+  if (normalized.error) return json({ error: `No se creó el banner: ${normalized.error}` }, 400);
+  const row = { ...normalized.row, position: count.last_position + 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+  try {
+    await db.prepare(`INSERT INTO hero_banners (${COLUMNS.join(', ')}) VALUES (${COLUMNS.map(() => '?').join(', ')})`)
+      .bind(...COLUMNS.map(column => row[column])).run();
+  } catch (error) {
+    console.error('Episode banner could not be created', { name: error?.name || 'Error', episodeId });
+    return json({ error: 'El episodio se publicó, pero no se pudo guardar su banner en la portada.' }, 503);
+  }
+  return json({ ok: true, created: true, banner: fromRow(row) }, 201);
 }
 
 export async function onRequestPatch(context) {
