@@ -351,7 +351,7 @@
 .admin-layout.sidebar-collapsed .admin-nav-icon { flex-basis: 22px; width: 22px; height: 22px; }
 @media (min-width: 1181px) {
   .admin-layout { grid-template-columns: 232px minmax(0,1fr); }
-  .site-content-form { grid-template-columns: minmax(300px,.82fr) minmax(500px,1.18fr); align-items: start; }
+  .site-content-form { grid-template-columns: minmax(250px,.78fr) minmax(360px,1.22fr); align-items: start; }
   .site-content-editor-heading,.site-content-action-bar { grid-column: 1 / -1; }
   .site-content-fields { grid-column: 1; }
   .site-content-schedule { grid-column: 1; }
@@ -458,4 +458,74 @@
   .admin-main { padding-bottom: calc(112px + env(safe-area-inset-bottom)); scroll-margin-top: 72px; }
   .site-content-action-bar { bottom: calc(58px + env(safe-area-inset-bottom)); }
   .site-content-action-bar { top: auto; }
+}
+
+/* System dark mode: preserve the editor's hierarchy without bright form surfaces. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --paper: #27211c;
+    --canvas: #191512;
+    --ink: #f4ede6;
+    --muted: #c5b9b1;
+    --line: #51443b;
+    --orange: #ff9a55;
+    --green: #a5c97b;
+  }
+  body { background: var(--canvas); color: var(--ink); }
+  .admin-header { background: var(--paper); border-bottom-color: var(--line); }
+  .admin-brand img { content: url("assets/mandarinita-logo-white.svg"); }
+  .admin-account button,.admin-sidebar-toggle,.admin-refresh { background: var(--paper); color: var(--ink); border-color: var(--line); }
+  .admin-sidebar { background: #211b17; border-color: var(--line); }
+  .admin-sidebar nav a:hover,.admin-sidebar nav a.active,.admin-layout.sidebar-collapsed .admin-sidebar nav a.active { background: #3b2b20; color: #ffc18f; }
+  .admin-welcome { background: radial-gradient(ellipse at 92% 4%, rgba(226,133,61,.16), transparent 42%), var(--paper); border-color: var(--line); }
+  .admin-count,.admin-status,.admin-card-icon { background: #342a23; color: var(--green); }
+  .admin-primary { background: #ffad70; color: #281a12; }
+  .admin-primary:hover { background: #ffc18f; }
+  .admin-refresh:hover { border-color: var(--orange); color: #ffc18f; }
+  .admin-danger { background: #35231e; border-color: #75493e; color: #ffb4a4; }
+  .admin-danger:hover { background: #452a23; }
+  .admin-empty { background: linear-gradient(115deg, var(--paper), #30251d); }
+  .admin-metric { color: #b7a99d; }
+  .admin-footer { border-color: var(--line); }
+  .admin-footer a,.inquiry-reply { color: #ffad70; }
+  .admin-quick-link>span:last-child,.admin-section-heading a.admin-refresh { color: #ffad70; }
+  .inquiry-status-label select,.site-content-pair input,.site-content-pair textarea,.site-content-pair select {
+    background: #211b17;
+    color: var(--ink);
+    border-color: var(--line);
+    color-scheme: dark;
+  }
+  .site-content-image-preview,.hero-banner-select img {
+    background-color: #211b17;
+    background-image: linear-gradient(45deg,#342a23 25%,transparent 25%),linear-gradient(-45deg,#342a23 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#342a23 75%),linear-gradient(-45deg,transparent 75%,#342a23 75%);
+    border-color: var(--line);
+  }
+  .site-content-artwork input[type="file"] { background: #211b17; color: var(--ink); border-color: var(--line); color-scheme: dark; }
+  .admin-contrast-note { background: #26351f; border-color: #526b3d; color: #d9e9c4; }
+  .hero-episode-picker { background: #211b17; border-color: var(--line); }
+  .hero-episode-options,.admin-more-options { background: var(--paper); border-color: var(--line); }
+  .hero-episode-option:hover,.hero-episode-option[aria-selected=true] { background: #3b2b20; }
+  .hero-banner-row { background: var(--paper); border-color: var(--line); }
+  .hero-banner-row.is-selected { border-color: var(--orange); }
+  .hero-banner-enabled input { accent-color: var(--green); }
+  .site-content-action-bar { background: rgba(39,33,28,.97); border-color: var(--line); }
+  .admin-section-heading { background: rgba(25,21,18,.97); border-color: var(--line); }
+  .hero-admin-preview { background: #211b17; border-color: var(--line); }
+  .hero-preview-stage { background: #302923; border-color: var(--line); }
+  .hero-preview-stage iframe { background: #f06d00; }
+  .admin-alert { background: #3b211d; border-color: #d37865; color: #ffe6df; }
+  .admin-alert > .ui-icon { color: #ffac99; }
+  .admin-alert button { background: #271b18; border-color: #a46254; color: #ffe6df; }
+  .admin-alert button:hover { background: #452720; }
+  .admin-dialog { background: var(--paper); color: var(--ink); border-color: var(--line); }
+  .admin-dialog::backdrop { background: rgba(0,0,0,.68); }
+  .admin-data-error { background: #3b211d; border-color: #a35d50; color: #ffe6df; }
+  .site-content-save-state { color: #b5d48c !important; }
+  .site-content-save-state[data-state="dirty"] { color: #ffd09a !important; }
+  .site-content-save-state[data-state="saving"] { color: #d1c5bc !important; }
+  .admin-sidebar nav { scrollbar-color: #746153 transparent; }
+  @media (max-width: 760px) {
+    .admin-sidebar nav { background: rgba(39,33,28,.97); border-color: var(--line); }
+  }
 }
