@@ -116,6 +116,8 @@
   let componentLayerId = null;
   let componentStroke = null;
   let componentColor = '#302D2A';
+  let componentBrush = 'pen';
+  let componentUndo = [];
   let pendingDeleteId = null;
   let panelDrag = null;
   let layerDragId = null;
@@ -1605,6 +1607,22 @@
   }
 
   const componentStudioPalette = ['#302D2A','#F87209','#F5B6A8','#F6CC63','#AFCB9B','#A9D6D5','#B7B2E7','#F2E7D7'];
+  const componentPartLabels = {body:'Cuerpo',head:'Cabeza',eyes:'Ojos',mouth:'Boca',arm:'Brazo',leg:'Pierna',leaf:'Hoja',accessory:'Accesorio',custom:'Otra parte'};
+  function normalizeComponentLayer(layer) {
+    layer.strokes ||= []; layer.offsetX=Number(layer.offsetX)||0; layer.offsetY=Number(layer.offsetY)||0;
+    if(!layer.partType){const name=String(layer.name||'').toLocaleLowerCase('es');layer.partType=name.includes('ojo')?'eyes':name.includes('boca')?'mouth':name.includes('brazo')?'arm':name.includes('pierna')?'leg':name.includes('hoja')?'leaf':name.includes('cabeza')?'head':'body';}
+    layer.side ||= /izquierd/i.test(layer.name||'')?'left':/derech/i.test(layer.name||'')?'right':'center';
+    layer.slotKey ||= `${layer.partType}:${layer.side}`; layer.variantName ||= 'Principal';
+    return layer;
+  }
+  function componentPartName(type,side,custom='') { const label=type==='custom'?(custom.trim()||'Otra parte'):(componentPartLabels[type]||'Parte');return side==='left'?`${label} izquierdo`:side==='right'?`${label} derecho`:label; }
+  function addComponentLayer(type,side,variantName,custom='') {
+    const slotKey=`${type}:${side}`,siblings=componentDraft.layers.filter(layer=>normalizeComponentLayer(layer).slotKey===slotKey);
+    const label=componentPartName(type,side,custom),variant=(variantName||'').trim()||(siblings.length?`Alternativa ${siblings.length+1}`:'Principal');
+    componentDraft.layers.forEach(layer=>{normalizeComponentLayer(layer);if(layer.slotKey===slotKey)layer.visible=false;});
+    const layer={id:id(),name:label,partType:type,partLabel:type==='custom'?(custom.trim()||'Otra parte'):'',side,slotKey,variantName:variant,visible:true,offsetX:0,offsetY:0,strokes:[]};
+    componentDraft.layers.push(layer);componentLayerId=layer.id;return layer;
+  }
   function componentThumbnail(component) {
     const paths=[];
     for(const layer of component.layers||[]) if(layer.visible!==false) for(const stroke of layer.strokes||[]) {
@@ -1621,8 +1639,8 @@
   }
   function openComponentStudio(templateId='') {
     const existing=state.customComponents.find(component=>component.id===templateId);
-    componentDraft=existing?JSON.parse(JSON.stringify(existing)):{id:id(),name:'',category:'character',width:400,height:360,layers:[{id:id(),name:'Cuerpo',visible:true,offsetX:0,offsetY:0,strokes:[]}],createdAt:Date.now()};
-    componentLayerId=componentDraft.layers[0]?.id||null;componentStroke=null;
+    componentDraft=existing?JSON.parse(JSON.stringify(existing)):{id:id(),name:'',category:'character',width:400,height:360,layers:[{id:id(),name:'Cuerpo',partType:'body',side:'center',slotKey:'body:center',variantName:'Principal',visible:true,offsetX:0,offsetY:0,strokes:[]}],createdAt:Date.now()};
+    componentDraft.layers.forEach(normalizeComponentLayer);componentLayerId=componentDraft.layers[0]?.id||null;componentStroke=null;componentUndo=[];
     $('#component-studio-temp').setAttribute('d','');
     $('#component-studio-name').value=componentDraft.name||'';$('#component-studio-category').value=componentDraft.category||'character';
     renderComponentStudio();$('#component-studio-dialog').showModal();
@@ -1634,23 +1652,28 @@
     (state.customComponents||[]).forEach(component=>{const option=document.createElement('option');option.value=component.id;option.textContent=component.name;selector.append(option);});
     selector.value=(state.customComponents||[]).some(component=>component.id===selected)?selected:'';
     const list=$('#component-studio-layer-list');list.innerHTML='';
+    componentDraft.layers.forEach(normalizeComponentLayer);
     componentDraft.layers.forEach(layer=>{
       const row=document.createElement('div');row.className=`component-layer-row${layer.id===componentLayerId?' active':''}`;
-      const pick=document.createElement('button');pick.type='button';pick.className='component-layer-select';pick.textContent=layer.name;pick.onclick=()=>{componentLayerId=layer.id;renderComponentStudio();};
-      const visibility=document.createElement('button');visibility.type='button';visibility.textContent=layer.visible===false?'◌':'◉';visibility.setAttribute('aria-label',`${layer.visible===false?'Mostrar':'Ocultar'} ${layer.name}`);visibility.onclick=()=>{layer.visible=layer.visible===false;renderComponentStudio();};
-      const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label',`Eliminar capa ${layer.name}`);remove.onclick=()=>{componentDraft.layers=componentDraft.layers.filter(entry=>entry.id!==layer.id);if(componentLayerId===layer.id)componentLayerId=componentDraft.layers[0]?.id||null;renderComponentStudio();};
-      const detail=document.createElement('small');detail.textContent=`${layer.strokes.length} ${layer.strokes.length===1?'trazo':'trazos'}${layer.visible===false?' · oculta':''}`;
+      const pick=document.createElement('button');pick.type='button';pick.className='component-layer-select';const title=document.createElement('span');title.className='component-layer-title';title.textContent=layer.name;const variant=document.createElement('span');variant.className='component-layer-variant';variant.textContent=layer.variantName;pick.append(title,variant);pick.onclick=()=>{componentLayerId=layer.id;renderComponentStudio();};
+      const visibility=document.createElement('button');visibility.className='component-layer-visibility';visibility.type='button';visibility.textContent=layer.visible===false?'○':'●';visibility.setAttribute('aria-label',`${layer.visible===false?'Activar':'Desactivar'} variante ${layer.variantName} de ${layer.name}`);visibility.onclick=()=>{const active=layer.visible===false;componentDraft.layers.forEach(entry=>{normalizeComponentLayer(entry);if(entry.slotKey===layer.slotKey)entry.visible=false;});layer.visible=active;renderComponentStudio();};
+      const remove=document.createElement('button');remove.className='component-layer-remove';remove.type='button';remove.textContent='×';remove.setAttribute('aria-label',`Eliminar ${layer.name}, variante ${layer.variantName}`);remove.onclick=()=>{componentDraft.layers=componentDraft.layers.filter(entry=>entry.id!==layer.id);if(componentLayerId===layer.id)componentLayerId=componentDraft.layers[0]?.id||null;renderComponentStudio();};
+      const detail=document.createElement('small');detail.textContent=`${layer.partType==='custom'?(layer.partLabel||'Otra parte'):(componentPartLabels[layer.partType]||'Parte')} · ${layer.side==='left'?'izquierda':layer.side==='right'?'derecha':'centro'} · ${layer.strokes.length} trazos${layer.visible===false?' · alternativa guardada':''}`;
       row.append(pick,visibility,remove,detail);list.append(row);
     });
     const stack=$('#component-studio-layer-stack');stack.innerHTML='';
     componentDraft.layers.forEach(layer=>{
       const group=document.createElementNS('http://www.w3.org/2000/svg','g');group.dataset.layerId=layer.id;group.setAttribute('transform',`translate(${Number(layer.offsetX)||0} ${Number(layer.offsetY)||0})`);group.style.display=layer.visible===false?'none':'';
-      (layer.strokes||[]).forEach(stroke=>{const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',stroke.points.map((point,index)=>`${index?'L':'M'}${point.x},${point.y}`).join(' ')+(stroke.closed?' Z':''));path.setAttribute('fill','none');path.setAttribute('stroke',stroke.color);path.setAttribute('stroke-width',stroke.strokeWidth);path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');path.setAttribute('opacity',stroke.opacity??1);group.append(path);});stack.append(group);
+      (layer.strokes||[]).forEach(stroke=>{const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',stroke.points.map((point,index)=>`${index?'L':'M'}${point.x},${point.y}`).join(' ')+(stroke.closed?' Z':''));path.setAttribute('fill','none');path.setAttribute('stroke',stroke.color);path.setAttribute('stroke-width',stroke.strokeWidth);path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');path.setAttribute('opacity',stroke.opacity??1);if(stroke.brush==='pencil')path.setAttribute('stroke-dasharray',`${stroke.strokeWidth*.35} ${stroke.strokeWidth*.12}`);group.append(path);});stack.append(group);
     });
+    const active=componentDraft.layers.find(layer=>layer.id===componentLayerId)||componentDraft.layers[0];
+    if(active){$('#component-studio-part-type').value=active.partType;$('#component-studio-part-side').value=active.side;$('#component-studio-variant').value=active.variantName==='Principal'?'':active.variantName;$('#component-studio-custom-part').value=active.partLabel||'';}
+    $('#component-studio-custom-part-field').hidden=$('#component-studio-part-type').value!=='custom';
+    $$('.component-studio-brushes button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.brush===componentBrush)));
     const palette=$('#component-studio-palette');palette.innerHTML='';
     componentStudioPalette.forEach(color=>{const button=document.createElement('button');button.type='button';button.className='component-studio-color';button.style.backgroundColor=color;button.setAttribute('aria-label',`Color ${color}`);button.setAttribute('aria-pressed',String(componentColor===color));button.onclick=()=>{componentColor=color;renderComponentStudio();};palette.append(button);});
     const custom=document.createElement('input');custom.type='color';custom.value=componentColor;custom.setAttribute('aria-label','Elegir otro color');palette.append(custom);
-    $('#component-studio-temp').setAttribute('stroke',componentColor);$('#component-studio-temp').setAttribute('stroke-width',$('#component-studio-width').value);
+    $('#component-studio-temp').setAttribute('stroke',componentBrush==='eraser'?'#fffdf8':componentColor);$('#component-studio-temp').setAttribute('stroke-width',Number($('#component-studio-width').value)*(componentBrush==='eraser'?2:1));$('#component-studio-width-value').value=$('#component-studio-width').value;
   }
   function componentCanvasPoint(event) {
     const rect=$('#component-studio-canvas').getBoundingClientRect();
@@ -1688,22 +1711,25 @@
     $('#open-component-studio').onclick=()=>openComponentStudio();
     $('#component-studio-close').onclick=()=>$('#component-studio-dialog').close();
     $('#component-studio-dialog').addEventListener('close',()=>{componentDraft=null;componentStroke=null;$('#component-studio-temp').setAttribute('d','');});
-    $('#component-studio-add-layer').onclick=()=>{const name=$('#component-studio-part-type').value;const same=componentDraft.layers.filter(layer=>layer.name.startsWith(name)).length;const layer={id:id(),name:same?`${name} ${same+1}`:name,visible:true,offsetX:0,offsetY:0,strokes:[]};componentDraft.layers.push(layer);componentLayerId=layer.id;renderComponentStudio();};
+    $('#component-studio-add-layer').onclick=()=>{const type=$('#component-studio-part-type').value,side=$('#component-studio-part-side').value,custom=$('#component-studio-custom-part').value;const sides=side==='pair'?['left','right']:[side];for(const entrySide of sides)addComponentLayer(type,entrySide,$('#component-studio-variant').value,custom);componentDraft.layers.find(layer=>layer.id===componentLayerId).visible=true;$('#component-studio-status').textContent='Parte añadida. Dibuja en esta capa; las variantes alternativas se guardan por separado.';renderComponentStudio();};
+    $('#component-studio-part-type').onchange=()=>{$('#component-studio-custom-part-field').hidden=$('#component-studio-part-type').value!=='custom';};
+    $('#component-studio-add-variant').onclick=()=>{const active=componentDraft?.layers.find(layer=>layer.id===componentLayerId);if(!active)return;const siblings=componentDraft.layers.filter(layer=>normalizeComponentLayer(layer).slotKey===active.slotKey);const variant=$('#component-studio-variant').value.trim()||`Alternativa ${siblings.length+1}`;addComponentLayer(active.partType,active.side,variant,active.partLabel||'');$('#component-studio-status').textContent=`Nueva variante de ${active.name}. La anterior queda guardada.`;renderComponentStudio();};
     $('#component-studio-edit').onclick=()=>{const template=state.customComponents.find(item=>item.id===$('#component-studio-existing').value);if(template)openComponentStudio(template.id);};
     $('#component-studio-save').onclick=()=>saveComponentStudio(false);$('#component-studio-save-insert').onclick=()=>saveComponentStudio(true);
-    $('#component-studio-undo-stroke').onclick=()=>{const layer=componentDraft?.layers.find(item=>item.id===componentLayerId);if(layer?.strokes.length){layer.strokes.pop();renderComponentStudio();}};
-    $('#component-studio-width').addEventListener('input',()=>$('#component-studio-temp').setAttribute('stroke-width',$('#component-studio-width').value));
+    $('#component-studio-undo-stroke').onclick=()=>{const previous=componentUndo.pop();if(previous){const layer=componentDraft?.layers.find(item=>item.id===previous.layerId);if(layer)layer.strokes=previous.strokes;renderComponentStudio();return;}const layer=componentDraft?.layers.find(item=>item.id===componentLayerId);if(layer?.strokes.length){layer.strokes.pop();renderComponentStudio();}};
+    $$('.component-studio-brushes button').forEach(button=>{button.innerHTML=svgIcon(({pen:'pen',marker:'highlighter',pencil:'pencil',eraser:'eraser'})[button.dataset.brush]||'pen');button.onclick=()=>{componentBrush=button.dataset.brush;renderComponentStudio();};});
+    $('#component-studio-width').addEventListener('input',()=>{renderComponentStudio();});
     $('#component-studio-touch-draw').onchange=event=>$('#component-studio-canvas').classList.toggle('touch-draw',event.target.checked);
     $('#component-studio-palette').addEventListener('input',event=>{if(event.target.type==='color'){componentColor=event.target.value;$('#component-studio-temp').setAttribute('stroke',componentColor);}});
     $('#component-studio-canvas').addEventListener('pointerdown',event=>{
       if(!componentDraft||!componentLayerId||(event.pointerType==='touch'&&!$('#component-studio-touch-draw').checked))return;
-      event.preventDefault();event.stopPropagation();componentStroke={pointerId:event.pointerId,layerId:componentLayerId,points:[componentCanvasPoint(event)],color:componentColor,width:Number($('#component-studio-width').value)};
+      const layer=componentDraft.layers.find(item=>item.id===componentLayerId);if(!layer||layer.visible===false)return;event.preventDefault();event.stopPropagation();componentStroke={pointerId:event.pointerId,layerId:componentLayerId,points:[componentCanvasPoint(event)],color:componentColor,width:Number($('#component-studio-width').value),brush:componentBrush,originalStrokes:JSON.parse(JSON.stringify(layer.strokes))};
       try{event.currentTarget.setPointerCapture(event.pointerId);}catch{}
     });
     $('#component-studio-canvas').addEventListener('pointermove',event=>{
-      if(!componentStroke||componentStroke.pointerId!==event.pointerId)return;const point=componentCanvasPoint(event),last=componentStroke.points.at(-1);if(Math.hypot(point.x-last.x,point.y-last.y)<1)return;componentStroke.points.push(point);const path=$('#component-studio-temp');path.setAttribute('d',componentStrokePath(componentStroke.points));path.setAttribute('stroke',componentStroke.color);path.setAttribute('stroke-width',componentStroke.width);
+      if(!componentStroke||componentStroke.pointerId!==event.pointerId)return;const point=componentCanvasPoint(event),last=componentStroke.points.at(-1);if(Math.hypot(point.x-last.x,point.y-last.y)<1)return;componentStroke.points.push(point);const path=$('#component-studio-temp');path.setAttribute('d',componentStrokePath(componentStroke.points));path.setAttribute('stroke',componentStroke.brush==='eraser'?'#fffdf8':componentStroke.color);path.setAttribute('stroke-width',componentStroke.width*(componentStroke.brush==='eraser'?2:1));path.setAttribute('opacity',componentStroke.brush==='marker'?'.42':componentStroke.brush==='pencil'?'.7':'1');
     });
-    const finish=event=>{if(!componentStroke||componentStroke.pointerId!==event.pointerId)return;const stroke=componentStroke;componentStroke=null;try{event.currentTarget.releasePointerCapture(event.pointerId);}catch{};if(stroke.points.length===1)stroke.points.push({x:stroke.points[0].x+.1,y:stroke.points[0].y+.1});componentDraft.layers.find(layer=>layer.id===stroke.layerId)?.strokes.push({points:stroke.points,color:stroke.color,strokeWidth:stroke.width,opacity:1,brush:'pen',closed:false});$('#component-studio-temp').setAttribute('d','');renderComponentStudio();};
+    const finish=event=>{if(!componentStroke||componentStroke.pointerId!==event.pointerId)return;const stroke=componentStroke;componentStroke=null;try{event.currentTarget.releasePointerCapture(event.pointerId);}catch{};const layer=componentDraft.layers.find(entry=>entry.id===stroke.layerId);if(layer){componentUndo.push({layerId:layer.id,strokes:stroke.originalStrokes});if(stroke.brush==='eraser'){const path=stroke.points,radius=stroke.width*1.1;const near=(a,b,c)=>{const dx=c.x-b.x,dy=c.y-b.y,length=dx*dx+dy*dy,t=length?Math.max(0,Math.min(1,((a.x-b.x)*dx+(a.y-b.y)*dy)/length)):0;return Math.hypot(a.x-(b.x+t*dx),a.y-(b.y+t*dy))<radius;};layer.strokes=layer.strokes.filter(item=>{const pts=item.points||[];return !pts.some(point=>path.some(cursor=>Math.hypot(cursor.x-point.x,cursor.y-point.y)<radius))&&!pts.slice(1).some((point,index)=>path.some(cursor=>near(cursor,pts[index],point)));});}else{if(stroke.points.length===1)stroke.points.push({x:stroke.points[0].x+.1,y:stroke.points[0].y+.1});layer.strokes.push({points:stroke.points,color:stroke.color,strokeWidth:stroke.width,opacity:stroke.brush==='marker'?.42:stroke.brush==='pencil'?.7:1,brush:stroke.brush,closed:false});}}$('#component-studio-temp').setAttribute('d','');renderComponentStudio();};
     $('#component-studio-canvas').addEventListener('pointerup',finish);$('#component-studio-canvas').addEventListener('pointercancel',event=>{componentStroke=null;$('#component-studio-temp').setAttribute('d','');});
     $$('.component-studio-position button').forEach(button=>button.onclick=event=>{const layer=componentDraft?.layers.find(item=>item.id===componentLayerId);if(!layer)return;const step=event.shiftKey?10:2;const direction=button.dataset.layerMove;layer.offsetX+=direction==='left'?-step:direction==='right'?step:0;layer.offsetY+=direction==='up'?-step:direction==='down'?step:0;renderComponentStudio();});
     $('#component-studio-dialog').addEventListener('keydown',event=>{if(!componentDraft||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)||event.target.matches('input,select,button'))return;event.preventDefault();const layer=componentDraft.layers.find(item=>item.id===componentLayerId);if(!layer)return;const step=event.shiftKey?10:2;layer.offsetX+=event.key==='ArrowLeft'?-step:event.key==='ArrowRight'?step:0;layer.offsetY+=event.key==='ArrowUp'?-step:event.key==='ArrowDown'?step:0;renderComponentStudio();});
