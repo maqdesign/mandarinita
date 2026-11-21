@@ -36,6 +36,12 @@
   const heroMediaStyleLabel = document.querySelector('#hero-media-style-label');
   const heroMediaShadowLabel = document.querySelector('#hero-media-shadow-label');
   const heroEpisodeCustomDialog = document.querySelector('#hero-episode-custom-dialog');
+  const heroStickerEditor = document.querySelector('#hero-sticker-editor');
+  const heroStickerLibrary = document.querySelector('#hero-sticker-library');
+  const heroStickerAddButton = document.querySelector('#hero-sticker-add-button');
+  const heroStickerList = document.querySelector('#hero-sticker-list');
+  const heroStickerField = siteContentForm.elements.hero_stickers;
+  const heroImageUploadLabel = siteContentForm.querySelector('.site-content-upload-label span');
   const heroStartAt = document.querySelector('#hero-start-at');
   const heroEndAt = document.querySelector('#hero-end-at');
   const bannerPreview = document.querySelector('#hero-banner-preview');
@@ -64,8 +70,10 @@
   let heroPreviewLayout = 'horizontal';
   let approvedEpisodes = [];
   let episodeSearchEntries = [];
+  let heroStickerCatalog = [];
   let episodeCatalogLoaded = false;
   let pendingEpisodeCopy = null;
+  let episodeBeingReplaced = null;
   let highlightedEpisodeIndex = -1;
   const draftAutosaveTimers = new Map();
   const draftAutosaveInFlight = new Map();
@@ -87,6 +95,7 @@
     ['hero.mediaStyle', 'hero_media_style', 'hero_media_style'],
     ['hero.mediaShadow', 'hero_media_shadow', 'hero_media_shadow'],
     ['hero.isNew', 'hero_is_new', 'hero_is_new'],
+    ['hero.stickers', 'hero_stickers', 'hero_stickers'],
     ['hero.startAt', 'hero_start_at', 'hero_start_at'],
     ['hero.endAt', 'hero_end_at', 'hero_end_at']
   ];
@@ -408,16 +417,33 @@
     if (episodeCatalogLoaded) return;
     episodeCatalogLoaded = true;
     try {
-      const [response, characterResponse, objectResponse] = await Promise.all([
+      const [response, characterResponse, objectResponse, artResponse] = await Promise.all([
         fetch('/episodes.json', { cache: 'no-store' }),
         fetch('/characters.json', { cache: 'no-store' }),
-        fetch('/episode-objects.json', { cache: 'no-store' })
+        fetch('/episode-objects.json', { cache: 'no-store' }),
+        fetch('/editor-art-catalog.json', { cache: 'no-store' })
       ]);
-      if (!response.ok || !characterResponse.ok || !objectResponse.ok) throw new Error('No se pudo cargar el catálogo de episodios y sus metadatos.');
-      const [catalog, characterCatalog, objectCatalog] = await Promise.all([response.json(), characterResponse.json(), objectResponse.json()]);
+      if (!response.ok || !characterResponse.ok || !objectResponse.ok || !artResponse.ok) throw new Error('No se pudo cargar el catálogo de episodios y sus metadatos.');
+      const [catalog, characterCatalog, objectCatalog, artCatalog] = await Promise.all([response.json(), characterResponse.json(), objectResponse.json(), artResponse.json()]);
       const characters = new Map((characterCatalog.characters || []).map(item => [item.id, item]));
       const objects = new Map((objectCatalog.objects || []).map(item => [item.id, item]));
       const localizedName = record => typeof record?.name === 'string' ? record.name : record?.name?.es || record?.name?.en || '';
+      const characterIdsByName = new Map([...characters].map(([id, item]) => [normalizeSearch(localizedName(item)), id]));
+      heroStickerCatalog = (artCatalog.directCharacterAssets || [])
+        .filter(item => item.editorCutoutApproved === true && item.assetUse === 'existing-transparent-portrait')
+        .map(item => ({
+          asset: item.source,
+          name: item.canonicalName || item.source.split('/').at(-1),
+          alt: item.pageAltText || item.canonicalName || 'Personaje de Mandarinita',
+          characterId: characterIdsByName.get(normalizeSearch(item.canonicalName || '')) || ''
+        }));
+      heroStickerCatalog.push(
+        { asset: 'assets/stickers/sticker-pack-02.webp', name: 'Sticker frutal · 02', alt: 'Sticker frutal del pack 02', characterId: '' },
+        { asset: 'assets/stickers/sticker-pack-03.webp', name: 'Sticker zanahoria · 03', alt: 'Sticker de zanahoria del pack 03', characterId: '' },
+        { asset: 'assets/stickers/sticker-pack-04.webp', name: 'Sticker frutal · 04', alt: 'Sticker frutal del pack 04', characterId: '' },
+        { asset: 'assets/stickers/sticker-pack-06.webp', name: 'Sticker frutal · 06', alt: 'Sticker frutal del pack 06', characterId: '' },
+        { asset: 'assets/stickers/sticker-pack-07.webp', name: 'Sticker frutal · 07', alt: 'Sticker frutal del pack 07', characterId: '' }
+      );
       approvedEpisodes = (catalog.episodes || []).filter(entry => entry.status === 'published'
         && entry.type === 'comic' && entry.complete === true && Number.isInteger(entry.episodeNumber)
         && typeof entry.id === 'string' && /^[a-z0-9-]{1,100}$/i.test(entry.id)
@@ -430,12 +456,14 @@
         const titleEs = typeof entry.title === 'string' ? entry.title : entry.title?.es || `Episodio ${entry.episodeNumber}`;
         const titleEn = typeof entry.title === 'string' ? entry.title : entry.title?.en || titleEs;
         const characterLabels = (entry.characters || []).map(id => localizedName(characters.get(id)) || id);
+        const characterLabelsEn = (entry.characters || []).map(id => characters.get(id)?.name?.en || localizedName(characters.get(id)) || id);
         const objectLabels = (entry.objects || []).map(id => localizedName(objects.get(id)) || id);
+        const objectLabelsEn = (entry.objects || []).map(id => objects.get(id)?.name?.en || localizedName(objects.get(id)) || id);
         const characterSearchTerms = labelValues(entry.characters || [], characters);
         const objectSearchTerms = labelValues(entry.objects || [], objects);
         const descriptions = (entry.panels || []).flatMap(panel => [panel.alt?.es, panel.alt?.en]).filter(Boolean);
         const searchable = normalizeSearch([entry.episodeNumber, titleEs, titleEn, entry.id, ...characterSearchTerms, ...objectSearchTerms, ...descriptions].join(' '));
-        return { entry, titleEs, titleEn, characterLabels, objectLabels, searchable };
+        return { entry, titleEs, titleEn, characterLabels, characterLabelsEn, objectLabels, objectLabelsEn, searchable };
       });
       renderEpisodeOptions();
     } catch (error) {
@@ -448,6 +476,25 @@
   }
   function normalizeSearch(value) {
     return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');
+  }
+  function positionEpisodeOptions() {
+    if (heroEpisodeOptions.hidden || !heroEpisodeSearch) return;
+    const rect = heroEpisodeSearch.getBoundingClientRect();
+    const viewportHeight = window.visualViewport?.height || window.innerHeight;
+    const reservedBottom = mobileNavigation.matches ? 145 : 18;
+    const below = Math.max(0, viewportHeight - rect.bottom - reservedBottom);
+    const above = Math.max(0, rect.top - 12);
+    const openAbove = below < 170 && above > below;
+    const maxHeight = Math.max(96, Math.min(320, openAbove ? above : below || viewportHeight - 24));
+    const width = Math.min(rect.width, window.innerWidth - 20);
+    const left = Math.min(Math.max(10, rect.left), window.innerWidth - width - 10);
+    const top = openAbove
+      ? Math.max(10, rect.top - maxHeight - 7)
+      : Math.min(viewportHeight - maxHeight - 10, rect.bottom + 7);
+    heroEpisodeOptions.style.left = `${left}px`;
+    heroEpisodeOptions.style.top = `${top}px`;
+    heroEpisodeOptions.style.width = `${width}px`;
+    heroEpisodeOptions.style.maxHeight = `${maxHeight}px`;
   }
   function renderEpisodeOptions() {
     const query = normalizeSearch(heroEpisodeSearch.value.trim());
@@ -476,6 +523,7 @@
     const isOpen = document.activeElement === heroEpisodeSearch && Boolean(query);
     heroEpisodeOptions.hidden = !isOpen;
     heroEpisodeSearch.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen) requestAnimationFrame(positionEpisodeOptions);
     if (isOpen && highlightedEpisodeIndex >= 0) heroEpisodeSearch.setAttribute('aria-activedescendant', `hero-episode-option-${highlightedEpisodeIndex}`);
     else heroEpisodeSearch.removeAttribute('aria-activedescendant');
     if (query && !matches.length && isOpen) {
@@ -485,20 +533,147 @@
       heroEpisodeOptions.append(empty);
     }
   }
+  window.addEventListener('scroll', positionEpisodeOptions, true);
+  window.addEventListener('resize', positionEpisodeOptions);
+  window.visualViewport?.addEventListener('resize', positionEpisodeOptions);
+  window.visualViewport?.addEventListener('scroll', positionEpisodeOptions);
   function episodeCopy(entry, isNew) {
     const titleEs = typeof entry.title === 'string' ? entry.title : entry.title?.es || `Episodio ${entry.episodeNumber}`;
     const titleEn = typeof entry.title === 'string' ? entry.title : entry.title?.en || titleEs;
+    const metadata = episodeSearchEntries.find(item => item.entry.id === entry.id);
+    const charactersEs = (metadata?.characterLabels || []).slice(0, 2);
+    const objectsEs = (metadata?.objectLabels || []).slice(0, 2);
+    const charactersEn = (metadata?.characterLabelsEn || metadata?.characterLabels || []).slice(0, 2);
+    const objectsEn = (metadata?.objectLabelsEn || metadata?.objectLabels || []).slice(0, 2);
+    const joinNames = (items, conjunction) => items.length < 2 ? (items[0] || '') : `${items.slice(0, -1).join(', ')} ${conjunction} ${items.at(-1)}`;
+    const teaserEs = charactersEs.length && objectsEs.length
+      ? `Con ${joinNames(charactersEs, 'y')} y ${joinNames(objectsEs, 'y')} en escena, una situación cotidiana se convierte en una ocurrencia muy Mandarinita. Descubre la historieta sin spoilers.`
+      : charactersEs.length
+        ? `Acompaña a ${joinNames(charactersEs, 'y')} en una situación cotidiana que toma un giro muy Mandarinita. Descubre la ocurrencia sin spoilers.`
+        : objectsEs.length
+          ? `${objectsEs[0][0].toLocaleUpperCase('es') + objectsEs[0].slice(1)} aparece en una situación cotidiana que pronto se convierte en una ocurrencia muy Mandarinita. Descubre la historieta sin spoilers.`
+          : 'Acompaña a los personajes de Mandarinita en una ocurrencia cotidiana que toma un giro inesperado. Descubre la historieta sin spoilers.';
+    const teaserEn = charactersEn.length && objectsEn.length
+      ? `With ${joinNames(charactersEn, 'and')} and ${joinNames(objectsEn, 'and')} in the mix, an everyday moment turns into a very Mandarinita-style surprise. Discover the comic without spoilers.`
+      : charactersEn.length
+        ? `Join ${joinNames(charactersEn, 'and')} in an everyday situation that takes a very Mandarinita turn. Discover the misadventure without spoilers.`
+        : objectsEn.length
+          ? `${objectsEn[0][0].toLocaleUpperCase('en') + objectsEn[0].slice(1)} shows up in an everyday situation that soon becomes a Mandarinita-style surprise. Discover the comic without spoilers.`
+          : 'Join the Mandarinita characters in an everyday situation that takes an unexpected turn. Discover the comic without spoilers.';
     return {
       'hero.eyebrow': { es: isNew ? 'Nuevo episodio' : 'Episodio destacado', en: isNew ? 'New episode' : 'Featured episode' },
       'hero.title.first': { es: `Episodio ${entry.episodeNumber}`, en: `Episode ${entry.episodeNumber}` },
       'hero.title.second': { es: titleEs, en: titleEn },
-      'hero.description': {
-        es: `Lee «${titleEs}», el episodio ${entry.episodeNumber} de Mandarinita.`,
-        en: `Read “${titleEn}”, episode ${entry.episodeNumber} of Mandarinita.`
-      },
+      'hero.description': { es: teaserEs, en: teaserEn },
       'hero.cta': { es: `Leer episodio ${entry.episodeNumber}`, en: `Read episode ${entry.episodeNumber}` }
     };
   }
+  function parseHeroStickers(value = heroStickerField.value) {
+    try {
+      const stickers = JSON.parse(value || '[]');
+      return Array.isArray(stickers) ? stickers.filter(item => heroStickerCatalog.some(asset => asset.asset === item.asset)).slice(0, 4) : [];
+    } catch { return []; }
+  }
+  function writeHeroStickers(stickers, { render = true } = {}) {
+    heroStickerField.value = JSON.stringify(stickers.slice(0, 4));
+    if (render) renderHeroStickerControls();
+    captureBannerForm();
+  }
+  function renderStickerLibraryOptions() {
+    if (!heroStickerLibrary) return;
+    const selectedEpisode = approvedEpisodes.find(item => item.id === heroEpisodeId.value);
+    const episodeCharacters = new Set(selectedEpisode?.characters || []);
+    const recommended = heroStickerCatalog.filter(item => item.characterId && episodeCharacters.has(item.characterId));
+    const others = heroStickerCatalog.filter(item => !recommended.includes(item));
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Selecciona un personaje o sticker';
+    heroStickerLibrary.replaceChildren(placeholder);
+    const appendOptions = (items, label) => {
+      if (!items.length) return;
+      const group = document.createElement('optgroup');
+      group.label = label;
+      for (const item of items) {
+        const option = document.createElement('option');
+        option.value = item.asset;
+        option.textContent = item.name;
+        group.append(option);
+      }
+      heroStickerLibrary.append(group);
+    };
+    appendOptions(recommended, 'Personajes de este episodio');
+    appendOptions(others, recommended.length ? 'Otros personajes y stickers' : 'Personajes y stickers aprobados');
+    heroStickerAddButton.disabled = heroStickerCatalog.length === 0 || parseHeroStickers().length >= 4;
+  }
+  function renderHeroStickerControls() {
+    if (!heroStickerList) return;
+    const stickers = parseHeroStickers();
+    heroStickerList.replaceChildren();
+    stickers.forEach((sticker, index) => {
+      const asset = heroStickerCatalog.find(item => item.asset === sticker.asset);
+      if (!asset) return;
+      const card = document.createElement('article');
+      card.className = 'hero-sticker-card';
+      const image = document.createElement('img');
+      image.src = `/${asset.asset}`;
+      image.alt = '';
+      image.loading = 'lazy';
+      const name = document.createElement('strong');
+      name.textContent = asset.name;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'admin-refresh hero-sticker-remove';
+      remove.textContent = 'Quitar';
+      remove.setAttribute('aria-label', `Quitar ${asset.name}`);
+      remove.addEventListener('click', () => {
+        stickers.splice(index, 1);
+        writeHeroStickers(stickers);
+      });
+      const top = document.createElement('div');
+      top.className = 'hero-sticker-card-heading';
+      top.append(image, name, remove);
+      card.append(top);
+      for (const [key, label, min, max] of [
+        ['x', 'Horizontal', 5, 95], ['y', 'Vertical', 5, 95], ['size', 'Tamaño', 8, 45], ['rotation', 'Giro', -12, 12]
+      ]) {
+        const control = document.createElement('label');
+        control.className = 'hero-sticker-control';
+        const title = document.createElement('span');
+        title.textContent = label;
+        const range = document.createElement('input');
+        range.type = 'range';
+        range.min = String(min);
+        range.max = String(max);
+        range.step = '1';
+        range.value = String(Number.isInteger(sticker[key]) ? sticker[key] : (key === 'x' ? 78 : key === 'y' ? 28 : key === 'size' ? 28 : 0));
+        range.setAttribute('aria-label', `${label} · ${asset.name}`);
+        const output = document.createElement('output');
+        output.value = `${range.value}${key === 'rotation' ? '°' : '%'}`;
+        range.addEventListener('input', () => {
+          sticker[key] = Number(range.value);
+          output.value = `${range.value}${key === 'rotation' ? '°' : '%'}`;
+          heroStickerField.value = JSON.stringify(stickers);
+          captureBannerForm();
+        });
+        control.append(title, range, output);
+        card.append(control);
+      }
+      heroStickerList.append(card);
+    });
+    renderStickerLibraryOptions();
+  }
+  heroStickerLibrary?.addEventListener('change', () => {
+    heroStickerAddButton.disabled = !heroStickerLibrary.value || parseHeroStickers().length >= 4;
+  });
+  heroStickerAddButton?.addEventListener('click', () => {
+    const asset = heroStickerCatalog.find(item => item.asset === heroStickerLibrary.value);
+    const stickers = parseHeroStickers();
+    if (!asset || stickers.length >= 4 || stickers.some(item => item.asset === asset.asset)) return;
+    const index = stickers.length;
+    stickers.push({ asset: asset.asset, name: asset.name, alt: asset.alt, x: 78 - (index % 2) * 20, y: 28 + Math.floor(index / 2) * 32, size: 28, rotation: index % 2 ? 5 : -4 });
+    heroStickerLibrary.value = '';
+    writeHeroStickers(stickers);
+  });
   function episodeCopyIsCustom(banner, entry) {
     const currentNew = banner.fields['hero.isNew']?.es === 'true';
     const generated = episodeCopy(entry, currentNew);
@@ -512,11 +687,18 @@
       ],
       'hero.cta': ['Leer historietas', 'Read the comics']
     };
+    const episodeTitleEs = typeof entry?.title === 'string' ? entry.title : entry?.title?.es || '';
+    const episodeTitleEn = typeof entry?.title === 'string' ? entry.title : entry?.title?.en || episodeTitleEs;
+    const legacyDescription = {
+      es: `Lee «${episodeTitleEs}», el episodio ${entry?.episodeNumber || 0} de Mandarinita.`,
+      en: `Read “${episodeTitleEn}”, episode ${entry?.episodeNumber || 0} of Mandarinita.`
+    };
     return Object.entries(generated).some(([key, value]) => {
       const saved = banner.fields[key];
       const matchesGenerated = saved?.es === value.es && saved?.en === value.en;
       const matchesOriginal = originals[key]?.includes(saved?.es) && originals[key]?.includes(saved?.en);
-      return !matchesGenerated && !matchesOriginal;
+      const matchesLegacy = key === 'hero.description' && saved?.es === legacyDescription.es && saved?.en === legacyDescription.en;
+      return !matchesGenerated && !matchesOriginal && !matchesLegacy;
     });
   }
   function applyEpisodeCopy(entry) {
@@ -532,22 +714,51 @@
     }
     captureBannerForm();
   }
+  function episodePanelImage(episode) {
+    const path = episode?.panels?.[0]?.watermarkedSrc || episode?.panels?.[0]?.src || '';
+    return /^assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)$/i.test(path) && !path.split('/').includes('..') ? path : '';
+  }
+  function isEpisodePanelImage(path) {
+    return approvedEpisodes.some(episode => episodePanelImage(episode) === path);
+  }
+  function useEpisodePanel(episode) {
+    const panel = episode?.panels?.[0];
+    const imagePath = episodePanelImage(episode);
+    if (!panel || !imagePath) return false;
+    heroImagePreview.src = new URL(imagePath, location.href).href;
+    heroImagePreview.alt = `Primera viñeta del episodio ${episode.episodeNumber}`;
+    heroImageStatus.textContent = `Primera viñeta · episodio ${episode.episodeNumber}`;
+    siteContentForm.elements.hero_image_es.value = imagePath;
+    siteContentForm.elements.hero_image_en.value = imagePath;
+    const title = typeof episode.title === 'string' ? episode.title : episode.title?.es || `Episodio ${episode.episodeNumber}`;
+    for (const [name, lang] of [['hero_image_alt_es', 'es'], ['hero_image_alt_en', 'en']]) {
+      const alt = panel.alt?.[lang] || panel.alt?.es || title;
+      siteContentForm.elements[name].value = `${lang === 'en' ? 'First panel of episode' : 'Primera viñeta del episodio'} ${episode.episodeNumber}: ${alt}`.slice(0, 300);
+    }
+    return true;
+  }
   function chooseFeaturedEpisode(id) {
     const banner = selectedBanner();
     const episode = approvedEpisodes.find(item => item.id === id);
     if (!banner || !episode) return;
-    const previous = approvedEpisodes.find(item => item.id === banner.fields['hero.episode']?.es);
+    const previous = approvedEpisodes.find(item => item.id === banner.fields['hero.episode']?.es) || episodeBeingReplaced;
     const custom = (!previous || previous.id !== id) && episodeCopyIsCustom(banner, previous || { episodeNumber: 0, title: { es: '', en: '' } });
+    episodeBeingReplaced = null;
+    const currentImage = siteContentForm.elements.hero_image_es.value;
+    const usingEpisodeArtwork = !currentImage || currentImage === 'assets/hero-mandy-mando-morita.png' || isEpisodePanelImage(currentImage);
     heroEpisodeId.value = id;
     heroEpisodeSearch.value = `Ep. ${episode.episodeNumber} · ${(typeof episode.title === 'string' ? episode.title : episode.title?.es) || ''}`;
     heroEpisodeOptions.hidden = true;
     heroEpisodeSearch.setAttribute('aria-expanded', 'false');
+    heroEpisodeOptions.style.cssText = '';
+    if (usingEpisodeArtwork) useEpisodePanel(episode);
     const searchableEntry = episodeSearchEntries.find(item => item.entry.id === id);
     const metadataLabel = [...(searchableEntry?.characterLabels || []), ...(searchableEntry?.objectLabels || [])].join(' · ');
     heroEpisodeSelection.textContent = `${siteContentForm.elements.hero_is_new.checked ? 'Nuevo episodio · ' : ''}Ep. ${episode.episodeNumber} · ${typeof episode.title === 'string' ? episode.title : episode.title?.es || ''}${metadataLabel ? ` · ${metadataLabel}` : ''}`;
     pendingEpisodeCopy = custom ? episode : null;
     if (custom) heroEpisodeCustomDialog.showModal();
     else applyEpisodeCopy(episode);
+    renderStickerLibraryOptions();
     updateBannerMediaUI();
     captureBannerForm();
   }
@@ -558,8 +769,13 @@
     heroEpisodeSearch.disabled = !isEpisode;
     heroEpisodeSearch.required = isEpisode;
     heroEpisodeId.required = false;
-    siteContentForm.querySelector('.site-content-upload-label').hidden = isEpisode;
-    heroImageFile.disabled = isEpisode;
+    siteContentForm.querySelector('.site-content-upload-label').hidden = false;
+    heroImageFile.disabled = false;
+    heroImageUploadLabel.textContent = isEpisode
+      ? 'Imagen de portada o promocional · PNG, WebP o JPEG · máximo 8 MB'
+      : 'Imagen principal · PNG, WebP o JPEG · máximo 8 MB';
+    heroStickerEditor.hidden = !isEpisode;
+    renderHeroStickerControls();
     heroEffectLabel.hidden = isEpisode;
     heroMediaStyleLabel.hidden = !isEpisode;
     heroMediaShadowLabel.hidden = !isEpisode;
@@ -572,23 +788,20 @@
     siteContentForm.elements.hero_effect_en.value = 'still';
     const episode = approvedEpisodes.find(item => item.id === heroEpisodeId.value);
     if (!episode) {
-      heroImageStatus.textContent = 'Selecciona un episodio publicado para usar su primera viñeta.';
+      heroImageStatus.textContent = 'Selecciona el episodio que abrirá el botón. También puedes subir una imagen promocional propia.';
       heroEpisodeSelection.textContent = 'Busca un episodio y selecciónalo de las sugerencias.';
       return;
     }
-    const panel = episode.panels[0];
-    const imagePath = panel.watermarkedSrc || panel.src;
-    if (!/^assets\/[A-Za-z0-9._/-]+\.(?:png|webp|jpe?g)$/i.test(imagePath)) return;
-    heroImagePreview.src = new URL(imagePath, location.href).href;
-    heroImagePreview.alt = `Primera viñeta del episodio ${episode.episodeNumber}`;
-    heroImageStatus.textContent = `Primera viñeta · episodio ${episode.episodeNumber}`;
-    siteContentForm.elements.hero_image_es.value = imagePath;
-    siteContentForm.elements.hero_image_en.value = imagePath;
-    const title = typeof episode.title === 'string' ? episode.title : episode.title?.es || `Episodio ${episode.episodeNumber}`;
-    for (const [name, lang] of [['hero_image_alt_es', 'es'], ['hero_image_alt_en', 'en']]) {
-      const alt = panel.alt?.[lang] || panel.alt?.es || title;
-      siteContentForm.elements[name].value = `${lang === 'en' ? 'First panel of episode' : 'Primera viñeta del episodio'} ${episode.episodeNumber}: ${alt}`.slice(0, 300);
+    const episodeImage = episodePanelImage(episode);
+    const selectedImage = siteContentForm.elements.hero_image_es.value;
+    if (selectedImage === episodeImage) {
+      heroImageStatus.textContent = `Primera viñeta · episodio ${episode.episodeNumber}`;
+      heroImagePreview.alt = `Primera viñeta del episodio ${episode.episodeNumber}`;
+    } else {
+      heroImageStatus.textContent = 'Imagen promocional propia · el botón abrirá este episodio.';
+      heroImagePreview.alt = siteContentForm.elements.hero_image_alt_es.value || 'Imagen promocional del episodio';
     }
+    renderHeroStickerControls();
   }
   function closeEpisodeSuggestions() {
     heroEpisodeOptions.hidden = true;
@@ -599,7 +812,10 @@
   heroEpisodeSearch.addEventListener('input', () => {
     const selected = approvedEpisodes.find(item => item.id === heroEpisodeId.value);
     const expected = selected ? `Ep. ${selected.episodeNumber} · ${(typeof selected.title === 'string' ? selected.title : selected.title?.es) || ''}` : '';
-    if (heroEpisodeSearch.value !== expected) heroEpisodeId.value = '';
+    if (heroEpisodeSearch.value !== expected) {
+      if (selected) episodeBeingReplaced = selected;
+      heroEpisodeId.value = '';
+    }
     renderEpisodeOptions();
     if (!heroEpisodeId.value && heroMediaType.value === 'episode') {
       heroImageStatus.textContent = 'Selecciona un resultado para destacar su primera viñeta.';
@@ -703,6 +919,7 @@
     heroImageStatus.textContent = 'Imagen de este banner';
     const selectedEpisode = approvedEpisodes.find(item => item.id === banner.fields['hero.episode']?.es);
     heroEpisodeSearch.value = selectedEpisode ? `Ep. ${selectedEpisode.episodeNumber} · ${(typeof selectedEpisode.title === 'string' ? selectedEpisode.title : selectedEpisode.title?.es) || ''}` : '';
+    episodeBeingReplaced = null;
     const selectedMeta = episodeSearchEntries.find(item => item.entry.id === selectedEpisode?.id);
     const selectedLabels = [...(selectedMeta?.characterLabels || []), ...(selectedMeta?.objectLabels || [])].join(' · ');
     heroEpisodeSelection.textContent = selectedEpisode ? `${siteContentForm.elements.hero_is_new.checked ? 'Nuevo episodio · ' : ''}Ep. ${selectedEpisode.episodeNumber} · ${(typeof selectedEpisode.title === 'string' ? selectedEpisode.title : selectedEpisode.title?.es) || ''}${selectedLabels ? ` · ${selectedLabels}` : ''}` : 'Ningún episodio seleccionado.';

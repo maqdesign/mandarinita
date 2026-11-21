@@ -599,3 +599,39 @@
 @media (prefers-color-scheme: dark) {
   .site-content-action-bar { background: rgba(39,33,28,.98); }
 }
+
+/* Banner type leads the form; episode search stays beside its field. */
+.site-content-kind { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(220px,.42fr) minmax(0,1fr); align-items: center; gap: 8px 18px; border-color: #e8caa9; background: #fffaf3; }
+.site-content-kind legend { color: #9c4a0b; }
+.site-content-kind label { margin: 0; }
+.site-content-kind .site-content-help { margin: 0; }
+.hero-episode-picker { position: relative; overflow: visible; }
+.hero-episode-search-shell { position: relative; min-width: 0; }
+.hero-episode-options { position: fixed; z-index: 1300; top: 0; left: 0; right: auto; width: min(480px,calc(100vw - 20px)); max-height: min(320px,55vh); overscroll-behavior: contain; }
+.hero-episode-option { gap: 5px; padding: 11px 12px; }
+.hero-episode-option[aria-selected="true"] { outline: 2px solid rgba(248,114,9,.34); outline-offset: -2px; }
+.hero-sticker-editor { grid-column: 1 / -1; display: grid; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,250,243,.75); }
+.hero-sticker-editor[hidden] { display: none !important; }
+.hero-sticker-heading { display: grid; gap: 10px; }
+.hero-sticker-heading h4 { margin: 0 0 3px; font: 600 .95rem Fredoka,sans-serif; }
+.hero-sticker-heading p { margin: 0; color: var(--muted); font-size: .7rem; }
+.hero-sticker-add { display: flex; gap: 8px; min-width: 0; }
+.hero-sticker-add select { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); color: var(--ink); font: 500 .75rem 'Work Sans',sans-serif; }
+.hero-sticker-add button { white-space: nowrap; }
+.hero-sticker-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 8px; }
+.hero-sticker-card { display: grid; gap: 7px; padding: 9px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+.hero-sticker-card-heading { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.hero-sticker-card-heading img { width: 38px; height: 38px; object-fit: contain; }
+.hero-sticker-card-heading strong { min-width: 0; flex: 1; font-size: .7rem; }
+.hero-sticker-remove { padding: 5px 9px; }
+.hero-sticker-control { display: grid; grid-template-columns: 58px minmax(0,1fr) 34px; align-items: center; gap: 6px; color: var(--muted); font-size: .62rem; }
+.hero-sticker-control input { min-width: 0; accent-color: var(--orange); }
+.hero-sticker-control output { color: var(--ink); text-align: right; font-size: .62rem; }
+@media (max-width:760px) {
+  .site-content-kind { grid-template-columns: minmax(0,1fr); gap: 5px; }
+  .hero-sticker-list { grid-template-columns: minmax(0,1fr); }
+  .hero-episode-options { width: min(460px,calc(100vw - 20px)); }
+}
+@media (prefers-color-scheme:dark) {
+  .site-content-kind,.hero-sticker-editor { background: var(--paper); }
+}

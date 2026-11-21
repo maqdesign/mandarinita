@@ -14,6 +14,7 @@ const FIELD_COLUMNS = [
   ['hero.mediaStyle', 'media_style', 'media_style', 'media-style', 20],
   ['hero.mediaShadow', 'media_shadow', 'media_shadow', 'media-shadow', 20],
   ['hero.isNew', 'is_new', 'is_new', 'boolean', 5],
+  ['hero.stickers', 'stickers_json', 'stickers_json', 'stickers', 3000],
   ['hero.startAt', 'starts_at', 'starts_at', 'schedule', 40],
   ['hero.endAt', 'ends_at', 'ends_at', 'schedule', 40]
 ];
@@ -23,8 +24,20 @@ const COLUMNS = [
   'id', 'position', 'enabled', 'eyebrow_es', 'eyebrow_en',
   'title_first_es', 'title_first_en', 'title_second_es', 'title_second_en',
   'description_es', 'description_en', 'cta_es', 'cta_en', 'image_path',
-  'effect', 'alt_es', 'alt_en', 'media_type', 'episode_id', 'media_style', 'media_shadow', 'is_new', 'starts_at', 'ends_at', 'cta_href', 'created_at', 'updated_at'
+  'effect', 'alt_es', 'alt_en', 'media_type', 'episode_id', 'media_style', 'media_shadow', 'is_new', 'stickers_json', 'starts_at', 'ends_at', 'cta_href', 'created_at', 'updated_at'
 ];
+const BANNER_STICKER_ASSETS = new Set([
+  'assets/characters/aguacatelo-transparent.png', 'assets/characters/greg-transparent.webp',
+  'assets/characters/limon-agrio-transparent.webp', 'assets/characters/mando-transparent.webp',
+  'assets/characters/mandy-transparent.webp', 'assets/characters/morita.png',
+  'assets/characters/sra-pera-transparent.webp', 'assets/characters/champi-transparent.webp',
+  'assets/characters/cherrys-transparent.webp', 'assets/characters/don-guineo-transparent.webp',
+  'assets/characters/don-pepino-transparent.webp', 'assets/characters/manzanillo-transparent.webp',
+  'assets/characters/sandy-transparent.webp', 'assets/characters/superfreso-transparent.webp',
+  'assets/stickers/sticker-pack-02.webp', 'assets/stickers/sticker-pack-03.webp',
+  'assets/stickers/sticker-pack-04.webp', 'assets/stickers/sticker-pack-06.webp',
+  'assets/stickers/sticker-pack-07.webp'
+]);
 
 async function authorize({ request, env }, write = false) {
   if (!isAuthConfigured(env)) return { response: json({ error: 'La administración privada no está configurada.' }, 503) };
@@ -74,6 +87,24 @@ function normalizeBanner(banner, { allowIncomplete = false } = {}) {
     if (type === 'media-style' && !['straight', 'tilt-left', 'tilt-right'].includes(es)) return { error: 'Elige una inclinación disponible.' };
     if (type === 'media-shadow' && !['none', 'soft', 'lifted'].includes(es)) return { error: 'Elige una sombra disponible.' };
     if (type === 'boolean' && !['true', 'false'].includes(es)) return { error: 'Revisa si el banner debe anunciarse como episodio nuevo.' };
+    if (type === 'stickers') {
+      let stickers;
+      try { stickers = JSON.parse(es); } catch { return { error: 'Revisa los personajes y stickers del banner.' }; }
+      if (en !== es || !Array.isArray(stickers) || stickers.length > 4) return { error: 'El banner admite hasta cuatro personajes o stickers.' };
+      for (const sticker of stickers) {
+        if (!sticker || typeof sticker !== 'object' || !BANNER_STICKER_ASSETS.has(sticker.asset)
+          || typeof sticker.name !== 'string' || sticker.name.length > 80
+          || typeof sticker.alt !== 'string' || sticker.alt.length > 200
+          || !Number.isInteger(sticker.x) || sticker.x < 5 || sticker.x > 95
+          || !Number.isInteger(sticker.y) || sticker.y < 5 || sticker.y > 95
+          || !Number.isInteger(sticker.size) || sticker.size < 8 || sticker.size > 45
+          || !Number.isInteger(sticker.rotation) || sticker.rotation < -12 || sticker.rotation > 12) {
+          return { error: 'Uno de los stickers tiene una imagen o posición no válida.' };
+        }
+      }
+      row[esColumn] = JSON.stringify(stickers);
+      continue;
+    }
     if (type === 'schedule' && es && (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(es)
       || !Number.isFinite(Date.parse(es)) || new Date(es).toISOString() !== es)) return { error: 'Revisa la fecha programada del banner.' };
     row[esColumn] = optionalEpisodeForImage ? '' : es;

@@ -14,6 +14,7 @@
   const timing = document.querySelector('#hero-carousel-timing');
   const hero = document.querySelector('.hero');
   const heroArt = document.querySelector('.hero-art-family');
+  const heroBannerStickers = document.querySelector('#hero-banner-stickers');
   const previewMode = new URLSearchParams(location.search).has('admin-banner-preview');
   const editLabels = {
     'hero.eyebrow': { es: 'frase de entrada', en: 'intro line' },
@@ -58,6 +59,32 @@
     heroImage.style.setProperty('--episode-aspect-ratio', `${heroImage.naturalWidth} / ${heroImage.naturalHeight}`);
     const color = dominantImageColor(heroImage);
     if (color) heroArt.style.setProperty('--episode-frame-color', color);
+  }
+  function renderBannerStickers(fields) {
+    if (!heroBannerStickers) return;
+    heroBannerStickers.replaceChildren();
+    if (fields['hero.mediaType']?.es !== 'episode') return;
+    let stickers = [];
+    try {
+      const value = fields['hero.stickers']?.es;
+      stickers = Array.isArray(value) ? value : JSON.parse(value || '[]');
+    } catch { stickers = []; }
+    if (!Array.isArray(stickers)) return;
+    for (const sticker of stickers.slice(0, 4)) {
+      const src = safeImage(sticker?.asset);
+      if (!src) continue;
+      const image = document.createElement('img');
+      image.className = 'hero-banner-sticker';
+      image.src = src;
+      image.alt = '';
+      image.setAttribute('aria-hidden', 'true');
+      image.draggable = false;
+      image.style.left = `${Math.max(5, Math.min(95, Number(sticker.x) || 50))}%`;
+      image.style.top = `${Math.max(5, Math.min(95, Number(sticker.y) || 50))}%`;
+      image.style.width = `${Math.max(8, Math.min(45, Number(sticker.size) || 28))}%`;
+      image.style.transform = `translate(-50%,-50%) rotate(${Math.max(-12, Math.min(12, Number(sticker.rotation) || 0))}deg)`;
+      heroBannerStickers.append(image);
+    }
   }
   heroImage?.addEventListener('load', updateEpisodeFrame);
   if (previewMode) {
@@ -234,6 +261,7 @@
       heroArt.dataset.newLabel = lang === 'en' ? 'NEW EPISODE' : 'NUEVO EPISODIO';
       updateEpisodeFrame();
     }
+    renderBannerStickers(fields);
     const cta = document.querySelector('.hero-copy .button-dark');
     if (cta && (/^#[A-Za-z0-9_-]+$/.test(banner.ctaHref || '') || /^\/\?episode=[a-z0-9-]{1,100}$/i.test(banner.ctaHref || ''))) cta.href = banner.ctaHref;
     const effect = fields['hero.effect']?.es === 'still' ? 'still' : 'orbit';
@@ -367,7 +395,7 @@
       const editableImage = target?.closest('.hero-family-image');
       const editable = editableText || editableImage;
       if (editable) {
-        const imageEditField = banners[current]?.fields?.['hero.mediaType']?.es === 'episode' ? 'hero.episode' : 'hero.image';
+        const imageEditField = 'hero.image';
         const field = editableText?.dataset.liveContent || imageEditField;
         if (editLabels[field] || field === 'hero.image') {
           event.preventDefault();

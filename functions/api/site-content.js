@@ -14,6 +14,7 @@ const FIELD_COLUMNS = [
   ['hero.mediaStyle', 'media_style', 'media_style'],
   ['hero.mediaShadow', 'media_shadow', 'media_shadow'],
   ['hero.isNew', 'is_new', 'is_new'],
+  ['hero.stickers', 'stickers_json', 'stickers_json'],
   ['hero.startAt', 'starts_at', 'starts_at'],
   ['hero.endAt', 'ends_at', 'ends_at']
 ];
