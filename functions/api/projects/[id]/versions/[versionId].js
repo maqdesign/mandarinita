@@ -52,7 +52,9 @@ export async function onRequestPost(context) {
   let saved;
   try {
     saved = await env.MANDARINITA_PROJECTS.put(currentKey, JSON.stringify(project), {
-      onlyIf: { etagMatches: expectedEtag },
+      // Use the incoming conditional headers exactly as the regular project
+      // save endpoint does; R2 evaluates If-Match atomically on the write.
+      onlyIf: request.headers,
       httpMetadata: { contentType: 'application/vnd.mandarinita+json; charset=utf-8' },
       customMetadata: {
         title: String(project.title || 'Episodio sin título').slice(0, 180), contentType: String(project.contentType || 'episode').slice(0, 40),
@@ -61,7 +63,7 @@ export async function onRequestPost(context) {
       }
     });
   } catch (error) {
-    console.error('Project version restore could not write restored project', { name: error?.name || 'Error', projectId: id, versionId });
+    console.error('Project version restore could not write restored project', { name: error?.name || 'Error', message: error?.message || '', projectId: id, versionId });
     return json({ error: 'No se pudo aplicar la copia histórica. La versión actual no se reemplazó; vuelve a intentarlo.' }, 503);
   }
   if (!saved) return json({ error: 'El proyecto cambió mientras se restauraba. No se reemplazó la versión actual.', code: 'version_conflict' }, 412);

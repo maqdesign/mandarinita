@@ -650,3 +650,31 @@ dialog.export-preview-dialog button.primary,
   .publish-episode-fields label:first-child { grid-column: auto; }
   dialog.publish-episode-dialog { width: calc(100vw - 20px); max-height: 96dvh; }
 }
+
+/* Keep publication controls inside Safari's narrow viewport and avoid stale/forced intrinsic widths. */
+@media (max-width: 760px) {
+  dialog.publish-episode-dialog {
+    box-sizing: border-box;
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
+  dialog.publish-episode-dialog > form,
+  dialog.publish-episode-dialog .publish-episode-fields,
+  dialog.publish-episode-dialog .publish-metadata-fieldset,
+  dialog.publish-episode-dialog .publish-alt-fieldset {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .publish-episode-fields label { width: 100%; min-width: 0; }
+  .publish-episode-fields input[type="datetime-local"] {
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding-inline: 8px;
+  }
+}
