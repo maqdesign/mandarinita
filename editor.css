@@ -321,6 +321,8 @@ html.session-ended body{visibility:hidden!important}
 .left-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px}.left-tabs button>.ui-icon{width:15px;height:15px;flex:none}.left-tabs button #layer-count-tab{padding-left:2px}
 .layer-row{display:flex;align-items:center;gap:3px;min-width:0}.layer-row .layer-grip,.layer-row .layer-rename{display:grid;place-items:center;flex:none;width:27px;height:30px;padding:4px;border:0;border-radius:5px;background:transparent;color:var(--muted);touch-action:none;cursor:grab}.layer-row .layer-grip:hover,.layer-row .layer-rename:hover{background:var(--surface-soft);color:var(--ink)}.layer-row .layer-grip:active{cursor:grabbing}.layer-row .layer-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.layer-row .layer-name-input{flex:1;min-width:35px;width:100%;height:28px;padding:3px 5px;border:1px solid var(--orange);border-radius:5px;background:var(--surface);color:var(--ink);font:inherit}.layer-row.layer-dragging{opacity:.45}.layer-row.layer-drop-target{box-shadow:inset 0 2px var(--orange)}.layer-row button:focus-visible,.has-icon:focus-visible{outline:3px solid #f8720966;outline-offset:2px}
 .project-menu-popover button{display:flex;align-items:center;gap:8px}.project-menu-popover button .ui-icon{width:14px;height:14px}
+.version-history-dialog{width:min(560px,calc(100vw - 28px));max-height:min(80vh,720px);overflow:auto}.version-history-list{display:grid;gap:8px;max-height:48vh;overflow:auto;margin:12px 0;padding:0;list-style:none}.version-history-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}.version-history-item>div{display:grid;gap:4px;min-width:0}.version-history-item strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.version-history-item small{color:var(--muted);font-size:12px}.version-history-item button{flex:none;min-height:38px}.version-history-dialog [role=status]{min-height:1.4em;color:var(--muted)}.version-history-dialog .dialog-actions{display:flex;justify-content:flex-end;gap:8px}.version-history-dialog button:focus-visible{outline:3px solid #f8720966;outline-offset:2px}
+@media(max-width:540px){.version-history-item{align-items:flex-start;flex-direction:column}.version-history-item button{width:100%}.version-history-dialog .dialog-actions{flex-direction:column-reverse}.version-history-dialog .dialog-actions button{width:100%}}
 @media(max-width:950px){.top-actions .button-label{display:none}.top-actions .has-icon{min-width:38px;justify-content:center;padding-inline:8px}.top-actions #theme-toggle{width:38px}}
 
 /* Horizontal story strip: the active frame leads and its neighbors stay in view. */
@@ -516,3 +518,38 @@ dialog.publish-episode-dialog::backdrop{background:#171411a8;backdrop-filter:blu
 .published-episode-empty{padding:34px 16px;border:1px dashed var(--line);border-radius:14px;text-align:center;color:var(--muted)}
 @media(max-width:640px){.home-sections{margin-inline:-14px;padding-inline:14px}.published-episodes-heading{align-items:flex-start}.published-episodes-filters{grid-template-columns:1fr}.published-episode-card{grid-template-columns:56px minmax(0,1fr);gap:10px;padding:9px}.published-episode-thumb{width:56px;height:56px}.published-episode-card>.button{grid-column:2;justify-self:start;min-height:36px}.published-episode-copy strong{font-size:13px}.publish-metadata-fieldset{padding:11px}.publish-episode-footer{gap:8px}}
 @media(prefers-reduced-motion:no-preference){.published-episode-card{transition:border-color .15s ease,transform .15s ease}.published-episode-card:hover{border-color:var(--orange);transform:translateY(-1px)}}
+
+/* Cloud sync notices stay separate from the brand header and can be dismissed. */
+.cloud-sync-banner{display:flex;align-items:center;gap:12px;width:min(100% - 32px,1180px);margin:12px auto 0;padding:11px 13px;border:1px solid #d99a79;border-radius:12px;background:#fff4eb;color:#69351f;box-shadow:0 4px 14px #4027190d}
+.cloud-sync-banner[hidden]{display:none}
+.cloud-sync-banner[data-state="conflict"]{border-color:#d7b06c;background:#fff8e8;color:#62430b}
+.cloud-banner-icon{display:grid;place-items:center;width:26px;height:26px;flex:none;border-radius:50%;background:#a94f2b;color:#fff;font-weight:800}
+.cloud-sync-banner[data-state="conflict"] .cloud-banner-icon{background:#90620d}
+.cloud-sync-banner .cloud-status{flex:1;max-width:none;margin:0;color:inherit;font-size:13px;font-weight:600;line-height:1.45}
+.cloud-sync-banner .cloud-retry{min-height:38px;flex:none}
+.cloud-banner-dismiss{display:grid;place-items:center;width:34px;height:34px;flex:none;border:0;border-radius:8px;background:transparent;color:inherit;font-size:24px;line-height:1;cursor:pointer}
+.cloud-banner-dismiss:hover,.cloud-banner-dismiss:focus-visible{background:#0000000d;outline:2px solid currentColor;outline-offset:1px}
+.project-card-cloud-only{background:radial-gradient(#d8cfc3 1px,transparent 1px),var(--surface-soft)!important;background-size:12px 12px!important}
+.cloud-only-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;width:100%;height:100%;color:var(--muted);font-size:13px;font-weight:600}
+.cloud-only-preview .ui-icon{width:26px;height:26px;color:#718854}
+.cloud-only-preview small{font-size:10px;font-weight:400}
+.theme-dark .cloud-sync-banner{border-color:#81513e;background:#3b2a24;color:#ffd2ba}
+.theme-dark .cloud-sync-banner[data-state="conflict"]{border-color:#7c633a;background:#393224;color:#ffe0a0}
+.theme-dark .cloud-banner-icon{background:#a94f2b}
+@media(max-width:640px){
+ .cloud-sync-banner{width:calc(100% - 20px);margin-top:8px;padding:10px;gap:8px;align-items:flex-start}
+ .cloud-sync-banner .cloud-status{font-size:12px}
+ .cloud-sync-banner .cloud-retry{min-height:36px;padding:7px 9px;font-size:10px}
+ .cloud-sync-banner .cloud-retry .button-label{display:inline}
+ .cloud-banner-dismiss{width:30px;height:30px}
+}
+@media(max-width:640px){
+ .cloud-sync-banner{display:grid;grid-template-columns:26px minmax(0,1fr) 30px;align-items:start}
+ .cloud-banner-icon{grid-column:1;grid-row:1 / span 2;margin-top:2px}
+ .cloud-sync-banner .cloud-status{grid-column:2;grid-row:1;min-width:0}
+ .cloud-sync-banner .cloud-retry{grid-column:2;grid-row:2;justify-self:start;margin-top:5px}
+ .cloud-banner-dismiss{grid-column:3;grid-row:1}
+}
+
+.publish-readiness-note{margin:14px 0;padding:11px 13px;border-left:3px solid var(--orange);border-radius:0 9px 9px 0;background:var(--surface-soft);color:var(--ink);font-size:12px;line-height:1.5}
+.publish-readiness-note strong{color:var(--orange)}

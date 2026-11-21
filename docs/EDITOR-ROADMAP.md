@@ -2,17 +2,21 @@
 
 ## Flujo actual
 
-El editor se sirve como aplicación estática en Cloudflare Pages. El guardado local sigue disponible. Se añadieron Pages Functions para iniciar sesión de forma privada con GitHub y guardar proyectos en R2; falta configurar OAuth, el binding privado y secretos en el Dashboard antes de que la nube se active. `episodes.json` requiere `status: review` hasta la aprobación manual. Los `.png` de episodios son láminas aplanadas: el repositorio no contiene fuentes por capas para separar fielmente muebles, personajes u otros objetos.
+El taller está desplegado en `mandarinita.art` y en el preview de Cloudflare Pages. GitHub OAuth restringe el acceso a la cuenta autorizada y Pages Functions almacena los proyectos editables en el bucket privado R2 `mandarinita-editor-projects`. Los borradores se comparten entre dispositivos con la misma cuenta. El índice de proyectos usa metadatos ligeros; los documentos de la nube se descargan al abrirlos para evitar agotar la cuota local de Safari. El archivo editable también queda en el dispositivo cuando cabe.
 
-## MVP local que ya se está probando
+El flujo cubre creación, composición, vista previa, exportación de revisión, publicación web y administración del catálogo publicado. La publicación genera PNG por viñeta, exige títulos en español e inglés y textos alternativos bilingües, sugiere metadatos de búsqueda y permite programar o retirar episodios. Publicar a Instagram o programar allí aún no está integrado.
+
+`episodes.json` continúa siendo el archivo editorial existente y los episodios publicados desde el editor se guardan como manifiestos en R2; no se reescribe el catálogo estático. Los episodios se pueden administrar desde el editor y el buscador público consulta el índice combinado.
+
+## Capacidades implementadas
 
 - Biblioteca de componentes aprobados, alias para búsquedas y más espacio para capas.
 - Composición multipanel; mover, seleccionar, redimensionar, bloquear, duplicar y reordenar elementos.
 - Globos de diálogo, pensamiento, narración, voz fuerte y efectos; texto editable y crecimiento automático.
 - Formatos Web 3:2, Instagram cuadrado 1:1 e Instagram vertical 4:5; el lienzo adopta el formato elegido y avisa de elementos fuera de cuadro.
-- Gestor local de borradores y paquete de proyecto `.mandarinita`, que conserva la estructura editable versionada (`schemaVersion: 1`) en `proyecto.json`. La importación valida la integridad del ZIP y que el archivo tenga viñetas y capas compatibles; rechaza metadata ajena y evita que un proyecto cargue imágenes remotas.
-- Exportación visual y metadata marcada `review`, sin publicar. Los paquetes de imagen están listos para revisión y carga manual.
-- Si el navegador alcanza su cuota local, el botón de guardado informa el fallo en vez de mostrar un éxito falso; si no puede escribirse el proyecto, el índice de archivos se revierte para evitar una entrada rota. Los ZIP de revisión siguen descargables y muestran que el borrador no se guardó en ese dispositivo.
+- Borradores locales y en R2 privado, con sincronización entre dispositivos, carga de proyectos de nube al abrirlos, conflictos protegidos por ETag y paquete editable `.mandarinita`. El ZIP conserva el proyecto versionado (`schemaVersion: 1`) y valida estructura y archivos al importarse.
+- Vista previa final y exportación de revisión. La publicación web desde el editor sube las viñetas, registra metadatos de búsqueda y accesibilidad y admite programación y retiro por fecha. Los episodios publicados se administran desde el editor.
+- La cuota de Safari se controla con un índice remoto ligero: el taller no descarga todos los proyectos en cada dispositivo. Cuando una copia de nube se abre, el editor mantiene el documento en memoria y sincroniza los cambios sin exigir otra copia local completa.
 - Tema oscuro, modo de lienzo amplio y trazos vectoriales básicos para ratón, dedo y Apple Pencil.
 
 Los tamaños son presets iniciales basados en el inventario actual y las relaciones de aspecto comunes. Son una propuesta de trabajo, no un formato canónico obligatorio.
@@ -27,9 +31,9 @@ La biblioteca reconoce Mando y Señor Mandarino como una sola identidad con alia
 
 ## Guardado entre dispositivos
 
-La implementación usa Pages Functions, GitHub OAuth con verificación del correo autorizado y un bucket R2 privado. El middleware protege el editor y su catálogo; las rutas privadas no se sirven si todavía falta la configuración. El archivo JSON editable continúa siendo la unidad almacenada; no hace falta una base relacional para la lista personal de borradores. Los secretos quedan del lado de Pages. La configuración y los pasos pendientes están en [EDITOR-CLOUD-SYNC.md](EDITOR-CLOUD-SYNC.md). Mientras tanto, la vista local se puede abrir desde un servidor de desarrollo.
+Pages Functions, GitHub OAuth y R2 privado ya están configurados y desplegados. La sesión se limita al correo autorizado y los secretos permanecen en Pages. La sincronización y sus límites están documentados en [EDITOR-CLOUD-SYNC.md](EDITOR-CLOUD-SYNC.md).
 
-Supabase sería útil si el producto evolucionara a cuentas de varios artistas, relaciones de datos consultables o permisos por equipo; añadirlo ahora duplicaría autenticación y almacenamiento. R2 y Pages Functions cubren la necesidad individual con menor operación. Falta habilitar OAuth/R2 en el proyecto y probar conflictos desde dos dispositivos antes de considerar lista la sincronización.
+El historial privado y restaurable ya está implementado para borradores en la nube. La prioridad pendiente es revisar manualmente el flujo entre dispositivos, incluida la recuperación tras uso offline. No hay edición simultánea en vivo: las escrituras concurrentes quedan protegidas por ETags y requieren elegir qué versión conservar. R2 sigue siendo suficiente para el taller personal; una base relacional no aportaría valor claro mientras no haya flujos de equipo y consultas más complejas.
 
 ## Progreso del atlas piloto
 
@@ -41,7 +45,7 @@ La última validación local confirmó la reapertura de un `.mandarinita` de dos
 
 ## Próximos hitos
 
-1. Validar la experiencia local en iPhone/iPad y escritorio; corregir interacción con lápiz, accesibilidad y persistencia.
-2. Completar la revisión del catálogo visual con Mauricio a resolución completa; seguir el atlas piloto de Mando y después revisar los demás personajes, objetos y fondos. Para el rig de Mando hacen falta dibujos fuente separados preparados por Mauricio; seguir el modelo y las restricciones de [sprites de personajes](EDITOR-CHARACTER-SPRITES.md). Toda extracción nueva pasa a revisión antes de entrar a la biblioteca aprobada.
-3. Configurar la OAuth App de GitHub y el bucket R2 privado; verificar la integración desde dos dispositivos y añadir recuperación/versiones antes de depender de la nube.
-4. Diseñar programación/publicación Meta solo después de verificar permisos oficiales de la cuenta. La exportación manual permanece disponible y ningún episodio se publica sin aprobación explícita.
+1. Verificar el flujo real entre iPhone, iPad y escritorio: abrir proyectos “En la nube”, editarlos, trabajar sin conexión y resolver cambios simultáneos sin perder trabajo.
+2. Conectar y autorizar una Meta App para Instagram Graph API; después implementar el Worker programado y el calendario. Hasta contar con permisos y credenciales de Meta, la interfaz no debe indicar que una publicación de Instagram está en cola o publicada. La publicación web funciona de forma independiente.
+4. Seguir aprobando recortes de personajes, objetos y fondos a partir de fuentes originales; las referencias pendientes no deben habilitarse como piezas insertables sin revisión.
+5. Evaluar una interfaz de revisión previa al estreno que reúna títulos, textos alternativos, numeración, fechas, firma de marca y vista previa en una sola lista de comprobación.

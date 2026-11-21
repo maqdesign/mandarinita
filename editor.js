@@ -120,6 +120,8 @@
   let cloudRefreshTimer = null;
   let cloudPollTimer = null;
   let cloudAuthExpired = false;
+  let cloudBannerDismissed = false;
+  let cloudBannerKey = '';
   const cloudTimers = new Map();
   const cloudBases = new Map();
   const cloudConflicts = new Set();
@@ -128,6 +130,7 @@
   // Small inline subset of the open-source Lucide icon set (ISC) keeps controls crisp offline.
   const ICON = {
     more: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
     eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
     eyeOff: '<path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a15 15 0 0 1-3.2 4.1M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7a10 10 0 0 0 4-.8"/>',
@@ -221,7 +224,7 @@
     if (!validProjectId(normalized.projectId)) normalized.projectId = id();
     normalized.contentType ||= 'episode';
     normalized.format = FORMAT[normalized.format] ? normalized.format : 'web';
-    normalized.exportStyle = ['classic','cream','footer'].includes(normalized.exportStyle) ? normalized.exportStyle : 'classic';
+    normalized.exportStyle = ['classic','cream','footer','bleed'].includes(normalized.exportStyle) ? normalized.exportStyle : 'classic';
     normalized.pageHeight = normalized.pageHeight || FORMAT[normalized.format].logicalHeight;
     normalized.panels = Array.isArray(normalized.panels) && normalized.panels.length ? normalized.panels : [{ id: id(), items: [] }, { id: id(), items: [] }];
     normalized.panels.forEach(p => { p.id ||= id(); p.items ||= []; });
@@ -259,6 +262,15 @@
     const text = message || (signedIn ? 'Sincronización al día' : 'Los borradores se guardan en este dispositivo.');
     ['#cloud-status','#editor-cloud-status'].forEach(selector => { const region=$(selector); if(region){region.textContent=text;region.dataset.state=syncState;} });
     ['#retry-cloud','#editor-retry-cloud'].forEach(selector => { const retry=$(selector); if(retry){retry.hidden=!(signedIn&&(syncState==='error'||cloudConflicts.size));const label=cloudConflicts.size?'Resolver conflicto':'Reintentar sincronización';retry.classList.add('has-icon');retry.innerHTML=`${svgIcon(cloudConflicts.size?'users':'refresh')}<span class="button-label">${label}</span>`;retry.title=label;retry.setAttribute('aria-label',label);} });
+    const banner=$('#cloud-sync-banner');
+    if(banner){
+      const key=`${syncState}:${text}`;
+      if(syncState==='busy')cloudBannerDismissed=false;
+      if((syncState==='error'||syncState==='conflict')&&key!==cloudBannerKey){cloudBannerDismissed=false;cloudBannerKey=key;}
+      if(syncState==='ready'){cloudBannerKey='';cloudBannerDismissed=false;}
+      banner.dataset.state=syncState;
+      banner.hidden=!signedIn||!['error','conflict'].includes(syncState)||cloudBannerDismissed;
+    }
     const footnote = $('#home-footnote');
     const storageLabel = $('#project-storage-label');
     if (storageLabel) storageLabel.textContent = signedIn ? syncState==='error'?'CENTRO DE CONTENIDO · SINCRONIZACIÓN PENDIENTE':syncState==='busy'?'CENTRO DE CONTENIDO · SINCRONIZANDO':syncState==='conflict'?'CENTRO DE CONTENIDO · CONFLICTO POR REVISAR':'CENTRO DE CONTENIDO · NUBE SINCRONIZADA' : 'CENTRO DE CONTENIDO · BORRADORES';
@@ -397,7 +409,6 @@
     console.error('Cloud synchronization failed', { step, name: error?.name||'Error', code: error?.code||'', status: error?.status||0, endpoint: error?.syncPath||'', message: error?.message||'' });
     setCloudStatus(message,'error');
     if(state)$('#save-state').textContent='Guardado local · sincronización pendiente';
-    toast(message);
   }
   function localProject(projectId) {
     if (state?.projectId===projectId) return captureState();
@@ -437,12 +448,13 @@
     timer = setTimeout(sync,900);
     cloudTimers.set(scheduledId, timer);
   }
-  function storeRemoteProject(project,etag) {
+  function storeRemoteProject(project,etag,{persistLocal=false}={}) {
     validateEditableProject(project);
-    const record = { id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: Number(project.updatedAt) || Date.now() };
+    const record = { id: project.projectId, title: project.title || 'Contenido sin título', contentType: project.contentType || 'episode', status: project.status || 'draft', createdAt: project.createdAt || Date.now(), updatedAt: Number(project.updatedAt) || Date.now(), panels: project.panels.length };
     const index = listProjects().filter(entry => entry.id !== project.projectId);
-    index.push(record); index.sort((a, b) => b.updatedAt - a.updatedAt);
-    localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
+    const hasLocal=localStorage.getItem(PROJECT_KEY(project.projectId))!==null;
+    index.push({...record,cloudOnly:!persistLocal&&!hasLocal}); index.sort((a, b) => b.updatedAt - a.updatedAt);
+    if(persistLocal)localStorage.setItem(PROJECT_KEY(project.projectId), JSON.stringify(project));
     localStorage.setItem(PROJECTS_KEY, JSON.stringify(index));
     saveCloudBase(project.projectId,etag,project.updatedAt);
   }
@@ -459,19 +471,32 @@
       const localProjects = listProjects().filter(record=>record&&typeof record==='object'&&!Array.isArray(record));
       const remoteById = new Map(remoteProjects.map(project => [project.id, project]));
       const skippedRemoteProjects = [];
+      const nextIndex=localProjects.filter(record=>!record.cloudOnly||remoteById.has(record.id));
       for (const remote of remoteProjects) {
         try {
-          syncStep=`leer «${String(remote.title||remote.id||'borrador').slice(0,80)}» desde la nube`;
-          let local;try { local=JSON.parse(localStorage.getItem(PROJECT_KEY(remote.id))||'null'); } catch { local=null; }
-          if(!local){const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag||remote.etag);continue;}
+          let local=localProject(remote.id);
+          const priorRecord=localProjects.find(record=>record.id===remote.id);
+          const remoteTitle=remote.title&&remote.title!=='Episodio sin título'?remote.title:(local?.title||priorRecord?.title||'Episodio sin título');
+          const metadata={id:remote.id,title:remoteTitle,contentType:remote.contentType||'episode',status:remote.status||'draft',createdAt:Number(remote.createdAt)||Number(remote.updatedAt)||Date.now(),updatedAt:Number(remote.updatedAt)||Date.now(),panels:Number(remote.panels)||0,cloudOnly:!local};
+          const indexPos=nextIndex.findIndex(record=>record.id===remote.id);
+          if(indexPos>=0)nextIndex[indexPos]={...nextIndex[indexPos],...metadata,cloudOnly:!local};else nextIndex.push(metadata);
+          if(!remote.etag){syncStep=`actualizar el índice de «${String(remote.title||remote.id||'borrador').slice(0,80)}»`;continue;}
+          if(!local){saveCloudBase(remote.id,remote.etag,0);continue;}
           const base=cloudBases.get(remote.id);
           if(!base){
-            const latest=await readRemoteProject(remote.id);
-            if(JSON.stringify(local)===JSON.stringify(latest.project))saveCloudBase(remote.id,latest.etag,local.updatedAt);
-            else markCloudConflict(remote.id);
+            if(Number(local.updatedAt)===Number(remote.updatedAt))saveCloudBase(remote.id,remote.etag,local.updatedAt);
+            else if(Number(local.updatedAt)>Number(remote.updatedAt)){
+              saveCloudBase(remote.id,remote.etag,local.updatedAt);
+              syncStep=`guardar «${String(local.title||remote.id||'borrador').slice(0,80)}» en la nube`;
+              try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(remote.id);else throw error;}
+            } else markCloudConflict(remote.id);
           }else if(base.etag!==remote.etag){
-            if(Number(local.updatedAt)>Number(base.localUpdatedAt))markCloudConflict(remote.id);
-            else {const latest=await readRemoteProject(remote.id);storeRemoteProject(latest.project,latest.etag);if(state?.projectId===remote.id){state=normalizeProject(latest.project);render();}}
+            if(Number(local.updatedAt)>Number(base.localUpdatedAt)||state?.projectId===remote.id)markCloudConflict(remote.id);
+            else{
+              localStorage.removeItem(PROJECT_KEY(remote.id));
+              metadata.cloudOnly=true;
+              saveCloudBase(remote.id,remote.etag,0);
+            }
           }else if(Number(local.updatedAt)>Number(base.localUpdatedAt)){
             syncStep=`guardar «${String(local.title||remote.id||'borrador').slice(0,80)}» en la nube`;
             cloudBases.set(remote.id,{etag:remote.etag,localUpdatedAt:Number(base.localUpdatedAt)||0});
@@ -483,13 +508,15 @@
         }
       }
       for (const record of localProjects) {
-        if (!remoteById.has(record.id)) {
+        if (!record.cloudOnly&&!remoteById.has(record.id)) {
           syncStep=`subir «${String(record.title||record.id||'borrador').slice(0,80)}» a la nube`;
           const local=localProject(record.id);
           if(local)try{await pushCloudProject(local);}catch(error){if(error.status===412)markCloudConflict(record.id);else throw error;}
         }
       }
       cloudReady = true;
+      nextIndex.sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));
+      try{localStorage.setItem(PROJECTS_KEY,JSON.stringify(nextIndex));}catch(error){console.warn('Could not save the small project index locally',error);}
       const skippedMessage=skippedRemoteProjects.length?`${skippedRemoteProjects.length} borrador${skippedRemoteProjects.length===1?'':'es'} de la nube tiene${skippedRemoteProjects.length===1?'':'n'} un formato que esta versión no puede abrir. El resto sí se sincronizó; esos archivos no se modificaron.`:'';
       setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':skippedMessage||'Sincronización al día',cloudConflicts.size?'conflict':skippedMessage?'error':'ready');
       renderProjectList();
@@ -512,6 +539,7 @@
     try{
       const latest=await readRemoteProject(projectId);
       if(action==='cloud'){
+        localStorage.removeItem(PROJECT_KEY(projectId));
         storeRemoteProject(latest.project,latest.etag);
         cloudConflicts.delete(projectId);pendingCloudConflict=null;$('#cloud-conflict-dialog').close();
         if(state?.projectId===projectId){state=normalizeProject(latest.project);showEditor();}else renderProjectList();
@@ -565,6 +593,7 @@
   }
   async function setupCloudSync() {
     const button = $('#github-sync');
+    $('#dismiss-cloud-banner').onclick=()=>{cloudBannerDismissed=true;$('#cloud-sync-banner').hidden=true;};
     button.onclick = async () => {
       if (cloudAuthExpired) { window.location.assign('/login.html?area=editor'); return; }
       if (cloudUser) {
@@ -701,6 +730,7 @@
   function showEditor() {
     $('#project-home').hidden = true; $('#editor-view').hidden = false;
     $('#export-preset').value = state.format;
+    $('#export-style').value = state.exportStyle || 'classic';
     render();
   }
   function renderProjectList() {
@@ -715,10 +745,14 @@
       let project; try { project = JSON.parse(localStorage.getItem(PROJECT_KEY(record.id)) || '{}'); } catch { project = {}; }
       const card = document.createElement('article'); card.className = 'project-card';
       const preview = document.createElement('div'); preview.className = 'project-card-preview'; preview.setAttribute('aria-hidden','true');
+      if(record.cloudOnly){
+        preview.classList.add('project-card-cloud-only');
+        preview.innerHTML=`<div class="cloud-only-preview">${svgIcon('cloud')}<span>En la nube</span><small>La vista previa se carga al abrir</small></div>`;
+      }
       const pageHeight = Number(project.pageHeight) || 400;
       const previewCanvas = document.createElement('div'); previewCanvas.className = 'project-preview-canvas';
       previewCanvas.style.aspectRatio = `${LOGICAL_WIDTH} / ${pageHeight}`;
-      const firstPanel = project.panels?.[0];
+      const firstPanel = record.cloudOnly ? null : project.panels?.[0];
       (firstPanel?.items || []).slice(0,8).forEach(item => {
         const layer = document.createElement('div'); layer.className = `project-preview-item ${item.type === 'bubble' ? `preview-${item.kind}` : ''}`;
         layer.style.left = `${item.x/LOGICAL_WIDTH*100}%`; layer.style.top = `${item.y/pageHeight*100}%`;
@@ -729,29 +763,94 @@
         else { const stroke = document.createElement('span'); stroke.style.cssText = `position:absolute;inset:0;background:linear-gradient(135deg,transparent 46%,${item.color || '#282522'} 48%,${item.color || '#282522'} 52%,transparent 54%)`; layer.append(stroke); }
         previewCanvas.append(layer);
       });
-      preview.append(previewCanvas);
+      if(!record.cloudOnly)preview.append(previewCanvas);
       const main = document.createElement('div'); main.className = 'project-card-main';
       const reviewState = record.status === 'review';
       const publicationLabel = record.status === 'published' ? 'Publicado en la web' : record.status === 'scheduled' ? `Programado · ${project.publishedAt || ''}` : reviewState ? 'En revisión' : 'Borrador';
       const publicationClass = record.status === 'published' ? 'published' : record.status === 'scheduled' ? 'scheduled' : reviewState ? 'ready' : '';
       const kindLabels = {episode:'Episodio',copy:'Texto / copy',banner:'Banner',section:'Sección web',design:'Diseño gráfico',mockup:'Diseño de producto'};
       const isEpisode = (project.contentType || record.contentType || 'episode') === 'episode';
-      main.innerHTML = `<strong>${escapeHTML(record.title)}</strong><span class="status-pill ${publicationClass}">${publicationLabel}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
-      const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${record.title}`); open.append(preview,main); open.onclick = () => openProject(record.id);
+      const displayTitle=project.title&&project.title!=='Episodio sin título'?project.title:record.title;
+      main.innerHTML = `<strong>${escapeHTML(displayTitle)}</strong><span class="status-pill ${publicationClass}">${publicationLabel}</span><small>${kindLabels[project.contentType || record.contentType || 'episode'] || 'Contenido'} · ${isEpisode ? `${project.panels?.length || record.panels || 0} viñetas · ` : ''}Modificado ${new Date(record.updatedAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' })}</small>`;
+      const open = document.createElement('button'); open.type = 'button'; open.className = 'project-card-open'; open.setAttribute('aria-label',`Abrir ${displayTitle}`); open.append(preview,main); open.onclick = () => openProject(record.id);
       const menu = document.createElement('details'); menu.className = 'project-card-menu';
-      menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
+      menu.innerHTML = `<summary aria-label="Más opciones para ${escapeHTML(record.title)}">${svgIcon('more')}</summary><div class="project-menu-popover"><button type="button" data-action="history">${svgIcon('clock')}<span>Historial de versiones</span></button><button type="button" data-action="duplicate">${svgIcon('copy')}<span>Duplicar archivo</span></button><button type="button" data-action="delete" class="danger">${svgIcon('trash')}<span>Borrar archivo</span></button></div>`;
       menu.addEventListener('click', event => event.stopPropagation());
+      menu.querySelector('[data-action="history"]').onclick = () => { menu.open = false; openVersionHistory(record.id); };
       menu.querySelector('[data-action="duplicate"]').onclick = () => { menu.open = false; duplicateProject(record.id); };
       menu.querySelector('[data-action="delete"]').onclick = () => { menu.open = false; requestDeleteProject(record.id); };
       card.append(open,menu);
       list.append(card);
     });
   }
-  function openProject(projectId) {
+  let historyProjectId = null, historyEtag = '';
+  async function openVersionHistory(projectId) {
+    historyProjectId = projectId; historyEtag = '';
+    $('#version-history-list').replaceChildren();
+    $('#version-history-status').textContent = 'Cargando versiones…';
+    $('#version-history-dialog').showModal();
+    await refreshVersionHistory();
+  }
+  async function refreshVersionHistory() {
+    const status = $('#version-history-status'), list = $('#version-history-list');
+    if (!historyProjectId) return;
+    status.textContent = 'Consultando el historial privado…'; list.replaceChildren();
     try {
-      state = normalizeProject(JSON.parse(localStorage.getItem(PROJECT_KEY(projectId))));
+      const result = await cloudFetch(`/api/projects/${encodeURIComponent(historyProjectId)}/versions`);
+      historyEtag = result.etag || '';
+      const versions = Array.isArray(result.versions) ? result.versions : [];
+      if (!versions.length) { status.textContent = 'Aún no hay puntos de recuperación. Se crearán automáticamente cuando el borrador cambie.'; return; }
+      status.textContent = `${versions.length} punto${versions.length === 1 ? '' : 's'} de recuperación · Se conservan hasta 30 versiones recientes.`;
+      versions.forEach(version => {
+        const row = document.createElement('li'); row.className = 'version-history-item';
+        const copy = document.createElement('div');
+        const title = document.createElement('strong'); title.textContent = version.title || 'Versión anterior';
+        const date = document.createElement('small'); date.textContent = version.snapshotAt ? new Date(version.snapshotAt).toLocaleString('es-DO', { dateStyle: 'medium', timeStyle: 'short' }) : 'Fecha no disponible';
+        copy.append(title, date);
+        const restore = document.createElement('button'); restore.type = 'button'; restore.className = 'button'; restore.textContent = 'Restaurar'; restore.setAttribute('aria-label', `Restaurar ${title.textContent}, ${date.textContent}`);
+        restore.onclick = () => restoreProjectVersion(version.id, restore);
+        row.append(copy, restore); list.append(row);
+      });
+    } catch (error) { status.textContent = error.message || 'No se pudo cargar el historial.'; }
+  }
+  async function restoreProjectVersion(versionId, button) {
+    const id = historyProjectId;
+    if (!id || !historyEtag) { toast('Actualiza el historial antes de restaurar.'); return; }
+    if (cloudConflicts.has(id)) { toast('Resuelve primero el conflicto de sincronización de este borrador.'); return; }
+    const local = localProject(id), base = cloudBases.get(id);
+    if (local && (!base || Number(local.updatedAt) > Number(base.localUpdatedAt || 0))) {
+      toast('Hay cambios locales pendientes. Sincronízalos antes de restaurar una versión.'); return;
+    }
+    if (!window.confirm('¿Restaurar esta versión? La versión actual se guardará primero en el historial para que puedas recuperarla.')) return;
+    button.disabled = true; $('#version-history-status').textContent = 'Restaurando…';
+    try {
+      await cloudFetch(`/api/projects/${encodeURIComponent(id)}/versions/${encodeURIComponent(versionId)}`, { method: 'POST', headers: { 'If-Match': historyEtag } });
+      const latest = await readRemoteProject(id);
+      storeRemoteProject(latest.project, latest.etag, { persistLocal: true });
+      if (state?.projectId === id) { state = normalizeProject(latest.project); undoStack = []; redoStack = []; showEditor(); }
+      else renderProjectList();
+      toast('Versión restaurada. La versión anterior también quedó guardada en el historial.');
+      await refreshVersionHistory();
+    } catch (error) {
+      $('#version-history-status').textContent = error.message || 'No se pudo restaurar esa versión.';
+      if (error.status === 412) await refreshVersionHistory();
+    } finally { button.disabled = false; }
+  }
+  async function openProject(projectId) {
+    try {
+      let project=null;
+      try{project=JSON.parse(localStorage.getItem(PROJECT_KEY(projectId))||'null');}catch{}
+      if(!project){
+        if(!cloudUser)throw new Error('Este proyecto solo está en la nube. Conéctate a internet para abrirlo.');
+        setCloudStatus('Cargando el proyecto desde la nube…','busy');
+        const latest=await readRemoteProject(projectId);
+        storeRemoteProject(latest.project,latest.etag);
+        project=latest.project;
+        setCloudStatus(cloudConflicts.size?'Hay versiones en conflicto. Revísalas antes de seguir.':'Sincronización al día',cloudConflicts.size?'conflict':'ready');
+      }
+      state = normalizeProject(project);
       undoStack = []; redoStack = []; showEditor();
-    } catch { toast('No pude abrir ese proyecto local. Prueba importar su archivo .mandarinita.'); }
+    } catch (error) { setCloudStatus(error.message||'No pude abrir ese proyecto.','error');toast(error.message||'No pude abrir ese proyecto.'); }
   }
   function newProject() {
     $('#new-content-dialog').showModal();
@@ -771,9 +870,10 @@
     const item={id:id(),type:'text',name:preset.title,text:preset.label,x:80,y:105,w:440,h:150,fontSize:32,fontWeight:600,align:'center',color:'#292725',rotation:0,locked:false};state.panels[0].items.push(item);state.selected=item.id;
     try{saveProject();showEditor();}catch{showEditor();toast('Este navegador no permitió guardar automáticamente. Descarga el archivo editable.');}
   }
-  function duplicateProject(projectId) {
+  async function duplicateProject(projectId) {
     try {
-      const source = JSON.parse(localStorage.getItem(PROJECT_KEY(projectId)));
+      let source=null;try{source=JSON.parse(localStorage.getItem(PROJECT_KEY(projectId))||'null');}catch{}
+      if(!source){const latest=await readRemoteProject(projectId);source=latest.project;}
       const copy = normalizeProject({ ...source, projectId: id(), title: `${source.title} · copia`, createdAt: Date.now(), updatedAt: Date.now() });
       saveProject(copy); renderProjectList();
     } catch { toast('No pude duplicar ese proyecto.'); }
@@ -2154,6 +2254,14 @@
     const entries = await getEditorCharacterCatalog();
     return (ids || []).map(value => entries.find(entry => entry.id === value)?.name || value);
   }
+  function updateRetirementDateMinimum(startSelector, endSelector) {
+    const start=$(startSelector),end=$(endSelector);
+    if(!start||!end)return;
+    const parts=String(start.value||'').split('-').map(Number);
+    if(parts.length!==3||parts.some(value=>!value)){end.removeAttribute('min');return;}
+    const nextDay=new Date(Date.UTC(parts[0],parts[1]-1,parts[2]+1)).toISOString().slice(0,10);
+    end.min=nextDay;
+  }
 
   async function openPublishEpisodeDialog() {
     if (state.contentType !== 'episode') {
@@ -2171,6 +2279,7 @@
     const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     $('#publish-episode-date').value = state.publishedAt || localToday;
     $('#publish-episode-unpublish-date').value = state.unpublishAt || '';
+    updateRetirementDateMinimum('#publish-episode-date','#publish-episode-unpublish-date');
     let catalog = { episodes: [] };
     try {
       const response = await fetch('/api/editor/episodes', { credentials: 'same-origin', cache: 'no-store' });
@@ -2235,6 +2344,7 @@
       const episodeNumber = Number($('#publish-episode-number').value);
       const publishedAt = $('#publish-episode-date').value;
       const unpublishAt = $('#publish-episode-unpublish-date').value || null;
+      const isExistingPublication = Boolean(state.publishedEpisodeId);
       const title = { es: String(state.title || '').trim(), en: $('#publish-episode-title-en').value.trim() };
       const idValue = state.publishedEpisodeId || `ep-${String(state.projectId || '').replace(/[^a-zA-Z0-9_-]/g, '')}`;
       const resolvedCharacters = await characterIdsFromNames($('#publish-characters').value);
@@ -2301,7 +2411,7 @@
                 : 'An everyday moment takes a very Mandarinita turn in this new comic.';
           const bannerResponse = await fetch('/api/admin/banners', {
             method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ episodeBanner: { episodeId: idValue, descriptionEs, descriptionEn, isNew: !state.publishedEpisodeId } })
+            body: JSON.stringify({ episodeBanner: { episodeId: idValue, descriptionEs, descriptionEn, isNew: !isExistingPublication } })
           });
           const bannerResult = await bannerResponse.json().catch(() => ({}));
           if (!bannerResponse.ok) throw new Error(bannerResult.error || 'No se pudo crear el banner.');
@@ -2393,6 +2503,7 @@
     $('#manage-episode-title-en').value = entry.title?.en || '';
     $('#manage-episode-date').value = entry.publishedAt || '';
     $('#manage-episode-unpublish-date').value = entry.unpublishAt || '';
+    updateRetirementDateMinimum('#manage-episode-date','#manage-episode-unpublish-date');
     $('#manage-episode-characters').value = (await characterNamesFromIds(entry.characters || [])).join(', ');
     $('#manage-episode-objects').value = (entry.objects || []).join(', ');
     $('#manage-episode-themes').value = (entry.themes || []).join(', ');
@@ -2599,6 +2710,9 @@
     $('#manage-published-episode-close').onclick = () => $('#manage-published-episode-dialog').close();
     $('#manage-published-episode-cancel').onclick = () => $('#manage-published-episode-dialog').close();
     $('#manage-published-episode-dialog').addEventListener('cancel', event => { if ($('#manage-published-episode-form').dataset.pending === 'true') event.preventDefault(); });
+    $('#version-history-refresh').onclick = refreshVersionHistory;
+    $('#version-history-close').onclick = () => $('#version-history-dialog').close();
+    $('#version-history-dialog').addEventListener('close', () => { historyProjectId = null; historyEtag = ''; });
     $$('.content-type-card').forEach(button=>button.onclick=()=>{$('#new-content-dialog').close();createContentDraft(button.dataset.contentType);});
     $$('.design-template-card').forEach(button=>button.onclick=()=>{$('#design-template-dialog').close();if(changingMockup)changeProductMockup(button.dataset.designTemplate);else createDesignProject(button.dataset.designTemplate);changingMockup=false;});
     $$('.text-style-card').forEach(button=>button.onclick=()=>{$('#text-style-dialog').close();addTextBlock('Escribe aquí…',button.dataset.textStyle);});
@@ -2619,7 +2733,9 @@
     $('#publish-episode-close').onclick = () => $('#publish-episode-dialog').close();
     $('#publish-episode-cancel').onclick = () => $('#publish-episode-dialog').close();
     $('#publish-episode-form').addEventListener('submit', submitEpisodePublication);
+    $('#publish-episode-date').addEventListener('change',()=>updateRetirementDateMinimum('#publish-episode-date','#publish-episode-unpublish-date'));
     $('#publish-episode-dialog').addEventListener('cancel', event => { if ($('#publish-episode-form').dataset.pending === 'true') event.preventDefault(); });
+    $('#manage-episode-date').addEventListener('change',()=>updateRetirementDateMinimum('#manage-episode-date','#manage-episode-unpublish-date'));
     $('#export-preview-dialog').addEventListener('close',closeExportPreview);
     $('#project-title').addEventListener('input', event => { state.title = event.currentTarget.textContent; autosave(); });
     $('#add-panel').onclick = addPanel;
