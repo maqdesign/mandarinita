@@ -110,6 +110,8 @@
   let drawing = null;
   let drawingObjectId = null;
   let erasing = null;
+  let lasso = null;
+  let recentDrawingGroup = null;
   let pendingDeleteId = null;
   let panelDrag = null;
   let layerDragId = null;
@@ -1204,6 +1206,7 @@
       boardCanvas.setAttribute('role','application'); boardCanvas.setAttribute('aria-label',`Lienzo de viñeta ${panelIndex + 1}`);
       boardCanvas.style.width = `${LOGICAL_WIDTH}px`; boardCanvas.style.height = `${state.pageHeight}px`; boardCanvas.style.transform = `scale(${scale})`;
       boardCanvas.classList.toggle('grid-off', !state.grid); boardCanvas.classList.toggle('draw-active', $('#toggle-draw').getAttribute('aria-pressed') === 'true');
+      boardCanvas.classList.toggle('draw-touch-native', ($('#draw-touch-mode')?.value || 'pan')==='pan');
       boardCanvas.title='Límite de publicación. Lo que sobresale sigue visible aquí y se recorta al exportar.';
       boardCanvas.addEventListener('pointerdown', beginDrawing); boardCanvas.addEventListener('pointermove', continueDrawing); boardCanvas.addEventListener('pointerup', finishDrawing); boardCanvas.addEventListener('pointercancel', cancelDrawing);
       boardCanvas.addEventListener('dragover', event => { if (event.dataTransfer?.types.includes('application/x-mandarinita-resource')) { event.preventDefault(); boardCanvas.classList.add('drop-target'); } });
@@ -1936,15 +1939,51 @@
   }
   function beginDrawing(event) {
     if ($('#toggle-draw').getAttribute('aria-pressed') !== 'true') return;
+    const touchMode = $('#draw-touch-mode')?.value || 'pan';
+    if (event.pointerType === 'touch' && touchMode === 'pan') return;
+    if (event.pointerType === 'touch' && touchMode === 'ignore') { event.preventDefault(); event.stopPropagation(); return; }
     event.preventDefault(); event.stopPropagation();
-    const target = event.currentTarget; const panelIndex = Number(target.dataset.panelIndex); if (state.active !== panelIndex) setActivePanel(panelIndex,true,false);
-    if (brushMode === 'eraser') {
+    const target = event.currentTarget; const panelIndex = Number(target.dataset.panelIndex);
+    if(state.active!==panelIndex){state.active=panelIndex;state.selected=null;recentDrawingGroup=null;$('#current-panel-label').textContent=`VIÑETA ${panelIndex+1}`;$$('.artboard-wrap').forEach((element,index)=>element.classList.toggle('active',index===panelIndex));$$('.viewport-badge').forEach((element,index)=>element.hidden=index!==panelIndex);}
+    if (event.pointerType === 'touch' && touchMode === 'lasso') {
+      recentDrawingGroup=null;
+      const first = pointOnCanvas(event,target);
+      lasso = { canvas:target, panelIndex, points:[first] };
+      target.setPointerCapture(event.pointerId); drawLassoPreview(); return;
+    }
+    if (brushMode === 'eraser' || (event.pointerType === 'touch' && touchMode === 'eraser')) {
+      recentDrawingGroup=null;
       erasing = { panelIndex, canvas:target, radius:Math.max(5,Number($('#brush-size').value)*1.4), changed:false, snapshot:false };
       target.setPointerCapture(event.pointerId); eraseAtPoint(pointOnCanvas(event,target)); return;
     }
     const first = pointOnCanvas(event,target);
     drawing = { segments:new Map([[panelIndex,{canvas:target,points:[first]}]]), color:selectedColor, size:Number($('#brush-size').value), brush:brushMode, opacity:brushMode === 'marker' ? .4 : brushMode === 'pencil' ? .75 : 1, panelIndex, canvas:target, lastClient:{x:event.clientX,y:event.clientY} };
     target.setPointerCapture(event.pointerId);
+  }
+  function drawLassoPreview() {
+    if (!lasso) return;
+    lasso.canvas.querySelector('.temporary-lasso')?.remove();
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('temporary-lasso');svg.setAttribute('viewBox',`0 0 ${LOGICAL_WIDTH} ${state.pageHeight}`);
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',lasso.points.map((p,i)=>`${i?'L':'M'}${p.x},${p.y}`).join(' '));svg.append(path);lasso.canvas.append(svg);
+  }
+  function pointInLasso(point, polygon) {
+    let inside=false;
+    for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){
+      const a=polygon[i],b=polygon[j];
+      if(((a.y>point.y)!==(b.y>point.y))&&(point.x<(b.x-a.x)*(point.y-a.y)/(b.y-a.y)+a.x))inside=!inside;
+    }
+    return inside;
+  }
+  function finishLasso(event) {
+    if(!lasso)return;
+    const current=lasso;current.canvas.querySelector('.temporary-lasso')?.remove();lasso=null;
+    if(current.canvas.hasPointerCapture(event.pointerId))current.canvas.releasePointerCapture(event.pointerId);
+    if(current.points.length<3)return;
+    const panel=state.panels[current.panelIndex];
+    const selected=panel.items.filter(item=>!item.locked&&pointInLasso({x:item.x+item.w/2,y:item.y+item.h/2},current.points));
+    state.selected=selected.at(-1)?.id||null;
+    render();
+    if(selected.length>1)toast(`El lazo encontró ${selected.length} capas; quedó seleccionada la superior.`);
   }
   function eraseAtPoint(point) {
     if (!erasing) return;
@@ -1968,6 +2007,11 @@
     }
   }
   function continueDrawing(event) {
+    if(lasso&&lasso.canvas.hasPointerCapture(event.pointerId)){
+      const point=pointOnCanvas(event,lasso.canvas),last=lasso.points.at(-1);
+      if(!last||Math.hypot(point.x-last.x,point.y-last.y)>3)lasso.points.push(point);
+      drawLassoPreview();return;
+    }
     if (erasing && erasing.canvas.hasPointerCapture(event.pointerId)) { eraseAtPoint(pointOnCanvas(event,erasing.canvas)); return; }
     if (!drawing || !drawing.canvas.hasPointerCapture(event.pointerId)) return;
     const from=drawing.lastClient, to={x:event.clientX,y:event.clientY};
@@ -2005,6 +2049,7 @@
     }
   }
   function finishDrawing(event) {
+    if(lasso){finishLasso(event);return;}
     if (erasing) {
       const current = erasing; if(current.canvas.hasPointerCapture(event.pointerId))current.canvas.releasePointerCapture(event.pointerId); erasing=null;
       if(current.changed)commit(); return;
@@ -2025,14 +2070,23 @@
     snapshot(); let selectedItem=null;
     for(const {panelIndex,stroke} of strokes){
       const panel=state.panels[panelIndex]; let item=drawingObjectId?panel.items.find(entry=>entry.id===drawingObjectId&&entry.type==='drawing'):null;
+      if(!item&&!drawingObjectId&&recentDrawingGroup?.panelIndex===panelIndex&&Date.now()-recentDrawingGroup.at<9000){
+        const candidate=panel.items.find(entry=>entry.id===recentDrawingGroup.id&&entry.type==='drawing');
+        if(candidate){
+          const pad=24, bounds={left:Math.min(...stroke.points.map(p=>p.x))-pad,right:Math.max(...stroke.points.map(p=>p.x))+pad,top:Math.min(...stroke.points.map(p=>p.y))-pad,bottom:Math.max(...stroke.points.map(p=>p.y))+pad};
+          if(bounds.right>=candidate.x&&bounds.left<=candidate.x+candidate.w&&bounds.bottom>=candidate.y&&bounds.top<=candidate.y+candidate.h)item=candidate;
+        }
+      }
       if(item){item.strokes.push(stroke);updateDrawingBounds(item);}
       else{item={id:drawingObjectId||id(),type:'drawing',name:drawingObjectId?'Dibujo':'Trazo',x:0,y:0,w:1,h:1,path:'',strokes:[stroke],color:stroke.color,strokeWidth:stroke.strokeWidth,fillEnabled:false,fillColor:'#F87209',locked:false,rotation:0};updateDrawingBounds(item);panel.items.push(item);}
+      if(!drawingObjectId)recentDrawingGroup={id:item.id,panelIndex,at:Date.now()};
       selectedItem ||= item;
     }
     state.selected=selectedItem?.id||null; commit();
   }
   function cancelDrawing(event) {
     const target = event.currentTarget;
+    if(lasso?.canvas===target){if(target.hasPointerCapture(event.pointerId))target.releasePointerCapture(event.pointerId);target.querySelector('.temporary-lasso')?.remove();lasso=null;}
     if (drawing?.canvas === target) {
       if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId);
       for(const segment of drawing.segments.values())segment.canvas.querySelector('.temporary-stroke')?.remove(); drawing = null;
@@ -3015,8 +3069,9 @@
     $('#eraser-tool').innerHTML = svgIcon('eraser');
     $('#group-drawing').innerHTML = svgIcon('layersPlus'); $('#end-drawing-object').innerHTML = svgIcon('fit');
     $('#eraser-tool').onclick = () => { const enabled=$('#eraser-tool').getAttribute('aria-pressed')!=='true'; if(enabled){brushMode='eraser';$('#eraser-tool').setAttribute('aria-pressed','true');$('#eraser-tool').classList.add('active');['pen','marker','pencil'].forEach(name=>{const button=$(`#brush-${name}`);button.setAttribute('aria-pressed','false');button.classList.remove('active');});$('#toggle-draw').setAttribute('aria-pressed','true');$('#draw-toolbar').hidden=false;render();}else setDrawingBrush('pen'); };
-    $('#group-drawing').onclick = () => { if(drawingObjectId){finishDrawingObject();return;} drawingObjectId = currentItem()?.type === 'drawing' ? currentItem().id : '__new_drawing_object__'; $('#end-drawing-object').hidden=false; $('#group-drawing').classList.add('active'); toast('Los siguientes trazos se unirán en un solo objeto.'); };
+    $('#group-drawing').onclick = () => { if(drawingObjectId){finishDrawingObject();return;} drawingObjectId = currentItem()?.type === 'drawing' ? currentItem().id : id(); $('#end-drawing-object').hidden=false; $('#group-drawing').classList.add('active'); toast('Los siguientes trazos se unirán en un solo objeto.'); };
     $('#end-drawing-object').onclick = finishDrawingObject;
+    $('#draw-touch-mode').addEventListener('change', () => render());
     $('#color-palette').addEventListener('click', event => { if (event.target.matches('.color-swatch')) { selectedColor = event.target.dataset.color; $$('.color-swatch').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.color===selectedColor))); } });
     $('#install-app').onclick = async () => {
       if (installPromptEvent) { installPromptEvent.prompt(); await installPromptEvent.userChoice; installPromptEvent=null; $('#install-app').hidden=true; }
@@ -3045,10 +3100,10 @@
   }
   function setDrawMode(enabled) {
     $('#toggle-draw').setAttribute('aria-pressed', String(enabled)); $('#draw-toolbar').hidden = !enabled;
-    if(!enabled){drawingObjectId=null;$('#end-drawing-object').hidden=true;$('#group-drawing').classList.remove('active');$('#eraser-tool').setAttribute('aria-pressed','false');$('#eraser-tool').classList.remove('active');setDrawingBrush('pen');}
+    if(!enabled){drawingObjectId=null;recentDrawingGroup=null;$('#end-drawing-object').hidden=true;$('#group-drawing').classList.remove('active');$('#eraser-tool').setAttribute('aria-pressed','false');$('#eraser-tool').classList.remove('active');setDrawingBrush('pen');}
     render();
   }
-  function finishDrawingObject() { drawingObjectId=null; $('#end-drawing-object').hidden=true; $('#group-drawing').classList.remove('active'); toast('Objeto de dibujo cerrado.'); }
+  function finishDrawingObject() { drawingObjectId=null; recentDrawingGroup=null; $('#end-drawing-object').hidden=true; $('#group-drawing').classList.remove('active'); toast('Objeto de dibujo cerrado.'); }
   function setDrawingBrush(mode) { brushMode=mode; $('#eraser-tool').setAttribute('aria-pressed','false'); $('#eraser-tool').classList.remove('active'); ['pen','marker','pencil'].forEach(name=>{const button=$(`#brush-${name}`);button.setAttribute('aria-pressed',String(name===mode));button.classList.toggle('active',name===mode);}); }
   function installPalette() {
     const root = $('#color-palette');

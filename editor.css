@@ -454,6 +454,14 @@ dialog.publish-episode-dialog::backdrop{background:#171411a8;backdrop-filter:blu
 .curved-text-preview{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .curved-text-preview text{dominant-baseline:auto;letter-spacing:.01em}
 .curved-text-input{color:transparent!important;caret-color:transparent!important;user-select:none!important}
+.artboard-canvas.draw-active.draw-touch-native{touch-action:pan-x pan-y!important}
+.artboard-canvas.draw-active .placed.selected{outline:0!important;box-shadow:none!important}
+.artboard-canvas.draw-active .placed.selected .move-handle,.artboard-canvas.draw-active .placed.selected .resize-handle{visibility:hidden!important;pointer-events:none!important}
+.temporary-lasso{position:absolute;inset:0;width:100%;height:100%;z-index:10001;pointer-events:none;overflow:visible}
+.temporary-lasso path{fill:#f8720922;stroke:#d75e00;stroke-width:2.5;stroke-dasharray:8 5;stroke-linejoin:round}
+.draw-toolbar .touch-mode-label{display:grid;gap:4px;justify-items:center;color:var(--muted);font-size:9px;line-height:1.1;text-align:center}
+.draw-toolbar .touch-mode-label select{width:100%;max-width:100%;padding:5px 2px;font-size:9px;white-space:normal}
+@media(max-width:720px){.draw-toolbar{width:94px}.draw-toolbar .touch-mode-label{width:100%}.draw-toolbar .touch-mode-label select{font-size:8px}}
 .editing-curved-text .curved-text-preview{visibility:hidden}
 .editing-curved-text .curved-text-input{color:var(--ink)!important;caret-color:var(--orange)!important;user-select:text!important}
 .canvas-context-menu{max-height:min(65dvh,420px);overflow:auto}

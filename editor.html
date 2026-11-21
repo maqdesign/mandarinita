@@ -92,6 +92,7 @@
         </div>
         <div id="draw-toolbar" class="draw-toolbar" hidden>
           <span class="eyebrow">DIBUJO</span>
+          <label class="touch-mode-label">Dedo<select id="draw-touch-mode" aria-label="Función del dedo al dibujar"><option value="pan">Desplazar lienzo</option><option value="lasso">Seleccionar con lazo</option><option value="eraser">Borrar trazos</option><option value="ignore">Ignorar dedo</option></select></label>
           <button class="draw-tool active" id="brush-pen" aria-label="Pluma" title="Pluma" aria-pressed="true"></button><button class="draw-tool" id="brush-marker" aria-label="Marcador" title="Marcador" aria-pressed="false"></button><button class="draw-tool" id="brush-pencil" aria-label="Lápiz" title="Lápiz" aria-pressed="false"></button>
           <div id="color-palette" class="color-palette" aria-label="Colores rápidos"></div><label class="brush-width" aria-label="Ancho del trazo">Ancho<input id="brush-size" type="range" min="2" max="24" value="5"></label><button id="eraser-tool" class="draw-tool" aria-label="Borrador" title="Borrador" aria-pressed="false"></button><button id="group-drawing" class="draw-tool" aria-label="Agrupar trazos en un objeto" title="Agrupar trazos"></button><button id="end-drawing-object" class="draw-tool" aria-label="Terminar objeto" title="Terminar objeto" hidden></button>
         </div>
